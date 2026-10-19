@@ -1,7 +1,7 @@
 ---
 name: task-workspace
 description: "Use when нужна папка задачи («tasks/»): старт задачи, артефакты, история работ."
-version: 1.0.0
+version: 1.0.1
 created: 2026-10-01
 tags: [задачи, задачи-папка, артефакты, история, процесс, iiko]
 triggers:
@@ -103,6 +103,6 @@ triggers:
 
 ## Установка (для команды)
 
-1. Скопируй `SKILL.md` из репозитория (`tasks/skill/SKILL.md`) в `~/.hermes/skills/productivity/task-workspace/SKILL.md`.
+1. Скопируй `SKILL.md` из репозитория (`skills/task-workspace/SKILL.md`) в `~/.hermes/skills/productivity/task-workspace/SKILL.md`.
 2. Новая сессия / перезапуск Hermes.
 3. `hermes curator pin task-workspace`.
