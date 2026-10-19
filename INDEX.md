@@ -26,4 +26,4 @@
 | spec-writing | Шаг 5 | `step-5-specification/skill/SKILL.md` | Спецификация (PRD) к разработке: вопросы, гейты, формат PRD. |
 | jira-task-digest | Шаг 6 | `step-6-development/skills/jira-task-digest/SKILL.md` | Use when нужен статус разработки по задаче Jira: выгрузка семьи задач эпика/стори, статусы и изменения. |
 | requirement-actualization | Шаг 6 | `step-6-development/skills/requirement-actualization/SKILL.md` | Use when требования поменялись в разработке: правка данных, пути пользователя или техрешения в Story. |
-| task-workspace | Сквозной | `tasks/skill/SKILL.md` | Use when нужна папка задачи («tasks/»): старт задачи, артефакты, история работ. |
+| task-workspace | Сквозной | `skills/task-workspace/SKILL.md` | Use when нужна папка задачи («tasks/»): старт задачи, артефакты, история работ. |
