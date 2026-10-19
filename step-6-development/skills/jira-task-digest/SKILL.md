@@ -35,7 +35,7 @@ source /opt/data/.env          # JIRA_TOKEN
 JIRA_URL по умолчанию https://jira.iiko.ru
 ```
 
-Скрипт: `/opt/data/iiko-product-process-main/step-6-development/scripts/jira_task_digest.py` (канон — в репозитории, папка `step-6-development/scripts/`; копия лежит рядом со скиллом — `jira_task_digest.py`).
+Скрипт в репозитории: `step-6-development/scripts/jira_task_digest.py` (копия лежит рядом со скиллом — `jira_task_digest.py`).
 **Куда складывать артефакты.** Как и у остальных шагов процесса — в папку задачи: `tasks/<слаг>/06-реализация/` (слаг задачи в репозитории процесса). Имена файлов:
 
 * `digest-<KEY>-<дата>.md` — выгрузка, `snapshot-<KEY>-<дата>.json` — снапшот для диффа со следующей выгрузкой;
@@ -49,7 +49,7 @@ JIRA_URL по умолчанию https://jira.iiko.ru
 2. **Запустить выгрузку:**
 
 ```bash
-python3 scripts/jira_task_digest.py PB-7986 --days 30 --out /opt/data/iiko-product-process-main/tasks/<слаг>/06-реализация
+python3 scripts/jira_task_digest.py PB-7986 --days 30 --out tasks/<слаг>/06-реализация
 ```
 
 Полезные ключи: `--days N` (окно изменений, по умолчанию 7), `--brief` (без таблицы задач: только сводка по статусам, изменения и застой), `--stuck-days N` (порог «нет движения», 14), `--all-changes` (показать и служебные изменения), `--no-changelog` (быстро, без истории), `--max-children N`, `--json-only`.

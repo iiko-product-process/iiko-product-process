@@ -1,6 +1,6 @@
-# Как работать с этой репой
+# Как работать с репозиторием iiko-product-process
 
-Общая репа скиллов продуктового офиса iiko. Два назначения — два места:
+Канон — [iiko-product-process/iiko-product-process](https://github.com/iiko-product-process/iiko-product-process). Два назначения — два места:
 
 - **`main`** — общее: скиллы по шагам, реестр `INDEX.md`, шаблон задачи `tasks/_шаблон`, скилл `tasks/skill`. Единственный источник для команды.
 - **`personal`** — личное: твои артефакты задач. В общей репе это только скелет; у тебя в форке — твоё личное пространство.
@@ -11,14 +11,14 @@
 2. Клонируй СВОЙ форк:
 
 ```bash
-git clone https://github.com/<ты>/iiko-product-office-skills.git
-cd iiko-product-office-skills
+git clone https://github.com/<ты>/iiko-product-process.git
+cd iiko-product-process
 ```
 
 3. Добавь общую репу как `upstream` (откуда качать обновления):
 
 ```bash
-git remote add upstream https://github.com/erldur84-cyber/iiko-product-office-skills.git
+git remote add upstream https://github.com/iiko-product-process/iiko-product-process.git
 ```
 
 Теперь у тебя два адреса: `origin` — твой форк, `upstream` — общая репа.
