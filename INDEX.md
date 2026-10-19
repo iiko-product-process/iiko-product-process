@@ -4,7 +4,7 @@
 [iiko-product-process](https://github.com/iiko-product-process/iiko-product-process). Каждая строка — один скилл.
 Добавить скилл = PR в этот репозиторий + строка в этом реестре (правка `INDEX.md` обязательна).
 
-Всего скиллов: **21**
+Всего скиллов: **20**
 
 | Скилл | Шаг | Путь | Описание |
 |---|---|---|---|
@@ -27,3 +27,4 @@
 | jira-task-digest | Шаг 6 | `step-6-development/skills/jira-task-digest/SKILL.md` | Use when нужен статус разработки по задаче Jira: выгрузка семьи задач эпика/стори, статусы и изменения. |
 | requirement-actualization | Шаг 6 | `step-6-development/skills/requirement-actualization/SKILL.md` | Use when требования поменялись в разработке: правка данных, пути пользователя или техрешения в Story. |
 | task-workspace | Сквозной | `skills/task-workspace/SKILL.md` | Use when нужна папка задачи («tasks/»): старт задачи, артефакты, история работ. |
+| share-to-common | Сквозной | `skills/share-to-common/SKILL.md` | Use when просит поделиться наработкой со всеми («в общую папку», «чтобы видели все»): собрать предложение и отправить PR. |
