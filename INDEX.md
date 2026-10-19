@@ -22,8 +22,6 @@
 | pb-task-writer | Шаг 3 | `step-3-pb-task-writer/skill/SKILL.md` | Use when нужны продуктовые требования или задача в Jira PB (шаг 3): интервью, Epic/Story. |
 | iiko-design-system | Шаг 4 | `step-4-design/04-агенты/skills/iiko-design-system/SKILL.md` | Use when working in iiko DS repos: tokens, mobile modes. |
 | iiko-ds-components | Шаг 4 | `step-4-design/04-агенты/skills/iiko-ds-components/SKILL.md` | Use when editing iiko DS components (CSS, tokens, modes). |
-| iiko-design-system | Шаг 4 | `step-4-design/prototyping-guide/04-агенты/skills/iiko-design-system/SKILL.md` | Use when working in iiko DS repos: tokens, mobile modes. |
-| iiko-ds-components | Шаг 4 | `step-4-design/prototyping-guide/04-агенты/skills/iiko-ds-components/SKILL.md` | Use when editing iiko DS components (CSS, tokens, modes). |
 | ux-writing-iiko | Шаг 4 | `step-4-design/skills/ux-writing-iiko.md` | Use when generating an iikoWeb prototype (always), writing or reviewing UX-тексты (RU). |
 | spec-writing | Шаг 5 | `step-5-specification/skill/SKILL.md` | Спецификация (PRD) к разработке: вопросы, гейты, формат PRD. |
 | jira-task-digest | Шаг 6 | `step-6-development/skills/jira-task-digest/SKILL.md` | Use when нужен статус разработки по задаче Jira: выгрузка семьи задач эпика/стори, статусы и изменения. |
