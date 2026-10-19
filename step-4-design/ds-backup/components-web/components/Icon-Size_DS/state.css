@@ -1,0 +1,15 @@
+.ds-state {
+  height: var(--ds-size-6x);
+  width: var(--ds-size-6x);
+  display: flex;
+  flex-direction: row;
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-state:hover {
+  background: #ebebeb;
+}
+.ds-state:active {
+  background: #e0e0e0;
+}
+

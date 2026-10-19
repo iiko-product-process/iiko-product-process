@@ -1,0 +1,374 @@
+/* app-sidenav.css — боковое меню приложения (организм): рейл L1 (52 ↔ 200) + панель L2 (260).
+   В кадре меню стоит во всю высоту (≥760) слева, шапка и кадр начинаются правее него —
+   логотип живёт в шапке меню, поэтому в шапке приложения бургера и лого нет (макет 59160:21175).
+   На узких кадрах (<760) — шторка поверх страницы (макет «Адаптив», узел 59193:17635; раздел 4 ниже).
+   Поведение и данные — app-sidenav.js (макеты DS «Взаимодействие с меню» 59160:36140 и «Адаптив» 59193:17635).
+
+   Подключение (одинаковое на всех страницах, см. app-sidenav/readme.md):
+     <link rel="stylesheet" href="app-sidenav/app-sidenav.css?v=15">
+     <script src="app-sidenav/app-sidenav.js?v=13" defer></script>
+   Страница подключает ДС (font/tokens/styles/components/index/fixes) и Material Icons; если что-то
+   забыли — скрипт дострахует (кроме мобильного слоя: меню десктопное).
+
+   Собрано из ДС: ds-sidenav-view / -header / -control / -item / -footer, ds-badge, ds-divider,
+   ds-element-sidenav (инициалы). Все размеры/цвета — переменные tokens.css.
+   Локально закрыто то, чего в ДС нет (в коде помечено «пробел ДС №N»), косяки — в журнале DS/fixes.md:
+     • раскладка меню в кадре (.panel/.frame) и швы подложки устройств — обвязка;
+     • L1: белый индикатор, стрелки наведения, точка-бейдж, цвета в свёрнутом (в css у --collapsed
+       цвета нет) — №57, 58;
+     • у ds-sidenav-item--l2 в css нет паддингов/высоты/ховера (только токены) — строка L2 здесь — №56;
+     • у подписи --l2 в css вес regular, в макете medium — здесь medium (токен) — №56;
+     • Info-блоки: в макете заголовок 12/16 + текст 10/12 (в ДС Text UI подпись 14) — здесь макетные
+       значения на токенах caption-l / caption-m — №60, 62;
+     • тултип свёрнутого меню — пилюля на токенах Hint (в ДС Hint container 250px, в макете 110×32) — №61;
+     • у .ds-sidenav-control__divider в css белый фон (должен быть токен control/divider) —
+       используется локальный разделитель на токене — №59;
+     • состояния selected/active в ДС отсутствуют (в css их нет) — №66; белый логотип/знак — №67. */
+
+/* ── 1. Меню в кадре: во всю высоту слева; шапка и кадр — правее меню ──────────
+   Макет 59160:21175: логотип — в шапке меню, шапка приложения начинается правее меню
+   (бургер и лого в ней — только в адаптиве, <760; правила в app-header.css) ── */
+.app-snav { display: none; }
+.panel.app-snav-on .app-snav {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--app-snav-w, 52px);
+  z-index: 2;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  background: var(--ds-color-sidenav-sidebar-l1-background, #263136);
+}
+.panel.app-snav-on .frame { margin-left: var(--app-snav-w, 52px); width: auto; }   /* width:auto — иначе кадр шириной 100% вылезает вправо */
+.panel.app-snav-on:not(.app-snav-drawer-on) .apph { margin-left: var(--app-snav-w, 52px); }   /* шапка — правее меню (в шторке не сдвигается) */
+
+/* углы «экрана» в подложках устройств: меню доходит до границы — скругления у него */
+body.device-desktop:not(.ui-clean) .app-snav { border-bottom-left-radius: 16px; }
+/* в широком состоянии верхний левый угол — у меню (шапка начинается правее) */
+body.device-desktop:not(.ui-clean) .panel.app-snav-on:not(.app-snav-drawer-on) .app-snav { border-top-left-radius: 16px; }
+body.device-tablet:not(.ui-clean) .panel.app-snav-on:not(.app-snav-drawer-on) .app-snav { border-top-left-radius: 14px; }
+body.device-desktop:not(.ui-clean) .panel.app-snav-on:not(.app-snav-drawer-on) .apph { border-top-left-radius: 0; }
+body.device-tablet:not(.ui-clean) .panel.app-snav-on:not(.app-snav-drawer-on) .apph { border-top-left-radius: 0; }
+
+/* Шов при дробном масштабе подложки (безель рендерится 13.6px): между безелем и рейлом
+   проступала белая нить. Продлеваем фон рейла на 2px под безель слева, сверху и снизу — стык
+   теней получается бесшовным; контент остаётся на прежних местах (padding компенсирует сдвиг). */
+body.device-desktop:not(.ui-clean) .panel.app-snav-on .app-snav {
+  left: -2px;
+  top: -2px;
+  bottom: -2px;
+  width: calc(var(--app-snav-w, 52px) + 2px);
+  padding-left: 2px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  box-sizing: border-box;
+}
+
+/* ── 2. Рейл L1 ─────────────────────────────────────────────────────────────── */
+.app-snav .material-icons { font-family: 'Material Icons Outlined'; }   /* страховка: везде аутлайн */
+.app-snav__l1 {
+  flex: none;
+  justify-content: space-between;
+  background: var(--ds-color-sidenav-sidebar-l1-background, #263136);
+}
+.app-snav--l1collapsed .app-snav__l1 { width: 52px; }
+.app-snav--l1expanded .app-snav__l1 { width: 200px; }
+
+/* шапка: в раскрытом — белый логотип, в свёрнутом — круглый знак (макет; белого логотипа в ДС нет — пробел ДС №67) */
+.app-snav__logo { display: none; }
+.app-snav--l1expanded .app-snav__logo {
+  display: block;
+  width: var(--ds-sidenav-header-l1-expanded-logo-width, 56px);
+  height: var(--ds-sidenav-header-l1-expanded-logo-height, 24px);
+}
+.app-snav--l1expanded .app-snav__mark { display: none; }
+
+/* кнопка «Свернуть меню»: квадрат с шевроном + подпись (в свёрнутом — только квадрат) */
+.app-snav__control { cursor: pointer; }
+.app-snav--l1collapsed .app-snav__control { width: 52px; }
+.app-snav__collapse {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--ds-size-1x, 4px);
+  background: var(--ds-color-sidenav-element-collaps-icon-background, #36474e);
+  color: var(--ds-color-text-inversive, #ffffff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.app-snav__collapse .material-icons { font-size: 16px; line-height: 1; }
+.app-snav--l1collapsed .ds-sidenav-control__label { display: none; }
+.app-snav__divider {
+  display: block;
+  height: 1px;
+  flex: none;
+  background: var(--ds-color-sidenav-control-divider, #36474e);
+}
+
+/* список пунктов: прокручивается (полоса прокрутки скрыта) */
+.app-snav__body { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+.app-snav__body::-webkit-scrollbar { display: none; }
+
+/* пункт L1: цвет подписи/иконки (у --collapsed в css цвета нет — пробел ДС №57) */
+.app-snav__item { position: relative; color: var(--ds-color-sidenav-item-l1-text-color, #ffffff); user-select: none; }
+.app-snav__content {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-sidenav-item-l1-gap-content, 8px);
+  flex: 1;
+  min-width: 0;
+}
+.app-snav--l1collapsed .app-snav__label,
+.app-snav--l1collapsed .app-snav__badge { display: none; }
+.app-snav__icon { flex: none; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
+.app-snav__icon .material-icons { font-size: 20px; line-height: 1; }
+.app-snav__icon-img { display: block; width: 20px; height: 20px; }
+
+/* белый индикатор открытого раздела — полоса 4×44 слева (макет; показывается, пока L2 открыт) */
+.app-snav__indicator {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 44px;
+  background: var(--ds-color-sidenav-item-l1-indicator, #ffffff);
+}
+.app-snav__item--open .app-snav__indicator { display: block; }
+
+/* фон раздела, в котором находится пользователь (в макете — выделенный фон открытого раздела;
+   пока открытие L2 = вход в раздел, состояния совпадают; класса состояния в ДС нет — пробел ДС №66) */
+.app-snav__item--open.ds-sidenav-item--l1 { background: var(--ds-color-sidenav-item-l1-background-selected, #4b626d); }
+
+/* стрелка наведения у разделов с L2: раскрытое меню — справа по строке.
+   Селектор привязан к пункту (.app-snav__item): общий класс .material-icons приходит в
+   каскаде ПОЗЖЕ css организмов и при равной специфичности перебивал display/font-size —
+   стрелка висела в потоке 24px, и строки прыгали 44↔48 на ховере. */
+.app-snav__item .app-snav__arrow {
+  display: none;
+  flex: none;
+  color: var(--ds-color-sidenav-item-l1-element-right, #ffffff);
+  font-size: var(--ds-icon-size-size-5x, 20px);
+  line-height: 1;
+}
+.app-snav--l1expanded .app-snav__item[data-l2]:hover .app-snav__arrow { display: flex; }
+
+/* свёрнутое меню: при наведении вместо иконки — стрелка по центру пункта (как иконка; вправо — откроет L2, влево — закроет) — пробел ДС №58 */
+.app-snav--l1collapsed .app-snav__item[data-l2]:hover .app-snav__icon { visibility: hidden; }
+.app-snav--l1collapsed .app-snav__item[data-l2]:hover .app-snav__arrow {
+  display: flex;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* тултип с названием в свёрнутом меню (токены Hint; в ДС Hint container 250px — пробел ДС №61).
+   Один слой на всё меню, position:fixed — внутри прокручиваемого списка тултип режет overflow-y. */
+.app-snav__hint {
+  display: none;
+  align-items: center;
+  position: fixed;
+  transform: translateY(-50%);
+  height: 32px;
+  padding: 0 var(--ds-space-3x, 12px);
+  border-radius: var(--ds-hint-border-radius, 8px);
+  background: var(--ds-color-hint-background-color, #424242);
+  white-space: nowrap;
+  z-index: 9;
+  pointer-events: none;
+  /* Шрифт: ds-hint-content__label сам семейство не задаёт (оно на обёртке ds-hint-content,
+     которую пилюля намеренно не использует — в ДС контейнер 250px, №61), поэтому текст
+     падал в системный Times. Стек — как в компоненте Hint-Tooltip. */
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.app-snav__hint.is-on { display: flex; }
+.app-snav__hint .ds-hint-content__label { color: var(--ds-color-hint-content-text-color, #ffffff); }
+
+/* тултип иконки ⓘ в шапке L2 — компонент Hint-Tooltip из ДС (ds-hint-container + ds-hint-content).
+   Слой position:fixed (не режется overflow панели), позицию задаёт скрипт по иконке. */
+.app-snav__tip { display: none; position: fixed; z-index: 12; }
+.app-snav__tip.is-on { display: block; }
+.app-snav__tip .ds-hint-container { overflow: hidden; }
+
+/* бейдж «Pro»: в раскрытом — пилюля, в свёрнутом — точка (позиция точки из макета — пробел ДС №57, №65) */
+.app-snav__dot { display: none; }
+.app-snav--l1collapsed .app-snav__dot { display: block; position: absolute; left: 32px; bottom: 28px; }
+
+/* подвал L1 */
+.app-snav__foot { flex-shrink: 0; }
+.app-snav__avatar {
+  position: relative;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.app-snav__avatar img { position: absolute; inset: 0; width: 20px; height: 20px; }
+.app-snav__avatar-text { position: relative; }
+
+/* ── 3. Панель L2 ───────────────────────────────────────────────────────────── */
+.app-snav__l2 {
+  flex: none;
+  width: 260px;
+  justify-content: space-between;
+  background: var(--ds-color-sidenav-sidebar-l2-background, #ffffff);
+  box-shadow:
+    var(--ds-shadow-shadows-sl-1-x, 0) var(--ds-shadow-shadows-sl-1-y, 2px) var(--ds-shadow-shadows-sl-1-blur, 2px) var(--ds-shadow-shadows-sl-1-spread, 0) var(--ds-shadow-shadows-sl-1-color, rgba(33, 33, 33, 0.04)),
+    var(--ds-shadow-shadows-sl-2-x, 0) var(--ds-shadow-shadows-sl-2-y, 0) var(--ds-shadow-shadows-sl-2-blur, 4px) var(--ds-shadow-shadows-sl-2-spread, 0) var(--ds-shadow-shadows-sl-2-color, rgba(33, 33, 33, 0.12));
+}
+.app-snav__l2[hidden] { display: none; }
+
+/* шапка L2: название раздела + «i», крестик закрывает только второй уровень */
+.app-snav__l2head { flex: none; }
+.app-snav__l2title { flex: none; }
+.app-snav__l2info { flex: none; display: flex; align-items: center; color: var(--ds-color-text-secondary, #616161); font-size: 20px; line-height: 1; }   /* №100: обёртка-flex (иначе −1,6px) */
+.app-snav__l2close {
+  flex: none;
+  display: flex; align-items: center;   /* №100: обёртка-flex (иначе −1,6px) */
+  margin-left: auto;
+  color: var(--ds-color-text-primary, #333333);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* тело L2: пункты + Info-блок, прокручивается */
+.app-snav__l2body { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+.app-snav__l2body::-webkit-scrollbar { display: none; }
+
+/* пункты L2 (в ДС у --l2 нет паддингов/высоты/ховера — пробел ДС №56) */
+.app-snav__l2item,
+.app-snav__l2group {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-sidenav-item-l2-gap-content, 8px);
+  width: 100%;
+  height: 40px;
+  padding: var(--ds-sidenav-item-l2-pad-top, 10px) var(--ds-sidenav-item-l2-pad-right, 16px) var(--ds-sidenav-item-l2-pad-bottom, 10px) var(--ds-sidenav-item-l2-pad-left, 16px);
+  box-sizing: border-box;
+  background: var(--ds-color-sidenav-item-l2-background, #ffffff);
+  cursor: pointer;
+  user-select: none;
+}
+.app-snav__l2item:hover { background: var(--ds-color-sidenav-item-l2-background-hover, #f8f9fc); }
+.app-snav__l2item .ds-sidenav-item__label,
+.app-snav__l2group .ds-sidenav-item__label { font-weight: var(--ds-sidenav-item-l2-text-weight, 500); }   /* у подписи в css regular, в макете medium — пробел ДС №56 */
+.app-snav__l2arrow { flex: none; margin-left: auto; color: var(--ds-color-text-primary, #333333); font-size: 20px; line-height: 1; }
+
+/* группа L2 (раскрывающаяся «Номенклатура») + вложенные пункты L3 */
+.app-snav__l2group { background: var(--ds-color-sidenav-item-l2-background-selected, #f0f5ff); }
+.app-snav__grarrow { flex: none; margin-left: auto; color: var(--ds-color-text-primary, #333333); font-size: 20px; line-height: 1; }
+.app-snav__l2group--collapsed .app-snav__grarrow { transform: rotate(180deg); }   /* состояние свёрнутой группы в макете не нарисовано */
+.app-snav__l3--collapsed { display: none; }
+.app-snav__l3item {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-sidenav-item-l3-gap, 8px);
+  position: relative;
+  width: 100%;
+  height: 32px;
+  padding: var(--ds-sidenav-item-l3-pad-top, 8px) var(--ds-sidenav-item-l3-pad-right, 16px) var(--ds-sidenav-item-l3-pad-bottom, 8px) var(--ds-sidenav-item-l3-pad-left, 32px);
+  box-sizing: border-box;
+  background: var(--ds-color-sidenav-item-l3-background-active, #f0f5ff);
+  cursor: pointer;
+  user-select: none;
+}
+.app-snav__l3item:hover { background: var(--ds-color-sidenav-item-l3-background-hover, #f8f9fc); }
+.app-snav__l3item--selected .ds-sidenav-item__label { color: var(--ds-color-sidenav-item-l3-text-color-selected, #448aff); }
+.app-snav__l3indicator {
+  display: none;
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 16px;
+  border-radius: var(--ds-radius-0-5x, 2px);
+  background: var(--ds-color-sidenav-item-l3-indicator, #448aff);
+}
+.app-snav__l3item--selected .app-snav__l3indicator { display: block; }
+
+/* Info-блок: серый контейнер с подсказками (размеры подписей — как в макете — пробел ДС №60, №62 Text UI) */
+.app-snav__info {
+  padding: var(--ds-sidenav-sidebar-info-pad-top, 16px) var(--ds-sidenav-sidebar-info-pad-right, 8px) var(--ds-sidenav-sidebar-info-pad-bottom, 16px) var(--ds-sidenav-sidebar-info-pad-left, 8px);
+}
+.app-snav__info-box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-sidenav-sidebar-info-gap-container, 16px);
+  padding: var(--ds-sidenav-sidebar-info-pad-top-container, 12px) var(--ds-sidenav-sidebar-info-pad-right-container, 12px) var(--ds-sidenav-sidebar-info-pad-bottom-container, 12px) var(--ds-sidenav-sidebar-info-pad-left-container, 12px);
+  background: var(--ds-color-sidenav-sidebar-info-background-container, #f8f9fc);
+  border-radius: var(--ds-radius-2x, 8px);
+}
+.app-snav__info-item { display: flex; flex-direction: column; gap: var(--ds-space-1x, 4px); }
+.app-snav__info-title {
+  font-size: var(--ds-font-caption-l-12-normal-regular-size, 12px);
+  line-height: var(--ds-font-caption-l-12-normal-regular-line, 16px);
+  letter-spacing: var(--ds-font-caption-l-12-normal-regular-spacing, 0.5px);
+  font-weight: var(--ds-font-caption-l-12-normal-regular-weight, 400);
+  color: var(--ds-color-text-primary, #333333);
+}
+.app-snav__info-text {
+  font-size: var(--ds-font-caption-m-10-normal-regular-size, 10px);
+  line-height: var(--ds-font-caption-m-10-normal-regular-line, 12px);
+  letter-spacing: var(--ds-font-caption-m-10-normal-regular-spacing, 0.5px);
+  font-weight: var(--ds-font-caption-m-10-normal-regular-weight, 400);
+  color: var(--ds-color-text-ui-text-label-color, #616161);
+}
+
+/* подвал L2: красный логотип iiko + версия */
+.app-snav__l2foot { flex: none; }
+.app-snav__l2foot img {
+  display: block;
+  width: var(--ds-sidenav-footer-l2-logo-width, 38px);
+  height: var(--ds-sidenav-footer-l2-logo-height, 16px);
+}
+.app-snav__vdiv { flex: none; width: 1px; height: 16px; background: var(--ds-color-divider-solid-default-color, #e0e0e0); }
+
+/* клавиатурный фокус */
+.app-snav [role="button"]:focus-visible { outline: 2px solid var(--ds-color-stroke-accent, #448aff); outline-offset: -2px; }
+
+/* ── 4. Режим шторки (адаптив <760): меню поверх страницы с затемнением ────────
+   Макет «Адаптив» (узел 59193:17635): ширина мобильный 280 / планшет 300;
+   выбор раздела — L2 встаёт на место L1; закрытие — ✕, затемнение, Esc. */
+/* ✕ скрыт вне шторки. Селектор +класс (.app-snav .app-snav__close) — иначе Google-стиль
+   .material-icons (грузится на страницах позже) перебивал display и крестик торчал в рейле */
+.app-snav .app-snav__close { display: none; margin-left: auto; color: var(--ds-color-text-inversive, #ffffff); font-size: 20px; line-height: 1; cursor: pointer; }
+.app-snav__scrim { display: none; }
+.panel.app-snav-drawer-on .app-snav__scrim {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: rgba(0, 0, 0, .4);   /* как у оверлеев прототипов (Backdrop в ДС нет — п. 27 журнала) */
+}
+.panel.app-snav-drawer-on .app-snav {
+  top: 0;
+  bottom: 0;
+  width: var(--app-snav-dw, 300px);
+  z-index: 6;
+}
+.app-snav--drawer .app-snav__close { display: flex; align-items: center; }
+/* «Свернуть меню» в шторке остаётся, как в макете «Адаптив» (там она есть на 280 и 300);
+   клик по ней в шторке закрывает саму шторку — логика в скрипте (onClick) */
+.app-snav--drawer .app-snav__l1 { width: 100%; }
+/* в шторке элементы тянутся на всю ширину меню (в рейле у элементов ДС фикс. 200/260):
+   шапка — чтобы ✕ шёл у правого края, строки — чтобы ховер/выбор/клик покрывали всю ширину */
+.app-snav--drawer .app-snav__head,
+.app-snav--drawer .app-snav__control,
+.app-snav--drawer .app-snav__l2head,
+.app-snav--drawer .app-snav__l2foot,
+.app-snav--drawer .app-snav__item,
+.app-snav--drawer .app-snav__l2item,
+.app-snav--drawer .app-snav__l2group,
+.app-snav--drawer .app-snav__l3item { width: 100%; }
+.app-snav--drawer.app-snav--l2open .app-snav__l1 { display: none; }    /* L2 занимает место L1 */
+.app-snav--drawer .app-snav__l2 { width: 100%; }
+.panel.app-snav-drawer-on .frame { margin-left: 0; width: auto; }      /* шторка кадр не сдвигает */

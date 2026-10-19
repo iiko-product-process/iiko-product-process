@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banners — демо стенд компонента</title>
+<!--
+  Демо стенд компонента Banners (страница «Banners_DS», 54367:2214). Папка: DS/components-web/components/Banners_DS/.
+  Источник — канва «Banners_DS» Figma «Iiko Web DS (New)»: набор «Banners» (54367:2566, 12 вариантов:
+  Style Neutral/Accent/Positive/Warning/Negative/Tip × Orientation Horizontal/Vertical), блок примеров
+  «Banners examples» (56358:10085) с пятью группами и блок «Token Audit — Banners» (61245:3601: 6 инстансов,
+  1 расхождение токенов у Warning — Corner Radius).
+  Состав по узлам: Style-иконка (в наборе у Neutral/Accent/Positive/Negative — «notifications», у Warning —
+  «warning», у Tip — «wb_incandescent»), текст «Text»; слоты по свойствам: Element left (иконка), Buttons,
+  Close (крестик 20). В примерах: кнопки M (36) / S (28) / XS (24) в слоте Buttons строкой ниже текста
+  (Vertical) или справа (Horizontal).
+  Style=Tip: в css класса нет (в наборе вариант есть) — обойдено в fixes.css п. 23 (по узлу 59827:5322:
+  граница 1px dashed [2,2] акцентом, фон #F5F9FF — токена нет, хардкод с пометкой).
+  Тексты примеров — дословно из канвы. Журнал DS/fixes.md №113.
+-->
+<link rel="stylesheet" href="../../font.css">
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../index.css">
+<link rel="stylesheet" href="../../fixes.css">
+<style>
+  /* каркас демо-стенда — как у других стендов */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .view { padding: 24px; }
+  .view .ds-tabs { margin-bottom: 24px; }
+  .panel { width: fit-content; max-width: 1920px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  .snap-cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0; }
+  .snap-note { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 28px 0 0; max-width: 980px; }
+  .snap-sect { margin: 0 0 40px; }
+  .snap-sect:last-child { margin-bottom: 0; }
+  .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
+  .snap-row { display: flex; gap: 48px; align-items: flex-start; }
+  .snap-col { display: flex; flex-direction: column; gap: 10px; }
+
+  /* витрина набора: артборд 570 (варианты 570×52/80) */
+  .snap-w570 { width: 570px; }
+  .snap-w810 { width: 810px; }
+  .snap-w605 { width: 605px; }
+  .snap-w448 { width: 448px; }
+
+  /* иконки баннера: svg-глифы по кадру 20 */
+  .ds-banner__icon svg { width: 100%; height: 100%; display: block; fill: currentColor; }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Banners — демо стенд</span>
+  <span>набор Figma: Banners (54367-2566, 12) · примеры: «Banners examples» (56358-10085)</span>
+</div>
+<div class="view">
+  <div class="ds-tabs" role="tablist" aria-label="Banners">
+    <button class="ds-tab ds-tab--active" role="tab" aria-selected="true" data-vtab="sets">Набор</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="examples">Примеры</button>
+  </div>
+
+  <!-- 1. Набор: 6 стилей × 2 ориентации -->
+  <div class="panel" data-vpanel="sets" role="tabpanel">
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Orientation=Horizontal (артборд 570×52; иконка стиля + текст)</div>
+      <div class="snap-col">
+        <div class="snap-cap">Style=Neutral</div>
+        <div class="ds-banner ds-banner--neutral ds-banner--horizontal snap-w570"><span class="ds-banner__icon"><svg><use href="#ic-bell"/></svg></span><span class="ds-banner__text">Text</span></div>
+        <div class="snap-cap">Style=Accent</div>
+        <div class="ds-banner ds-banner--accent ds-banner--horizontal snap-w570"><span class="ds-banner__icon"><svg><use href="#ic-bell"/></svg></span><span class="ds-banner__text">Text</span></div>
+        <div class="snap-cap">Style=Positive</div>
+        <div class="ds-banner ds-banner--positive ds-banner--horizontal snap-w570"><span class="ds-banner__icon"><svg><use href="#ic-bell"/></svg></span><span class="ds-banner__text">Text</span></div>
+        <div class="snap-cap">Style=Warning</div>
+        <div class="ds-banner ds-banner--warning ds-banner--horizontal snap-w570"><span class="ds-banner__icon"><svg><use href="#ic-warning"/></svg></span><span class="ds-banner__text">Text</span></div>
+        <div class="snap-cap">Style=Negative</div>
+        <div class="ds-banner ds-banner--negative ds-banner--horizontal snap-w570"><span class="ds-banner__icon"><svg><use href="#ic-bell"/></svg></span><span class="ds-banner__text">Text</span></div>
+        <div class="snap-cap">Style=Tip (пунктир — fixes п. 23)</div>
+        <div class="ds-banner ds-banner--tip ds-banner--horizontal snap-w570"><span class="ds-banner__icon"><svg><use href="#ic-bulb"/></svg></span><span class="ds-banner__text">Text</span></div>
+      </div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Orientation=Vertical (артборд 570×80; иконка и текст сверху, слот кнопок — снизу)</div>
+      <div class="snap-col">
+        <div class="snap-cap">Style=Neutral</div>
+        <div class="ds-banner ds-banner--neutral ds-banner--vertical snap-w570"><div class="ds-banner__row"><span class="ds-banner__icon"><svg><use href="#ic-bell"/></svg></span><span class="ds-banner__text">Text</span></div></div>
+        <div class="snap-cap">Style=Accent</div>
+        <div class="ds-banner ds-banner--accent ds-banner--vertical snap-w570"><div class="ds-banner__row"><span class="ds-banner__icon"><svg><use href="#ic-bell"/></svg></span><span class="ds-banner__text">Text</span></div></div>
+        <div class="snap-cap">Style=Positive</div>
+        <div class="ds-banner ds-banner--positive ds-banner--vertical snap-w570"><div class="ds-banner__row"><span class="ds-banner__icon"><svg><use href="#ic-bell"/></svg></span><span class="ds-banner__text">Text</span></div></div>
+        <div class="snap-cap">Style=Warning</div>
+        <div class="ds-banner ds-banner--warning ds-banner--vertical snap-w570"><div class="ds-banner__row"><span class="ds-banner__icon"><svg><use href="#ic-warning"/></svg></span><span class="ds-banner__text">Text</span></div></div>
+        <div class="snap-cap">Style=Negative</div>
+        <div class="ds-banner ds-banner--negative ds-banner--vertical snap-w570"><div class="ds-banner__row"><span class="ds-banner__icon"><svg><use href="#ic-bell"/></svg></span><span class="ds-banner__text">Text</span></div></div>
+        <div class="snap-cap">Style=Tip</div>
+        <div class="ds-banner ds-banner--tip ds-banner--vertical snap-w570"><div class="ds-banner__row"><span class="ds-banner__icon"><svg><use href="#ic-bulb"/></svg></span><span class="ds-banner__text">Text</span></div></div>
+      </div>
+    </div>
+
+    <p class="snap-note">Пометки для ревью: (а) иконки стилей — точные svg-пути из Figma: в наборе у Neutral/Accent/Positive/Negative — «notifications», у Warning — «warning» (треугольник), у Tip — «wb_incandescent»; цвет — токены Banners/*, задаются стилем; (б) в вертикальной ориентации текст и иконка в строке (<code>ds-banner__row</code>), ниже — слот кнопок (<code>ds-banner__buttons</code>); (в) Style=Tip в css отсутствует — собран в fixes.css п. 23 по узлу 59827:5322 (1px dashed [2,2], Stroke/Accent; фон #F5F9FF — токена нет, хардкод); (г) в канве у Warning-инстансов Token Audit показал 1 расхождение токенов (Corner Radius) — решить в ДС; (д) в «Padding 12/16, radius 12, gap 8» — токены banners-*. Журнал №113.</p>
+  </div>
+
+  <!-- 2. Примеры: 5 групп из «Banners examples» (тексты — из канвы) -->
+  <div class="panel" data-vpanel="examples" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Без кнопок и иконок, но с крестиком (570)</div>
+      <div class="ds-banner ds-banner--accent ds-banner--horizontal snap-w570"><div class="ds-banner__row"><span class="ds-banner__text">Если документы ещё не подготовлены, вы можете использовать наши шаблоны как основу.</span><span class="ds-banner__icon"><svg><use href="#ic-close-20"/></svg></span></div></div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">С иконкой и без крестика (570)</div>
+      <div class="ds-banner ds-banner--warning ds-banner--horizontal snap-w570"><div class="ds-banner__row"><span class="ds-banner__icon"><svg><use href="#ic-warning"/></svg></span><span class="ds-banner__text">Склад хранения = Склад отгрузки  Акт перемещения сформирован не будет</span></div></div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">С кнопкой в футере и крестиком (810 — кнопка M 36; 605 — кнопка S 28)</div>
+      <div class="snap-col">
+        <div class="ds-banner ds-banner--accent ds-banner--vertical snap-w810">
+          <div class="ds-banner__row"><span class="ds-banner__text">Если документы ещё не подготовлены, вы можете использовать наши шаблоны как основу.  Важно: шаблоны являются примером. В соответствии с 152-ФЗ ответственность за содержание документов несёте вы.</span><span class="ds-banner__icon"><svg><use href="#ic-close-20"/></svg></span></div>
+          <div class="ds-banner__buttons"><button type="button" class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Скачать шаблоны</span></button></div>
+        </div>
+        <div class="ds-banner ds-banner--accent ds-banner--vertical snap-w605">
+          <div class="ds-banner__row"><span class="ds-banner__text">Если документы ещё не подготовлены, вы можете использовать наши шаблоны как основу.  Важно: шаблоны являются примером. В соответствии с 152-ФЗ ответственность за содержание документов несёте вы.</span><span class="ds-banner__icon"><svg><use href="#ic-close-20"/></svg></span></div>
+          <div class="ds-banner__buttons"><button type="button" class="ds-btn ds-btn--s ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Скачать шаблоны</span></button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">С кнопками и без крестика (810; подписи кнопок — плейсхолдеры канвы «Button»)</div>
+      <div class="ds-banner ds-banner--negative ds-banner--horizontal snap-w810"><div class="ds-banner__row"><span class="ds-banner__text">Счёт не оплачен! Счет 1234567 Лизенции iikoCloud за период 23.10—22.11.2025</span><span class="ds-banner__buttons"><button type="button" class="ds-btn ds-btn--s ds-btn--neutral ds-btn--outlined"><span class="ds-btn__label">Button</span></button><button type="button" class="ds-btn ds-btn--s ds-btn--neutral ds-btn--outlined"><span class="ds-btn__label">Button</span></button></span></div></div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Баннер-подсказка с обводкой dashed (448; кнопка XS 24)</div>
+      <div class="ds-banner ds-banner--tip ds-banner--vertical snap-w448">
+        <div class="ds-banner__row"><span class="ds-banner__icon"><svg><use href="#ic-bulb"/></svg></span><span class="ds-banner__text">Рекомендуем настроить приветственный бонус
+Новые гости смогут получить бонус сразу после регистрации по QR-коду.</span><span class="ds-banner__icon"><svg><use href="#ic-close-20"/></svg></span></div>
+        <div class="ds-banner__buttons"><button type="button" class="ds-btn ds-btn--xs ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Настроить акцию</span></button></div>
+      </div>
+    </div>
+
+    <p class="snap-note">Пометки для ревью: (а) группы примеров и тексты — дословно из «Banners examples» (56358:10085); (б) состав по узлам: строка с иконкой/текстом/крестиком — <code>ds-banner__row</code>, кнопки — <code>ds-banner__buttons</code> (в примерах кнопки M 36 / S 28 / XS 24); крестик — Icon size 20 (svg-путь «close» из Figma); (в) в примерах у кнопки «Скачать шаблоны» в Figma включён левый слот-иконка — глиф в канве не назван, на стенде не выдумываем; (г) Tip — dashed-обводка обойдена в fixes п. 23 (браузерный пунктир аппроксимирует Figma-паттерн [2,2]); (д) цвета иконок/текста — токены Banners/*; у нейтрального фона рамка 1px (токен border). Журнал №113.</p>
+  </div>
+</div>
+
+<!-- svg-иконки — точные пути из Figma: notifications (набор, 20), warning (54638:751, 20), wb_incandescent (tip, 20), close (54025:273, 20) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-bell" viewBox="0 0 20 20">
+    <path d="M3.33333 15.8333V14.1667H4.99999V8.33332C4.99999 7.18054 5.34722 6.15624 6.04166 5.26041C6.73611 4.36457 7.63888 3.77777 8.74999 3.49999V2.91666C8.74999 2.56943 8.87152 2.2743 9.11458 2.03124C9.35763 1.78818 9.65277 1.66666 9.99999 1.66666C10.3472 1.66666 10.6424 1.78818 10.8854 2.03124C11.1285 2.2743 11.25 2.56943 11.25 2.91666V3.49999C12.3611 3.77777 13.2639 4.36457 13.9583 5.26041C14.6528 6.15624 15 7.18054 15 8.33332V14.1667H16.6667V15.8333H3.33333ZM9.99999 18.3333C9.54166 18.3333 9.1493 18.1701 8.82291 17.8437C8.49652 17.5174 8.33333 17.125 8.33333 16.6667H11.6667C11.6667 17.125 11.5035 17.5174 11.1771 17.8437C10.8507 18.1701 10.4583 18.3333 9.99999 18.3333ZM6.66666 14.1667H13.3333V8.33332C13.3333 7.41666 13.0069 6.63193 12.3542 5.97916C11.7014 5.32638 10.9167 4.99999 9.99999 4.99999C9.08333 4.99999 8.29861 5.32638 7.64583 5.97916C6.99305 6.63193 6.66666 7.41666 6.66666 8.33332V14.1667Z"/>
+  </symbol>
+  <symbol id="ic-warning" viewBox="0 0 20 20">
+    <path d="M0.833374 17.4166L10 1.58331L19.1667 17.4166H0.833374ZM3.70837 15.75H16.2917L10 4.91665L3.70837 15.75ZM10 14.9166C10.2362 14.9166 10.4341 14.8368 10.5938 14.6771C10.7535 14.5173 10.8334 14.3194 10.8334 14.0833C10.8334 13.8472 10.7535 13.6493 10.5938 13.4896C10.4341 13.3298 10.2362 13.25 10 13.25C9.76393 13.25 9.56601 13.3298 9.40629 13.4896C9.24657 13.6493 9.16671 13.8472 9.16671 14.0833C9.16671 14.3194 9.24657 14.5173 9.40629 14.6771C9.56601 14.8368 9.76393 14.9166 10 14.9166ZM9.16671 12.4166H10.8334V8.24998H9.16671V12.4166Z"/>
+  </symbol>
+  <symbol id="ic-bulb" viewBox="0 0 20 20">
+    <path d="M9.16675 18.4167V15.9167H10.8334V18.4167H9.16675ZM1.66675 10.9167V9.25001H4.16675V10.9167H1.66675ZM15.8334 10.9167V9.25001H18.3334V10.9167H15.8334ZM15.0001 16.6667L13.2501 14.9167L14.4167 13.75L16.1667 15.5L15.0001 16.6667ZM5.00008 16.6667L3.83341 15.5L5.58341 13.75L6.75008 14.9167L5.00008 16.6667ZM10.0001 14.25C8.8473 14.25 7.86466 13.8438 7.05216 13.0313C6.23966 12.2188 5.83341 11.2361 5.83341 10.0833C5.83341 9.41668 5.98272 8.79515 6.28133 8.21876C6.57994 7.64237 6.98619 7.15279 7.50008 6.75001V2.58334H12.5001V6.75001C13.014 7.15279 13.4202 7.64237 13.7188 8.21876C14.0174 8.79515 14.1667 9.41668 14.1667 10.0833C14.1667 11.2361 13.7605 12.2188 12.948 13.0313C12.1355 13.8438 11.1529 14.25 10.0001 14.25ZM9.16675 6.00001C9.30564 5.97223 9.44453 5.9514 9.58341 5.93751C9.7223 5.92362 9.86119 5.91668 10.0001 5.91668C10.139 5.91668 10.2779 5.92362 10.4167 5.93751C10.5556 5.9514 10.6945 5.97223 10.8334 6.00001V4.25001H9.16675V6.00001ZM10.0001 12.5833C10.6945 12.5833 11.2848 12.3403 11.7709 11.8542C12.257 11.3681 12.5001 10.7778 12.5001 10.0833C12.5001 9.3889 12.257 8.79862 11.7709 8.31251C11.2848 7.8264 10.6945 7.58334 10.0001 7.58334C9.30564 7.58334 8.71536 7.8264 8.22925 8.31251C7.74314 8.79862 7.50008 9.3889 7.50008 10.0833C7.50008 10.7778 7.74314 11.3681 8.22925 11.8542C8.71536 12.3403 9.30564 12.5833 10.0001 12.5833Z"/>
+  </symbol>
+  <symbol id="ic-close-20" viewBox="0 0 20 20">
+    <path d="M5.33329 15.8333L4.16663 14.6667L8.83329 9.99999L4.16663 5.33332L5.33329 4.16666L9.99996 8.83332L14.6666 4.16666L15.8333 5.33332L11.1666 9.99999L15.8333 14.6667L14.6666 15.8333L9.99996 11.1667L5.33329 15.8333Z"/>
+  </symbol>
+</svg>
+
+<script>
+  /* табы стенда (верхние) */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.ds-tab[data-vtab]'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('[data-vpanel]'));
+  tabs.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      tabs.forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle('ds-tab--active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach(function (p) { p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab'); });
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+.ds-tree-item {
+  height: 44px;
+  display: flex;
+  width: fit-content;
+  padding: 0 0 var(--ds-size-5x) 11px;
+  gap: var(--ds-size-2-5x);
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-tree-item__separator-stroke {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  background: #d7d8d9;
+}
+.ds-tree-item--end {
+  flex-direction: row;
+  align-items: center;
+}
+.ds-tree-item--end-long {
+  width: 48px;
+  flex-direction: column;
+  padding: 0 0 21px 11px;
+}
+.ds-tree-item--middle {
+  flex-direction: row;
+  align-items: center;
+  padding: 0 0 0 11px;
+}
+.ds-tree-item--middle-long {
+  width: 48px;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 0 0 11px;
+}
+.ds-tree-item--start {
+  width: var(--ds-size-6x);
+  flex-direction: row;
+  align-items: center;
+  padding: 0 var(--ds-size-3x) 0 11px;
+}

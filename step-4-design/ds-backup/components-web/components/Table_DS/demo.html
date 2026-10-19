@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Table — демо стенд компонента</title>
+<!--
+  Демо стенд компонента Table (семейство, страница «🟡Table_DS», 52954:1252). Папка: DS/components-web/components/Table_DS/.
+  Источник — канва «🟡Table_DS» Figma «Iiko Web DS (New)»: наборы
+  «Table header row» (53556:3571, 1 вариант: State=Default), «Table header cell» (60098:45424, 3: Default/Hover/Disable),
+  «Table content row» (60105:56764, 5: Default/Disable/Hover/Selected/Zebra),
+  «Table content cell» (52954:1253, 8: Default/Null/Disable/Link/Hover/Focus/Edit/Error),
+  «Table 2 lvl» (60074:44684, 2: Table cell 2 lvl / Table row 2 lvl), «Table footer» (59207:20759, 1: Type=Default),
+  «Table Chips Input» (60220:70978, 8 состояний), «Input cell» (60229:74436, 8), «Select cell» (60231:74976, 7),
+  «Chips input cell» (60231:75648, 8), «Element cell» (58885:32432, 11), «Element Form Field» (60231:76795, 3).
+  Состав по узлам вариантов: полоса — горизонтальный ряд ячеек (в наборе шапка 486×36 = 6 ячеек 81),
+  ячейка содержит «Element cell» → «Text UI»; ячейка прозрачна, рамку и фон несёт полоса (шапка: полоса
+  #f0f5ff + рамка #e0e0e0, ячейка без рамки/фона). Подъячейка 2 уровня (162×72) — две полосы подряд
+  (сначала 1 ячейка, ниже 2), подстрока — ряд подъячеек.
+  Сборка (вкладка «Пример сборки»): шапка + строки (обычная, зебра, выделенная, живой hover) + подстрока 2 lvl;
+  ширины колонок — как в примере канвы «Table view default» (60058:53172): 280/122/152/174/272.
+  Пробелы выгрузки обойдены в ../../fixes.css п. 22 (журнал №109, №1/№4): развёртка полос колонкой → ряд;
+  двойная рамка/фон шапки (владелец — полоса) + clip; состояния Zebra/Selected (фон строки) и Link/Focus/
+  Edit/Error (ячейка) в css не реализованы — собраны на токенах table-* по значениям узлов.
+  Состояния, которых нет и в fixes (Focus/Error/… у Input cell, Select cell, Chips input cell) — на стенде не
+  показываем, перечислены в сноске. Тексты — плейсхолдеры Figma («Cell value»), заголовки — из примера канвы.
+  Журнал DS/fixes.md №109.
+-->
+<link rel="stylesheet" href="../../font.css">
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../index.css">
+<link rel="stylesheet" href="../../fixes.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined">
+<style>
+  /* каркас демо-стенда — как у других стендов */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .material-icons { font-family: 'Material Icons Outlined'; }   /* иконки — только аутлайн (правило) */
+  .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .view { padding: 24px; }
+  .view .ds-tabs { margin-bottom: 24px; }
+  .panel { width: fit-content; max-width: 1920px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  .snap-cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0; }
+  .snap-note { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 28px 0 0; max-width: 980px; }
+  .snap-sect { margin: 0 0 40px; }
+  .snap-sect:last-child { margin-bottom: 0; }
+  .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
+
+  /* сетки витрин */
+  .snap-cells { display: grid; grid-template-columns: repeat(4, max-content); gap: 32px 24px; align-items: start; }
+  .snap-cell { display: flex; flex-direction: column; gap: 10px; }
+  .snap-stack { display: flex; flex-direction: column; gap: 6px; }
+  .snap-pad { padding: 16px; background: var(--ds-color-brand-neutral-super-light, #f5f5f5); }
+
+  /* ширины: сборка — из примера канвы (280/122/152/174/272 = 1000); витрины полос — 6×81 = 486; ячейки — 162 */
+  .snap-table { width: 1000px; }
+  .snap-w280 { width: 280px; } .snap-w122 { width: 122px; } .snap-w152 { width: 152px; } .snap-w174 { width: 174px; } .snap-w272 { width: 272px; }
+  .snap-w81 { width: 81px; } .snap-w162 { width: 162px; } .snap-w250 { width: 250px; } .snap-w500 { width: 500px; }
+  .snap-w200 { width: 200px; } .snap-w336 { width: 336px; }
+
+  /* замороженные состояния (в ДС живут на :hover; значения — токены) */
+  .st-hover .ds-table-header-cell { background: var(--ds-color-table-cell-header-hover-background, #f8f9fc); }
+  .st-hover .ds-table-content-cell { border: 1px solid var(--ds-color-table-cell-content-hover-border-color, #9e9e9e); }
+  .st-hover .ds-table-content-row { background: var(--ds-color-table-row-content-hover-background, #f5f5f5); }
+
+  /* слоты-иконки в ячейках: svg-глифы по кадру контейнера */
+  .ds-element-cell__icon svg, .ds-element-cell__icon-size svg, .ds-icon-size svg { width: 100%; height: 100%; display: block; }
+  .ds-element-cell__icon svg, .ds-icon-size svg { fill: currentColor; }
+  .ds-element-cell__label { margin: 0; }
+  .ds-table-content-cell__element .ds-chips { border: none; }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Table — демо стенд</span>
+  <span>наборы Figma: страница «Table_DS» (52954-1252) — шапка, строки, ячейки, 2-й уровень, футер, ячейки с полями</span>
+</div>
+<div class="view">
+  <div class="ds-tabs" role="tablist" aria-label="Table">
+    <button class="ds-tab ds-tab--active" role="tab" aria-selected="true" data-vtab="assembly">Пример сборки</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="header">Шапка</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="rows">Строки</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="cells">Ячейки</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="lvl2">2-й уровень</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="fields">Элементы и поля</button>
+  </div>
+
+  <!-- 1. Пример сборки: шапка + строки (+ зебра, выделенная, живой hover) + подстрока 2-го уровня -->
+  <div class="panel" data-vpanel="assembly" role="tabpanel">
+    <p class="snap-cap">Сборка: Table header row + Table header cell (шапка) → Table content row + Table content cell (строки) → подстрока 2-го уровня; ширины колонок — как в примере канвы «Table view default» (280/122/152/174/272). Наводите строки — hover живой.</p>
+    <div class="snap-table" style="margin-top: 16px;">
+      <div class="ds-table-header-row">
+        <div class="ds-table-header-cell snap-w280"><span class="ds-table-header-cell__label">Товар</span></div>
+        <div class="ds-table-header-cell snap-w122"><span class="ds-table-header-cell__label">Остаток</span></div>
+        <div class="ds-table-header-cell snap-w152"><span class="ds-table-header-cell__label">Дата поступления</span></div>
+        <div class="ds-table-header-cell snap-w174"><span class="ds-table-header-cell__label">Статус марки</span></div>
+        <div class="ds-table-header-cell snap-w272"><span class="ds-table-header-cell__label">Рекомендации</span></div>
+      </div>
+      <div class="ds-table-content-row">
+        <div class="ds-table-content-cell snap-w280"><span class="ds-table-content-cell__label">Cell value</span></div>
+        <div class="ds-table-content-cell snap-w122"><span class="ds-table-content-cell__label">Cell value</span></div>
+        <div class="ds-table-content-cell snap-w152"><span class="ds-table-content-cell__label">Cell value</span></div>
+        <div class="ds-table-content-cell snap-w174"><span class="ds-table-content-cell__label">Cell value</span></div>
+        <div class="ds-table-content-cell snap-w272"><span class="ds-table-content-cell__label">Cell value</span></div>
+      </div>
+      <div class="ds-table-content-row">
+        <div class="ds-table-content-cell snap-w280"><span class="ds-table-content-cell__label">Cell value</span></div>
+        <div class="ds-table-content-cell snap-w122"><span class="ds-table-content-cell__label">Cell value</span></div>
+        <div class="ds-table-content-cell snap-w152"><span class="ds-table-content-cell__label">Cell value</span></div>
+        <div class="ds-table-content-cell snap-w174"><span class="ds-table-content-cell__label">Cell value</span></div>
+        <div class="ds-table-content-cell snap-w272"><span class="ds-table-content-cell__label">Cell value</span></div>
+      </div>
+      <div class="ds-table-2-lvl ds-table-2-lvl--table-row-2-lvl" style="width: 1000px;">
+        <div class="ds-table-2-lvl ds-table-2-lvl--table-cell-2-lvl snap-w500">
+          <div class="ds-table-2-lvl__header-row"><div class="ds-table-header-cell snap-w500"><span class="ds-table-header-cell__label">Cell value</span></div></div>
+          <div class="ds-table-2-lvl__header-row">
+            <div class="ds-table-header-cell snap-w250"><span class="ds-table-header-cell__label">Cell value</span></div>
+            <div class="ds-table-header-cell snap-w250"><span class="ds-table-header-cell__label">Cell value</span></div>
+          </div>
+        </div>
+        <div class="ds-table-2-lvl ds-table-2-lvl--table-cell-2-lvl snap-w500">
+          <div class="ds-table-2-lvl__header-row"><div class="ds-table-header-cell snap-w500"><span class="ds-table-header-cell__label">Cell value</span></div></div>
+          <div class="ds-table-2-lvl__header-row">
+            <div class="ds-table-header-cell snap-w250"><span class="ds-table-header-cell__label">Cell value</span></div>
+            <div class="ds-table-header-cell snap-w250"><span class="ds-table-header-cell__label">Cell value</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="ds-table-content-row ds-table-content-row--zebra">
+        <div class="ds-table-content-cell snap-w280"><span class="ds-table-content-cell__label">Cell value</span></div>
+        <div class="ds-table-content-cell snap-w122"><span class="ds-table-content-cell__label">Cell value</span></div>
+        <div class="ds-table-content-cell snap-w152"><span class="ds-table-content-cell__label">Cell value</span></div>
+        <div class="ds-table-content-cell snap-w174"><span class="ds-table-content-cell__label">Cell value</span></div>
+        <div class="ds-table-content-cell snap-w272"><span class="ds-table-content-cell__label">Cell value</span></div>
+      </div>
+      <div class="ds-table-content-row ds-table-content-row--selected">
+        <div class="ds-table-content-cell snap-w280"><span class="ds-table-content-cell__label">Cell value</span></div>
+        <div class="ds-table-content-cell snap-w122"><span class="ds-table-content-cell__label">Cell value</span></div>
+        <div class="ds-table-content-cell snap-w152"><span class="ds-table-content-cell__label">Cell value</span></div>
+        <div class="ds-table-content-cell snap-w174"><span class="ds-table-content-cell__label">Cell value</span></div>
+        <div class="ds-table-content-cell snap-w272"><span class="ds-table-content-cell__label">Cell value</span></div>
+      </div>
+    </div>
+    <p class="snap-note">Как собрать: полоса — отдельный класс (<code>ds-table-header-row</code> / <code>ds-table-content-row</code>), внутри — ячейки (<code>ds-table-header-cell</code> / <code>ds-table-content-cell</code>); ширина колонок задаётся на ячейках (обвязка страницы), порядок колонок в шапке = порядок в строках. Текст ячейки — <code>__label</code>; для контролов внутри — слот <code>__element</code> (вкладка «Элементы и поля»). Зебра/выделение — классы <code>--zebra</code> / <code>--selected</code> на полосе. Полный порядок сборки — блок «Как собрать таблицу целиком» в спецификации. Обходы выгрузки — fixes.css п. 22 (журнал №109; №1 — швы шапки, №4 — развёртка полос).</p>
+  </div>
+
+  <!-- 2. Шапка: полоса (1 вариант) + ячейка (3 состояния) -->
+  <div class="panel" data-vpanel="header" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Table header row — State=Default (в наборе 486×36 = 6 ячеек 81)</div>
+      <div class="snap-pad">
+        <div class="ds-table-header-row">
+          <div class="ds-table-header-cell snap-w81"><span class="ds-table-header-cell__label">Cell value</span></div>
+          <div class="ds-table-header-cell snap-w81"><span class="ds-table-header-cell__label">Cell value</span></div>
+          <div class="ds-table-header-cell snap-w81"><span class="ds-table-header-cell__label">Cell value</span></div>
+          <div class="ds-table-header-cell snap-w81"><span class="ds-table-header-cell__label">Cell value</span></div>
+          <div class="ds-table-header-cell snap-w81"><span class="ds-table-header-cell__label">Cell value</span></div>
+          <div class="ds-table-header-cell snap-w81"><span class="ds-table-header-cell__label">Cell value</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Table header cell — 3 состояния (на подложке, ячейки 162)</div>
+      <div class="snap-cells">
+        <div class="snap-cell">
+          <div class="snap-cap">State=Default</div>
+          <div class="ds-table-header-cell snap-w162"><span class="ds-table-header-cell__label">Cell value</span></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Hover</div>
+          <span class="st-hover"><span class="ds-table-header-cell snap-w162"><span class="ds-table-header-cell__label">Cell value</span></span></span>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Disable</div>
+          <div class="ds-table-header-cell ds-table-header-cell--disabled snap-w162"><span class="ds-table-header-cell__label">Cell value</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: (а) рамку и фон шапки рисуют и полоса, и ячейка — при сборке швы двойные, фон дважды (журнал №1, в ДС открыт); обойдено в fixes.css п. 22: владелец — полоса (ячейка прозрачна, без рамки, как в Figma по скрину варианта 53593:10988), у полосы добавлен clip — прямоугольные ячейки перекрывали скругление 8; (б) State=Hover и Disable ячейки — родные из css (:hover и --disabled: фон #f8f9fc / #f0f5ff, текст #9e9e9e); (в) полоса в контексте растягивается по таблице — ячейкам ширины задаёт обвязка.</p>
+  </div>
+
+  <!-- 3. Строки: 5 состояний полосы -->
+  <div class="panel" data-vpanel="rows" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Table content row — 5 состояний (в наборе 486×36 = 6 ячеек 81; hover — в ДС :hover, остальные — классы стенда из fixes.css п. 22)</div>
+      <div class="snap-stack">
+        <div class="snap-cell">
+          <div class="snap-cap">State=Default</div>
+          <div class="ds-table-content-row">
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+          </div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Zebra</div>
+          <div class="ds-table-content-row ds-table-content-row--zebra">
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+          </div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Hover (заморожен; в ДС — :hover)</div>
+          <span class="st-hover"><span class="ds-table-content-row">
+            <span class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></span>
+            <span class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></span>
+            <span class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></span>
+            <span class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></span>
+            <span class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></span>
+            <span class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></span>
+          </span></span>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Selected</div>
+          <div class="ds-table-content-row ds-table-content-row--selected">
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+          </div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Disable</div>
+          <div class="ds-table-content-row ds-table-content-row--disabled">
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+            <div class="ds-table-content-cell snap-w81"><span class="ds-table-content-cell__label">Cell value</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: (а) в css у полосы есть только :hover (фон #f5f5f5) и --disabled; Zebra (Table surfase/Zebra #f5f5f5) и Selected (Table surfase/Selected #ebebeb) выгружены только токенами — собраны классами <code>--zebra</code>/<code>--selected</code> в fixes.css п. 22 (в ДС решить); (б) конфликт ховеров (журнал №2): полоса красит фон, а ячейка под курсором — ещё и рамку #9e9e9e — двойной отклик, в ДС открыт; (в) hover показан «замороженным» классом стенда st-hover (значение из токена) — в живом виде работает на вкладке «Пример сборки».</p>
+  </div>
+
+  <!-- 4. Ячейки: 8 состояний ячейки -->
+  <div class="panel" data-vpanel="cells" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Table content cell — 8 состояний (в наборе 81×36; здесь 162, на подложке)</div>
+      <div class="snap-cells">
+        <div class="snap-cell">
+          <div class="snap-cap">State=Default</div>
+          <div class="ds-table-content-cell snap-w162"><span class="ds-table-content-cell__label">Cell value</span></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Null (прочерк)</div>
+          <div class="ds-table-content-cell snap-w162"><span class="ds-table-content-cell__label">—</span></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Link</div>
+          <div class="ds-table-content-cell ds-table-content-cell--link snap-w162"><span class="ds-table-content-cell__label">Cell value</span></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Hover (заморожен; в ДС — :hover)</div>
+          <span class="st-hover"><span class="ds-table-content-cell snap-w162"><span class="ds-table-content-cell__label">Cell value</span></span></span>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Focus</div>
+          <div class="ds-table-content-cell ds-table-content-cell--focus snap-w162"><span class="ds-table-content-cell__label">Cell value</span></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Edit</div>
+          <div class="ds-table-content-cell ds-table-content-cell--edit snap-w162"><span class="ds-table-content-cell__label">Cell value</span></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Error</div>
+          <div class="ds-table-content-cell ds-table-content-cell--error snap-w162"><span class="ds-table-content-cell__label">Cell value</span></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Disable</div>
+          <div class="ds-table-content-cell ds-table-content-cell--disabled snap-w162"><span class="ds-table-content-cell__label">Cell value</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: (а) в css у ячейки есть только :hover (рамка #9e9e9e) и --disabled (текст #9e9e9e); (б) State=Link — состояние есть в компоненте, в css не реализовано вовсе (ни модификатора, ни токена цвета — журнал №3): на стенде собран классом <code>--link</code> (fixes.css п. 22) на токене Text UI/Link (Accent) — как решено для прототипов; (в) Focus/Edit (Stroke/Accent) и Error (Stroke/Negative) — границы собраны классами <code>--focus</code>/<code>--edit</code>/<code>--error</code> (fixes.css п. 22) на выгруженных токенах table-cell-content-*; (г) Null — прочерк «—» текстом (рекомендация спецификации: пустое значение показывать прочерком); (д) содержимое ячейки в наборе — Element cell → Text UI: для простого текста хватает <code>__label</code>, для контролов — слот <code>__element</code> (вкладка «Элементы и поля»).</p>
+  </div>
+
+  <!-- 5. 2-й уровень: подъячейка и подстрока -->
+  <div class="panel" data-vpanel="lvl2" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Table 2 lvl — Type=Table cell 2 lvl (162×72: две полосы — 1 ячейка + 2 ячейки, как в наборе)</div>
+      <div class="snap-pad">
+        <div class="ds-table-2-lvl ds-table-2-lvl--table-cell-2-lvl">
+          <div class="ds-table-2-lvl__header-row"><div class="ds-table-header-cell snap-w162"><span class="ds-table-header-cell__label">Cell value</span></div></div>
+          <div class="ds-table-2-lvl__header-row">
+            <div class="ds-table-header-cell snap-w81"><span class="ds-table-header-cell__label">Cell value</span></div>
+            <div class="ds-table-header-cell snap-w81"><span class="ds-table-header-cell__label">Cell value</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Table 2 lvl — Type=Table row 2 lvl (подстрока: ряд подъячеек; в примере канвы 60108:51954 — 648×72)</div>
+      <div class="snap-pad">
+        <div class="ds-table-2-lvl ds-table-2-lvl--table-row-2-lvl">
+          <div class="ds-table-2-lvl ds-table-2-lvl--table-cell-2-lvl snap-w500">
+            <div class="ds-table-2-lvl__header-row"><div class="ds-table-header-cell snap-w500"><span class="ds-table-header-cell__label">Cell value</span></div></div>
+            <div class="ds-table-2-lvl__header-row">
+              <div class="ds-table-header-cell snap-w250"><span class="ds-table-header-cell__label">Cell value</span></div>
+              <div class="ds-table-header-cell snap-w250"><span class="ds-table-header-cell__label">Cell value</span></div>
+            </div>
+          </div>
+          <div class="ds-table-2-lvl ds-table-2-lvl--table-cell-2-lvl snap-w500">
+            <div class="ds-table-2-lvl__header-row"><div class="ds-table-header-cell snap-w500"><span class="ds-table-header-cell__label">Cell value</span></div></div>
+            <div class="ds-table-2-lvl__header-row">
+              <div class="ds-table-header-cell snap-w250"><span class="ds-table-header-cell__label">Cell value</span></div>
+              <div class="ds-table-header-cell snap-w250"><span class="ds-table-header-cell__label">Cell value</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: (а) 2-й уровень — вложенная строка/ячейка внутри записи (состав блюда, позиции документа, разбивка по складам); в Figma подъячейка собрана из двух полос «Table header row» подряд (верх — 1 ячейка, низ — 2), подстрока — ряд подъячеек (в примере 60108:51954 ширины 310/220/220/…, последняя узкая 36); на стенде повторено 1:1, ширины — обвязка; (б) у полос подъячейки в css развёртка тоже колонкой (журнал №4) — обойдено в fixes.css п. 22; (в) 162 и 72 — из набора; в контексте ширины задаёт таблица; (г) в канве есть заметка «Показать пример с глубокой раскрываемой иерархией (отступы слева в первой ячейке строки)» — такого примера в наборе пока нет, на стенде не выдумываем; (д) таблица целиком с подстрокой — вкладка «Пример сборки».</p>
+  </div>
+
+  <!-- 6. Элементы и поля: Element cell (7 из 11), ячейки с полями, Table Chips Input, футер -->
+  <div class="panel" data-vpanel="fields" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Element cell — ячейка-элемент (в наборе 11 видов; здесь основные: Icon size, Button, Button icon, Status, Text UI, Checkbox, Chips)</div>
+      <div class="snap-cells">
+        <div class="snap-cell">
+          <div class="snap-cap">Variant=Icon size</div>
+          <div class="ds-element-cell ds-element-cell--icon-size"><span class="ds-element-cell__icon"><svg><use href="#ic-info"/></svg></span></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Variant=Button</div>
+          <div class="ds-element-cell ds-element-cell--button"><button type="button" class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--text"><span class="ds-btn__label">Button</span></button></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Variant=Button icon</div>
+          <div class="ds-element-cell ds-element-cell--button-icon"><button type="button" class="ds-btn-icon ds-btn-icon--xs ds-btn-icon--neutral ds-btn-icon--text"><span class="ds-btn-icon__icon"><svg><use href="#ic-add-16"/></svg></span></button></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Variant=Status</div>
+          <div class="ds-element-cell ds-element-cell--status"><div class="ds-status ds-status--accent"><span class="ds-status__label">Текст</span></div></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Variant=Text UI</div>
+          <div class="ds-element-cell ds-element-cell--text-ui"><span class="ds-element-cell__label">Cell value</span></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Variant=Checkbox</div>
+          <div class="ds-element-cell ds-element-cell--checkbox"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-check-off"/></svg></span></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Variant=Chips</div>
+          <div class="ds-element-cell ds-element-cell--chips"><div class="ds-chips ds-chips--filled"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><svg><use href="#ic-close-20"/></svg></span></div></div>
+        </div>
+      </div>
+      <p class="snap-cap" style="margin-top: 12px;">В наборе есть ещё Variant=Icon group, Input number, Slide toggle, Cell Input (и Button icon в статусной строке) — на стенде не собраны: см. компоненты Icon group, Input number, Slide toggle и вкладку «Ячейки с полями».</p>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Ячейка с элементом в контексте строки (Table content cell → слот __element → Element cell)</div>
+      <div class="snap-pad">
+        <div class="ds-table-content-row">
+          <div class="ds-table-content-cell snap-w280"><span class="ds-table-content-cell__label">Cell value</span></div>
+          <div class="ds-table-content-cell snap-w162"><div class="ds-table-content-cell__element"><div class="ds-element-cell ds-element-cell--checkbox"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-check-on"/></svg></span></div></div></div>
+          <div class="ds-table-content-cell snap-w162"><div class="ds-table-content-cell__element"><div class="ds-element-cell ds-element-cell--icon-size"><span class="ds-element-cell__icon"><svg><use href="#ic-info"/></svg></span></div></div></div>
+          <div class="ds-table-content-cell snap-w162"><div class="ds-table-content-cell__element"><div class="ds-element-cell ds-element-cell--button-icon"><button type="button" class="ds-btn-icon ds-btn-icon--xs ds-btn-icon--neutral ds-btn-icon--text"><span class="ds-btn-icon__icon"><svg><use href="#ic-add-16"/></svg></span></button></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Ячейки с полями (редактируемая таблица) — Input cell (200), Select cell (200), Chips input cell (336); Default и Disable</div>
+      <div class="snap-cells">
+        <div class="snap-cell">
+          <div class="snap-cap">Input cell — State=Default</div>
+          <div class="ds-input-cell snap-w200"><div class="ds-input-cell__frame"><span class="ds-input-cell__label">Cell value</span></div></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Input cell — State=Disable</div>
+          <div class="ds-input-cell ds-input-cell--disabled snap-w200"><div class="ds-input-cell__frame"><span class="ds-input-cell__label">Cell value</span></div></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Select cell — State=Default</div>
+          <div class="ds-select-cell snap-w200"><div class="ds-select-cell__input"><div class="ds-select-cell__input-frame"><span class="ds-select-cell__label">Cell value</span><span class="ds-select-cell__icon"><span class="material-icons">arrow_drop_down</span></span></div></div></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Select cell — State=Disable</div>
+          <div class="ds-select-cell ds-select-cell--disabled snap-w200"><div class="ds-select-cell__input"><div class="ds-select-cell__input-frame"><span class="ds-select-cell__label">Cell value</span><span class="ds-select-cell__icon"><span class="material-icons">arrow_drop_down</span></span></div></div></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Chips input cell — State=Default</div>
+          <div class="ds-chips-input-cell snap-w336"><span class="ds-chips-input-cell__frame"><span class="ds-chips ds-chips--s ds-chips--filled"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><svg><use href="#ic-close-20"/></svg></span></span></span></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Chips input cell — State=Disable</div>
+          <div class="ds-chips-input-cell ds-chips-input-cell--disabled snap-w336"><span class="ds-chips-input-cell__frame"><span class="ds-chips ds-chips--s ds-chips--filled"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><svg><use href="#ic-close-20"/></svg></span></span></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Table Chips Input — 8 состояний (в css есть все модификаторы набора)</div>
+      <div class="snap-cells">
+        <div class="snap-cell">
+          <div class="snap-cap">Style=Default</div>
+          <div class="ds-table-chips-input ds-table-chips-input--default snap-w200"><div class="ds-table-chips-input__frame"><span class="ds-table-chips-input__label">Cell value</span></div></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Style=Hover</div>
+          <div class="ds-table-chips-input ds-table-chips-input--hover snap-w200"><div class="ds-table-chips-input__frame"><span class="ds-table-chips-input__label">Cell value</span></div></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Style=Focus</div>
+          <div class="ds-table-chips-input ds-table-chips-input--focus snap-w200"><div class="ds-table-chips-input__frame"><span class="ds-table-chips-input__label">Cell value</span></div></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Style=Focus+Placeholder</div>
+          <div class="ds-table-chips-input ds-table-chips-input--focus-placeholder snap-w200"><div class="ds-table-chips-input__frame"><span class="ds-table-chips-input__label">Cell value</span></div></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Style=Focus+Value</div>
+          <div class="ds-table-chips-input ds-table-chips-input--vocus-value snap-w200"><div class="ds-table-chips-input__frame"><span class="ds-table-chips-input__label">Cell value</span></div></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Style=Error</div>
+          <div class="ds-table-chips-input ds-table-chips-input--error snap-w200"><div class="ds-table-chips-input__frame"><span class="ds-table-chips-input__label">Cell value</span></div></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Style=Error+Hover</div>
+          <div class="ds-table-chips-input ds-table-chips-input--error-hover snap-w200"><div class="ds-table-chips-input__frame"><span class="ds-table-chips-input__label">Cell value</span></div></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Style=Disable</div>
+          <div class="ds-table-chips-input ds-table-chips-input--disable snap-w200"><div class="ds-table-chips-input__frame"><span class="ds-table-chips-input__label">Cell value</span></div></div>
+        </div>
+      </div>
+      <p class="snap-cap" style="margin-top: 12px;">В Figma у набора подписи состояний: Style=Default / Hover / Focus / Focus+Placeholder / Vocus+Value (опечатка в наборе — на стенде класс focus-value, как в css: <code>--vocus-value</code>) / Error / Error+Hover / Disable.</p>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Table footer — Type=Default (980×65, тень 01 dp; слот контента)</div>
+      <div class="snap-pad">
+        <div class="ds-table-footer ds-table-footer--default">
+          <div class="ds-table-footer__content"><span class="ds-table-footer__label">Итого</span></div>
+        </div>
+      </div>
+    </div>
+
+    <p class="snap-note">Пометки для ревью: (а) у Input cell / Select cell / Chips input cell в css реализованы только Default (:hover — фон и рамка ячейки) и --disabled; состояния Focus / Focus+Placeholder / Focus+Value / Error / Error+Hover — есть в наборах (8/7/8 вариантов), в css не выгружены вовсе — на стенде не показываем (в ДС решить: классы состояний + токены у полей forms-* есть); (б) «Vocus+Value» — опечатка имени варианта в наборе Figma (сохранена в классе css); (в) Element cell — контейнер под вложенный компонент: в наборе 11 видов, из несамостоятельных: Icon group, Input number, Slide toggle, Cell Input — см. одноимённые компоненты; у Status подпись наследует цвет варианта (fixes п. 1); (г) у чипа в ячейке крестик — svg из Figma, кадр выправлен в fixes пп. 5–6 (журнал №51); (д) футер в css фиксированный 980×65 с тенью 01 dp (токен shadows-01-dp-sl); в контексте ширину задаёт таблица; содержимое слота в наборе пустое — «Итого» как пример. Журнал №109.</p>
+  </div>
+</div>
+
+<!-- svg-иконки — точные пути из Figma (как на стендах Button/Text UI): ⓘ 20, checkbox (контур/заливной),
+     add 16/20, close 20 (banner/chips — узел 54025:273) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-info" viewBox="0 0 20 20">
+    <path d="M9.16667 14.1667H10.8333V9.16667H9.16667V14.1667ZM10 7.5C10.2361 7.5 10.434 7.42014 10.5937 7.26042C10.7535 7.10069 10.8333 6.90278 10.8333 6.66667C10.8333 6.43056 10.7535 6.23264 10.5937 6.07292C10.434 5.91319 10.2361 5.83333 10 5.83333C9.76389 5.83333 9.56597 5.91319 9.40625 6.07292C9.24653 6.23264 9.16667 6.43056 9.16667 6.66667C9.16667 6.90278 9.24653 7.10069 9.40625 7.26042C9.56597 7.42014 9.76389 7.5 10 7.5ZM10 18.3333C8.84722 18.3333 7.76389 18.1146 6.75 17.6771C5.73611 17.2396 4.85417 16.6458 4.10417 15.8958C3.35417 15.1458 2.76042 14.2639 2.32292 13.25C1.88542 12.2361 1.66667 11.1528 1.66667 10C1.66667 8.84722 1.88542 7.76389 2.32292 6.75C2.76042 5.73611 3.35417 4.85417 4.10417 4.10417C4.85417 3.35417 5.73611 2.76042 6.75 2.32292C7.76389 1.88542 8.84722 1.66667 10 1.66667C11.1528 1.66667 12.2361 1.88542 13.25 2.32292C14.2639 2.76042 15.1458 3.35417 15.8958 4.10417C16.6458 4.85417 17.2396 5.73611 17.6771 6.75C18.1146 7.76389 18.3333 8.84722 18.3333 10C18.3333 11.1528 18.1146 12.2361 17.6771 13.25C17.2396 14.2639 16.6458 15.1458 15.8958 15.8958C15.1458 16.6458 14.2639 17.2396 13.25 17.6771C12.2361 18.1146 11.1528 18.3333 10 18.3333ZM10 16.6667C11.8611 16.6667 13.4375 16.0208 14.7292 14.7292C16.0208 13.4375 16.6667 11.8611 16.6667 10C16.6667 8.13889 16.0208 6.5625 14.7292 5.27083C13.4375 3.97917 11.8611 3.33333 10 3.33333C8.13889 3.33333 6.5625 3.97917 5.27083 5.27083C3.97917 6.5625 3.33333 8.13889 3.33333 10C3.33333 11.8611 3.97917 13.4375 5.27083 14.7292C6.5625 16.0208 8.13889 16.6667 10 16.6667Z"/>
+  </symbol>
+  <symbol id="ic-check-off" viewBox="0 0 20 20">
+    <path d="M4.16667 17.5C3.70833 17.5 3.31597 17.3368 2.98958 17.0104C2.66319 16.684 2.5 16.2917 2.5 15.8333V4.16667C2.5 3.70833 2.66319 3.31597 2.98958 2.98958C3.31597 2.66319 3.70833 2.5 4.16667 2.5H15.8333C16.2917 2.5 16.684 2.66319 17.0104 2.98958C17.3368 3.31597 17.5 3.70833 17.5 4.16667V15.8333C17.5 16.2917 17.3368 16.684 17.0104 17.0104C16.684 17.3368 16.2917 17.5 15.8333 17.5H4.16667ZM4.16667 15.8333H15.8333V4.16667H4.16667V15.8333Z"/>
+  </symbol>
+  <symbol id="ic-check-on" viewBox="0 0 20 20">
+    <path fill-rule="evenodd" d="M8.83333 13.5L14.7083 7.625L13.5417 6.45833L8.83333 11.1667L6.45833 8.79167L5.29167 9.95833L8.83333 13.5ZM4.16667 17.5C3.70833 17.5 3.31597 17.3368 2.98958 17.0104C2.66319 16.684 2.5 16.2917 2.5 15.8333V4.16667C2.5 3.70833 2.66319 3.31597 2.98958 2.98958C3.31597 2.66319 3.70833 2.5 4.16667 2.5H15.8333C16.2917 2.5 16.684 2.66319 17.0104 2.98958C17.3368 3.31597 17.5 3.70833 17.5 4.16667V15.8333C17.5 16.2917 17.3368 16.684 17.0104 17.0104C16.684 17.3368 16.2917 17.5 15.8333 17.5H4.16667Z"/>
+  </symbol>
+  <symbol id="ic-add-16" viewBox="0 0 16 16">
+    <path d="M7.33333 8.66667H3.33333V7.33333H7.33333V3.33333H8.66667V7.33333H12.66667V8.66667H8.66667V12.66667H7.33333V8.66667Z"/>
+  </symbol>
+  <symbol id="ic-close-20" viewBox="0 0 20 20">
+    <path d="M5.33329 15.8333L4.16663 14.6667L8.83329 9.99999L4.16663 5.33332L5.33329 4.16666L9.99996 8.83332L14.6666 4.16666L15.8333 5.33332L11.1666 9.99999L15.8333 14.6667L14.6666 15.8333L9.99996 11.1667L5.33329 15.8333Z"/>
+  </symbol>
+</svg>
+
+<script>
+  /* табы — компонент ДС Tabs (как на стендах Button/Select/Form field input) */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.ds-tab[data-vtab]'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('[data-vpanel]'));
+  tabs.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      tabs.forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle('ds-tab--active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach(function (p) { p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab'); });
+    });
+  });
+</script>
+</body>
+</html>

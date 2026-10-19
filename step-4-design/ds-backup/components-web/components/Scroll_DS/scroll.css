@@ -1,0 +1,39 @@
+.ds-scroll {
+  display: flex;
+  flex-direction: column;
+  padding: var(--ds-scroll-pad-top, 2px) var(--ds-scroll-pad-right, 2px) var(--ds-scroll-pad-bottom, 2px) var(--ds-scroll-pad-left, 2px);
+  width: 184px;
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-scroll__background {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--ds-scroll-border-radius, 8px);
+  background: var(--ds-color-scroll-default-background, #fafafa);
+}
+.ds-scroll__knob {
+  height: var(--ds-size-2x);
+  display: flex;
+  flex-direction: row;
+  gap: var(--ds-size-2-5x);
+  padding: var(--ds-size-2-5x) var(--ds-size-2-5x) var(--ds-size-2-5x) var(--ds-size-2-5x);
+  border-radius: var(--ds-scroll-knob-radius, 8px);
+  background: var(--ds-color-scroll-default-knob-color, #d6d6d6);
+}
+.ds-scroll--s {
+  width: var(--ds-size-2x);
+}
+.ds-scroll--first:hover {
+  background: var(--ds-color-scroll-hover-background, #ebebeb);
+}
+.ds-scroll--middle {
+  align-items: center;
+}
+.ds-scroll--middle:hover {
+  background: var(--ds-color-scroll-hover-background, #ebebeb);
+}
+.ds-scroll--last:hover {
+  background: var(--ds-color-scroll-hover-background, #ebebeb);
+}
+

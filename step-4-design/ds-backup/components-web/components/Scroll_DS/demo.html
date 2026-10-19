@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scroll — демо стенд компонента</title>
+<!--
+  Демо стенд компонента Scroll (страница «Scroll_DS», 53615:15338). Папка: DS/components-web/components/Scroll_DS/.
+  Источник — канва «Scroll_DS» Figma «Iiko Web DS (New)»: набор «Scroll» (53615:15339; 12 вариантов:
+  Size M/S × Position First/Middle/Last × State Default/Hover) и блок примеров «Скролл и разделители»
+  (60006:13882): «Нет скролла — нет разделителей» (меню 240×288 без разделителей и полосы) и
+  «Есть скролл — есть разделители» (меню 240×302: Divider сверху и снизу области контента + Scroll 156×12
+  внизу области прокрутки; в блоке канвы также показан диалог 500 — полная композиция появится в стенде Dialog).
+  Состав по узлам набора: Size=M — полоса 180×8 (r8, #FAFAFA) в кадре 184×12 (пад 2), ползунок 96×8 (#D6D6D6);
+  Size=S — кадр 64×8, полоса 60×4, ползунок 24×4; ховер — подложка #EBEBEB, ползунок #9E9E9E;
+  у S фон остаётся прозрачным (переменная «Scroll/Background» = #ffffff00, в набор приходит как прозрачный),
+  ползунок на ховере темнеет.
+  Обойдено в fixes.css п. 25 (там же про «--s» = 8px в выгрузке, ховер-цвет ползунка и ховер-корень).
+  Позиции ползунка (first/middle/last) и его длина (96/24) — артворк набора; в контексте зависят от прокрутки
+  (обвязка/JS) — на стенде заданы стенд-классами. Ширина .ds-scroll в css фиксирована (184) — в примерах по месту
+  (156) — см. примечание. Журнал DS/fixes.md №117.
+-->
+<link rel="stylesheet" href="../../font.css">
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../index.css">
+<link rel="stylesheet" href="../../fixes.css">
+<style>
+  /* каркас демо-стенда — как у других стендов */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .view { padding: 24px; }
+  .view .ds-tabs { margin-bottom: 24px; }
+  .panel { width: fit-content; max-width: 1920px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  .snap-cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0; }
+  .snap-note { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 28px 0 0; max-width: 980px; }
+  .snap-sect { margin: 0 0 40px; }
+  .snap-sect:last-child { margin-bottom: 0; }
+  .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
+  .snap-row { display: flex; gap: 48px; align-items: flex-start; }
+  .snap-col { display: flex; flex-direction: column; gap: 10px; }
+
+  /* ── витрина набора: позиции ползунка (артворк набора) и длины ползунков (96/24) ── */
+  .ds-scroll--first .ds-scroll__background { justify-content: flex-start; }
+  .ds-scroll--middle .ds-scroll__background { justify-content: center; }
+  .ds-scroll--last .ds-scroll__background { justify-content: flex-end; }
+  .snap-m .ds-scroll__knob { width: 96px; }
+  .snap-s .ds-scroll__knob { width: 24px; }
+  /* заморозка State=Hover для витрины (в ДС — живые :hover, fixes п. 25) */
+  .st-hover .ds-scroll__background { background: var(--ds-color-scroll-hover-background, #ebebeb); }
+  .st-hover.ds-scroll--s .ds-scroll__background { background: transparent; }
+  .st-hover .ds-scroll__knob { background: var(--ds-color-scroll-hover-knob-color, #9e9e9e); }
+
+  /* ── примеры: меню из блока «Скролл и разделители» (240; рамка/радиус контейнера — стенд, стиль меню уточнит стенд Menu) ── */
+  .snap-menu { width: 240px; background: #fff; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); border-radius: 12px; box-sizing: border-box; overflow: hidden; display: flex; flex-direction: column; padding: 8px 0; }
+  .snap-menu__search { height: 40px; padding: 0 16px; box-sizing: border-box; }
+  .snap-menu__search .ds-search { width: 208px; }
+  .snap-menu__title { display: flex; align-items: center; height: 36px; padding: 0 16px; font-size: 16px; line-height: 20px; color: var(--ds-color-text-primary, #333333); }
+  .snap-menu__content { height: 144px; position: relative; }
+  .snap-menu__content--scroll { height: 156px; }
+  .snap-menu__scroll { position: absolute; right: 12px; bottom: 0; width: 156px; }
+  .snap-menu__footer { display: flex; justify-content: flex-end; align-items: center; gap: 8px; height: 52px; padding: 0 16px; }
+
+  /* иконка поиска в примере — svg-спрайт (как в стенде Search) */
+  .snap-menu__search .ds-search__icon svg { width: 20px; height: 20px; display: block; fill: currentColor; }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Scroll — демо стенд</span>
+  <span>набор Figma: Scroll (53615-15339, 12) · примеры: «Скролл и разделители» (60006-13882)</span>
+</div>
+<div class="view">
+  <div class="ds-tabs" role="tablist" aria-label="Scroll">
+    <button class="ds-tab ds-tab--active" role="tab" aria-selected="true" data-vtab="basic">Basic example</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="scroll">Scroll</button>
+  </div>
+
+  <!-- 2. Scroll: Size × Position × State -->
+  <div class="panel" data-vpanel="scroll" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Size=M (кадр 184×12; полоса 180×8, ползунок 96×8)</div>
+      <div class="snap-col">
+        <div class="snap-cap">Position=First</div>
+        <div class="snap-row">
+          <div class="ds-scroll ds-scroll--first snap-m"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+          <div class="ds-scroll ds-scroll--first st-hover snap-m"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+        </div>
+        <div class="snap-cap">Position=Middle</div>
+        <div class="snap-row">
+          <div class="ds-scroll ds-scroll--middle snap-m"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+          <div class="ds-scroll ds-scroll--middle st-hover snap-m"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+        </div>
+        <div class="snap-cap">Position=Last</div>
+        <div class="snap-row">
+          <div class="ds-scroll ds-scroll--last snap-m"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+          <div class="ds-scroll ds-scroll--last st-hover snap-m"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+        </div>
+        <div class="snap-cap">пары: слева — State=Default (живой ховер), справа — State=Hover (заморожен классом стенда st-hover)</div>
+      </div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Size=S (кадр 64×8; полоса 60×4 прозрачная, ползунок 24×4)</div>
+      <div class="snap-col">
+        <div class="snap-cap">Position=First</div>
+        <div class="snap-row">
+          <div class="ds-scroll ds-scroll--s ds-scroll--first snap-s"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+          <div class="ds-scroll ds-scroll--s ds-scroll--first st-hover snap-s"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+        </div>
+        <div class="snap-cap">Position=Middle</div>
+        <div class="snap-row">
+          <div class="ds-scroll ds-scroll--s ds-scroll--middle snap-s"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+          <div class="ds-scroll ds-scroll--s ds-scroll--middle st-hover snap-s"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+        </div>
+        <div class="snap-cap">Position=Last</div>
+        <div class="snap-row">
+          <div class="ds-scroll ds-scroll--s ds-scroll--last snap-s"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+          <div class="ds-scroll ds-scroll--s ds-scroll--last st-hover snap-s"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+        </div>
+        <div class="snap-cap">у Size=S фон полосы прозрачный (в т.ч. на ховере) — темнеет только ползунок</div>
+      </div>
+    </div>
+
+    <p class="snap-note">Пометки для ревью: (а) ховер живой (fixes п. 25: подложка #EBEBEB и ползунок #9E9E9E; у S фон не темнеет — по наборам); правая колонка каждого ряда — заморозка состояния стендом; (б) в css `--s` задан шириной 8px — это ошибка выгрузки (8 — высота полосы; ширина S = 64), исправлено в fixes п. 25; у ползунка не было ховер-цвета, а ховер красил корень-прямоугольник — поправлено там же; (в) позиции First/Middle/Last в css не выражены (в наборе ползунок стоит на x=0/42/84 при паддинге 2 — выравнивание выходит за паддинг); на стенде выровнено по подложке-треку, расхождение до 2–4px — решить в ДС; (г) в наборе Position=Middle/Last отличаются только положением ползунка (ткань полосы та же); длина ползунка и позиция в контексте зависят от прокрутки — это обвязка/JS, css даёт только вид. Журнал №117.</p>
+  </div>
+
+  <!-- 1. Basic example: «Скролл и разделители» -->
+  <div class="panel" data-vpanel="basic" role="tabpanel">
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Скролл и разделители (блок канвы 60006:13882) — правило: разделители живут вместе со скроллом</div>
+      <div class="snap-row" style="gap: 64px;">
+        <div class="snap-col">
+          <div class="snap-cap">Нет скролла — нет разделителей</div>
+          <div class="snap-menu">
+            <div class="snap-menu__search">
+              <div class="ds-search ds-search--s">
+                <span class="ds-search__icon"><svg><use href="#ic-search"/></svg></span>
+                <span class="ds-search__label">Search text</span>
+              </div>
+            </div>
+            <div class="snap-menu__title">Title menu</div>
+            <div class="snap-menu__content"></div>
+            <div class="snap-menu__footer">
+              <button class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text" type="button"><span class="ds-btn__label">Button</span></button>
+              <button class="ds-btn ds-btn--s ds-btn--accent ds-btn--filled" type="button"><span class="ds-btn__label">Button</span></button>
+            </div>
+          </div>
+        </div>
+        <div class="snap-col">
+          <div class="snap-cap">Есть скролл — есть разделители</div>
+          <div class="snap-menu">
+            <div class="snap-menu__search">
+              <div class="ds-search ds-search--s">
+                <span class="ds-search__icon"><svg><use href="#ic-search"/></svg></span>
+                <span class="ds-search__label">Search text</span>
+              </div>
+            </div>
+            <div class="snap-menu__title">Title menu</div>
+            <div class="ds-divider"></div>
+            <div class="snap-menu__content snap-menu__content--scroll">
+              <div class="ds-scroll ds-scroll--first snap-m snap-menu__scroll"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+            </div>
+            <div class="ds-divider"></div>
+            <div class="snap-menu__footer">
+              <button class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text" type="button"><span class="ds-btn__label">Button</span></button>
+              <button class="ds-btn ds-btn--s ds-btn--accent ds-btn--filled" type="button"><span class="ds-btn__label">Button</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="snap-note">Пометки для ревью: (а) композиции собраны по узлам канвы (меню 240×288 без скролла и 240×302 со скроллом; Divider 240×1 сверху и снизу области прокрутки; полоса 156×12 внизу области); в блоке канвы рядом показан диалог 500 — его композиция будет в стенде Dialog_DS; рамка/радиус контейнера меню на стенде — условные (точный стиль контейнера — в стенде Menu_DS); (б) ширина полосы в css фиксирована (184), в примерах — по месту (156) — в ДС решить (min/max или 100% обвязки); (в) текст «Search text» — плейсхолдер компонента Search (Size S); кнопки — Size S (28), подписи-плейсхолдеры канвы; (г) область контента показана пустой — как в узлах (слот «Menu container» без наполнения). Журнал №117.</p>
+  </div>
+</div>
+
+<script>
+  /* табы стенда (верхние) */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.ds-tab[data-vtab]'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('[data-vpanel]'));
+  tabs.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      tabs.forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle('ds-tab--active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach(function (p) { p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab'); });
+    });
+  });
+</script>
+
+<!-- svg-иконка — точный путь из Figma (лупа «search», 20; как в стенде Search_DS) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-search" viewBox="0 0 20 20">
+    <path d="M16.3333 17.5L11.0833 12.25C10.6667 12.5833 10.1875 12.8472 9.64583 13.0417C9.10417 13.2361 8.52778 13.3333 7.91667 13.3333C6.40278 13.3333 5.12153 12.809 4.07292 11.7604C3.02431 10.7118 2.5 9.43056 2.5 7.91667C2.5 6.40278 3.02431 5.12153 4.07292 4.07292C5.12153 3.02431 6.40278 2.5 7.91667 2.5C9.43056 2.5 10.7118 3.02431 11.7604 4.07292C12.809 5.12153 13.3333 6.40278 13.3333 7.91667C13.3333 8.52778 13.2361 9.10417 13.0417 9.64583C12.8472 10.1875 12.5833 10.6667 12.25 11.0833L17.5 16.3333L16.3333 17.5ZM7.91667 11.6667C8.95833 11.6667 9.84375 11.3021 10.5729 10.5729C11.3021 9.84375 11.6667 8.95833 11.6667 7.91667C11.6667 6.875 11.3021 5.98958 10.5729 5.26042C9.84375 4.53125 8.95833 4.16667 7.91667 4.16667C6.875 4.16667 5.98958 4.53125 5.26042 5.26042C4.53125 5.98958 4.16667 6.875 4.16667 7.91667C4.16667 8.95833 4.53125 9.84375 5.26042 10.5729C5.98958 11.3021 6.875 11.6667 7.91667 11.6667Z"/>
+  </symbol>
+</svg>
+</body>
+</html>

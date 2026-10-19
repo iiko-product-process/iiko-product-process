@@ -1,0 +1,30 @@
+.ds-icon-group {
+  min-height: var(--ds-size-5x);
+  width: fit-content;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--ds-icon-size-gap-group-2x, 8px);
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-icon-group__icon {
+  flex-shrink: 0;
+  width: var(--ds-size-5x);
+  height: var(--ds-size-5x);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ds-icon-group__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ds-icon-group__icon svg path {
+  fill: currentColor;
+}
+.ds-icon-group--4x {
+  gap: var(--ds-icon-size-gap-group-4x, 16px);
+}
+

@@ -1,0 +1,63 @@
+.ds-button-toggle {
+  width: fit-content;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--ds-button-toggle-gap, 4px);
+  padding: var(--ds-button-toggle-pad-top, 4px) var(--ds-button-toggle-pad-right, 4px) var(--ds-button-toggle-pad-bottom, 4px) var(--ds-button-toggle-pad-left, 4px);
+  border-radius: var(--ds-button-toggle-border-radius, 12px);
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-button-toggle__label {
+  font-size: var(--ds-font-body-s-14-normal-medium-size);
+  line-height: var(--ds-font-body-s-14-normal-medium-line);
+  letter-spacing: var(--ds-font-body-s-14-normal-medium-spacing);
+  font-weight: var(--ds-font-body-s-14-normal-medium-weight);
+  color: var(--ds-color-button-accent-outlined-default-text-color, #448aff);
+  white-space: nowrap;
+}
+.ds-button-toggle__icon {
+  flex-shrink: 0;
+  width: var(--ds-size-5x);
+  height: var(--ds-size-5x);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ds-button-toggle__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ds-button-toggle__icon svg path {
+  fill: currentColor;
+}
+.ds-button-toggle--s .ds-button-toggle__icon {
+  width: var(--ds-size-5x);
+  height: var(--ds-size-5x);
+}
+.ds-button-toggle--xs .ds-button-toggle__icon {
+  width: var(--ds-size-4x);
+  height: var(--ds-size-4x);
+}
+.ds-button-toggle--filled.ds-button-toggle--text {
+  background: var(--ds-color-button-toggle-filled-background, #ffffff);
+  color: var(--ds-color-button-accent-outlined-default-text-color, #448aff);
+  border: none;
+  box-shadow: none;
+}
+.ds-button-toggle--outlined.ds-button-toggle--text {
+  background: var(--ds-color-button-toggle-outlined-background, #ffffff);
+  border: 1px solid var(--ds-color-button-toggle-outlined-border-color, #e0e0e0);
+  color: var(--ds-color-button-accent-filled-default-text-color, #ffffff);
+  box-shadow: none;
+}
+.ds-button-toggle--outlined.ds-button-toggle--icon {
+  background: var(--ds-color-button-toggle-outlined-background, #ffffff);
+  border: 1px solid var(--ds-color-button-toggle-outlined-border-color, #e0e0e0);
+}
+.ds-button-toggle--filled.ds-button-toggle--icon {
+  background: var(--ds-color-button-toggle-filled-background, #ffffff);
+}
+

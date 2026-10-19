@@ -1,0 +1,70 @@
+<!--
+  Проба для проверки страниц рекомендаций (и любых страниц ДС) без глаз владельца.
+  Копировать в _audit/rec/checks/_имя.html, подставить путь к странице, запустить:
+
+    cd /c/Users/asukharev/GitHub/DS
+    "/c/Program Files/Google/Chrome/Application/chrome.exe" --headless=new --disable-gpu \
+      --no-sandbox --user-data-dir="$(cygpath -w "$LOCALAPPDATA/Temp/probe1")" \
+      --virtual-time-budget=25000 --window-size=1920,1400 --dump-dom \
+      "http://127.0.0.1:8899/_audit/rec/checks/_имя.html" > "$LOCALAPPDATA/Temp/probe.html"
+
+  затем вычитать измерение из <pre id="o"> (Python: re.search(r'<pre id="o">(.*?)</pre>', h, re.S)).
+
+  Правила, добытые опытом:
+   · iframe делать видимым и высоким (≥1500 px) — иначе элементы вне кадра «не находятся»;
+   · состояние «до» снимать ДО кликов, иначе проверка возврата даст ложный СБОЙ;
+   · события слать как new A.contentWindow.Event('input', {bubbles:true});
+   · confirm в headless возвращает false — подменять (orig = fw.confirm) перед сбросами;
+   · сгенерированный файл (xls/json) ловить подменой fw.URL.createObjectURL;
+   · по нескольку страниц за прогон: один iframe, менять src, ждать onload + ~600 мс.
+-->
+<!DOCTYPE html>
+<html lang="ru">
+<head><meta charset="UTF-8"><title>probe</title>
+<style>
+  html,body{margin:0;background:#fff}
+  pre{font:11.5px/17px monospace;margin:8px;white-space:pre-wrap}
+  iframe{width:1900px;height:1600px;border:0;display:block}
+</style></head>
+<body>
+<pre id="o">…</pre>
+<iframe id="a" src="../../../iiko-ds-mobile/prototypes/recommendations/button.html"></iframe>
+<script>
+var A = document.getElementById('a'), o = document.getElementById('o'), L = [];
+function log(s) { L.push(s); o.textContent = L.join('\n'); }
+function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+function px(v) { return Math.round(v * 10) / 10; }
+async function run() {
+  await new Promise(function (r) { A.onload = r; });
+  await wait(2500);                       /* страница дорисовывает экраны и своего зверя */
+  var d = A.contentDocument, w = A.contentWindow;
+
+  /* 1. база — снять ДО кликов */
+  var base = [].map.call(d.querySelectorAll('.phone__body'), function (b) { return b.innerHTML; }).join('|');
+
+  /* 2. измерить то, ради чего проба */
+  var b = d.querySelector('.phone__screen .btnbox .ds-btn');
+  if (b) log('кнопка: ' + px(b.getBoundingClientRect().width) + '×' + px(b.getBoundingClientRect().height) +
+             ' | min-height ' + w.getComputedStyle(b).minHeight);
+
+  /* 3. клик по пункту меню и правку поля */
+  var item = d.querySelector('.screens__item[data-pat]');
+  if (item) { item.click(); await wait(300); }
+  var f = d.querySelector('.edit__input');
+  if (f) { f.value = '48'; f.dispatchEvent(new w.Event('input', { bubbles: true })); await wait(400); }
+  log('живое правило: ' + ((d.getElementById('live') || {}).textContent || '').replace(/\n/g, ' '));
+
+  /* 4. вернуть «Основные» и сверить с базой */
+  var baseItem = d.querySelector('.screens__item[data-view="base"]');
+  if (baseItem) { baseItem.click(); await wait(250); }
+  log('возврат «Основные»: ' + ([].map.call(d.querySelectorAll('.phone__body'), function (x) { return x.innerHTML; }).join('|') === base ? 'ок' : 'СБОЙ'));
+
+  /* 5. переполнение и поломки вёрстки */
+  var doc = d.documentElement;
+  log('переполнение по ширине: ' + Math.max(0, doc.scrollWidth - doc.clientWidth) + ' px');
+  document.title = 'ready';
+}
+run().catch(function (e) { log('ERR ' + e.message); });
+</script>
+</body>
+</html>

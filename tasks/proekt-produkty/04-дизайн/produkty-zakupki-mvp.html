@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Продукты — закупки ресторана (MVP): пользовательский путь (прототип на компонентах ДС)</title>
+<!--
+  ПРОДУКТЫ — ЗАКУПКИ РЕСТОРАНА (MVP). Прототип собран на основе спеки шага 5 —
+  PRD «Закупочная платформа „Продукты“ — первая версия» и промпта к прототипу (05-спека/промпт-к-прототипу.md).
+  Итерация 3 (по фидбеку): экран «Закупки» — таблица закупок со статусной моделью (черновик · активна →
+  ждёт подтверждения → собирается → едет к вам → ждёт приёмки → завершена; отклонения: срок истёк, отменена);
+  новая закупка — выбор «по шаблону или своя», после сбора — «напрямую у поставщика или тендер»;
+  добавлен справочный экран статусов.
+  Итерация 4 (по фидбеку): «Новая закупка» — боковая панель (drawer) с шаблонами; карточка «в пути» — над таблицей;
+  товары на экранах (корзина, черновик, заказ, приёмка, накладная) — таблицами; сняты макетные ширины контейнеров списков.
+  Все состояния — на одной странице: переключатель «Состояние» в шапке ревью (или ?state=<id>),
+  стрелки ← → на клавиатуре. ?ui=0 — чистый кадр без обвязки; ?hints=1 — подсказки по пробелам ДС.
+
+  ЧТО СОБРАНО (по спеке — сценарии и критерии приёмки):
+    Ресторан: кабинет закупок (шаблоны и повтор) → каталог всех поставщиков → корзина по нескольким
+    поставщикам → тендер по группе А (сбор КП) → сводная таблица КП → заказы и статусы («где машина») →
+    замена от поставщика (только с подтверждением) → приёмка и накладная в учёт → повтор закупки;
+    Поставщик: входящие заказы → КП по тендеру → отгрузка и статусы → документы и закрытие.
+    Альтернативы: поиск без результатов, тендер без предложений в срок, пустой кабинет,
+    неподтверждённый в срок заказ, черновик прерванного оформления.
+
+  ОТКУДА ЧТО ВЗЯТО:
+    • компоненты и токены — только ДС: iiko-ds-web/tokens.css, styles.css, components/index.css, fixes.css
+      (Table, Card, List container/item, Status, Button, Button icon, Button group, Divider, Search,
+      Input, Checkbox — контрол и иконки вне агрегатора, догружаются отдельно; Backdrop, Material Icons);
+    • каркас страницы ревью — по образцу iiko-ds-prototypes/callcenter-noncash-payment.html
+      (modes-bar / note / hints / view / panel / frame, состояние в адресе ?state=…);
+    • шапка и боковое меню приложения — общие ассеты app-header/, app-sidenav/ (тот же экран iikoWeb);
+    • экраны и подписи — из спеки шага 5 (сценарии 1–15, критерии приёмки); данные на экранах —
+      демонстрационные, вымышленные (ресторан «Ромашка», МясоТорг, Прайм Биф…).
+
+  ПРАВКИ ПОВЕРХ ДС — только там, где у ДС реальный пробел; помечены в CSS `/* косяк ДС: … */`
+  и вынесены в «Подсказки ДС» (кнопка в шапке страницы).
+
+  ПЛОЩАДКА: файл рассчитан на рабочее пространство, где рядом лежит папка `iiko-ds-web`
+  (как в DS-репозитории). Живой адрес этого экземпляра: http://hermes.iiko.ru:8331/prototypes/produkty-zakupki-mvp.html
+-->
+<link rel="stylesheet" href="../iiko-ds-web/font.css">
+<link rel="stylesheet" href="../iiko-ds-web/tokens.css">
+<link rel="stylesheet" href="../iiko-ds-web/styles.css">
+<link rel="stylesheet" href="../iiko-ds-web/components/index.css">
+<!-- Checkbox: ни сам контрол, ни иконки выбора в агрегатор components/index.css не подключены
+     (у Radio та же история) — догружаем файлы ДС вручную, иначе у чекбокса нет ни flex, ни иконок -->
+<link rel="stylesheet" href="../iiko-ds-web/components/Checkbox_DS/checkbox.css">
+<link rel="stylesheet" href="../iiko-ds-web/components/Checkbox_DS/checkbox-icons.css">
+<link rel="stylesheet" href="../iiko-ds-web/fixes.css">
+<!-- шапка приложения («App bars: top») — один источник на все страницы-кадры -->
+<link rel="stylesheet" href="app-header/app-header.css?v=6">
+<!-- боковое меню приложения (свёрнутое, десктоп) -->
+<link rel="stylesheet" href="app-sidenav/app-sidenav.css?v=4">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<style>
+  /* ============================================================
+     КАРКАС СТРАНИЦЫ (обвязка ревью) — своих компонентов не рисуем
+     ============================================================ */
+  html,body{margin:0;background:#f4f5f7;font-family:'Roboto','Helvetica Neue',Arial,sans-serif;color:var(--ds-color-text-primary)}
+  .modes-bar{display:flex;align-items:center;gap:8px;padding:10px 24px;border-bottom:1px solid var(--ds-color-stroke-default);background:#fff;font-size:14px;line-height:20px}
+  .modes-bar[hidden]{display:none}
+  .modes-bar__title{font-weight:var(--ds-typography-font-weight-medium)}
+  .modes-bar__hint{color:var(--ds-color-text-secondary)}
+  .modes-bar__spacer{flex:1}
+  .modes-bar__link,.modes-bar__btn{height:28px;padding:0 12px;border:1px solid var(--ds-color-stroke-default);border-radius:var(--ds-radius-2x);background:transparent;font-family:inherit;font-size:14px;font-weight:var(--ds-typography-font-weight-medium);color:var(--ds-color-text-primary);cursor:pointer}
+  .modes-bar__link:hover,.modes-bar__btn:hover{background:var(--ds-color-button-neutral-hover)}
+  .modes-bar__select{height:28px;max-width:460px;padding:0 8px;border:1px solid var(--ds-color-stroke-default);border-radius:var(--ds-radius-2x);background:#fff;font-family:inherit;font-size:14px;color:var(--ds-color-text-primary)}
+  .modes-bar__counter{min-width:56px;text-align:center;color:var(--ds-color-text-secondary);font-variant-numeric:tabular-nums}
+  .modes-bar__title,.modes-bar__link,.modes-bar__btn{white-space:nowrap}
+  .note{width:1184px;max-width:calc(100% - 48px);margin:24px 24px 0;padding:16px;box-sizing:border-box;border:1px solid var(--ds-color-stroke-default);border-radius:var(--ds-radius-3x);background:#fff}
+  .note__group{font:var(--ds-font-caption-l-12-normal-medium);color:var(--ds-color-text-secondary);text-transform:uppercase;letter-spacing:.8px}
+  .note__title{margin:4px 0 8px;font:var(--ds-font-body-l-18-normal-medium)}
+  .note p{margin:6px 0 0;font:var(--ds-font-body-s-14-normal-regular);max-width:1100px}
+  .note__k{color:var(--ds-color-text-secondary)}
+  .view{display:flex;flex-direction:column;gap:16px;padding:24px;align-items:flex-start}
+  .panel{position:relative;width:1184px;max-width:100%;background:var(--ds-color-surface-default,#fff);border-radius:var(--ds-radius-3x);overflow:hidden;outline:1px solid var(--ds-color-stroke-default)}
+  .frame{position:relative;width:100%;min-height:660px;padding:24px 32px;box-sizing:border-box}
+  body.ui-clean .modes-bar,body.ui-clean .hints{display:none}
+  .hints{display:none;width:1184px;max-width:calc(100% - 48px);margin:16px 24px 0;padding:16px 20px;box-sizing:border-box;border:1px solid var(--ds-color-stroke-warning,#ffab40);border-radius:var(--ds-radius-3x);background:var(--ds-palette-warning-10,#fffcf8)}
+  .hints.is-open{display:block}
+  .hints__title{margin:0 0 8px;font:var(--ds-font-body-m-16-normal-medium)}
+  .hints__item{display:flex;gap:8px;font:var(--ds-font-body-s-14-normal-regular);margin-top:6px}
+  .hints__num{flex:0 0 18px;color:var(--ds-color-text-secondary)}
+
+  /* ============================================================
+     КОСЯКИ ДС — правки обвязки (каждый пробел — в «Подсказках ДС»)
+     ============================================================ */
+  /* Таблицы ДС: полосы строк свёрстаны колонкой (flex-direction: column) — строку из ячеек не собрать */
+  .ds-table{display:flex;flex-direction:column;width:100%}
+  .ds-table .ds-table-header-row,.ds-table .ds-table-content-row{flex-direction:row;width:100%}   /* косяк ДС: полоса строки — column */
+  /* Служебные слоты красят фон белым — перекрывают ховер и выбранное значение */
+  .ds-list-container__element-left,.ds-list-container__element-right,
+  .ds-list-item__element-left,.ds-list-item__element-right,.ds-element-select,
+  .ds-select-item__element-left,.ds-select-item__element-right{background:transparent}   /* косяк ДС: служебные слоты красят фон */
+  /* Текстовым элементам автоген ставит фон, равный цвету текста (плашка под текстом) */
+  .ds-list-item__text,.ds-list-item__label-up,.ds-list-item__label-down,.ds-list-container__label,
+  .ds-table-content-cell__label,.ds-table-header-cell__label,.ds-status__content,.ds-input__label,
+  .ds-select-item__label,.ds-select-item__label-down,.ds-select-item__subtitle{background:transparent}   /* косяк ДС: фон = цвет текста у текстовых элементов */
+  .ds-input__frame,.ds-input-number__frame{box-sizing:border-box}   /* косяк ДС: кадр поля теряет box-sizing */
+  .ds-checkbox__box.material-icons{font-size:20px;line-height:20px}   /* косяк ДС: у иконочного бокса чекбокса не задан размер вне агрегатора */
+  /* Значение справа в строке списка прижимаем обвязкой (у ДС правила нет — тот же пробел, что у Select item) */
+  .scr .ds-list-container__item .ds-list-container__element-right{margin-left:auto;align-items:flex-end}
+  .scr .ds-list-container__item .ds-list-container__content{min-width:0}
+
+  /* ============================================================
+     ЭКРАНЫ (каркас раскладки: позиционирование и ширины колонок)
+     ============================================================ */
+  .scr{display:flex;flex-direction:column;gap:20px}
+  .scr__top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-height:40px}   /* заголовки карточек в одном ряду с кнопками и без — одинаковой высоты */
+  .scr__title{margin:0;font:var(--ds-font-header-m-24-normal-medium);color:var(--ds-color-text-primary)}
+  .scr__fill{flex:1 1 auto}
+  .scr__sub{margin:0;font:var(--ds-font-body-m-16-normal-medium)}
+  .scr__cols{display:flex;gap:24px;align-items:flex-start}
+  .scr__main{flex:1 1 auto;min-width:0}
+  .scr__aside{flex:0 0 344px}
+  .scr .ds-card__content{padding:16px}
+  .c-chk{width:56px;flex:0 0 56px}
+  .c-flex{flex:1 1 auto;min-width:0}
+  .c-w140{width:140px}
+  .c-w160{width:160px}
+  .c-w180{width:180px}
+  .c-w220{width:220px}
+  .c-right{justify-content:flex-end}
+  .kv{display:flex;gap:16px;justify-content:space-between}
+  .kv + .kv{margin-top:8px}
+  .kv__k{font:var(--ds-font-body-s-14-normal-regular);color:var(--ds-color-text-secondary)}
+  .kv__v{font:var(--ds-font-body-s-14-normal-regular);text-align:right}
+  .kv--total .kv__k,.kv--total .kv__v{font-weight:var(--ds-font-body-s-14-normal-medium-weight);color:var(--ds-color-text-primary)}
+  .ds-card__content > .ds-divider{margin:12px 0}   /* косяк обвязки: у разделителя нет вертикальных отступов — «слипается» с соседями */
+  .scr__hint{font:var(--ds-font-caption-l-12-normal-regular);color:var(--ds-color-text-secondary)}
+  /* Блок-статус с иконкой (загрузка/пустота): состояний нет в ДС — иконка + подпись, как в примерах паттернов */
+  .p-state{display:flex;flex-direction:column;align-items:center;gap:12px;padding:32px 24px;text-align:center}
+  .p-state .material-icons{font-size:32px;line-height:32px;color:var(--ds-color-icon-primary)}
+  .p-state-text{font:var(--ds-font-body-s-14-normal-regular);color:var(--ds-color-text-secondary);max-width:420px}
+  .p-spin{animation:p-spin 1s linear infinite}
+  @keyframes p-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  /* Строки-выборы (тендер: предложения поставщиков) — состояние Selected в ДС нет (в Фигме есть) */
+  .off-row{cursor:pointer;align-items:center}
+  .off-row .ds-list-item__text{font:var(--ds-font-body-m-16-normal-regular)}
+  .off-row.is-selected{background:var(--ds-palette-neutral-50,#f5f5f5)}
+  .off-row.is-selected .ds-list-item__text{color:var(--ds-color-text-accent,#448aff)}
+  .ds-table .off-row.is-selected .ds-table-content-cell__label{color:var(--ds-color-text-accent,#448aff)}
+  .off-best{font:var(--ds-font-caption-l-12-normal-regular);color:var(--ds-color-text-positive)}
+  /* Поиск: у .ds-search жёсткая ширина 243 — филл по месту; у поля ввода класса в ДС нет — класс каркаса */
+  .srch.ds-search{width:100%}   /* косяк ДС: у Search ширина 243 захардкожена */
+  .srch__input{flex:1 1 auto;min-width:0;border:0;outline:none;background:transparent;font:var(--ds-font-body-s-14-normal-regular);color:var(--ds-color-text-primary)}
+  /* Поля ввода в раскладке: филл колонки */
+  .fld.ds-input{width:100%;min-width:0}
+  .fld .ds-input__frame{box-sizing:border-box;height:48px;padding:var(--ds-space-1x) var(--ds-space-3x);align-items:center}
+  .fld .ds-input__content{flex:1 1 auto;min-width:0}
+  /* Секции */
+  .sec-title{margin:0;font:var(--ds-font-body-m-16-normal-medium)}
+  .sec-gap{display:flex;flex-direction:column;gap:12px}
+  /* Футер-полоска секции с кнопками */
+  .rowfoot{display:flex;justify-content:flex-end;gap:16px;align-items:center}
+  /* Ряды статусной модели: чип фиксированной колонкой, пояснение — справа без наездов */
+  .st-row{display:flex;gap:16px;align-items:flex-start;padding:10px 0;width:100%}   /* косяк обвязки: строка списка сжимается по содержимому — прижимаем на всю ширину */
+  .st-list.ds-list-container{width:100%;align-items:stretch}   /* косяк обвязки: контейнер списка сжимается — растягиваем */
+  .c-w120{width:120px}
+  /* Косяк ДС: у .ds-list-container зашита макетная ширина (width:258px) и min-height:257px — растягиваем на всю ширину */
+  .ds-list-container{width:100%;min-height:0}
+  /* Боковая панель «Создать закупку»: компонента в ДС нет — паттерн по образцу панели «Создать акцию» */
+  .p-drawer{position:absolute;inset:0;z-index:80}   /* внутри экрана прототипа (.frame), не поверх всей страницы ревью */
+  .p-drawer__backdrop{position:absolute;inset:0;background:transparent;cursor:default}
+  .p-drawer__panel{position:absolute;top:0;right:0;bottom:0;width:min(920px,92vw);background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.06),-8px 0 24px rgba(0,0,0,.08);display:flex;flex-direction:column}
+  .p-drawer__head{display:flex;align-items:center;gap:12px;padding:24px 28px 8px}
+  .p-drawer__title{margin:0;font:var(--ds-font-header-m-24-normal-medium);color:var(--ds-color-text-primary)}
+  .p-drawer__body{padding:12px 28px 28px;overflow:auto;display:flex;flex-direction:column;gap:28px}
+  .p-drawer__sect{margin:0 0 12px;font:500 18px/24px 'Roboto','Helvetica Neue',Arial,sans-serif;color:var(--ds-color-text-primary)}
+  .p-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .p-card{border:1px solid var(--ds-palette-neutral-200,#e0e0e0);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:16px;background:#fff}
+  .p-card[data-go]{cursor:pointer}
+  .p-card--disabled{background:var(--ds-palette-neutral-50,#fafafa)}
+  .p-card--disabled .p-card__title{color:var(--ds-color-text-secondary)}
+  .p-card__main{display:flex;flex-direction:column;gap:4px}
+  .p-card__title{font:500 16px/22px 'Roboto','Helvetica Neue',Arial,sans-serif;color:var(--ds-color-text-primary)}
+  .p-card__desc{font:var(--ds-font-body-s-14-normal-regular);color:var(--ds-color-text-secondary)}
+  .p-card__foot{display:flex;align-items:center;gap:12px}
+  .p-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:8px;background:#E8F5E9;color:#2E7D32;font:var(--ds-font-caption-l-12-normal-regular)}
+  .p-badge .material-icons{font-size:14px;line-height:14px}
+  .st-row__chip{flex:0 0 220px}
+  .st-row__desc{flex:1 1 auto;min-width:0;font:var(--ds-font-body-s-14-normal-regular);color:var(--ds-color-text-secondary)}
+</style>
+</head>
+<body>
+
+<!-- Шапка ревью: переключатель состояний (?ui=0 — скрыть, ?state=<id> — прямая ссылка) -->
+<div class="modes-bar" id="modes-bar" role="group" aria-label="Состояния пользовательского пути">
+  <span class="modes-bar__title">Продукты · закупки ресторана (MVP)</span>
+  <span class="modes-bar__hint">весь пользовательский путь на одном экране</span>
+  <button class="modes-bar__link" type="button" id="hints-btn" aria-pressed="false" title="Показать/скрыть подсказки по пробелам ДС">Подсказки ДС · 11</button>
+  <span class="modes-bar__spacer"></span>
+  <button class="modes-bar__btn" type="button" id="prev-btn" title="Предыдущее состояние (←)">←</button>
+  <select class="modes-bar__select" id="state-select" aria-label="Состояние"></select>
+  <span class="modes-bar__counter" id="state-counter">1 / 1</span>
+  <button class="modes-bar__btn" type="button" id="next-btn" title="Следующее состояние (→)">→</button>
+</div>
+
+<!-- Подсказки ДС: кнопка в шапке или ?hints=1 -->
+<div class="hints" id="hints" role="note" aria-label="Подсказки по ДС">
+  <p class="hints__title">Пробелы ДС, найденные при сборке (правки в каркасе помечены «косяк ДС»)</p>
+  <div class="hints__item"><span class="hints__num">1</span><span class="hints__text">Table: полоса строки свёрстана колонкой (<code>flex-direction: column</code>) — строку из нескольких ячеек не собрать; в каркасе возвращаем <code>row</code>.</span></div>
+  <div class="hints__item"><span class="hints__num">2</span><span class="hints__text">Checkbox: ни сам контрол (<code>checkbox.css</code>), ни иконки выбора (<code>checkbox-icons.css</code>) в агрегатор <code>components/index.css</code> не подключены — догружаем вручную; у иконочного бокса вне агрегатора не задан размер (ставим 20 px).</span></div>
+  <div class="hints__item"><span class="hints__num">3</span><span class="hints__text">Служебные слоты строк (<code>__element-left/__element-right</code>, <code>ds-element-select</code>) красят фон белым и перекрывают ховер и выбранное значение — гасим фон обвязкой.</span></div>
+  <div class="hints__item"><span class="hints__num">4</span><span class="hints__text">Текстовые элементы автогена (<code>__text</code>, <code>__label-up/down</code>, <code>ds-status__content</code>, подписи таблиц) рисуют фон, равный цвету текста — «плашку» под текстом гасим обвязкой.</span></div>
+  <div class="hints__item"><span class="hints__num">5</span><span class="hints__text">Search: жёсткая ширина 243 px — для строки поиска во всю ширину фиксим обвязкой; у поля ввода внутри класса в ДС нет (используем класс каркаса).</span></div>
+  <div class="hints__item"><span class="hints__num">6</span><span class="hints__text">Состояний загрузки (скелетон/спиннер) в списках и таблицах ДС нет — используем иконку <code>autorenew</code> с вращением, как в примерах паттернов (прецедент — спиннер в кнопке).</span></div>
+  <div class="hints__item"><span class="hints__num">7</span><span class="hints__text">Состояние Selected строки (выбранное предложение в тендере) в CSS ДС не реализовано (в Фигме есть) — собираем обвязкой: фон Neutral/50 + акцент текста.</span></div>
+  <div class="hints__item"><span class="hints__num">8</span><span class="hints__text">Разделитель между строками списка: у <code>.ds-list-container__divider</code> фон #ffffff — линии не видно; используем компонент <code>&lt;hr class="ds-divider"&gt;</code>.</span></div>
+  <div class="hints__item"><span class="hints__num">9</span><span class="hints__text">Кадр поля (<code>ds-input__frame</code>) теряет box-sizing: при заданной высоте паддинги прибавляются сверху — возвращаем <code>border-box</code> в каркасе.</span></div>
+  <div class="hints__item"><span class="hints__num">10</span><span class="hints__text">List: у контейнера списка зашита макетная ширина (<code>width: 258px</code>) и <code>min-height: 257px</code> — в каркасе растягиваем на всю ширину карточки.</span></div>
+  <div class="hints__item"><span class="hints__num">11</span><span class="hints__text">Боковая панель «Создать закупку» (в границах экрана прототипа, ~60% ширины; по образцу «Создать акцию»): компонента в ДС нет — собран паттерном; закрытие — крестик и клик вне панели.</span></div>
+</div>
+
+<div class="note" id="note" role="note"></div>
+
+<div class="view">
+  <!-- Кадр приложения: шапка и рельса вставляются скриптами app-header.js / app-sidenav.js -->
+  <div class="panel" id="panel">
+    <div class="frame" id="frame"></div>
+  </div>
+</div>
+
+<script src="app-header/app-header.js?v=3" defer></script>
+<script src="app-sidenav/app-sidenav.js?v=2" defer></script>
+<script>
+(function () {
+  'use strict';
+
+  /* ── Данные прототипа (правдоподобные данные; источник экранов — описание задачи) ── */
+  var SUPPLIERS = { mt: 'МясоТорг', ov: 'Овощная база Юг', ml: 'Молочный дом', hb: 'Хлебозавод №5', pb: 'Прайм Биф', fd: 'Фермерский двор' };
+
+  var CATALOG = [
+    { id: 'p1', name: 'Говядина, лопатка', sup: SUPPLIERS.mt, unit: 'кг', price: '640,00 ₽', stock: 'в наличии', checked: true },
+    { id: 'p2', name: 'Куриное филе', sup: SUPPLIERS.mt, unit: 'кг', price: '380,00 ₽', stock: 'в наличии', checked: true },
+    { id: 'p3', name: 'Сыр моцарелла', sup: SUPPLIERS.ml, unit: 'кг', price: '720,00 ₽', stock: 'в наличии', checked: false },
+    { id: 'p4', name: 'Томаты черри', sup: SUPPLIERS.ov, unit: 'кг', price: '320,00 ₽', stock: 'в наличии', checked: true },
+    { id: 'p5', name: 'Картофель молодой', sup: SUPPLIERS.ov, unit: 'кг', price: '95,00 ₽', stock: 'в наличии', checked: false },
+    { id: 'p6', name: 'Молоко 3,2%', sup: SUPPLIERS.ml, unit: 'л', price: '89,00 ₽', stock: 'мало', checked: false },
+    { id: 'p7', name: 'Масло сливочное 82,5%', sup: SUPPLIERS.ml, unit: 'кг', price: '1 140,00 ₽', stock: 'мало', checked: false },
+    { id: 'p8', name: 'Хлеб бородинский', sup: SUPPLIERS.hb, unit: 'шт', price: '62,00 ₽', stock: 'в наличии', checked: false }
+  ];
+
+  var CART = [
+    { sup: SUPPLIERS.mt, items: [
+      { name: 'Говядина, лопатка', q: '12 кг', price: '640,00 ₽', sum: '7 680,00 ₽', sup: 'МясоТорг' },
+      { name: 'Куриное филе', q: '10 кг', price: '380,00 ₽', sum: '3 800,00 ₽', sup: 'МясоТорг' }
+    ], total: '11 480,00 ₽' },
+    { sup: SUPPLIERS.ov, items: [
+      { name: 'Томаты черри', q: '6 кг', price: '320,00 ₽', sum: '1 920,00 ₽', sup: 'Овощная база Юг' }
+    ], total: '1 920,00 ₽' }
+  ];
+
+  var OFFER_ROWS = [
+    { id: 'mt', sup: SUPPLIERS.mt, a: '7 680,00 ₽', b: '3 800,00 ₽', total: '11 480,00 ₽', note: 'текущий поставщик' },
+    { id: 'pb', sup: SUPPLIERS.pb, a: '7 380,00 ₽', b: '3 950,00 ₽', total: '11 330,00 ₽', note: 'лучший итог · −150 ₽' },
+    { id: 'fd', sup: SUPPLIERS.fd, a: '7 860,00 ₽', b: '3 700,00 ₽', total: '11 560,00 ₽', note: '' }
+  ];
+
+  /* ── Состояние экрана (то, что меняется кликами) ── */
+  var VIEW = { id: 'home', query: '', offerSel: 'pb', ship: 0, offerSent: false, docsSent: false };
+
+  /* ── Состояния пути: что показать на экране ── */
+  var SCEN = [
+    { id: 'home', group: 'Ресторан · закупки', screen: 'home', q: '',
+      title: 'Закупки: таблица закупок со статусами',
+      what: 'Экран закупок — таблица всех закупок ресторана: черновик № 4525 (активна), ждёт подтверждения, собирается, едет к вам (ETA), срок истёк, ждёт приёмки, завершена, отменена. В строке — поставщики, сумма, статус и доступное действие. Сверху — «Новая закупка»; над таблицей — карточка закупки, которая едет к вам («где машина»).',
+      why: 'Один экран отвечает, что сейчас с каждой закупкой — от сборки черновика до закрытия, без звонков и поиска в переписках.' },
+    { id: 'new-purchase', group: 'Ресторан · закупки', screen: 'new-purchase',
+      title: 'Новая закупка: панель «Создать закупку» с шаблонами',
+      what: 'Кнопка «Новая закупка» открывает боковую панель «Создать закупку» (по образцу «Создать акцию»): раздел «Создание с нуля» — карточка «Своя закупка», кнопка «Настроить» → каталог; раздел «Готовые шаблоны» — карточки «Пятничная закупка», «Бар и напитки», «Овощи и зелень» (кнопки «Выбрать» → корзина) и одна недоступная. Закрытие — крестик или клик вне панели.',
+      why: 'Типовая закупка — в пару кликов; нетиповая — без препятствий.' },
+    { id: 'home-empty', group: 'Ресторан · закупки', screen: 'home-empty',
+      title: 'Пустой кабинет: первая закупка (альтернатива)',
+      what: 'Ни истории, ни шаблонов: пустое состояние предлагает создать первую закупку — по шаблону (когда появятся) или с нуля из каталога.',
+      why: 'Пустой кабинет не должен выглядеть поломкой: следующий шаг — понятный и один.' },
+    { id: 'catalog', group: 'Ресторан · закупка', screen: 'catalog', q: '',
+      title: 'Каталог: каталоги и прайсы всех поставщиков в одном окне',
+      what: 'Поиск и список товаров всех подключённых поставщиков: цена, поставщик и наличие в строке. Три позиции отмечены — кнопка «В корзину (3)». Поиск фильтрует список по мере ввода.',
+      why: 'Все поставщики в одном месте — главный мотив выбора: заказ собирается без обзвона и переключения кабинетов.' },
+    { id: 'catalog-empty', group: 'Ресторан · закупка', screen: 'catalog', q: 'трюфель',
+      title: 'Каталог: поиск без результатов (альтернатива)',
+      what: 'В поиск введено «трюфель» — ничего не найдено: пустое состояние «Ничего не найдено: измените запрос или выберите категорию» и кнопка «Сбросить поиск».',
+      why: 'Пустой список без пояснения выглядит как «каталога нет» — пустота поиска и отсутствие товара различаются.' },
+    { id: 'cart', group: 'Ресторан · закупка', screen: 'cart',
+      title: 'Корзина: два пути — напрямую или тендер',
+      what: 'Корзина сгруппирована по поставщикам, товары — таблицей (Товар, Кол-во, Цена, Сумма); у каждой группы — «Заказать только у него». Справа — карточка «Итого» (заголовок как у групп): позиции и разбивка суммы по поставщикам, «К оформлению», подсказка про два пути. Вверху: «Оформить заказ» напрямую или «Выйти на тендер» по группе А; внизу — «Показать черновик».',
+      why: 'Напрямую — быстро у знакомого поставщика; тендер — сравнить цены. Выбор — из корзины, без лишних шагов.' },
+    { id: 'cart-draft', group: 'Ресторан · закупка', screen: 'cart-draft',
+      title: 'Корзина: черновик прерванного оформления (альтернатива)',
+      what: 'Закупка № 4525 в статусе «Черновик · активна» — прерванное оформление: товары — таблицей (3 позиции у 2 поставщиков на 13 400,00 ₽), справа — карточка «Итого» («Закупка № 4525», «Сохранён: сегодня, 12:40 — автоматически») с кнопками «Продолжить оформление» → корзина и «Удалить черновик» → закупки.',
+      why: 'Прерванная закупка не теряется: возврат к ней — в один клик.' },
+    { id: 'tender', group: 'Ресторан · тендер', screen: 'tender',
+      title: 'Тендер по группе А: собираем предложения',
+      what: 'Слева — таблица «Позиции тендера» (Товар, Кол-во, Последняя цена); справа — «Сбор предложений»: индикатор сбора и счётчик «ответили 2 из 4», срок — сегодня до 18:00 (задан при запуске). Кнопки «Посмотреть предложения (2)» и «Отменить тендер».',
+      why: 'Закупщик видит, что процесс идёт и когда ждать результат — тендер не «уходит в никуда», как запрос по телефону.' },
+    { id: 'tender-empty', group: 'Ресторан · тендер', screen: 'tender-empty',
+      title: 'Тендер: предложений в срок нет (альтернатива)',
+      what: 'К сроку никто не ответил: слева — таблица «Позиции тендера», справа — «Результат сбора» с пояснением; кнопки «Продлить сбор до 20:00» и «Вернуться в корзину».',
+      why: 'Молчаливый тендер выглядит как поломка — нужны выходы: продлить или вернуться к обычному заказу.' },
+    { id: 'offers', group: 'Ресторан · тендер', screen: 'offers',
+      title: 'Сводная таблица КП: выбор предложения',
+      what: 'Предложения трёх поставщиков по позициям группы А, у лучшего итога — пометка «лучший итог · −150 ₽»; строка выбрана (подсвечена), кнопка «Перенести в заказ».',
+      why: 'Предложения сравнимы построчно и по итогу: выбор делается осознанно, а выбранное предложение переносится в заказ.' },
+    { id: 'order-change', group: 'Ресторан · исполнение', screen: 'order-change',
+      title: 'Замена от поставщика: только с подтверждением',
+      what: 'Закупка №4521: состав — таблицей (Товар, Кол-во, Цена, Сумма); справа — запрос замены «Куриное филе → Бедро куриное б/к» (филе закончилось, цена без изменений). Кнопки «Подтвердить замену» и «Отклонить».',
+      why: 'Любые изменения и замены — только после подтверждения рестораном: «отменили без предупреждения» — главная жалоба на похожие сервисы.' },
+    { id: 'orders-unconfirmed', group: 'Ресторан · исполнение', screen: 'orders-unconfirmed',
+      title: 'Закупка не подтверждена в срок (альтернатива)',
+      what: 'Закупка №4520 «Молочный дом»: поставщик не подтвердил её до 16:00. Видны уведомление и выходы: «Напомнить поставщику» или «Выбрать другого» (вернуться в каталог и собрать замену).',
+      why: 'Молчание поставщика — не тупик: ресторан видит проблему и решает её, не дозваниваясь.' },
+    { id: 'acceptance', group: 'Ресторан · исполнение', screen: 'acceptance',
+      title: 'Приёмка: поставка по факту',
+      what: 'Поставка №4519 (Овощная база Юг): состав — таблицей (Товар, Заказано, Факт, Статус): томаты «6 кг / 6 кг», петрушка «1 кг / —, расхождение». Кнопка «Принять поставку».',
+      why: 'Приёмка идёт по факту, расхождения фиксируются на месте — они попадут и в учёт, и в историю поставщика.' },
+    { id: 'accepted', group: 'Ресторан · исполнение', screen: 'accepted',
+      title: 'Поставка принята: накладная в учёте, повтор закупки',
+      what: 'Итог: «Поставка принята · накладная №45123 загружена в iiko». Кнопка «Повторить закупку» (корзина предзаполняется) и «К закупкам».',
+      why: 'Накладные уходят в учётную систему автоматически, а повтор закупки — в пару кликов: цикл закупки замыкается.' },
+    { id: 'status-model', group: 'Справка', screen: 'status-model',
+      title: 'Статусы закупки — модель (пример)',
+      what: 'Справочный экран: последовательность статусов закупки — черновик · активна, ждёт подтверждения, собирается, едет к вам, ждёт приёмки, завершена — и отклонения (срок истёк, отменена). Сторона поставщика: новый → подтверждён → собран → в пути → доставлен → документы переданы.',
+      why: 'Единый язык статусов для ресторана, поставщика и команды — что показывать на каждом этапе.' },
+    { id: 'sup-orders', group: 'Поставщик', screen: 'sup-orders',
+      title: 'Поставщик: входящие заказы',
+      what: 'Кабинет поставщика (МясоТорг): входящий заказ №4521 от «Ромашки» — состав, сумма, срок подтверждения. Кнопка «Подтвердить заказ».',
+      why: 'Заказы приходят в кабинет, а не в мессенджеры: меньше потерянных заказов и двойных каналов.' },
+    { id: 'sup-offer', group: 'Поставщик', screen: 'sup-offer',
+      title: 'Поставщик: КП по тендеру',
+      what: 'Запрос КП по тендеру группы А: позиции и количества, поля цены, срок подачи — до 18:00. Кнопка «Отправить КП»; после отправки — состояние «КП отправлено, ждём решения».',
+      why: 'Поставщик отвечает на тендер в один экран; ресторан получает сравнимые предложения без обзвона.' },
+    { id: 'sup-ship', group: 'Поставщик', screen: 'sup-ship',
+      title: 'Поставщик: отгрузка и статусы',
+      what: 'Заказ №4521 в работе: этапы «Собрано → В пути → Доставлено», кнопка «Отметить: …» переводит на следующий этап; после «Доставлено» — кнопка «Передать документы».',
+      why: 'Статусы, которые поставщик отмечает сам, сразу видны ресторану — один источник правды вместо звонков.' },
+    { id: 'sup-docs', group: 'Поставщик', screen: 'sup-docs',
+      title: 'Поставщик: документы и закрытие',
+      what: 'Накладная №45123 по заказу №4521: состав и суммы; кнопка «Передать в учёт ресторана»; после передачи — статус «Накладная в iiko у ресторана · поставка закрыта».',
+      why: 'Документы передаются цифровым каналом: поставка закрывается без бумаг и ручного ввода.' }
+  ];
+
+  function scenById(id) {
+    for (var i = 0; i < SCEN.length; i++) { if (SCEN[i].id === id) return SCEN[i]; }
+    return SCEN[0];
+  }
+
+  /* ── Мелкие конструкторы (только ДС-классы) ── */
+  function btn(label, v, go, dis) {
+    var cls = { primary: 'ds-btn--accent ds-btn--filled', secondary: 'ds-btn--neutral ds-btn--outlined', text: 'ds-btn--neutral ds-btn--text' }[v] || 'ds-btn--neutral ds-btn--outlined';
+    return '<button class="ds-btn ds-btn--m ' + cls + '" type="button"' + (go ? ' data-go="' + go + '"' : '') + (dis ? ' disabled' : '') + '><span class="ds-btn__label">' + label + '</span></button>';
+  }
+  function st(text, tone) {
+    return '<span class="ds-status ds-status--' + tone + ' ds-status--filled"><span class="ds-status__label">' + text + '</span></span>';
+  }
+  function kv(k, v) { return '<div class="kv"><span class="kv__k">' + k + '</span><span class="kv__v">' + v + '</span></div>'; }
+  function scr(title, topRight, body) {
+    return '<div class="scr"><div class="scr__top"><h1 class="scr__title">' + title + '</h1>' + (topRight || '<span class="scr__fill"></span>') + '</div>' + body + '</div>';
+  }
+  function divider() { return '<hr class="ds-divider ds-divider--lite">'; }
+  /* строка списка: слева текст (+подпись), справа значение/кнопка */
+  function lrow(left, leftSub, right) {
+    return '<div class="ds-list-container__item">' +
+      '<div class="ds-list-container__content"><span class="ds-list-item__text">' + left + '</span>' + (leftSub ? '<span class="ds-list-item__label-down">' + leftSub + '</span>' : '') + '</div>' +
+      '<div class="ds-list-container__element-right">' + right + '</div>' +
+    '</div>';
+  }
+  function card(inner, outlined) { return '<div class="ds-card' + (outlined === false ? '' : ' ds-card--outlined') + '">' + inner + '</div>'; }
+
+  /* шапка таблицы товаров: Товар / Кол-во / Цена / Сумма */
+  function thead4() {
+    return '<div class="ds-table-header-row" role="row">' +
+      '<div class="ds-table-header-cell c-flex" role="columnheader"><span class="ds-table-header-cell__label">Товар</span></div>' +
+      '<div class="ds-table-header-cell c-w120" role="columnheader"><span class="ds-table-header-cell__label">Кол-во</span></div>' +
+      '<div class="ds-table-header-cell c-w140" role="columnheader"><span class="ds-table-header-cell__label">Цена</span></div>' +
+      '<div class="ds-table-header-cell c-w140 c-right" role="columnheader"><span class="ds-table-header-cell__label">Сумма</span></div>' +
+    '</div>';
+  }
+  /* строка таблицы товаров (подпись-поставщик — при необходимости) */
+  function trow(name, sub, q, price, sum) {
+    return '<div class="ds-table-content-row" role="row">' +
+      '<div class="ds-table-content-cell c-flex" role="cell"><span class="ds-table-content-cell__label">' + name + '</span>' + (sub ? '<span class="scr__hint">' + sub + '</span>' : '') + '</div>' +
+      '<div class="ds-table-content-cell c-w120" role="cell"><span class="ds-table-content-cell__label">' + q + '</span></div>' +
+      '<div class="ds-table-content-cell c-w140" role="cell"><span class="ds-table-content-cell__label">' + price + '</span></div>' +
+      '<div class="ds-table-content-cell c-w140 c-right" role="cell"><span class="ds-table-content-cell__label">' + sum + '</span></div>' +
+    '</div>';
+  }
+  /* боковая панель «Новая закупка» поверх экрана закупок */
+  function drawerHtml() {
+    function tplCard(name, desc, badge, disabled, go) {
+      return '<div class="p-card' + (disabled ? ' p-card--disabled' : '') + '"' + (disabled ? '' : ' data-go="' + go + '" role="button" tabindex="0"') + '>' +
+        '<div class="p-card__main"><div class="p-card__title">' + name + '</div><div class="p-card__desc">' + desc + '</div></div>' +
+        '<div class="p-card__foot">' + (badge ? '<span class="p-badge"><span class="material-icons" aria-hidden="true">' + badge[1] + '</span>' + badge[0] + '</span>' : '') +
+        '<span class="scr__fill"></span>' + btn('Выбрать', 'secondary', disabled ? null : go, disabled) + '</div>' +
+      '</div>';
+    }
+    return '<div class="p-drawer" role="dialog" aria-modal="true" aria-label="Создать закупку">' +
+      '<div class="p-drawer__backdrop" data-go="home"></div>' +
+      '<aside class="p-drawer__panel">' +
+        '<div class="p-drawer__head"><h2 class="p-drawer__title">Создать закупку</h2><span class="scr__fill"></span>' +
+          '<button class="ds-btn-icon" type="button" data-go="home" aria-label="Закрыть"><span class="material-icons">close</span></button></div>' +
+        '<div class="p-drawer__body">' +
+          '<section><h3 class="p-drawer__sect">Создание с нуля</h3>' +
+            '<div class="p-card" data-go="catalog" role="button" tabindex="0">' +
+              '<div class="p-card__main"><div class="p-card__title">Своя закупка</div>' +
+                '<div class="p-card__desc">Закупка без шаблона: полная настройка состава, количеств и поставщиков</div></div>' +
+              '<div class="p-card__foot"><span class="scr__fill"></span>' + btn('Настроить', 'secondary', 'catalog') + '</div>' +
+            '</div></section>' +
+          '<section><h3 class="p-drawer__sect">Готовые шаблоны</h3>' +
+            '<p class="scr__hint" style="margin:0 0 12px">Состав подставится в корзину — правьте перед отправкой.</p>' +
+            '<div class="p-grid">' +
+              tplCard('Пятничная закупка', '12 позиций · 4 поставщика', ['Автоповтор по пятницам', 'autorenew'], false, 'cart') +
+              tplCard('Бар и напитки', '7 позиций · 2 поставщика', null, false, 'cart') +
+              tplCard('Овощи и зелень', '9 позиций · 2 поставщика', null, false, 'cart') +
+              tplCard('Фирменные соусы', 'Появится после 3 доставок', null, true, '') +
+            '</div></section>' +
+        '</div>' +
+      '</aside>' +
+    '</div>';
+  }
+
+  function homeScreen(drawer) {
+    var head = '<div class="ds-table-header-row" role="row">' +
+      '<div class="ds-table-header-cell c-w140" role="columnheader"><span class="ds-table-header-cell__label">Закупка</span></div>' +
+      '<div class="ds-table-header-cell c-flex" role="columnheader"><span class="ds-table-header-cell__label">Поставщики</span></div>' +
+      '<div class="ds-table-header-cell c-w140 c-right" role="columnheader"><span class="ds-table-header-cell__label">Сумма</span></div>' +
+      '<div class="ds-table-header-cell c-w180" role="columnheader"><span class="ds-table-header-cell__label">Статус</span></div>' +
+      '<div class="ds-table-header-cell c-w220" role="columnheader"><span class="ds-table-header-cell__label">Действие</span></div>' +
+    '</div>';
+    function r(num, sub, sup, sum, statusHtml, action) {
+      return '<div class="ds-table-content-row" role="row">' +
+        '<div class="ds-table-content-cell c-w140" role="cell"><span class="ds-table-content-cell__label">' + num + '</span><span class="scr__hint">' + sub + '</span></div>' +
+        '<div class="ds-table-content-cell c-flex" role="cell"><span class="ds-table-content-cell__label">' + sup + '</span></div>' +
+        '<div class="ds-table-content-cell c-w140 c-right" role="cell"><span class="ds-table-content-cell__label">' + sum + '</span></div>' +
+        '<div class="ds-table-content-cell c-w180" role="cell">' + statusHtml + '</div>' +
+        '<div class="ds-table-content-cell c-w220" role="cell">' + (action || '<span class="scr__hint">—</span>') + '</div>' +
+      '</div>';
+    }
+    var rows =
+      r('№ 4525', 'сегодня, 12:40', '2 поставщика · 3 позиции', '13 400,00 ₽', st('Черновик · активна', 'neutral'), btn('Продолжить', 'secondary', 'cart-draft')) +
+      r('№ 4524', 'сегодня', 'МясоТорг · 1 позиция', '5 240,00 ₽', st('Собирается', 'accent'), btn('Детали', 'text', 'order-change')) +
+      r('№ 4522', 'сегодня', 'Хлебозавод №5 · 3 позиции', '890,00 ₽', st('Ждёт подтверждения', 'neutral'), '<span class="scr__hint">ответ до 16:00</span>') +
+      r('№ 4521', 'сегодня', 'МясоТорг · 2 позиции', '11 480,00 ₽', st('Едет к вам · ETA 14:30', 'accent'), btn('Детали', 'secondary', 'order-change')) +
+      r('№ 4520', 'сегодня', 'Молочный дом · 2 позиции', '2 340,00 ₽', st('Срок истёк', 'warning'), btn('Разобраться', 'secondary', 'orders-unconfirmed')) +
+      r('№ 4519', 'сегодня', 'Овощная база Юг · 2 позиции', '1 920,00 ₽', st('Ждёт приёмки', 'positive'), btn('Принять', 'primary', 'acceptance')) +
+      r('№ 4517', '29.09', 'Хлебозавод №5 · 2 позиции', '1 240,00 ₽', st('Завершена', 'positive'), btn('Повторить', 'secondary', 'cart')) +
+      r('№ 4516', '27.09', 'Молочный дом · 1 позиция', '980,00 ₽', '<span class="ds-status ds-status--negative ds-status--text"><span class="ds-status__label">Отменена</span></span>', '');
+    var track = '<div class="sec-gap"><div class="scr__top"><h2 class="scr__sub">Доставка по закупке №4521 · «где машина»</h2></div>' +
+      card('<div class="ds-card__content"><div style="display:flex;gap:12px;align-items:center">' +
+        '<span class="material-icons" aria-hidden="true">local_shipping</span>' +
+        '<span>Водитель Сергей · ГАЗон 1234 · в пути, выехал со склада в 12:40</span>' +
+        '<span class="scr__fill"></span>' + st('ETA 14:30', 'accent') +
+      '</div></div>') + '</div>';
+    return scr('Закупки', '<span class="scr__fill"></span>' + btn('Новая закупка', 'primary', 'new-purchase'),
+      '<div class="sec-gap">' + track + card('<div class="ds-card__content"><div class="ds-table" role="table" aria-label="Закупки">' + head + rows + '</div></div>') + '</div>') + (drawer ? drawerHtml() : '');
+  }
+
+  function catRow(it) {
+    var stockMod = it.stock === 'в наличии' ? 'positive' : (it.stock === 'мало' ? 'warning' : 'negative');
+    return '<div class="ds-table-content-row" role="row" data-name="' + (it.name + ' ' + it.sup).toLowerCase() + '">' +
+      '<div class="ds-table-content-cell c-chk" role="cell"><span class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"' + (it.checked ? ' checked' : '') + '><span class="ds-checkbox__box material-icons" aria-hidden="true"></span><span class="ds-checkbox__label"></span></span></div>' +
+      '<div class="ds-table-content-cell c-flex" role="cell"><span class="ds-table-content-cell__label">' + it.name + ' <span class="scr__hint">· ' + it.unit + '</span></span></div>' +
+      '<div class="ds-table-content-cell c-w160" role="cell"><span class="ds-table-content-cell__label">' + it.sup + '</span></div>' +
+      '<div class="ds-table-content-cell c-w140 c-right" role="cell"><span class="ds-table-content-cell__label">' + it.price + '</span></div>' +
+      '<div class="ds-table-content-cell c-w140" role="cell"><span class="ds-status ds-status--' + stockMod + ' ds-status--text"><span class="ds-status__label">' + it.stock + '</span></span></div>' +
+    '</div>';
+  }
+
+  function catalogScreen(q) {
+    var query = (q || '').trim().toLowerCase();
+    var list = CATALOG.filter(function (it) { return !query || (it.name + ' ' + it.sup).toLowerCase().indexOf(query) > -1; });
+    var table = '<div class="ds-table" role="table" aria-label="Каталог товаров">' +
+      '<div class="ds-table-header-row" role="row">' +
+        '<div class="ds-table-header-cell c-chk" role="columnheader"></div>' +
+        '<div class="ds-table-header-cell c-flex" role="columnheader"><span class="ds-table-header-cell__label">Товар</span></div>' +
+        '<div class="ds-table-header-cell c-w160" role="columnheader"><span class="ds-table-header-cell__label">Поставщик</span></div>' +
+        '<div class="ds-table-header-cell c-w140 c-right" role="columnheader"><span class="ds-table-header-cell__label">Цена</span></div>' +
+        '<div class="ds-table-header-cell c-w140" role="columnheader"><span class="ds-table-header-cell__label">Наличие</span></div>' +
+      '</div>' + list.map(catRow).join('') + '</div>';
+    var body = list.length ? table :
+      '<div class="p-state"><span class="material-icons" aria-hidden="true">search_off</span><span class="p-state-text">Ничего не найдено: измените запрос или выберите категорию</span>' + btn('Сбросить поиск', 'secondary', 'catalog') + '</div>';
+    var search = '<div class="ds-search srch"><span class="ds-search__icon material-icons" aria-hidden="true">search</span><input class="srch__input cat-q" type="text" placeholder="Поиск по товару или поставщику" aria-label="Поиск по товару" value="' + (q || '') + '"></div>';
+    return scr('Каталог', '<span class="scr__fill"></span>' + st('3 в корзине', 'neutral') + btn('В корзину (3)', 'primary', 'cart'),
+      '<div class="sec-gap">' + search + card('<div class="ds-card__content">' + body + '</div>') + '</div>');
+  }
+
+  function cartScreen() {
+    var groups = CART.map(function (g) {
+      var rows = g.items.map(function (it) { return trow(it.name, '', it.q, it.price, it.sum); }).join('');
+      return '<div class="sec-gap"><div class="scr__top"><h2 class="scr__sub">' + g.sup + '</h2><span class="scr__fill"></span>' +
+        btn('Заказать только у него', 'text', 'home') + '</div>' +
+        card('<div class="ds-card__content"><div class="ds-table" role="table" aria-label="Товары у поставщика">' + thead4() + rows + '</div>' +
+        divider() + kv('Итого по поставщику', g.total) + '</div>') + '</div>';
+    }).join('');
+    var aside = card('<div class="ds-card__content">' +
+      kv('Позиций', '3 · у 2 поставщиков') + kv('МясоТорг', '11 480,00 ₽') + kv('Овощная база Юг', '1 920,00 ₽') +
+      divider() +
+      '<div class="kv kv--total"><span class="kv__k">К оформлению</span><span class="kv__v">13 400,00 ₽</span></div>' +
+      '<p class="scr__hint" style="margin:12px 0 0">Два пути: оформить напрямую у поставщиков корзины (или только у одного) — либо выйти на тендер по группе А, чтобы сравнить цены.</p>' +
+      '</div>');
+    return scr('Корзина', '<span class="scr__fill"></span>' + btn('Выйти на тендер (2 позиции группы А)', 'secondary', 'tender') + btn('Оформить заказ', 'primary', 'home'),
+      '<div class="scr__cols"><div class="scr__main sec-gap">' + groups + '</div>' +
+      '<aside class="scr__aside sec-gap"><div class="scr__top"><h2 class="scr__sub">Итого</h2></div>' + aside +
+      '<div class="rowfoot">' + btn('Показать черновик', 'text', 'cart-draft') + '</div></aside></div>');
+  }
+
+  function tenderPositions() {
+    return '<div class="ds-table-content-row" role="row">' +
+      '<div class="ds-table-content-cell c-flex" role="cell"><span class="ds-table-content-cell__label">Говядина, лопатка</span></div>' +
+      '<div class="ds-table-content-cell c-w120" role="cell"><span class="ds-table-content-cell__label">12 кг</span></div>' +
+      '<div class="ds-table-content-cell c-w140 c-right" role="cell"><span class="ds-table-content-cell__label">640,00 ₽</span></div>' +
+    '</div>' +
+    '<div class="ds-table-content-row" role="row">' +
+      '<div class="ds-table-content-cell c-flex" role="cell"><span class="ds-table-content-cell__label">Куриное филе</span></div>' +
+      '<div class="ds-table-content-cell c-w120" role="cell"><span class="ds-table-content-cell__label">10 кг</span></div>' +
+      '<div class="ds-table-content-cell c-w140 c-right" role="cell"><span class="ds-table-content-cell__label">380,00 ₽</span></div>' +
+    '</div>';
+  }
+
+  function tenderPosHead() {
+    return '<div class="ds-table-header-row" role="row">' +
+      '<div class="ds-table-header-cell c-flex" role="columnheader"><span class="ds-table-header-cell__label">Товар</span></div>' +
+      '<div class="ds-table-header-cell c-w120" role="columnheader"><span class="ds-table-header-cell__label">Кол-во</span></div>' +
+      '<div class="ds-table-header-cell c-w140 c-right" role="columnheader"><span class="ds-table-header-cell__label">Последняя цена</span></div>' +
+    '</div>';
+  }
+
+  function tenderScreen() {
+    var state = '<div class="p-state"><span class="material-icons p-spin" aria-hidden="true">autorenew</span>' +
+      '<span class="p-state-text">Собираем предложения: ответили <b>2 из 4</b> поставщиков.<br>Срок сбора задан закупщиком при запуске: сегодня до 18:00 (дефолт — до конца дня).</span></div>';
+    return scr('Тендер по группе А', '<span class="scr__fill"></span>' + st('Идёт сбор КП', 'warning'),
+      '<div class="scr__cols"><div class="scr__main sec-gap"><div class="scr__top"><h2 class="scr__sub">Позиции тендера</h2></div>' +
+      card('<div class="ds-card__content"><div class="ds-table" role="table" aria-label="Позиции тендера">' + tenderPosHead() + tenderPositions() + '</div></div>') +
+      '<p class="scr__hint">Запрос КП отправлен всем подключённым поставщикам, у кого есть эти позиции. «Последняя цена» — из прошлой закупки, для сравнения.</p></div>' +
+      '<aside class="scr__aside sec-gap"><div class="scr__top"><h2 class="scr__sub">Сбор предложений</h2></div>' +
+      card('<div class="ds-card__content">' + state + '</div>') +
+      '<div class="rowfoot">' + btn('Отменить тендер', 'text', 'cart') + btn('Посмотреть предложения (2)', 'primary', 'offers') + '</div></aside></div>');
+  }
+
+  function tenderEmptyScreen() {
+    var state = '<div class="p-state"><span class="material-icons" aria-hidden="true">schedule</span>' +
+      '<span class="p-state-text">Предложений в срок нет: до 18:00 никто из поставщиков не ответил.<br>Можно продлить сбор или вернуться к обычному заказу.</span></div>';
+    return scr('Тендер по группе А', '<span class="scr__fill"></span>' + st('Нет предложений', 'negative'),
+      '<div class="scr__cols"><div class="scr__main sec-gap"><div class="scr__top"><h2 class="scr__sub">Позиции тендера</h2></div>' +
+      card('<div class="ds-card__content"><div class="ds-table" role="table" aria-label="Позиции тендера">' + tenderPosHead() + tenderPositions() + '</div></div>') +
+      '<p class="scr__hint">Запрос КП отправлен всем подключённым поставщикам, у кого есть эти позиции.</p></div>' +
+      '<aside class="scr__aside sec-gap"><div class="scr__top"><h2 class="scr__sub">Результат сбора</h2></div>' +
+      card('<div class="ds-card__content">' + state + '</div>') +
+      '<div class="rowfoot">' + btn('Вернуться в корзину', 'secondary', 'cart') + btn('Продлить сбор до 20:00', 'primary', 'tender') + '</div></aside></div>');
+  }
+
+  function offersScreen(sel) {
+    var head = '<div class="ds-table-header-row" role="row">' +
+      '<div class="ds-table-header-cell c-flex" role="columnheader"><span class="ds-table-header-cell__label">Поставщик</span></div>' +
+      '<div class="ds-table-header-cell c-w160 c-right" role="columnheader"><span class="ds-table-header-cell__label">Говядина, 12 кг</span></div>' +
+      '<div class="ds-table-header-cell c-w160 c-right" role="columnheader"><span class="ds-table-header-cell__label">Филе, 10 кг</span></div>' +
+      '<div class="ds-table-header-cell c-w160 c-right" role="columnheader"><span class="ds-table-header-cell__label">Итого</span></div>' +
+    '</div>';
+    var body = OFFER_ROWS.map(function (r) {
+      var selected = (r.id === sel);
+      var supCell = r.sup + (r.id === 'pb' ? ' <span class="off-best">· лучший итог, −150 ₽</span>' : '');
+      return '<div class="ds-table-content-row off-row' + (selected ? ' is-selected' : '') + '" role="row" data-offer="' + r.id + '">' +
+        '<div class="ds-table-content-cell c-flex" role="cell"><span class="ds-table-content-cell__label">' + supCell + '</span></div>' +
+        '<div class="ds-table-content-cell c-w160 c-right" role="cell"><span class="ds-table-content-cell__label">' + r.a + '</span></div>' +
+        '<div class="ds-table-content-cell c-w160 c-right" role="cell"><span class="ds-table-content-cell__label">' + r.b + '</span></div>' +
+        '<div class="ds-table-content-cell c-w160 c-right" role="cell"><span class="ds-table-content-cell__label">' + r.total + '</span></div>' +
+      '</div>';
+    }).join('');
+    return scr('Предложения по тендеру', '<span class="scr__fill"></span>' + st('Ответили 3 из 4', 'accent') + btn('Перенести в заказ', 'primary', 'cart'),
+      '<div class="sec-gap">' + card('<div class="ds-card__content"><div class="ds-table" role="table" aria-label="Сводная таблица КП">' + head + body + '</div></div>') +
+      '<p class="scr__hint">Лучший итог — «Прайм Биф»: 11 330,00 ₽ (−150 ₽ к текущему). Клик по строке — выбрать предложение; выбранное переносится в заказ.</p></div>');
+  }
+
+  function orderChangeScreen() {
+    var rows = trow('Говядина, лопатка', '', '12 кг', '640,00 ₽', '7 680,00 ₽') +
+               trow('Куриное филе', '', '10 кг', '380,00 ₽', '3 800,00 ₽');
+    var change = card('<div class="ds-card__content">' +
+      '<div class="kv"><span class="kv__k">Куриное филе → Бедро куриное б/к</span><span class="kv__v">цена без изменений</span></div>' +
+      '<p class="scr__hint" style="margin:10px 0 0">Причина: филе закончилось у поставщика. Замена приедет только после подтверждения.</p>' +
+      '<div class="rowfoot" style="margin-top:14px">' + btn('Отклонить', 'secondary', 'home') + btn('Подтвердить замену', 'primary', 'home') + '</div>' +
+      '</div>');
+    return scr('Заказ №4521 · МясоТорг', '<span class="scr__fill"></span>' + st('Едет к вам · ETA 14:30', 'accent'),
+      '<div class="scr__cols"><div class="scr__main sec-gap"><div class="scr__top"><h2 class="scr__sub">Состав заказа</h2></div>' +
+      card('<div class="ds-card__content"><div class="ds-table" role="table" aria-label="Состав заказа">' + thead4() + rows + '</div></div>') + '</div>' +
+      '<aside class="scr__aside sec-gap"><div class="scr__top"><h2 class="scr__sub">Запрос замены</h2></div>' + change + '</aside></div>');
+  }
+
+  function acceptanceScreen() {
+    var ahead = '<div class="ds-table-header-row" role="row">' +
+      '<div class="ds-table-header-cell c-flex" role="columnheader"><span class="ds-table-header-cell__label">Товар</span></div>' +
+      '<div class="ds-table-header-cell c-w120" role="columnheader"><span class="ds-table-header-cell__label">Заказано</span></div>' +
+      '<div class="ds-table-header-cell c-w120" role="columnheader"><span class="ds-table-header-cell__label">Факт</span></div>' +
+      '<div class="ds-table-header-cell c-w180" role="columnheader"><span class="ds-table-header-cell__label">Статус</span></div>' +
+    '</div>';
+    var rows =
+      '<div class="ds-table-content-row" role="row">' +
+        '<div class="ds-table-content-cell c-flex" role="cell"><span class="ds-table-content-cell__label">Томаты черри</span></div>' +
+        '<div class="ds-table-content-cell c-w120" role="cell"><span class="ds-table-content-cell__label">6 кг</span></div>' +
+        '<div class="ds-table-content-cell c-w120" role="cell"><span class="ds-table-content-cell__label">6 кг</span></div>' +
+        '<div class="ds-table-content-cell c-w180" role="cell">' + st('ОК', 'positive') + '</div>' +
+      '</div>' +
+      '<div class="ds-table-content-row" role="row">' +
+        '<div class="ds-table-content-cell c-flex" role="cell"><span class="ds-table-content-cell__label">Петрушка</span></div>' +
+        '<div class="ds-table-content-cell c-w120" role="cell"><span class="ds-table-content-cell__label">1 кг</span></div>' +
+        '<div class="ds-table-content-cell c-w120" role="cell"><span class="ds-table-content-cell__label">—</span></div>' +
+        '<div class="ds-table-content-cell c-w180" role="cell">' + st('Расхождение', 'negative') + '</div>' +
+      '</div>';
+    var aside = card('<div class="ds-card__content">' + kv('Поставщик', SUPPLIERS.ov) + kv('Поставка', '№ 4519 · сегодня 11:20') + divider() +
+      kv('Позиций', '2 · расхождений: 1') +
+      '<div class="rowfoot" style="margin-top:14px">' + btn('Принять поставку', 'primary', 'accepted') + '</div></div>');
+    return scr('Приёмка поставки №4519', '<span class="scr__fill"></span>' + st('Доставлено', 'positive'),
+      '<div class="scr__cols"><div class="scr__main sec-gap"><div class="scr__top"><h2 class="scr__sub">Состав поставки</h2></div>' +
+      card('<div class="ds-card__content"><div class="ds-table" role="table" aria-label="Состав поставки">' + ahead + rows + '</div></div>') +
+      '<p class="scr__hint">Расхождение зафиксируется в истории поставщика; накладная уйдёт в учёт с фактическим составом.</p></div>' +
+      '<aside class="scr__aside sec-gap"><div class="scr__top"><h2 class="scr__sub">Поставка</h2></div>' + aside + '</aside></div>');
+  }
+
+  function acceptedScreen() {
+    var body = card('<div class="ds-card__content">' +
+      '<div class="scr__top">' + st('Поставка принята', 'positive') + '</div>' +
+      kv('Накладная', '№ 45123 · загружена в iiko') + kv('Поставщик', SUPPLIERS.ov) + kv('Сумма', '1 920,00 ₽') +
+      '<p class="scr__hint" style="margin:10px 0 0">Накладная доступна в учётной системе ресторана; расхождение (петрушка) отмечено в истории поставщика.</p>' +
+      '<div class="rowfoot" style="margin-top:14px">' + btn('К закупкам', 'secondary', 'home') + btn('Повторить закупку', 'primary', 'cart') + '</div>' +
+      '</div>');
+    return scr('Поставка принята', '<span class="scr__fill"></span>', body);
+  }
+
+  /* ── Экраны: поставщик ── */
+  function supOrdersScreen() {
+    var head = '<div class="ds-table-header-row" role="row">' +
+      '<div class="ds-table-header-cell c-w140" role="columnheader"><span class="ds-table-header-cell__label">Заказ</span></div>' +
+      '<div class="ds-table-header-cell c-flex" role="columnheader"><span class="ds-table-header-cell__label">Ресторан</span></div>' +
+      '<div class="ds-table-header-cell c-w140 c-right" role="columnheader"><span class="ds-table-header-cell__label">Сумма</span></div>' +
+      '<div class="ds-table-header-cell c-w180" role="columnheader"><span class="ds-table-header-cell__label">Статус</span></div>' +
+      '<div class="ds-table-header-cell c-w220" role="columnheader"><span class="ds-table-header-cell__label">Действие</span></div>' +
+    '</div>';
+    var rows =
+      '<div class="ds-table-content-row" role="row">' +
+        '<div class="ds-table-content-cell c-w140" role="cell"><span class="ds-table-content-cell__label">№ 4521</span></div>' +
+        '<div class="ds-table-content-cell c-flex" role="cell"><span class="ds-table-content-cell__label">Ромашка · подтвердить до 16:00</span></div>' +
+        '<div class="ds-table-content-cell c-w140 c-right" role="cell"><span class="ds-table-content-cell__label">11 480,00 ₽</span></div>' +
+        '<div class="ds-table-content-cell c-w180" role="cell">' + st('Новый', 'warning') + '</div>' +
+        '<div class="ds-table-content-cell c-w220" role="cell">' + btn('Подтвердить заказ', 'primary', 'sup-ship') + '</div>' +
+      '</div>' +
+      '<div class="ds-table-content-row" role="row">' +
+        '<div class="ds-table-content-cell c-w140" role="cell"><span class="ds-table-content-cell__label">№ 4518</span></div>' +
+        '<div class="ds-table-content-cell c-flex" role="cell"><span class="ds-table-content-cell__label">Луна</span></div>' +
+        '<div class="ds-table-content-cell c-w140 c-right" role="cell"><span class="ds-table-content-cell__label">6 400,00 ₽</span></div>' +
+        '<div class="ds-table-content-cell c-w180" role="cell">' + st('Доставлен', 'positive') + '</div>' +
+        '<div class="ds-table-content-cell c-w220" role="cell">' + btn('Документы', 'secondary', 'sup-docs') + '</div>' +
+      '</div>';
+    return scr('Входящие заказы', '<span class="scr__fill"></span>' + st('МясоТорг', 'neutral'),
+      '<div class="sec-gap">' + card('<div class="ds-card__content"><div class="ds-table" role="table" aria-label="Входящие заказы">' + head + rows + '</div></div>') + '</div>');
+  }
+
+  function supOfferScreen(sent) {
+    var rows = '<div class="ds-list-container__item">' +
+        '<div class="ds-list-container__content"><span class="ds-list-item__text">Говядина, лопатка</span><span class="ds-list-item__label-down">12 кг</span></div>' +
+        '<div class="ds-list-container__element-right"><div class="fld ds-input"><div class="ds-input__frame"><div class="ds-input__content"><input class="ds-input__field" type="text" value="615,00 ₽" aria-label="Цена: говядина"></div></div></div></div>' +
+      '</div>' + divider() +
+      '<div class="ds-list-container__item">' +
+        '<div class="ds-list-container__content"><span class="ds-list-item__text">Куриное филе</span><span class="ds-list-item__label-down">10 кг</span></div>' +
+        '<div class="ds-list-container__element-right"><div class="fld ds-input"><div class="ds-input__frame"><div class="ds-input__content"><input class="ds-input__field" type="text" value="395,00 ₽" aria-label="Цена: филе"></div></div></div></div>' +
+      '</div>';
+    var foot = sent
+      ? '<div class="scr__top">' + st('КП отправлено · ждём решения', 'accent') + '</div>' + btn('Отправить КП', 'primary', null, true)
+      : btn('Отправить КП', 'primary', null, false);
+    var aside = card('<div class="ds-card__content">' + kv('Ресторан', 'Ромашка') + kv('Срок подачи', 'до 18:00') + divider() + kv('Позиций', '2 · группа А') +
+      '<div class="rowfoot" style="margin-top:14px">' + foot + '</div></div>');
+    return scr('Запрос КП · тендер группы А', '<span class="scr__fill"></span>' + st('МясоТорг', 'neutral'),
+      '<div class="scr__cols"><div class="scr__main sec-gap"><div class="scr__top"><h2 class="scr__sub">Позиции запроса и цены</h2></div>' + card('<div class="ds-card__content"><div class="ds-list-container">' + rows + '</div></div>') + '</div>' +
+      '<aside class="scr__aside sec-gap"><div class="scr__top"><h2 class="scr__sub">Запрос</h2></div>' + aside + '</aside></div>');
+  }
+
+  function supShipScreen(ship) {
+    var steps = ['Собрано', 'В пути', 'Доставлено'];
+    var listRows = steps.map(function (s, i) {
+      var right = i < ship ? st('готово', 'positive') : (i === ship ? st('текущий', 'accent') : '<span class="ds-list-item__label-down">ожидает</span>');
+      return lrow(s, '', right) + (i < steps.length - 1 ? divider() : '');
+    }).join('');
+    var action = ship < 2
+      ? btn('Отметить: ' + steps[ship + 1].toLowerCase(), 'primary', null, false)
+      : btn('Передать документы', 'primary', 'sup-docs');
+    var aside = card('<div class="ds-card__content">' + kv('Заказ', '№ 4521 · Ромашка') + kv('Сумма', '11 480,00 ₽') + kv('Позиций', '2') +
+      '<div class="rowfoot" style="margin-top:14px">' + action + '</div></div>');
+    return scr('Отгрузка заказа №4521', '<span class="scr__fill"></span>' + st(ship === 2 ? 'Доставлено' : steps[ship], ship === 2 ? 'positive' : 'accent'),
+      '<div class="scr__cols"><div class="scr__main sec-gap"><div class="scr__top"><h2 class="scr__sub">Этапы поставки (отмечает поставщик)</h2></div>' + card('<div class="ds-card__content"><div class="ds-list-container">' + listRows + '</div></div>') +
+      '<p class="scr__hint">Статусы видны ресторану в его заказах в реальном времени — без звонков.</p></div>' +
+      '<aside class="scr__aside sec-gap"><div class="scr__top"><h2 class="scr__sub">Итого</h2></div>' + aside + '</aside></div>');
+  }
+
+  function supDocsScreen(sent) {
+    var rows = trow('Говядина, лопатка', '', '12 кг', '615,00 ₽', '7 380,00 ₽') +
+               trow('Куриное филе', '', '10 кг', '395,00 ₽', '3 950,00 ₽');
+    var foot = sent
+      ? '<div class="scr__top">' + st('Накладная в iiko у ресторана · поставка закрыта', 'positive') + '</div>' + btn('Передать в учёт ресторана', 'primary', null, true)
+      : btn('Передать в учёт ресторана', 'primary', null, false);
+    var aside = card('<div class="ds-card__content">' + kv('Накладная', '№ 45123') + kv('Заказ', '№ 4521 · Ромашка') + divider() + kv('Итого', '11 330,00 ₽') +
+      '<div class="rowfoot" style="margin-top:14px">' + foot + '</div></div>');
+    return scr('Документы по заказу №4521', '<span class="scr__fill"></span>' + st('МясоТорг', 'neutral'),
+      '<div class="scr__cols"><div class="scr__main sec-gap"><div class="scr__top"><h2 class="scr__sub">Накладная</h2></div>' + card('<div class="ds-card__content"><div class="ds-table" role="table" aria-label="Накладная">' + thead4() + rows + '</div></div>') + '</div>' +
+      '<aside class="scr__aside sec-gap"><div class="scr__top"><h2 class="scr__sub">Итого</h2></div>' + aside + '</aside></div>');
+  }
+
+  function homeEmptyScreen() {
+    var state = '<div class="p-state"><span class="material-icons" aria-hidden="true">storefront</span>' +
+      '<span class="p-state-text">Пока нет ни одной закупки: создайте первую — по шаблону (когда появятся) или с нуля из каталога; после сбора — оформить напрямую или выйти на тендер.<br>Поставщики ещё не подключены — подключение через команду платформы.</span></div>';
+    return scr('Закупки', '<span class="scr__fill"></span>' + btn('Создать первую закупку', 'primary', 'new-purchase'),
+      card('<div class="ds-card__content">' + state + '</div>'));
+  }
+
+  function cartDraftScreen() {
+    var rows = '';
+    CART.forEach(function (g) { g.items.forEach(function (it) { rows += trow(it.name, it.sup, it.q, it.price, it.sum); }); });
+    var aside = card('<div class="ds-card__content">' +
+      kv('Закупка', '№ 4525') + kv('Сохранён', 'сегодня, 12:40 — автоматически') + kv('Позиций', '3 · у 2 поставщиков') + divider() +
+      '<div class="kv kv--total"><span class="kv__k">Сумма</span><span class="kv__v">13 400,00 ₽</span></div>' +
+      '<p class="scr__hint" style="margin:10px 0 0">Состав и цены сохранились — продолжите оформление или удалите черновик.</p>' +
+      '<div class="rowfoot" style="margin-top:14px">' + btn('Удалить черновик', 'text', 'home') + btn('Продолжить оформление', 'primary', 'cart') + '</div></div>');
+    return scr('Корзина: черновик закупки', '<span class="scr__fill"></span>' + st('Черновик', 'warning'),
+      '<div class="scr__cols"><div class="scr__main sec-gap"><div class="scr__top"><h2 class="scr__sub">Состав черновика</h2></div>' +
+      card('<div class="ds-card__content"><div class="ds-table" role="table" aria-label="Состав черновика">' + thead4() + rows + '</div></div>') + '</div>' +
+      '<aside class="scr__aside sec-gap"><div class="scr__top"><h2 class="scr__sub">Итого</h2></div>' + aside + '</aside></div>');
+  }
+
+  function ordersUnconfirmedScreen() {
+    var alert = '<div class="p-state"><span class="material-icons" aria-hidden="true">notifications_active</span>' +
+      '<span class="p-state-text">Поставщик не подтвердил заказ №4520 (Молочный дом) до 16:00.<br>Напомните поставщику — или выберите другого: состав заказа сохранится.</span></div>';
+    var aside = card('<div class="ds-card__content">' +
+      kv('Заказ', '№ 4520 · Молочный дом') + kv('Сумма', '2 340,00 ₽') + kv('Срок подтверждения', 'истёк — сегодня 16:00') + divider() +
+      '<div class="sec-gap" style="margin-top:14px">' + btn('Напомнить поставщику', 'primary', 'home') + btn('Выбрать другого (в каталог)', 'secondary', 'catalog') + '</div>' +
+      '</div>');
+    return scr('Заказ №4520 · Молочный дом', '<span class="scr__fill"></span>' + st('Не подтверждён в срок', 'warning'),
+      '<div class="scr__cols"><div class="scr__main sec-gap"><div class="scr__top"><h2 class="scr__sub">Уведомление</h2></div>' + card('<div class="ds-card__content">' + alert + '</div>') + '</div>' +
+      '<aside class="scr__aside sec-gap"><div class="scr__top"><h2 class="scr__sub">Закупка</h2></div>' + aside + '</aside></div>');
+  }
+
+  function statusModelScreen() {
+    var steps = [
+      ['Черновик · активна', 'neutral', 'Закупка собирается: можно продолжить и оформить или удалить.'],
+      ['Ждёт подтверждения', 'neutral', 'Заказы отправлены поставщикам — ждём подтверждения до указанного срока.'],
+      ['Срок истёк', 'warning', 'Поставщик не подтвердил вовремя: напомнить или выбрать другого.'],
+      ['Собирается', 'accent', 'Поставщик подтвердил и комплектует заказ.'],
+      ['Едет к вам', 'accent', 'В пути: видны «где машина» и ETA.'],
+      ['Ждёт приёмки', 'positive', 'Доставлена: примите по факту — расхождения фиксируются.'],
+      ['Завершена', 'positive', 'Принята: накладная ушла в учётную систему; закупку можно повторить.'],
+      ['Отменена', 'negative', 'Закупка отменена: видна причина; позиции можно взять в новую закупку.']
+    ];
+    var list = steps.map(function (s, i) {
+      return '<div class="st-row"><div class="st-row__chip">' + st(s[0], s[1]) + '</div><div class="st-row__desc">' + s[2] + '</div></div>' + (i < steps.length - 1 ? divider() : '');
+    }).join('');
+    return scr('Статусы закупки — модель (пример)', '<span class="scr__fill"></span>' + btn('К закупкам', 'text', 'home'),
+      '<div class="sec-gap">' + card('<div class="ds-card__content"><div class="ds-list-container st-list">' + list + '</div></div>') +
+      '<p class="scr__hint">Справочный экран для ревью. Сторона поставщика: новый → подтверждён → собран → в пути → доставлен → документы переданы.</p></div>');
+  }
+
+  /* ── Сборка экрана ── */
+  var frame = document.getElementById('frame');
+  var note = document.getElementById('note');
+  var sel = document.getElementById('state-select');
+  var counter = document.getElementById('state-counter');
+
+  function screenHtml(s) {
+    switch (s.screen) {
+      case 'home': return homeScreen();
+      case 'new-purchase': return homeScreen(true);
+      case 'home-empty': return homeEmptyScreen();
+      case 'catalog': return catalogScreen(VIEW.query);
+      case 'cart': return cartScreen();
+      case 'cart-draft': return cartDraftScreen();
+      case 'tender': return tenderScreen();
+      case 'tender-empty': return tenderEmptyScreen();
+      case 'offers': return offersScreen(VIEW.offerSel);
+      case 'orders-unconfirmed': return ordersUnconfirmedScreen();
+      case 'order-change': return orderChangeScreen();
+      case 'acceptance': return acceptanceScreen();
+      case 'accepted': return acceptedScreen();
+      case 'status-model': return statusModelScreen();
+      case 'sup-orders': return supOrdersScreen();
+      case 'sup-offer': return supOfferScreen(VIEW.offerSent);
+      case 'sup-ship': return supShipScreen(VIEW.ship);
+      case 'sup-docs': return supDocsScreen(VIEW.docsSent);
+      default: return '';
+    }
+  }
+
+  function render() {
+    var s = scenById(VIEW.id);
+    if (typeof s.q === 'string') { VIEW.query = s.q; }
+    frame.innerHTML = screenHtml(s);
+
+    note.innerHTML = '<div class="note__group">' + s.group + '</div>' +
+      '<h2 class="note__title">' + s.title + '</h2>' +
+      '<p><span class="note__k">Что на экране:</span> ' + s.what + '</p>' +
+      (s.why ? '<p><span class="note__k">Почему так:</span> ' + s.why + '</p>' : '');
+
+    sel.value = s.id;
+    counter.textContent = (SCEN.indexOf(s) + 1) + ' / ' + SCEN.length;
+    try { history.replaceState(null, '', '?state=' + s.id + (document.body.classList.contains('ui-clean') ? '&ui=0' : '')); } catch (err) {}
+  }
+
+  function go(id) {
+    if (id !== VIEW.id) { VIEW.query = ''; }
+    VIEW.id = id;
+    /* транзиентные состояния экранов поставщика сбрасываются при входе */
+    VIEW.ship = 0; VIEW.offerSent = false; VIEW.docsSent = false;
+    render();
+  }
+
+  /* Переключатель состояний: меню + стрелки + клавиатура */
+  SCEN.forEach(function (s) {
+    var o = document.createElement('option');
+    o.value = s.id;
+    o.textContent = s.group + ' · ' + s.title;
+    sel.appendChild(o);
+  });
+  sel.addEventListener('change', function () { go(sel.value); });
+  document.getElementById('prev-btn').addEventListener('click', function () { step(-1); });
+  document.getElementById('next-btn').addEventListener('click', function () { step(1); });
+  function step(delta) {
+    var i = SCEN.indexOf(scenById(VIEW.id));
+    i = Math.min(SCEN.length - 1, Math.max(0, i + delta));
+    go(SCEN[i].id);
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT')) return;
+    if (e.key === 'ArrowLeft') step(-1);
+    if (e.key === 'ArrowRight') step(1);
+  });
+
+  /* Подсказки ДС: кнопка в шапке или ?hints=1 */
+  var hints = document.getElementById('hints');
+  var hintsBtn = document.getElementById('hints-btn');
+  hintsBtn.addEventListener('click', function () {
+    hints.classList.toggle('is-open');
+    hintsBtn.setAttribute('aria-pressed', hints.classList.contains('is-open') ? 'true' : 'false');
+  });
+
+  /* Переходы и живые действия: делегированный обработчик по #frame */
+  frame.addEventListener('click', function (e) {
+    if (!e.target.closest) { return; }
+    /* выбор предложения в сводной таблице КП */
+    var off = e.target.closest('[data-offer]');
+    if (off) { VIEW.offerSel = off.getAttribute('data-offer'); render(); return; }
+    /* «Отметить: …» в отгрузке поставщика */
+    var ship = e.target.closest('[data-ship]');
+    if (ship) { VIEW.ship = Math.min(2, VIEW.ship + 1); render(); return; }
+    /* отправка КП / передача документов */
+    var send = e.target.closest('[data-send]');
+    if (send) { VIEW[send.getAttribute('data-send')] = true; render(); return; }
+    var target = e.target.closest('[data-go]');
+    if (!target) { return; }
+    go(target.getAttribute('data-go'));
+  });
+  /* кнопки «Отметить: …» и «Отправить/Передать» — привязываем live-действия по факту рендера */
+  function bindLive() {
+    Array.prototype.forEach.call(frame.querySelectorAll('button:not([data-go]):not([disabled])'), function (b) {
+      var label = b.textContent || '';
+      if (label.indexOf('Отметить') === 0) { b.setAttribute('data-ship', '1'); }
+      else if (label.indexOf('Отправить КП') === 0) { b.setAttribute('data-send', 'offerSent'); }
+      else if (label.indexOf('Передать в учёт') === 0) { b.setAttribute('data-send', 'docsSent'); }
+    });
+  }
+  var renderOrig = render;
+  render = function () { renderOrig(); bindLive(); };
+
+  /* Живой поиск в каталоге: фильтруем строки на месте, чтобы не сбрасывать фокус и курсор */
+  frame.addEventListener('input', function (e) {
+    if (!e.target.classList || !e.target.classList.contains('cat-q')) { return; }
+    var q = e.target.value.trim().toLowerCase();
+    VIEW.query = e.target.value;
+    var rows = frame.querySelectorAll('.ds-table-content-row');
+    var shown = 0;
+    Array.prototype.forEach.call(rows, function (r) {
+      var hit = !q || (r.getAttribute('data-name') || '').indexOf(q) > -1;
+      r.hidden = !hit;
+      if (hit) { shown++; }
+    });
+    var wrap = frame.querySelector('.ds-card__content');
+    if (!wrap) { return; }
+    var none = wrap.querySelector('.p-state');
+    if (none) { wrap.removeChild(none); }
+    if (!shown) {
+      var state = document.createElement('div');
+      state.className = 'p-state';
+      state.innerHTML = '<span class="material-icons" aria-hidden="true">search_off</span><span class="p-state-text">Ничего не найдено: измените запрос или выберите категорию</span>';
+      wrap.appendChild(state);
+    }
+  });
+
+  /* ── Старт: состояние из адреса (?state=<id>); обвязка скрывается по ?ui=0 ── */
+  var params = new URLSearchParams(location.search);
+  if (params.get('ui') === '0') { document.body.classList.add('ui-clean'); }
+  if (params.get('hints') === '1') { hints.classList.add('is-open'); }
+  var start = params.get('state') || (location.hash ? location.hash.replace('#', '') : '');
+  VIEW.id = scenById(start).id;
+  render();
+})();
+</script>
+</body>
+</html>

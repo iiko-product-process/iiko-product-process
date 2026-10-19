@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: С чего начать работу с ДС
+    url: https://github.com/iiko-DS/DS/blob/main/start-here.md
+    about: Что поставить, что склонировать, что запустить
+  - name: Инструкция для дизайнера (полная)
+    url: https://github.com/iiko-DS/DS/blob/main/readme.md
+    about: Как собираются страницы, где что править, частые ошибки

@@ -1,0 +1,65 @@
+.ds-input-number-but-icon {
+  min-height: 56px;
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-size-1x);
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-input-number-but-icon__label {
+  font-size: var(--ds-font-body-m-16-normal-regular-size);
+  line-height: var(--ds-font-body-m-16-normal-regular-line);
+  letter-spacing: var(--ds-font-body-m-16-normal-regular-spacing);
+  font-weight: var(--ds-font-body-m-16-normal-regular-weight);
+  color: var(--ds-color-form-field-filled-default-input-text-color, #333333);
+  white-space: nowrap;
+}
+.ds-input-number-but-icon__icon {
+  flex-shrink: 0;
+  width: var(--ds-size-5x);
+  height: var(--ds-size-5x);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ds-input-number-but-icon__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ds-input-number-but-icon__icon svg path {
+  fill: currentColor;
+}
+.ds-input-number-but-icon__container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--ds-size-1x);
+}
+.ds-input-number-but-icon__button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--ds-button-icon-gap, 8px);
+  padding: var(--ds-button-icon-m-size-pad-top, 8px) var(--ds-button-icon-m-size-pad-right, 8px) var(--ds-button-icon-m-size-pad-bottom, 8px) var(--ds-button-icon-m-size-pad-left, 8px);
+  border-radius: var(--ds-button-icon-border-radius, 8px);
+  background: var(--ds-color-button-icon-neutral-filled-default-background, #ffffff);
+  box-shadow: var(--ds-shadow-shadows-01-dp-sl);
+}
+.ds-input-number-but-icon__text {
+  height: var(--ds-size-4x);
+  display: flex;
+  flex-direction: row;
+}
+.ds-input-number-but-icon__support-text {
+  display: flex;
+  flex-direction: row;
+  background: var(--ds-color-form-field-filled-default-support-text-color, #616161);
+  font-size: var(--ds-font-caption-l-12-normal-regular-size);
+  line-height: var(--ds-font-caption-l-12-normal-regular-line);
+  letter-spacing: var(--ds-font-caption-l-12-normal-regular-spacing);
+  font-weight: var(--ds-font-caption-l-12-normal-regular-weight);
+  color: var(--ds-color-form-field-filled-default-support-text-color, #616161);
+}
+

@@ -1,0 +1,57 @@
+.ds-dialog-header {
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+  background: var(--ds-color-dialog-background, #ffffff);
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-dialog-header__label {
+  font-size: var(--ds-font-header-s-20-normal-medium-size);
+  line-height: var(--ds-font-header-s-20-normal-medium-line);
+  letter-spacing: var(--ds-font-header-s-20-normal-medium-spacing);
+  font-weight: var(--ds-font-header-s-20-normal-medium-weight);
+  color: var(--ds-color-dialog-header-title-color, #333333);
+  white-space: nowrap;
+}
+.ds-dialog-header__icon {
+  flex-shrink: 0;
+  width: var(--ds-size-6x);
+  height: var(--ds-size-6x);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ds-dialog-header__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ds-dialog-header__icon svg path {
+  fill: currentColor;
+}
+.ds-dialog-header__title-container {
+  display: flex;
+  flex-direction: row;
+  gap: var(--ds-dialog-header-gap, 8px);
+}
+.ds-dialog-header__description {
+  display: flex;
+  flex-direction: row;
+  background: var(--ds-color-dialog-header-desc-color, #616161);
+  font-size: var(--ds-font-body-m-16-normal-regular-size);
+  line-height: var(--ds-font-body-m-16-normal-regular-line);
+  letter-spacing: var(--ds-font-body-m-16-normal-regular-spacing);
+  font-weight: var(--ds-font-body-m-16-normal-regular-weight);
+  color: var(--ds-color-dialog-header-desc-color, #616161);
+}
+.ds-dialog-header__divider {
+  height: var(--ds-size-0-25x);
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
+.ds-dialog-header--text {
+  color: var(--ds-color-dialog-header-title-color, #333333);
+}
+

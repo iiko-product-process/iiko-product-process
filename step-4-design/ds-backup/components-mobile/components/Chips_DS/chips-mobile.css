@@ -1,0 +1,48 @@
+/* ============================================================
+   iiko DS Mobile — Chips (чипы)
+   ------------------------------------------------------------
+   Что меняется
+   ------------
+   1. Сам чип НЕ растёт: 32 px — это базовое значение и у MD3
+      (container-height 32 dp у всех четырёх типов), и у Angular Material
+      (32 при density 0; 28 и 24 — это плотности, которых на мобиле нет).
+      Шкалы large/small у чипов не существует ни там, ни там.
+   2. Растёт область нажатия: 48 x 48 у каждого чипа невидимым слоем —
+      общее правило Material (у чипа-ввода MD3 прямо задаёт 48 dp).
+   3. Набор чипов при переполнении прокручивается по горизонтали: MD3
+      требует, чтобы чипы всегда были набором, и на узком экране набор
+      скроллится. Полоса прокрутки скрыта.
+
+   Источники: рекомендации платформ
+   (iOS HIG компонента не имеет — страница /chips отдаёт 404).
+   Подключение: components-mobile/components/index.css
+   ============================================================ */
+
+[data-mode="mobile"] .ds-chips {
+  position: relative;
+}
+
+[data-mode="mobile"] .ds-chips::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  height: 100%;
+  min-width: 48px;
+  min-height: 48px;
+  transform: translate(-50%, -50%);
+  background: none;
+  border-radius: inherit;
+}
+
+[data-mode="mobile"] .ds-chips-group {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+[data-mode="mobile"] .ds-chips-group::-webkit-scrollbar {
+  height: 0;
+}

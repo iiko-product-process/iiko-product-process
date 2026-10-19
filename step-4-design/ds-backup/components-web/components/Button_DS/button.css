@@ -1,0 +1,231 @@
+/* ============================================================
+   iiko DS — Button (кнопка)
+   Источник: Figma, страница «🔵Готово 🧾 → Button»
+   Варианты: Size XS/S/M · Style Accent/Neutral/Positive/Negative/Warning/Disable
+             Type Filled/Outlined/Text · State Default/Hover/Press/Disable
+   Все значения — только токены из tokens.css
+   ============================================================ */
+
+.ds-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: var(--ds-radius-2x);            /* 8px */
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-size: var(--ds-typography-font-size-3-5x); /* 14px */
+  font-weight: var(--ds-typography-font-weight-medium); /* 500 */
+  letter-spacing: var(--ds-typography-letter-spacing-s); /* 0.5px */
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.ds-btn:focus-visible {
+  outline: 2px solid var(--ds-palette-accent-300);
+  outline-offset: 2px;
+}
+
+.ds-btn:disabled,
+.ds-btn--disabled {
+  pointer-events: none;
+}
+
+/* ── Размеры ─────────────────────────────────────────────── */
+
+.ds-btn--xs {
+  height: 24px;
+  padding: 4px 6px;
+  gap: var(--ds-space-1x);                        /* 4px */
+  font-size: var(--ds-typography-font-size-3x);   /* 12px */
+}
+.ds-btn--xs /* Контейнер текста (Figma: «Button Container» — HUG, выравнивание по центру).
+   Своей типографики нет: размер/вес/цвет наследуются от .ds-btn */
+.ds-btn__label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.ds-btn__icon { font-size: 16px; }
+
+.ds-btn--s {
+  height: 28px;
+  padding: 4px 8px;
+  gap: var(--ds-space-1x);
+}
+.ds-btn--s .ds-btn__icon { font-size: 20px; }
+
+.ds-btn--m {
+  height: 36px;
+  padding: 8px 12px;
+  gap: var(--ds-space-2x);                        /* 8px */
+}
+.ds-btn--m .ds-btn__icon { font-size: 20px; }
+
+/* ── Группа кнопок (Button group из Figma) ───────────────── */
+
+.ds-btn-group {
+  display: flex;
+}
+.ds-btn-group--horizontal { flex-direction: row; gap: var(--ds-button-group-gap); }    /* 8px */
+.ds-btn-group--vertical   { flex-direction: column; gap: var(--ds-button-group-gap); } /* 8px */
+.ds-btn-group--margins {
+  padding: var(--ds-button-group-margins-pad-top) var(--ds-button-group-margins-pad-right); /* 8px 16px */
+}
+
+/* ── Иконки ──────────────────────────────────────────────── */
+
+.ds-btn__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* ── Стили: Accent ───────────────────────────────────────── */
+
+.ds-btn--accent.ds-btn--filled {
+  background: var(--ds-color-button-accent-default);   /* #448AFF */
+  color: var(--ds-color-text-inversive);               /* #FFFFFF */
+}
+.ds-btn--accent.ds-btn--filled:hover  { background: var(--ds-color-button-accent-hover); }   /* #3969D5 */
+.ds-btn--accent.ds-btn--filled:active { background: var(--ds-color-button-accent-press); }   /* #2651B5 */
+
+.ds-btn--accent.ds-btn--outlined {
+  background: var(--ds-color-button-accent-lite-default); /* #FFFFFF */
+  border-color: var(--ds-color-button-accent-default);
+  color: var(--ds-color-button-accent-default);
+}
+.ds-btn--accent.ds-btn--outlined:hover  { background: var(--ds-color-button-accent-lite-hover); } /* #F5F9FF */
+.ds-btn--accent.ds-btn--outlined:active { background: var(--ds-color-button-accent-lite-press); } /* #E8F0FF */
+
+.ds-btn--accent.ds-btn--text {
+  background: var(--ds-color-button-accent-lite-default);
+  color: var(--ds-color-button-accent-default);
+}
+.ds-btn--accent.ds-btn--text:hover  { background: var(--ds-color-button-accent-lite-hover); }
+.ds-btn--accent.ds-btn--text:active { background: var(--ds-color-button-accent-lite-press); }
+
+/* ── Стили: Neutral ──────────────────────────────────────── */
+
+.ds-btn--neutral.ds-btn--filled {
+  background: var(--ds-color-button-neutral-default); /* #FFFFFF */
+  color: var(--ds-color-text-primary);                /* #333333 */
+}
+.ds-btn--neutral.ds-btn--filled:hover  { background: var(--ds-color-button-neutral-hover); } /* #FAFAFA */
+.ds-btn--neutral.ds-btn--filled:active { background: var(--ds-color-button-neutral-press); } /* #EBEBEB */
+
+.ds-btn--neutral.ds-btn--outlined {
+  background: var(--ds-color-button-neutral-default);
+  border-color: var(--ds-color-stroke-default);      /* #E0E0E0 */
+  color: var(--ds-color-text-primary);
+}
+.ds-btn--neutral.ds-btn--outlined:hover  { background: var(--ds-color-button-neutral-hover); }
+.ds-btn--neutral.ds-btn--outlined:active { background: var(--ds-color-button-neutral-press); }
+
+.ds-btn--neutral.ds-btn--text {
+  background: var(--ds-color-button-neutral-default);
+  color: var(--ds-color-text-primary);
+}
+.ds-btn--neutral.ds-btn--text:hover  { background: var(--ds-color-button-neutral-hover); }
+.ds-btn--neutral.ds-btn--text:active { background: var(--ds-color-button-neutral-press); }
+
+/* ── Стили: Positive ─────────────────────────────────────── */
+
+.ds-btn--positive.ds-btn--filled {
+  background: var(--ds-color-button-positive-default); /* #14B456 */
+  color: var(--ds-color-text-inversive);
+}
+.ds-btn--positive.ds-btn--filled:hover  { background: var(--ds-color-button-positive-hover); } /* #119C34 */
+.ds-btn--positive.ds-btn--filled:active { background: var(--ds-color-button-positive-press); } /* #0F852C */
+
+.ds-btn--positive.ds-btn--outlined {
+  background: var(--ds-color-button-positive-lite-default);
+  border-color: var(--ds-color-button-positive-default);
+  color: var(--ds-color-button-positive-default);
+}
+.ds-btn--positive.ds-btn--outlined:hover  { background: var(--ds-color-button-positive-lite-hover); } /* #F3FCF7 */
+.ds-btn--positive.ds-btn--outlined:active { background: var(--ds-color-button-positive-lite-press); } /* #E0F8EA */
+
+.ds-btn--positive.ds-btn--text {
+  background: var(--ds-color-button-positive-lite-default);
+  color: var(--ds-color-button-positive-default);
+}
+.ds-btn--positive.ds-btn--text:hover  { background: var(--ds-color-button-positive-lite-hover); }
+.ds-btn--positive.ds-btn--text:active { background: var(--ds-color-button-positive-lite-press); }
+
+/* ── Стили: Negative ─────────────────────────────────────── */
+
+.ds-btn--negative.ds-btn--filled {
+  background: var(--ds-color-button-negative-default); /* #FF5252 */
+  color: var(--ds-color-text-inversive);
+}
+.ds-btn--negative.ds-btn--filled:hover  { background: var(--ds-color-button-negative-hover); } /* #F4372F */
+.ds-btn--negative.ds-btn--filled:active { background: var(--ds-color-button-negative-press); } /* #DE1A12 */
+
+.ds-btn--negative.ds-btn--outlined {
+  background: var(--ds-color-button-negative-lite-default);
+  border-color: var(--ds-color-button-negative-default);
+  color: var(--ds-color-button-negative-default);
+}
+.ds-btn--negative.ds-btn--outlined:hover  { background: var(--ds-color-button-negative-lite-hover); } /* #FFF8F8 */
+.ds-btn--negative.ds-btn--outlined:active { background: var(--ds-color-button-negative-lite-press); } /* #FFE5E5 */
+
+.ds-btn--negative.ds-btn--text {
+  background: var(--ds-color-button-negative-lite-default);
+  color: var(--ds-color-button-negative-default);
+}
+.ds-btn--negative.ds-btn--text:hover  { background: var(--ds-color-button-negative-lite-hover); }
+.ds-btn--negative.ds-btn--text:active { background: var(--ds-color-button-negative-lite-press); }
+
+/* ── Стили: Warning ──────────────────────────────────────── */
+
+.ds-btn--warning.ds-btn--filled {
+  background: var(--ds-color-button-warning-default); /* #FFAB40 */
+  color: var(--ds-color-text-inversive);
+}
+.ds-btn--warning.ds-btn--filled:hover  { background: var(--ds-color-button-warning-hover); } /* #FE8C06 */
+.ds-btn--warning.ds-btn--filled:active { background: var(--ds-color-button-warning-press); } /* #EA7806 */
+
+.ds-btn--warning.ds-btn--outlined {
+  background: var(--ds-color-button-warning-lite-default);
+  border-color: var(--ds-color-button-warning-default);
+  color: var(--ds-color-button-warning-press);      /* по ДС текст #EA7806 */
+}
+.ds-btn--warning.ds-btn--outlined:hover  { background: var(--ds-color-button-warning-lite-hover); } /* #FFFCF8 */
+.ds-btn--warning.ds-btn--outlined:active { background: var(--ds-color-button-warning-lite-press); } /* #FFF4E5 */
+
+.ds-btn--warning.ds-btn--text {
+  background: var(--ds-color-button-warning-lite-default);
+  color: var(--ds-color-button-warning-press);
+}
+.ds-btn--warning.ds-btn--text:hover  { background: var(--ds-color-button-warning-lite-hover); }
+.ds-btn--warning.ds-btn--text:active { background: var(--ds-color-button-warning-lite-press); }
+
+/* ── Стили: Disable / disabled ───────────────────────────── */
+
+.ds-btn--filled:disabled,
+.ds-btn--filled.ds-btn--disabled {
+  background: var(--ds-color-button-neutral-disable); /* #EBEBEB */
+  color: var(--ds-color-text-disable);                /* #9E9E9E */
+}
+
+.ds-btn--outlined:disabled,
+.ds-btn--outlined.ds-btn--disabled {
+  background: var(--ds-color-button-neutral-default);
+  border-color: var(--ds-color-button-neutral-disable);
+  color: var(--ds-color-text-disable);
+}
+
+.ds-btn--text:disabled,
+.ds-btn--text.ds-btn--disabled {
+  background: var(--ds-color-button-neutral-default);
+  color: var(--ds-color-text-disable);
+}

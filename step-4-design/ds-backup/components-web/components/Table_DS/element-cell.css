@@ -1,0 +1,94 @@
+.ds-element-cell {
+  width: fit-content;
+  display: flex;
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-element-cell__label {
+  font-size: var(--ds-font-caption-l-12-normal-medium-size);
+  line-height: var(--ds-font-caption-l-12-normal-medium-line);
+  letter-spacing: var(--ds-font-caption-l-12-normal-medium-spacing);
+  font-weight: var(--ds-font-caption-l-12-normal-medium-weight);
+  color: var(--ds-color-button-neutral-filled-default-text-color, #333333);
+  white-space: nowrap;
+}
+.ds-element-cell__icon {
+  flex-shrink: 0;
+  width: var(--ds-size-5x);
+  height: var(--ds-size-5x);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ds-element-cell__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ds-element-cell__icon svg path {
+  fill: currentColor;
+}
+.ds-element-cell__icon-size {
+  height: var(--ds-size-5x);
+  display: flex;
+  flex-direction: row;
+}
+.ds-element-cell__info {
+  height: var(--ds-size-5x);
+  display: flex;
+  flex-direction: row;
+  background: #ffffff;
+}
+.ds-element-cell--icon-size {
+  flex-direction: row;
+  align-items: center;
+  background: #ffffff;
+}
+.ds-element-cell--icon-group {
+  flex-direction: row;
+  align-items: center;
+  background: #ffffff;
+}
+.ds-element-cell--button {
+  flex-direction: row;
+  background: #ffffff;
+  color: var(--ds-color-button-neutral-filled-default-text-color, #333333);
+}
+.ds-element-cell--button-icon {
+  flex-direction: row;
+  background: #ffffff;
+}
+.ds-element-cell--status {
+  flex-direction: row;
+  background: #ffffff;
+  color: var(--ds-color-status-neutral-filled-text-color, #616161);
+}
+.ds-element-cell--text-ui {
+  flex-direction: row;
+  color: var(--ds-color-text-ui-text-label-color, #616161);
+}
+.ds-element-cell--input-number {
+  flex-direction: row;
+  background: #ffffff;
+  color: var(--ds-color-form-field-filled-default-support-text-color, #616161);
+}
+.ds-element-cell--checkbox {
+  flex-direction: row;
+  background: #ffffff;
+}
+.ds-element-cell--slide-toggle {
+  flex-direction: column;
+  background: #ffffff;
+  color: var(--ds-color-slide-toggle-text-color, #333333);
+}
+.ds-element-cell--chips {
+  flex-direction: row;
+  background: #ffffff;
+  color: var(--ds-color-chips-text-color, #333333);
+}
+.ds-element-cell--cell-input {
+  flex-direction: row;
+  background: #ffffff;
+  color: var(--ds-color-form-field-filled-default-label-text-color, #616161);
+}
+

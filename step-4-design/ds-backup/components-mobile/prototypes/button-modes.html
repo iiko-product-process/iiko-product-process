@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Button: режим Desktop / Mobile — ДС iiko</title>
+<!-- ДС: шрифт, токены, режим, тема, компоненты (порядок обязателен) -->
+<link rel="stylesheet" href="../../components-web/font.css">
+<link rel="stylesheet" href="../../components-web/tokens.css">
+<link rel="stylesheet" href="../modes.css">
+<link rel="stylesheet" href="../components/index.css">
+<link rel="stylesheet" href="../../components-web/styles.css">
+<link rel="stylesheet" href="../../components-web/components/index.css">
+<!-- Иконки Material Icons (конвенция существующих прототипов) -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<style>
+  /* ── Каркас страницы (у него нет ДС-компонента) ──────────── */
+  html,body{margin:0;background:#f4f5f7;font-family:'Roboto','Helvetica Neue',Arial,sans-serif;color:#333}
+  body{padding:24px;box-sizing:border-box}
+  .wrap{max-width:1240px;margin:0 auto}
+  h1{font-size:20px;line-height:28px;font-weight:500;margin:0 0 4px}
+  .sub{font-size:14px;line-height:20px;color:#616161;margin:0 0 16px}
+  .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:16px}
+  .seg{display:inline-flex;border:1px solid var(--ds-color-stroke-default);border-radius:var(--ds-radius-2x);overflow:hidden;background:#fff}
+  .seg button{font:500 14px/20px 'Roboto',Arial,sans-serif;padding:8px 16px;border:0;background:#fff;color:#333;cursor:pointer}
+  .seg button+button{border-left:1px solid var(--ds-color-stroke-default)}
+  .seg button[aria-pressed="true"]{background:var(--ds-palette-accent-500);color:#fff}
+  .grid-two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .card{background:#fff;border:1px solid var(--ds-color-stroke-default);border-radius:var(--ds-radius-3x);padding:16px;box-sizing:border-box}
+  .card h2{font-size:16px;line-height:24px;font-weight:500;margin:0 0 12px}
+  .card h3{font-size:14px;line-height:20px;font-weight:500;color:#616161;margin:16px 0 8px}
+  .card h3:first-of-type{margin-top:0}
+  .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
+  .note{font-size:12px;line-height:16px;color:#616161;margin:8px 0 0}
+  table{border-collapse:collapse;width:100%;font-size:12px;line-height:16px}
+  th,td{border:1px solid var(--ds-color-stroke-default);padding:6px 8px;text-align:left;white-space:nowrap}
+  th{background:#fafafa;font-weight:500}
+  .ok{color:#0f852c;font-weight:500}
+  .warn{color:#ea7806;font-weight:500}
+  /* Показ «рядом» — панели с собственным режимом */
+  .panel{border:1px dashed var(--ds-color-stroke-default);border-radius:var(--ds-radius-2x);padding:12px;box-sizing:border-box}
+  .panel__tag{font-size:12px;font-weight:500;color:#616161;margin-bottom:8px}
+  /* состояние: только один режим на странице */
+  body.only-desktop .panel--mobile,body.only-mobile .panel--desktop{display:none}
+  body.only-desktop .grid-two,body.only-mobile .grid-two{grid-template-columns:1fr}
+  .sizes-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Button — режим Desktop / Mobile</h1>
+  <p class="sub">Один и тот же класс <code>.ds-btn</code>, разметка не меняется. Размеры приходят из токенов,
+     режим переключается атрибутом <code>data-mode="mobile"</code> (файл <code>components-mobile/modes.css</code>).
+     Мобильные значения — из Figma <code>Button_mob</code>: высота 44, паддинги 12/16, текст 16px/500.</p>
+
+  <div class="bar">
+    <div class="seg" role="group" aria-label="Режим показа">
+      <button type="button" data-view="both" aria-pressed="true">Рядом</button>
+      <button type="button" data-view="desktop" aria-pressed="false">Только Desktop</button>
+      <button type="button" data-view="mobile" aria-pressed="false">Только Mobile</button>
+    </div>
+  </div>
+
+  <!-- ── Замеры реальных элементов ─────────────────────────── -->
+  <div class="card" style="margin-bottom:16px">
+    <h2>Замеры отрендеренных кнопок (не из макета, а из браузера)</h2>
+    <table id="measure"><tbody></tbody></table>
+    <p class="note">Высоты сверяются с Figma: M Desktop 36 · M Mobile 44 · S 28 · XS 24.
+       Тач-зона на мобиле считается достаточной от 44px.</p>
+  </div>
+
+  <div class="grid-two">
+    <!-- ── Desktop ─────────────────────────────────────────── -->
+    <div class="panel panel--desktop" data-mode="desktop" id="panel-desktop">
+      <div class="panel__tag">data-mode="desktop" (дефолт)</div>
+      <div class="card">
+        <h2>Размеры</h2>
+        <h3>M — 36px</h3>
+        <div class="row" data-size="m">
+          <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" type="button">
+            <span class="ds-btn__icon material-icons">add</span><span class="ds-btn__label">Создать</span>
+          </button>
+          <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--outlined" type="button">
+            <span class="ds-btn__label">Далее</span><span class="ds-btn__icon material-icons">chevron_right</span>
+          </button>
+          <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" type="button">
+            <span class="ds-btn__label">Отмена</span>
+          </button>
+        </div>
+        <h3>S — 28px</h3>
+        <div class="row" data-size="s">
+          <button class="ds-btn ds-btn--s ds-btn--accent ds-btn--filled" type="button"><span class="ds-btn__label">Создать</span></button>
+          <button class="ds-btn ds-btn--s ds-btn--neutral ds-btn--outlined" type="button"><span class="ds-btn__label">Далее</span></button>
+          <button class="ds-btn ds-btn--s ds-btn--accent ds-btn--text" type="button">
+            <span class="ds-btn__icon material-icons">delete</span><span class="ds-btn__label">Удалить</span>
+          </button>
+        </div>
+        <h3>XS — 24px</h3>
+        <div class="row" data-size="xs">
+          <button class="ds-btn ds-btn--xs ds-btn--accent ds-btn--filled" type="button"><span class="ds-btn__label">Создать</span></button>
+          <button class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--outlined" type="button"><span class="ds-btn__label">Далее</span></button>
+          <button class="ds-btn ds-btn--xs ds-btn--accent ds-btn--text" type="button">
+            <span class="ds-btn__icon material-icons">add</span><span class="ds-btn__label">Добавить</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h2>Стили и типы (M)</h2>
+        <h3>Filled</h3>
+        <div class="row">
+          <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" type="button"><span class="ds-btn__label">Accent</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled" type="button"><span class="ds-btn__label">Neutral</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--positive ds-btn--filled" type="button"><span class="ds-btn__label">Positive</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--negative ds-btn--filled" type="button"><span class="ds-btn__label">Negative</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--warning ds-btn--filled" type="button"><span class="ds-btn__label">Warning</span></button>
+        </div>
+        <h3>Outlined</h3>
+        <div class="row">
+          <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--outlined" type="button"><span class="ds-btn__label">Accent</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--outlined" type="button"><span class="ds-btn__label">Neutral</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--positive ds-btn--outlined" type="button"><span class="ds-btn__label">Positive</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--negative ds-btn--outlined" type="button"><span class="ds-btn__label">Negative</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--warning ds-btn--outlined" type="button"><span class="ds-btn__label">Warning</span></button>
+        </div>
+        <h3>Text</h3>
+        <div class="row">
+          <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--text" type="button"><span class="ds-btn__label">Accent</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" type="button"><span class="ds-btn__label">Neutral</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--positive ds-btn--text" type="button"><span class="ds-btn__label">Positive</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--negative ds-btn--text" type="button"><span class="ds-btn__label">Negative</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--warning ds-btn--text" type="button"><span class="ds-btn__label">Warning</span></button>
+        </div>
+        <h3>Disable</h3>
+        <div class="row">
+          <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" type="button" disabled><span class="ds-btn__label">Filled</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--outlined" type="button" disabled><span class="ds-btn__label">Outlined</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--text" type="button" disabled><span class="ds-btn__label">Text</span></button>
+        </div>
+        <p class="note">Hover и press — живые состояния: наведи мышь / нажми и держи. На тач-устройстве
+           hover не показывается, остаётся press (вопрос по «залипанию» hover — открыт).</p>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h2>Футер формы и группа</h2>
+        <h3>На всю ширину (Bottom action bar)</h3>
+        <div class="row">
+          <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled ds-btn--full-width" type="button"><span class="ds-btn__label">Сохранить</span></button>
+        </div>
+        <h3>Button group</h3>
+        <div class="ds-btn-group ds-btn-group--horizontal">
+          <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--outlined" type="button"><span class="ds-btn__label">Отмена</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" type="button"><span class="ds-btn__label">Сохранить</span></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Mobile ──────────────────────────────────────────── -->
+    <div class="panel panel--mobile" data-mode="mobile" id="panel-mobile">
+      <div class="panel__tag">data-mode="mobile"</div>
+      <div class="card">
+        <h2>Размеры</h2>
+        <h3>M — 44px</h3>
+        <div class="row" data-size="m">
+          <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" type="button">
+            <span class="ds-btn__icon material-icons">add</span><span class="ds-btn__label">Создать</span>
+          </button>
+          <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--outlined" type="button">
+            <span class="ds-btn__label">Далее</span><span class="ds-btn__icon material-icons">chevron_right</span>
+          </button>
+          <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" type="button">
+            <span class="ds-btn__label">Отмена</span>
+          </button>
+        </div>
+        <h3>S — 28px</h3>
+        <div class="row" data-size="s">
+          <button class="ds-btn ds-btn--s ds-btn--accent ds-btn--filled" type="button"><span class="ds-btn__label">Создать</span></button>
+          <button class="ds-btn ds-btn--s ds-btn--neutral ds-btn--outlined" type="button"><span class="ds-btn__label">Далее</span></button>
+          <button class="ds-btn ds-btn--s ds-btn--accent ds-btn--text" type="button">
+            <span class="ds-btn__icon material-icons">delete</span><span class="ds-btn__label">Удалить</span>
+          </button>
+        </div>
+        <h3>XS — 24px</h3>
+        <div class="row" data-size="xs">
+          <button class="ds-btn ds-btn--xs ds-btn--accent ds-btn--filled" type="button"><span class="ds-btn__label">Создать</span></button>
+          <button class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--outlined" type="button"><span class="ds-btn__label">Далее</span></button>
+          <button class="ds-btn ds-btn--xs ds-btn--accent ds-btn--text" type="button">
+            <span class="ds-btn__icon material-icons">add</span><span class="ds-btn__label">Добавить</span>
+          </button>
+        </div>
+        <p class="note">На мобиле меняется только M (44px). S и XS остаются 28/24px — тач-зона у них
+           ниже минимума 44px, решение по ним не принято.</p>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h2>Стили и типы (M)</h2>
+        <h3>Filled</h3>
+        <div class="row">
+          <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" type="button"><span class="ds-btn__label">Accent</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled" type="button"><span class="ds-btn__label">Neutral</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--positive ds-btn--filled" type="button"><span class="ds-btn__label">Positive</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--negative ds-btn--filled" type="button"><span class="ds-btn__label">Negative</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--warning ds-btn--filled" type="button"><span class="ds-btn__label">Warning</span></button>
+        </div>
+        <h3>Outlined</h3>
+        <div class="row">
+          <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--outlined" type="button"><span class="ds-btn__label">Accent</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--outlined" type="button"><span class="ds-btn__label">Neutral</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--positive ds-btn--outlined" type="button"><span class="ds-btn__label">Positive</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--negative ds-btn--outlined" type="button"><span class="ds-btn__label">Negative</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--warning ds-btn--outlined" type="button"><span class="ds-btn__label">Warning</span></button>
+        </div>
+        <h3>Text</h3>
+        <div class="row">
+          <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--text" type="button"><span class="ds-btn__label">Accent</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" type="button"><span class="ds-btn__label">Neutral</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--positive ds-btn--text" type="button"><span class="ds-btn__label">Positive</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--negative ds-btn--text" type="button"><span class="ds-btn__label">Negative</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--warning ds-btn--text" type="button"><span class="ds-btn__label">Warning</span></button>
+        </div>
+        <h3>Disable</h3>
+        <div class="row">
+          <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" type="button" disabled><span class="ds-btn__label">Filled</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--outlined" type="button" disabled><span class="ds-btn__label">Outlined</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--text" type="button" disabled><span class="ds-btn__label">Text</span></button>
+        </div>
+        <p class="note">Цвета и состояния не отличаются от десктопа — общие токены.</p>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h2>Футер формы и группа</h2>
+        <h3>На всю ширину (Bottom action bar)</h3>
+        <div class="row">
+          <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled ds-btn--full-width" type="button"><span class="ds-btn__label">Сохранить</span></button>
+        </div>
+        <h3>Button group</h3>
+        <div class="ds-btn-group ds-btn-group--horizontal">
+          <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--outlined" type="button"><span class="ds-btn__label">Отмена</span></button>
+          <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" type="button"><span class="ds-btn__label">Сохранить</span></button>
+        </div>
+        <p class="note">Кнопки в группе на мобиле того же размера (44) — набирает высоту каждая.
+           Вертикальную укладку группы и Bottom action bar из Figma (Button group_mob) переносим
+           отдельным шагом.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Переключатель показа ─────────────────────────────────── */
+document.querySelectorAll('.seg button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    var view = b.getAttribute('data-view');
+    document.querySelectorAll('.seg button').forEach(function (x) {
+      x.setAttribute('aria-pressed', String(x === b));
+    });
+    document.body.className = view === 'both' ? '' : 'only-' + view;
+  });
+});
+
+/* ── Замеры: реальные значения из браузера ────────────────── */
+(function () {
+  var expect = { 'desktop': { m: 36, s: 28, xs: 24 }, 'mobile': { m: 44, s: 28, xs: 24 } };
+  var rows = [];
+  ['desktop', 'mobile'].forEach(function (mode) {
+    var panel = document.getElementById('panel-' + mode);
+    ['m', 's', 'xs'].forEach(function (size) {
+      var row = panel.querySelector('[data-size="' + size + '"]');
+      var btn = row.querySelector('.ds-btn');
+      var icon = btn.querySelector('.ds-btn__icon');
+      var cs = getComputedStyle(btn);
+      var rect = btn.getBoundingClientRect();
+      var h = Math.round(rect.height * 100) / 100;
+      var want = expect[mode][size];
+      var touch = mode === 'mobile' ? (h >= 44 ? 'ok' : 'ниже 44') : '—';
+      rows.push({
+        mode: mode, size: size,
+        height: h, want: want, fit: Math.abs(h - want) < 0.6 ? 'ok' : '≠ ' + want,
+        width: Math.round(rect.width * 100) / 100,
+        pad: cs.paddingTop + ' / ' + cs.paddingLeft,
+        font: cs.fontSize + ' · ' + cs.fontWeight,
+        line: cs.lineHeight,
+        icon: icon ? getComputedStyle(icon).fontSize : '—',
+        token: getComputedStyle(btn).getPropertyValue('--ds-button-' + size + '-size-pad-top').trim(),
+        touch: touch
+      });
+    });
+  });
+  var tb = document.querySelector('#measure tbody');
+  var head = '<tr><th>Режим</th><th>Размер</th><th>Высота, px</th><th>Сверка с Figma</th>' +
+             '<th>Паддинг (верх/лево)</th><th>Текст</th><th>Строка</th><th>Иконка</th>' +
+             '<th>Токен pad-top</th><th>Тач-зона</th></tr>';
+  var body = rows.map(function (r) {
+    var fitCls = r.fit === 'ok' ? 'ok' : 'warn';
+    var touchCls = r.touch === 'ok' ? 'ok' : (r.touch === '—' ? '' : 'warn');
+    return '<tr><td>' + r.mode + '</td><td>' + r.size.toUpperCase() + '</td><td><b>' + r.height + '</b></td>' +
+           '<td class="' + fitCls + '">' + r.fit + '</td><td>' + r.pad + '</td><td>' + r.font + '</td>' +
+           '<td>' + r.line + '</td><td>' + r.icon + '</td><td>' + r.token + '</td>' +
+           '<td class="' + touchCls + '">' + r.touch + '</td></tr>';
+  }).join('');
+  tb.innerHTML = head + body;
+
+  /* то же — в консоль и в data-атрибут, чтобы можно было забрать программно */
+  window.__measure = rows;
+  document.body.setAttribute('data-measure', JSON.stringify(rows));
+})();
+</script>
+</body>
+</html>

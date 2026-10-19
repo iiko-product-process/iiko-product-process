@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Select — демо стенд компонента</title>
+<!--
+  Демо стенд КОМПОНЕНТА Select (семейство). Папка: DS/components-web/components/Select_DS/.
+  Источник — канва Figma «Select_DS» (57734:6008). Наборы:
+    1) Select (Сontainer) (57735:17612) — подложка списка: Search, Title, Divider, Content,
+       Scroll, Button group (слоты-свойства варианта Type=Сontainer);
+    2) Select item (57735:17872) — 8 вариантов: Default (Subtitle True/False), Hover, Press,
+       Selected, Back selected, Error, Disable; ширина 258, шаг 274;
+    3) Select form (57862:17226) — 22 варианта: M(48)/S(36)/XS(28) × Empty/Populated ×
+       Default/Hover/Focus/Focus+Value/Error/Disable (колонки набора: x40, 314, 588, 862, 1136, 1410);
+    4) Element select (57735:17972) — 8 вариантов слота: Image size, Icon size, Text default,
+       Checkbox, Radio button, Indicator, Slide toggle, Counter;
+    5) Arrow select (57735:17989) — 13 стрелок (сетка как у Arrow: 5 колонок, шаг 40).
+  Вкладка «Basic example» — живая сборка по группе примеров «Basic pattern» (57750:36699): поле
+  Select form + раскрывающийся Select (Сontainer) с пунктами (клик открывает список, выбор
+  подставляется в поле, Esc / клик мимо — закрывают). Ниже — витрина контейнера со слотами набора.
+  Разметка — классы ДС, значения — токены. ПОЛЕ — ИНСТАНС ИНПУТА: обёртка ds-select-form + внутри
+  ds-input (__frame → __content (__label/__field) + __icon со стрелкой) — как в Figma, где внутри
+  вариантов Select form лежит инстанс «Input» (52670:7573), а стрелка — его слот Element right.
+  Обойдённые пробелы выгрузки — ручной слой ../../fixes.css, п. 15 (журнал DS/fixes.md №31, 34–37,
+  91): min-height контейнера, жёсткие ширины пункта, состояния пункта, XS-underline инпута,
+  цвет текста M Empty, стрелка Error. Замороженные состояния — st-hover/st-focus (в ДС :hover/
+  :focus-visible) и реальные классы инпута ds-input--error/--disabled; значения — токенами.
+  Глифы — Material Icons по имени; svg-путями из Figma — arrow ×2 (нет в шрифте, №90) и чекбоксы
+  пунктов (в Figma скруглённая версия: заливной с белой галочкой / скруглённый контур, №91).
+-->
+<link rel="stylesheet" href="../../font.css">
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../index.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined">
+<link rel="stylesheet" href="../../fixes.css">
+<style>
+  /* каркас демо-стенда — как у других стендов (ср. components/Sidenav_DS/demo.html) */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .demo-bar__state { margin-left: 12px; color: var(--ds-color-text-secondary, #616161); }
+  .view { padding: 24px; }
+  .view .ds-tabs { margin-bottom: 24px; }
+  .panel { width: fit-content; max-width: 1920px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  .material-icons { font-family: 'Material Icons Outlined'; }   /* иконки — только аутлайн (правило) */
+
+  /* ── обвязка стенда (не ДС); числа — из наборов Figma ───────────────────────── */
+  .snap-cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0 0 8px; }
+  .snap-block { margin-bottom: var(--ds-size-7x, 28px); }
+  .snap-block:last-child { margin-bottom: 0; }
+  .snap-col { display: flex; flex-direction: column; align-items: flex-start; }
+
+  /* Basic example: живая сборка «поле + Select (Сontainer)» (группа примеров «Basic pattern») */
+  .snap-sel { display: flex; flex-direction: column; align-items: flex-start; width: 240px; }   /* 240 — как в примере (поле и контейнер) */
+  .snap-sel-field { width: 240px; cursor: pointer; }
+  .snap-sel-list { margin-top: var(--ds-size-0-5x, 2px); width: 100%; }   /* зазор 2 — из макета (поле y278+48 → список y328) */
+  .snap-sel-items { display: flex; flex-direction: column; }
+  .snap-sel-list .ds-select-item { cursor: pointer; }
+  /* открытый список = Focus поля (как в наборе): рамка и лейбл акцентные; значение и стрелка — по узлам
+     57862:17536 / 60868:18777 (значение 16/24 #333, стрелка остаётся иконочной) */
+  .snap-sel-field.is-open .ds-input__frame { border-color: var(--ds-color-form-field-filled-focus-border-color, #448aff); }
+  .snap-sel-field.is-open .ds-input__label,
+  .snap-sel-field.is-open .ds-input--empty .ds-input__field { color: var(--ds-color-form-field-filled-focus-label-text-color, #448aff); }
+  /* Basic example: витрина контейнера со слотами набора */
+  .snap-sel-search { width: 100%; }   /* Search в контейнере тянется по ширине (в css 243 фикс) */
+  .snap-sel-title { font-size: var(--ds-font-body-s-14-normal-regular-size); line-height: var(--ds-font-body-s-14-normal-regular-line); letter-spacing: var(--ds-font-body-s-14-normal-regular-spacing); font-weight: var(--ds-font-body-s-14-normal-medium-weight); color: var(--ds-color-text-primary, #333333); }   /* «Title select» — 14/20 medium, как в наборе (класса в css нет) */
+  .snap-sel-ccontent { display: flex; flex-direction: row; align-items: flex-start; width: 100%; }
+  .snap-sel-ccontent > .ds-select-container__content { flex: 1 1 auto; min-width: 0; }
+  .snap-sel-scroll { flex: none; width: var(--ds-size-3x, 12px); align-self: stretch; display: flex; justify-content: center; padding: var(--ds-size-0-5x, 2px) 0; }
+  .snap-sel-scroll__track { width: var(--ds-size-2x, 8px); background: #fafafa; border-radius: var(--ds-scroll-knob-radius, 8px); display: flex; align-items: center; }   /* цвета — из набора (токенов нет) */
+  .snap-sel-scroll__knob { width: var(--ds-size-2x, 8px); height: 96px; background: #d6d6d6; border-radius: var(--ds-scroll-knob-radius, 8px); }
+
+  /* Select item: витрина — шаг 274 (258 + 16), подзаголовочный вариант — от того же левого края ниже */
+  .snap-items-row { display: flex; align-items: flex-start; gap: var(--ds-size-4x, 16px); }
+  .snap-items-row .ds-select-item { width: 258px; }
+  .snap-items-row--sub { margin-top: 48px; }
+  /* «замороженные» состояния пункта (в ДС :hover/:active; значения те же) */
+  .st-hover.ds-select-item--false { background: var(--ds-color-select-item-hover-background, #f5f5f5); }
+  .st-press.ds-select-item--false { background: var(--ds-color-select-item-press-background, #e0e0e0); }
+
+  /* Select form: сетка набора — колонки состояний (шаг 274), ряды M/S/XS */
+  .snap-forms { display: grid; grid-template-columns: 96px repeat(6, 250px); gap: var(--ds-size-6x, 24px); align-items: start; }
+  .snap-forms .snap-cap { margin: 0; }
+  .snap-forms .ds-select-form { grid-column: auto; }
+  /* «замороженные» состояния поля: hover/focus — классами st-* (в ДС это :hover/:focus-visible);
+     Error/Disable — реальными классами инпута ds-input--error / ds-input--disabled (цвета — input.css
+     + п. 15 fixes.css). Значение в фокусе — #333, стрелка — иконочная (узлы 57862:17536, 60868:18777) */
+  .st-hover .ds-input:not(.ds-input--xs) .ds-input__frame { background: var(--ds-color-form-field-filled-hover-input-background-hover, #f5f5f5); border-color: var(--ds-color-form-field-filled-hover-border-color, #9e9e9e); }
+  .st-hover .ds-input--xs .ds-input__frame { border-color: var(--ds-color-form-field-filled-hover-border-color, #9e9e9e); }   /* XS — только линия (узел 60868:18773) */
+  .st-focus .ds-input__frame { border-color: var(--ds-color-form-field-filled-focus-border-color, #448aff); }
+  .st-focus .ds-input__label { color: var(--ds-color-form-field-filled-focus-label-text-color, #448aff); }
+
+  /* Element select: витрина слотов */
+  .snap-els { display: flex; align-items: flex-start; gap: var(--ds-size-8x, 32px); }
+  .snap-el-img { width: var(--ds-size-6x, 24px); height: var(--ds-size-6x, 24px); display: block; color: var(--ds-palette-neutral-500, #9e9e9e); }
+  .snap-el-img svg { width: 100%; height: 100%; display: block; }
+  .snap-el-cb { color: var(--ds-color-icon-primary, #616161); }
+  .snap-el-ind { display: block; width: 2px; height: 18px; background: var(--ds-color-icon-accent, #448aff); }   /* ассет «maximize», повёрнут: полоса 2×18 */
+  .snap-el-toggle { display: block; color: var(--ds-palette-neutral-500, #9e9e9e); }
+
+  /* Arrow select: сетка как в наборе — колонки через 40 (24 + 16) */
+  .snap-arrows { display: grid; grid-template-columns: repeat(5, var(--ds-size-6x, 24px)); gap: var(--ds-size-4x, 16px); color: var(--ds-color-icon-primary, #616161); }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Демо стенд Select</span>
+  <span class="demo-bar__state" id="state">Выбрано: —</span>
+</div>
+<div class="view">
+  <!-- табы — компонент ДС Tabs; переключение панелей — скрипт внизу страницы -->
+  <div class="ds-tabs" role="tablist" aria-label="Компоненты семейства Select">
+    <button class="ds-tab ds-tab--active" role="tab" aria-selected="true" data-vtab="basic">Basic example</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="item">Select item</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="form">Select form</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="element">Element select</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="arrow">Arrow select</button>
+  </div>
+
+  <!-- 1. Basic example: живая сборка «поле + Select (Сontainer)» (группа примеров «Basic pattern» 57750:36699) -->
+  <div class="panel" data-vpanel="basic" role="tabpanel">
+    <div class="snap-block">
+      <div class="snap-cap">Живой пример: клик по полю открывает список; выбор подставляется в поле; Esc или клик мимо — закрывают</div>
+      <div class="snap-sel" id="sel-demo">
+        <div class="ds-select-form ds-select-form--m ds-select-form--empty snap-sel-field" id="sel-field" role="button" tabindex="0" aria-haspopup="listbox" aria-expanded="false" aria-label="Выбор значения">
+          <div class="ds-input ds-input--m ds-input--empty" id="sel-input">
+            <div class="ds-input__frame">
+              <div class="ds-input__content">
+                <span class="ds-input__label" id="sel-up" hidden>Label</span>
+                <span class="ds-input__field" id="sel-value">Label</span>
+              </div>
+              <span class="ds-input__icon"><span class="material-icons" id="sel-arrow">arrow_drop_down</span></span>
+            </div>
+          </div>
+        </div>
+        <div class="ds-select-container ds-select-container--container snap-sel-list" id="sel-list" role="listbox" hidden>
+          <div class="snap-sel-items" id="sel-items">
+            <div class="ds-select-item ds-select-item--false" role="option" tabindex="-1"><span class="ds-select-item__label">Select item text</span></div>
+            <div class="ds-select-item ds-select-item--false" role="option" tabindex="-1"><span class="ds-select-item__label">Select item text</span></div>
+            <div class="ds-select-item ds-select-item--false" role="option" tabindex="-1"><span class="ds-select-item__label">Select item text</span></div>
+            <div class="ds-select-item ds-select-item--false" role="option" tabindex="-1"><span class="ds-select-item__label">Select item text</span></div>
+            <div class="ds-select-item ds-select-item--false" role="option" tabindex="-1"><span class="ds-select-item__label">Select item text</span></div>
+            <div class="ds-select-item ds-select-item--false" role="option" tabindex="-1"><span class="ds-select-item__label">Select item text</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- контейнер со слотами набора: Search, Title, Divider, Scroll, Button group -->
+    <div class="snap-block">
+      <div class="snap-cap">Select (Сontainer) — состав набора: Search, Title, Divider, Scroll, Button group</div>
+      <div class="ds-select-container">
+        <div class="ds-select-container__search">
+          <div class="ds-search ds-search--s snap-sel-search">
+            <span class="ds-search__icon"><span class="material-icons">search</span></span>
+            <span class="ds-search__text">Search text</span>
+          </div>
+        </div>
+        <div class="ds-select-container__title"><span class="snap-sel-title">Title select</span></div>
+        <div class="ds-divider"></div>
+        <div class="snap-sel-ccontent">
+          <div class="ds-select-container__content">
+            <div class="snap-sel-items">
+              <div class="ds-select-item ds-select-item--false">
+                <span class="ds-select-item__element-left"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4.16667 17.5C3.70833 17.5 3.31597 17.3368 2.98958 17.0104C2.66319 16.684 2.5 16.2917 2.5 15.8333V4.16667C2.5 3.70833 2.66319 3.31597 2.98958 2.98958C3.31597 2.66319 3.70833 2.5 4.16667 2.5H15.8333C16.2917 2.5 16.684 2.66319 17.0104 2.98958C17.3368 3.31597 17.5 3.70833 17.5 4.16667V15.8333C17.5 16.2917 17.3368 16.684 17.0104 17.0104C16.684 17.3368 16.2917 17.5 15.8333 17.5H4.16667ZM4.16667 15.8333H15.8333V4.16667H4.16667V15.8333Z"/></svg></span>
+                <div class="ds-select-item__content">
+                  <span class="ds-select-item__label-up">Label up</span>
+                  <span class="ds-select-item__label">Select item text</span>
+                  <span class="ds-select-item__label-down">Label down</span>
+                </div>
+                <span class="ds-select-item__element-right"><span class="material-icons">info</span></span>
+              </div>
+              <div class="ds-select-item ds-select-item--false">
+                <span class="ds-select-item__element-left"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4.16667 17.5C3.70833 17.5 3.31597 17.3368 2.98958 17.0104C2.66319 16.684 2.5 16.2917 2.5 15.8333V4.16667C2.5 3.70833 2.66319 3.31597 2.98958 2.98958C3.31597 2.66319 3.70833 2.5 4.16667 2.5H15.8333C16.2917 2.5 16.684 2.66319 17.0104 2.98958C17.3368 3.31597 17.5 3.70833 17.5 4.16667V15.8333C17.5 16.2917 17.3368 16.684 17.0104 17.0104C16.684 17.3368 16.2917 17.5 15.8333 17.5H4.16667ZM4.16667 15.8333H15.8333V4.16667H4.16667V15.8333Z"/></svg></span>
+                <div class="ds-select-item__content">
+                  <span class="ds-select-item__label-up">Label up</span>
+                  <span class="ds-select-item__label">Select item text</span>
+                  <span class="ds-select-item__label-down">Label down</span>
+                </div>
+                <span class="ds-select-item__element-right"><span class="material-icons">info</span></span>
+              </div>
+              <div class="ds-select-item ds-select-item--false">
+                <span class="ds-select-item__element-left"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4.16667 17.5C3.70833 17.5 3.31597 17.3368 2.98958 17.0104C2.66319 16.684 2.5 16.2917 2.5 15.8333V4.16667C2.5 3.70833 2.66319 3.31597 2.98958 2.98958C3.31597 2.66319 3.70833 2.5 4.16667 2.5H15.8333C16.2917 2.5 16.684 2.66319 17.0104 2.98958C17.3368 3.31597 17.5 3.70833 17.5 4.16667V15.8333C17.5 16.2917 17.3368 16.684 17.0104 17.0104C16.684 17.3368 16.2917 17.5 15.8333 17.5H4.16667ZM4.16667 15.8333H15.8333V4.16667H4.16667V15.8333Z"/></svg></span>
+                <div class="ds-select-item__content">
+                  <span class="ds-select-item__label-up">Label up</span>
+                  <span class="ds-select-item__label">Select item text</span>
+                  <span class="ds-select-item__label-down">Label down</span>
+                </div>
+                <span class="ds-select-item__element-right"><span class="material-icons">info</span></span>
+              </div>
+              <div class="ds-select-item ds-select-item--false">
+                <span class="ds-select-item__element-left"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4.16667 17.5C3.70833 17.5 3.31597 17.3368 2.98958 17.0104C2.66319 16.684 2.5 16.2917 2.5 15.8333V4.16667C2.5 3.70833 2.66319 3.31597 2.98958 2.98958C3.31597 2.66319 3.70833 2.5 4.16667 2.5H15.8333C16.2917 2.5 16.684 2.66319 17.0104 2.98958C17.3368 3.31597 17.5 3.70833 17.5 4.16667V15.8333C17.5 16.2917 17.3368 16.684 17.0104 17.0104C16.684 17.3368 16.2917 17.5 15.8333 17.5H4.16667ZM4.16667 15.8333H15.8333V4.16667H4.16667V15.8333Z"/></svg></span>
+                <div class="ds-select-item__content">
+                  <span class="ds-select-item__label-up">Label up</span>
+                  <span class="ds-select-item__label">Select item text</span>
+                  <span class="ds-select-item__label-down">Label down</span>
+                </div>
+                <span class="ds-select-item__element-right"><span class="material-icons">info</span></span>
+              </div>
+            </div>
+          </div>
+          <span class="snap-sel-scroll"><span class="snap-sel-scroll__track"><span class="snap-sel-scroll__knob"></span></span></span>
+        </div>
+        <div class="ds-divider"></div>
+        <div class="ds-select-container__button-group">
+          <button class="ds-btn ds-btn--s ds-btn--neutral ds-btn--outlined" type="button"><span class="ds-btn__label">Button</span></button>
+          <button class="ds-btn ds-btn--s ds-btn--accent ds-btn--filled" type="button"><span class="ds-btn__label">Button</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Select item: 8 вариантов набора (57735:17872): 7 без подзаголовка + 1 с подзаголовком -->
+  <div class="panel" data-vpanel="item" role="tabpanel" hidden>
+    <div class="snap-items-row">
+      <div class="snap-col">
+        <div class="snap-cap">State=Default</div>
+        <div class="ds-select-item ds-select-item--false">
+          <span class="ds-select-item__element-left"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4.16667 17.5C3.70833 17.5 3.31597 17.3368 2.98958 17.0104C2.66319 16.684 2.5 16.2917 2.5 15.8333V4.16667C2.5 3.70833 2.66319 3.31597 2.98958 2.98958C3.31597 2.66319 3.70833 2.5 4.16667 2.5H15.8333C16.2917 2.5 16.684 2.66319 17.0104 2.98958C17.3368 3.31597 17.5 3.70833 17.5 4.16667V15.8333C17.5 16.2917 17.3368 16.684 17.0104 17.0104C16.684 17.3368 16.2917 17.5 15.8333 17.5H4.16667ZM4.16667 15.8333H15.8333V4.16667H4.16667V15.8333Z"/></svg></span>
+          <div class="ds-select-item__content">
+            <span class="ds-select-item__label-up">Label up</span>
+            <span class="ds-select-item__label">Select item text</span>
+            <span class="ds-select-item__label-down">Label down</span>
+          </div>
+          <span class="ds-select-item__element-right"><span class="material-icons">info</span></span>
+        </div>
+      </div>
+      <div class="snap-col">
+        <div class="snap-cap">State=Hover</div>
+        <div class="ds-select-item ds-select-item--false st-hover">
+          <span class="ds-select-item__element-left"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4.16667 17.5C3.70833 17.5 3.31597 17.3368 2.98958 17.0104C2.66319 16.684 2.5 16.2917 2.5 15.8333V4.16667C2.5 3.70833 2.66319 3.31597 2.98958 2.98958C3.31597 2.66319 3.70833 2.5 4.16667 2.5H15.8333C16.2917 2.5 16.684 2.66319 17.0104 2.98958C17.3368 3.31597 17.5 3.70833 17.5 4.16667V15.8333C17.5 16.2917 17.3368 16.684 17.0104 17.0104C16.684 17.3368 16.2917 17.5 15.8333 17.5H4.16667ZM4.16667 15.8333H15.8333V4.16667H4.16667V15.8333Z"/></svg></span>
+          <div class="ds-select-item__content">
+            <span class="ds-select-item__label-up">Label up</span>
+            <span class="ds-select-item__label">Select item text</span>
+            <span class="ds-select-item__label-down">Label down</span>
+          </div>
+          <span class="ds-select-item__element-right"><span class="material-icons">info</span></span>
+        </div>
+      </div>
+      <div class="snap-col">
+        <div class="snap-cap">State=Press</div>
+        <div class="ds-select-item ds-select-item--false st-press">
+          <span class="ds-select-item__element-left"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4.16667 17.5C3.70833 17.5 3.31597 17.3368 2.98958 17.0104C2.66319 16.684 2.5 16.2917 2.5 15.8333V4.16667C2.5 3.70833 2.66319 3.31597 2.98958 2.98958C3.31597 2.66319 3.70833 2.5 4.16667 2.5H15.8333C16.2917 2.5 16.684 2.66319 17.0104 2.98958C17.3368 3.31597 17.5 3.70833 17.5 4.16667V15.8333C17.5 16.2917 17.3368 16.684 17.0104 17.0104C16.684 17.3368 16.2917 17.5 15.8333 17.5H4.16667ZM4.16667 15.8333H15.8333V4.16667H4.16667V15.8333Z"/></svg></span>
+          <div class="ds-select-item__content">
+            <span class="ds-select-item__label-up">Label up</span>
+            <span class="ds-select-item__label">Select item text</span>
+            <span class="ds-select-item__label-down">Label down</span>
+          </div>
+          <span class="ds-select-item__element-right"><span class="material-icons">info</span></span>
+        </div>
+      </div>
+      <div class="snap-col">
+        <div class="snap-cap">State=Selected</div>
+        <div class="ds-select-item ds-select-item--false ds-select-item--selected">
+          <span class="ds-select-item__element-left"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.83333 13.5L14.7083 7.625L13.5417 6.45833L8.83333 11.1667L6.45833 8.79167L5.29167 9.95833L8.83333 13.5ZM4.16667 17.5C3.70833 17.5 3.31597 17.3368 2.98958 17.0104C2.66319 16.684 2.5 16.2917 2.5 15.8333V4.16667C2.5 3.70833 2.66319 3.31597 2.98958 2.98958C3.31597 2.66319 3.70833 2.5 4.16667 2.5H15.8333C16.2917 2.5 16.684 2.66319 17.0104 2.98958C17.3368 3.31597 17.5 3.70833 17.5 4.16667V15.8333C17.5 16.2917 17.3368 16.684 17.0104 17.0104C16.684 17.3368 16.2917 17.5 15.8333 17.5H4.16667Z"/></svg></span>
+          <div class="ds-select-item__content">
+            <span class="ds-select-item__label-up">Label up</span>
+            <span class="ds-select-item__label">Select item text</span>
+            <span class="ds-select-item__label-down">Label down</span>
+          </div>
+          <span class="ds-select-item__element-right"><span class="material-icons">info</span></span>
+        </div>
+      </div>
+      <div class="snap-col">
+        <div class="snap-cap">State=Back selected</div>
+        <div class="ds-select-item ds-select-item--false ds-select-item--back-selected">
+          <span class="ds-select-item__element-left"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.83333 13.5L14.7083 7.625L13.5417 6.45833L8.83333 11.1667L6.45833 8.79167L5.29167 9.95833L8.83333 13.5ZM4.16667 17.5C3.70833 17.5 3.31597 17.3368 2.98958 17.0104C2.66319 16.684 2.5 16.2917 2.5 15.8333V4.16667C2.5 3.70833 2.66319 3.31597 2.98958 2.98958C3.31597 2.66319 3.70833 2.5 4.16667 2.5H15.8333C16.2917 2.5 16.684 2.66319 17.0104 2.98958C17.3368 3.31597 17.5 3.70833 17.5 4.16667V15.8333C17.5 16.2917 17.3368 16.684 17.0104 17.0104C16.684 17.3368 16.2917 17.5 15.8333 17.5H4.16667Z"/></svg></span>
+          <div class="ds-select-item__content">
+            <span class="ds-select-item__label-up">Label up</span>
+            <span class="ds-select-item__label">Select item text</span>
+            <span class="ds-select-item__label-down">Label down</span>
+          </div>
+          <span class="ds-select-item__element-right"><span class="material-icons">info</span></span>
+        </div>
+      </div>
+      <div class="snap-col">
+        <div class="snap-cap">State=Error</div>
+        <div class="ds-select-item ds-select-item--false ds-select-item--error">
+          <span class="ds-select-item__element-left"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4.16667 17.5C3.70833 17.5 3.31597 17.3368 2.98958 17.0104C2.66319 16.684 2.5 16.2917 2.5 15.8333V4.16667C2.5 3.70833 2.66319 3.31597 2.98958 2.98958C3.31597 2.66319 3.70833 2.5 4.16667 2.5H15.8333C16.2917 2.5 16.684 2.66319 17.0104 2.98958C17.3368 3.31597 17.5 3.70833 17.5 4.16667V15.8333C17.5 16.2917 17.3368 16.684 17.0104 17.0104C16.684 17.3368 16.2917 17.5 15.8333 17.5H4.16667ZM4.16667 15.8333H15.8333V4.16667H4.16667V15.8333Z"/></svg></span>
+          <div class="ds-select-item__content">
+            <span class="ds-select-item__label-up">Label up</span>
+            <span class="ds-select-item__label">Select item text</span>
+            <span class="ds-select-item__label-down">Label down</span>
+          </div>
+          <span class="ds-select-item__element-right"><span class="material-icons">info</span></span>
+        </div>
+      </div>
+      <div class="snap-col">
+        <div class="snap-cap">State=Disable</div>
+        <div class="ds-select-item ds-select-item--false ds-select-item--disabled">
+          <span class="ds-select-item__element-left"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4.16667 17.5C3.70833 17.5 3.31597 17.3368 2.98958 17.0104C2.66319 16.684 2.5 16.2917 2.5 15.8333V4.16667C2.5 3.70833 2.66319 3.31597 2.98958 2.98958C3.31597 2.66319 3.70833 2.5 4.16667 2.5H15.8333C16.2917 2.5 16.684 2.66319 17.0104 2.98958C17.3368 3.31597 17.5 3.70833 17.5 4.16667V15.8333C17.5 16.2917 17.3368 16.684 17.0104 17.0104C16.684 17.3368 16.2917 17.5 15.8333 17.5H4.16667ZM4.16667 15.8333H15.8333V4.16667H4.16667V15.8333Z"/></svg></span>
+          <div class="ds-select-item__content">
+            <span class="ds-select-item__label-up">Label up</span>
+            <span class="ds-select-item__label">Select item text</span>
+            <span class="ds-select-item__label-down">Label down</span>
+          </div>
+          <span class="ds-select-item__element-right"><span class="material-icons">info</span></span>
+        </div>
+      </div>
+    </div>
+    <div class="snap-items-row snap-items-row--sub">
+      <div class="snap-col">
+        <div class="snap-cap">State=Default, Subtitle=True</div>
+        <div class="ds-select-item ds-select-item--true">
+          <span class="ds-select-item__element-left"><span class="material-icons">info</span></span>
+          <div class="ds-select-item__content"><span class="ds-select-item__subtitle">Subtitle</span></div>
+          <span class="ds-select-item__element-right"><span class="material-icons">info</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Select form: 22 варианта набора (57862:17226) — колонки состояний, ряды M/S/XS -->
+  <div class="panel" data-vpanel="form" role="tabpanel" hidden>
+    <div class="snap-forms">
+      <!-- строка заголовков колонок -->
+      <div></div>
+      <div class="snap-cap">Default</div>
+      <div class="snap-cap">Hover</div>
+      <div class="snap-cap">Focus</div>
+      <div class="snap-cap">Focus+Value</div>
+      <div class="snap-cap">Error</div>
+      <div class="snap-cap">Disable</div>
+
+      <!-- M · Empty (в наборе нет ячеек Focus и Focus+Value — 22 варианта: 4+4+3+3+4+4) -->
+      <div class="snap-cap">M · Empty</div>
+      <div class="ds-select-form ds-select-form--m ds-select-form--empty">
+        <div class="ds-input ds-input--m ds-input--empty">
+          <div class="ds-input__frame">
+            <div class="ds-input__content"><span class="ds-input__field">Label</span></div>
+            <span class="ds-input__icon"><span class="material-icons">arrow_drop_down</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="ds-select-form ds-select-form--m ds-select-form--empty st-hover">
+        <div class="ds-input ds-input--m ds-input--empty">
+          <div class="ds-input__frame">
+            <div class="ds-input__content"><span class="ds-input__field">Label</span></div>
+            <span class="ds-input__icon"><span class="material-icons">arrow_drop_down</span></span>
+          </div>
+        </div>
+      </div>
+      <div></div>
+      <div></div>
+      <div class="ds-select-form ds-select-form--m ds-select-form--empty">
+        <div class="ds-input ds-input--m ds-input--empty ds-input--error">
+          <div class="ds-input__frame">
+            <div class="ds-input__content"><span class="ds-input__field">Label</span></div>
+            <span class="ds-input__icon"><span class="material-icons">arrow_drop_down</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="ds-select-form ds-select-form--m ds-select-form--empty ds-select-form--disabled">
+        <div class="ds-input ds-input--m ds-input--empty ds-input--disabled">
+          <div class="ds-input__frame">
+            <div class="ds-input__content"><span class="ds-input__field">Label</span></div>
+            <span class="ds-input__icon"><span class="material-icons">arrow_drop_down</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- M · Populated -->
+      <div class="snap-cap">M · Populated</div>
+      <div class="ds-select-form ds-select-form--m ds-select-form--populated">
+        <div class="ds-input ds-input--m ds-input--populated">
+          <div class="ds-input__frame">
+            <div class="ds-input__content">
+              <span class="ds-input__label">Label</span>
+              <span class="ds-input__field">Select item</span>
+            </div>
+            <span class="ds-input__icon"><span class="material-icons">arrow_drop_down</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="ds-select-form ds-select-form--m ds-select-form--populated st-hover">
+        <div class="ds-input ds-input--m ds-input--populated">
+          <div class="ds-input__frame">
+            <div class="ds-input__content">
+              <span class="ds-input__label">Label</span>
+              <span class="ds-input__field">Select item</span>
+            </div>
+            <span class="ds-input__icon"><span class="material-icons">arrow_drop_down</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="ds-select-form ds-select-form--m ds-select-form--populated st-focus">
+        <div class="ds-input ds-input--m ds-input--populated">
+          <div class="ds-input__frame">
+            <div class="ds-input__content">
+              <span class="ds-input__label">Label</span>
+              <span class="ds-input__field">&nbsp;</span>
+            </div>
+            <span class="ds-input__icon"><span class="material-icons">arrow_drop_up</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="ds-select-form ds-select-form--m ds-select-form--populated st-focus">
+        <div class="ds-input ds-input--m ds-input--populated">
+          <div class="ds-input__frame">
+            <div class="ds-input__content">
+              <span class="ds-input__label">Label</span>
+              <span class="ds-input__field">Selected new item</span>
+            </div>
+            <span class="ds-input__icon"><span class="material-icons">arrow_drop_down</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="ds-select-form ds-select-form--m ds-select-form--populated">
+        <div class="ds-input ds-input--m ds-input--populated ds-input--error">
+          <div class="ds-input__frame">
+            <div class="ds-input__content">
+              <span class="ds-input__label">Label</span>
+              <span class="ds-input__field">Select item</span>
+            </div>
+            <span class="ds-input__icon"><span class="material-icons">arrow_drop_down</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="ds-select-form ds-select-form--m ds-select-form--populated ds-select-form--disabled">
+        <div class="ds-input ds-input--m ds-input--populated ds-input--disabled">
+          <div class="ds-input__frame">
+            <div class="ds-input__content">
+              <span class="ds-input__label">Label</span>
+              <span class="ds-input__field">Select item</span>
+            </div>
+            <span class="ds-input__icon"><span class="material-icons">arrow_drop_down</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- S · Empty (в наборе компактные поля без лейбла — значение «Select item») -->
+      <div class="snap-cap">S · Empty</div>
+      <div class="ds-select-form ds-select-form--s ds-select-form--empty">
+        <div class="ds-input ds-input--s">
+          <div class="ds-input__frame">
+            <div class="ds-input__content"><span class="ds-input__field">Select item</span></div>
+            <span class="ds-input__icon"><span class="material-icons">arrow_drop_down</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="ds-select-form ds-select-form--s ds-select-form--empty st-hover">
+        <div class="ds-input ds-input--s">
+          <div class="ds-input__frame">
+            <div class="ds-input__content"><span class="ds-input__field">Select item</span></div>
+            <span class="ds-input__icon"><span class="material-icons">arrow_drop_down</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="ds-select-form ds-select-form--s ds-select-form--empty st-focus">
+        <div class="ds-input ds-input--s">
+          <div class="ds-input__frame">
+            <div class="ds-input__content"><span class="ds-input__field">Select item</span></div>
+            <span class="ds-input__icon"><span class="material-icons">arrow_drop_up</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="ds-select-form ds-select-form--s ds-select-form--empty st-focus">
+        <div class="ds-input ds-input--s">
+          <div class="ds-input__frame">
+            <div class="ds-input__content"><span class="ds-input__field">Selected new item</span></div>
+            <span class="ds-input__icon"><span class="material-icons">arrow_drop_down</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="ds-select-form ds-select-form--s ds-select-form--empty">
+        <div class="ds-input ds-input--s ds-input--error">
+          <div class="ds-input__frame">
+            <div class="ds-input__content"><span class="ds-input__field">Select item</span></div>
+            <span class="ds-input__icon"><span class="material-icons">arrow_drop_down</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="ds-select-form ds-select-form--s ds-select-form--empty ds-select-form--disabled">
+        <div class="ds-input ds-input--s ds-input--disabled">
+          <div class="ds-input__frame">
+            <div class="ds-input__content"><span class="ds-input__field">Select item</span></div>
+            <span class="ds-input__icon"><span class="material-icons">arrow_drop_down</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- XS · Empty (в наборе — только нижняя граница) -->
+      <div class="snap-cap">XS · Empty</div>
+      <div class="ds-select-form ds-select-form--xs ds-select-form--empty">
+        <div class="ds-input ds-input--xs">
+          <div class="ds-input__frame">
+            <div class="ds-input__content"><span class="ds-input__field">Select item</span></div>
+            <span class="ds-input__icon"><span class="material-icons">arrow_drop_down</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="ds-select-form ds-select-form--xs ds-select-form--empty st-hover">
+        <div class="ds-input ds-input--xs">
+          <div class="ds-input__frame">
+            <div class="ds-input__content"><span class="ds-input__field">Select item</span></div>
+            <span class="ds-input__icon"><span class="material-icons">arrow_drop_down</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="ds-select-form ds-select-form--xs ds-select-form--empty st-focus">
+        <div class="ds-input ds-input--xs">
+          <div class="ds-input__frame">
+            <div class="ds-input__content"><span class="ds-input__field">Select item</span></div>
+            <span class="ds-input__icon"><span class="material-icons">arrow_drop_up</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="ds-select-form ds-select-form--xs ds-select-form--empty st-focus">
+        <div class="ds-input ds-input--xs">
+          <div class="ds-input__frame">
+            <div class="ds-input__content"><span class="ds-input__field">Selected new item</span></div>
+            <span class="ds-input__icon"><span class="material-icons">arrow_drop_down</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="ds-select-form ds-select-form--xs ds-select-form--empty">
+        <div class="ds-input ds-input--xs ds-input--error">
+          <div class="ds-input__frame">
+            <div class="ds-input__content"><span class="ds-input__field">Select item</span></div>
+            <span class="ds-input__icon"><span class="material-icons">arrow_drop_down</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="ds-select-form ds-select-form--xs ds-select-form--empty ds-select-form--disabled">
+        <div class="ds-input ds-input--xs ds-input--disabled">
+          <div class="ds-input__frame">
+            <div class="ds-input__content"><span class="ds-input__field">Select item</span></div>
+            <span class="ds-input__icon"><span class="material-icons">arrow_drop_down</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Element select: 8 вариантов слота (57735:17972) -->
+  <div class="panel" data-vpanel="element" role="tabpanel" hidden>
+    <div class="snap-els">
+      <div class="snap-col">
+        <div class="snap-cap">Content=Image size</div>
+        <span class="ds-element-select ds-element-select--image-size"><span class="ds-element-select__image-size snap-el-img"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="currentColor"/></svg></span></span>
+      </div>
+      <div class="snap-col">
+        <div class="snap-cap">Content=Icon size</div>
+        <span class="ds-element-select ds-element-select--icon-size"><span class="ds-element-select__icon"><span class="material-icons">info</span></span></span>
+      </div>
+      <div class="snap-col">
+        <div class="snap-cap">Content=Text default</div>
+        <span class="ds-element-select ds-element-select--text-default"><span class="ds-element-select__label">Text default</span></span>
+      </div>
+      <div class="snap-col">
+        <div class="snap-cap">Content=Checkbox</div>
+        <span class="ds-element-select ds-element-select--checkbox"><span class="ds-element-select__icon"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4.16667 17.5C3.70833 17.5 3.31597 17.3368 2.98958 17.0104C2.66319 16.684 2.5 16.2917 2.5 15.8333V4.16667C2.5 3.70833 2.66319 3.31597 2.98958 2.98958C3.31597 2.66319 3.70833 2.5 4.16667 2.5H15.8333C16.2917 2.5 16.684 2.66319 17.0104 2.98958C17.3368 3.31597 17.5 3.70833 17.5 4.16667V15.8333C17.5 16.2917 17.3368 16.684 17.0104 17.0104C16.684 17.3368 16.2917 17.5 15.8333 17.5H4.16667ZM4.16667 15.8333H15.8333V4.16667H4.16667V15.8333Z"/></svg></span></span>
+      </div>
+      <div class="snap-col">
+        <div class="snap-cap">Content=Radio button</div>
+        <span class="ds-element-select ds-element-select--radio-button"><span class="ds-element-select__icon"><span class="material-icons">radio_button_unchecked</span></span></span>
+      </div>
+      <div class="snap-col">
+        <div class="snap-cap">Content=Indicator</div>
+        <span class="ds-element-select ds-element-select--indicator"><span class="snap-el-ind"></span></span>
+      </div>
+      <div class="snap-col">
+        <div class="snap-cap">Content=Slide toggle</div>
+        <span class="ds-element-select ds-element-select--slide-toggle"><svg class="snap-el-toggle" width="34" height="20" viewBox="0 0 34 20"><path d="M0 10C0 4.47715 4.47715 0 10 0H24C29.5228 0 34 4.47715 34 10V10C34 15.5228 29.5228 20 24 20H10C4.47715 20 0 15.5228 0 10V10Z" fill="currentColor"/><circle cx="10" cy="10" r="8" fill="#ffffff"/></svg></span>
+      </div>
+      <div class="snap-col">
+        <div class="snap-cap">Content=Counter</div>
+        <span class="ds-element-select ds-element-select--counter"><span class="ds-badge ds-badge--counter ds-badge--negative">17</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Arrow select: 13 стрелок (57735:17989), расположение как в наборе (5 колонок; в 3-м ряду — пять) -->
+  <div class="panel" data-vpanel="arrow" role="tabpanel" hidden>
+    <div class="snap-arrows">
+      <div class="ds-arrow-select" title="arrow_left"><span class="ds-arrow-select__icon"><span class="material-icons">arrow_left</span></span></div>
+      <div class="ds-arrow-select" title="arrow_drop_up"><span class="ds-arrow-select__icon"><span class="material-icons">arrow_drop_up</span></span></div>
+      <div class="ds-arrow-select" title="arrow_right"><span class="ds-arrow-select__icon"><span class="material-icons">arrow_right</span></span></div>
+      <div class="ds-arrow-select" title="arrow_drop_down"><span class="ds-arrow-select__icon"><span class="material-icons">arrow_drop_down</span></span></div>
+      <span></span>
+      <div class="ds-arrow-select" title="keyboard_arrow_left"><span class="ds-arrow-select__icon"><span class="material-icons">keyboard_arrow_left</span></span></div>
+      <div class="ds-arrow-select" title="keyboard_arrow_up"><span class="ds-arrow-select__icon"><span class="material-icons">keyboard_arrow_up</span></span></div>
+      <div class="ds-arrow-select" title="keyboard_arrow_right"><span class="ds-arrow-select__icon"><span class="material-icons">keyboard_arrow_right</span></span></div>
+      <div class="ds-arrow-select" title="keyboard_arrow_down"><span class="ds-arrow-select__icon"><span class="material-icons">keyboard_arrow_down</span></span></div>
+      <span></span>
+      <div class="ds-arrow-select" title="arrow_back"><span class="ds-arrow-select__icon"><span class="material-icons">arrow_back</span></span></div>
+      <div class="ds-arrow-select" title="arrow_forward"><span class="ds-arrow-select__icon"><span class="material-icons">arrow_forward</span></span></div>
+      <div class="ds-arrow-select" title="arrow_downward_alt"><span class="ds-arrow-select__icon"><svg viewBox="0 0 24 24"><path d="M12 18L6 12L7.4 10.6L11 14.2V5H13V14.2L16.6 10.6L18 12L12 18Z"/></svg></span></div>
+      <div class="ds-arrow-select" title="arrow_upward_alt"><span class="ds-arrow-select__icon"><svg viewBox="0 0 24 24"><path d="M11 18V8.8L7.4 12.4L6 11L12 5L18 11L16.6 12.4L13 8.8V18H11Z"/></svg></span></div>
+      <div class="ds-arrow-select" title="unfold_less"><span class="ds-arrow-select__icon"><span class="material-icons">unfold_less</span></span></div>
+    </div>
+  </div>
+</div>
+<script>
+  /* табы — компонент ДС Tabs: переключаем активный таб и панель (как на стендах Sidenav/Datepicker/Icon size) */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.ds-tab[data-vtab]'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('[data-vpanel]'));
+  tabs.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      tabs.forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle('ds-tab--active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach(function (p) { p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab'); });
+    });
+  });
+
+  /* Basic example: живой селект (поле ↔ список) */
+  (function () {
+    var demo = document.getElementById('sel-demo');
+    if (!demo) return;
+    var field = document.getElementById('sel-field');
+    var input = document.getElementById('sel-input');
+    var list = document.getElementById('sel-list');
+    var value = document.getElementById('sel-value');
+    var up = document.getElementById('sel-up');
+    var arrow = document.getElementById('sel-arrow');
+    var status = document.getElementById('state');
+    var items = Array.prototype.slice.call(demo.querySelectorAll('.snap-sel-items .ds-select-item'));
+
+    function open() {
+      list.hidden = false;
+      field.classList.add('is-open');
+      field.setAttribute('aria-expanded', 'true');
+      arrow.textContent = 'arrow_drop_up';
+    }
+    function close() {
+      list.hidden = true;
+      field.classList.remove('is-open');
+      field.setAttribute('aria-expanded', 'false');
+      arrow.textContent = 'arrow_drop_down';
+    }
+    field.addEventListener('click', function () { list.hidden ? open() : close(); });
+    field.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); list.hidden ? open() : close(); }
+    });
+    document.addEventListener('click', function (e) { if (!demo.contains(e.target)) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+    items.forEach(function (it) {
+      it.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var text = it.textContent.trim();
+        value.textContent = text;
+        up.hidden = false;
+        field.classList.remove('ds-select-form--empty');
+        field.classList.add('ds-select-form--populated');
+        input.classList.remove('ds-input--empty');
+        input.classList.add('ds-input--populated');
+        items.forEach(function (x) { x.classList.remove('ds-select-item--back-selected'); });
+        it.classList.add('ds-select-item--back-selected');
+        if (status) status.textContent = 'Выбрано: ' + text;
+        close();
+      });
+    });
+  })();
+</script>
+</body>
+</html>

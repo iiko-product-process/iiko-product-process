@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>List — демо стенд компонента</title>
+<!--
+  Демо стенд семейства List. Папка: DS/components-web/components/List_DS/.
+  Источник — канва «List_DS» (страница 54101:7916) Figma «Iiko Web DS (New)»:
+  1) Basic example — живая сборка: контейнер (набор 57604-4762; заголовок «Title list» + Divider + область со
+     строками и полосой скролла) со строками набора List item (чекбокс + Label up / List item text / Label down + ⓘ);
+     клик (и Enter/Space) переключает Selected, hover/press живые — пример работы, а не копия макета. Заголовок по
+     слоям — инстанс List item (все слоты выключены, 258×36): в вёрстке — контейнерные классы на тех же токенах
+     --ds-list-item-* (отступы/gap/фон) и Medium-текст, поэтому правка List item в Фигме доезжает и до заголовка
+     (через tokens.css); divider — компонент Divider (.ds-divider--m); скролл — компонент Scroll (повёрнут, Position=First);
+  2) List item — набор 54101-7922, 8 состояний: Default, Hover, Press, Negative, Selected, Link, Back selected, Disable;
+  3) Element — набор 54104-20956, 9 контентов слота: Text default, Icon size, Image size, Checkbox, Radio button,
+     Indicator, Slide toggle, Icon group, Counter;
+  4) Arrow list — набор 55939-13307, 13 стрелок (раскладка набора: 4 + 4 + 5).
+  Слоты строки (чекбокс и ⓘ) — по ВЕРХНЕМУ краю (y=8, на линии «Label up»), правый слот прижат к правому краю
+  (x=222, от края 16) — как в Select item (узлы State=Default/Selected/Negative).
+  Состав строки List item (по узлам): Element left = Checkbox (Deselected; у Selected/Back selected — Selected),
+  Content = «Label up» / «List item text» / «Label down», Element right = ⓘ (info).
+  Цвета иконок по состояниям (по узлам): Default/Hover/Press/Link — #616161; Negative — #ff5252;
+  Selected/Back selected — #448aff; Disable — #9e9e9e. Тексты: Link — акцентный только основной текст;
+  Negative — все три; Disable — все три серые (узлы 54743/54745/57943/57946/57959-серий).
+  Иконки — svg точными путями Figma (чекбоксы — скруглённые, как в Select; info — как в Form field input);
+  глифы-«настоящие» для radio (radio_button_unchecked), стрелок (11 из 13), slide toggle и counter — классы ДС.
+  Пробелы выгрузки обойдены в ../../fixes.css п. 18: «плашки» текстов и белые подложки слотов (артефакт генератора),
+  состояния Selected/Back selected/Link/Negative (в css не реализованы), размеры иконок слотов; у Scroll ползунок
+  выгружен с padding 10px (визуально 28px) — п. 19 (журнал №95). Divider контейнера в css белый (№38) — стенд
+  собирает его компонентом Divider. Журнал DS/fixes.md №94.
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined">
+<link rel="stylesheet" href="../../font.css">
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../index.css">
+<link rel="stylesheet" href="../../fixes.css">
+<style>
+  /* каркас демо-стенда — как у других стендов */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .view { padding: 24px; }
+  .view .ds-tabs { margin-bottom: 24px; }
+  .panel { width: fit-content; max-width: 1920px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  .snap-cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0; }
+  .snap-note { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 28px 0 0; max-width: 800px; }
+
+  /* сетка витрин */
+  .snap-cells { display: grid; grid-template-columns: repeat(4, max-content); gap: 32px 24px; align-items: start; }
+  .snap-cell { display: flex; flex-direction: column; gap: 10px; }
+  .snap-col { display: flex; flex-direction: column; gap: 10px; }
+
+  /* замороженные состояния List item (в ДС :hover/:active; значения — токены) */
+  .st-hover .ds-list-item { background: var(--ds-color-list-item-hover-background, #f5f5f5); }
+  .st-press .ds-list-item { background: var(--ds-color-list-item-press-background, #e0e0e0); }
+
+  /* живая сборка примера: строки 246 (как в узле) + вертикальная полоса скролла справа — инстанс компонента Scroll,
+     повёрнут (в узле −90°; ползунок Position=First оказывается у верхнего края); переключатель — ds-list-item--selected */
+  .snap-live .ds-list-item { cursor: pointer; }
+  .snap-content { position: relative; width: 258px; height: 204px; }
+  .snap-content .ds-list-item { width: 246px; }
+  .snap-vscroll { position: absolute; top: 0; right: 0; width: 12px; height: 204px; }
+  /* длина 204 = высоте области контента (у инстанса 204; в css Scroll — 184, расхождение №95); длина ползунка 96 — из узла */
+  .snap-vscroll .ds-scroll { position: absolute; top: 0; left: 100%; width: 204px; transform-origin: top left; transform: rotate(90deg); }
+  .snap-vscroll .ds-scroll__knob { width: 96px; flex: none; }
+  .ds-list-item__element-left .snap-cb-on { display: none; }
+  .ds-list-item--selected .snap-cb-on { display: block; }
+  .ds-list-item--selected .snap-cb-off { display: none; }
+
+  /* Element: слот-контенты */
+  .snap-els { display: flex; flex-wrap: wrap; gap: 32px 40px; align-items: flex-start; }
+  .snap-el-img { width: var(--ds-size-6x, 24px); height: var(--ds-size-6x, 24px); display: block; color: var(--ds-palette-neutral-500, #9e9e9e); }
+  .snap-el-img svg { width: 100%; height: 100%; display: block; }
+  .snap-el-ind { display: block; width: 2px; height: 18px; background: var(--ds-color-icon-accent, #448aff); }  /* ассет «maximize», повёрнут: полоса 2×18 */
+  .snap-el-toggle { display: block; color: var(--ds-palette-neutral-500, #9e9e9e); }
+
+  /* Arrow list: сетка набора — 5 колонок, шаг 40 (24 + 16) */
+  .snap-arrows { display: grid; grid-template-columns: repeat(5, var(--ds-size-6x, 24px)); gap: var(--ds-size-4x, 16px); color: var(--ds-color-icon-primary, #616161); }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">List — демо стенд</span>
+  <span>наборы Figma: List item (54101-7922) · List (Сontainer) (57604-4762) · Element (54104-20956) · Arrow list (55939-13307)</span>
+</div>
+<div class="view">
+  <div class="ds-tabs" role="tablist" aria-label="List">
+    <button class="ds-tab ds-tab--active" role="tab" aria-selected="true" data-vtab="basic">Basic example</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="item">List item</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="element">Element</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="arrow">Arrow list</button>
+  </div>
+
+  <!-- 1. Basic example: контейнер списка (набор 57604-4762, Type=Сontainer) — по узлу -->
+  <div class="panel" data-vpanel="basic" role="tabpanel">
+    <div class="snap-cell snap-live">
+      <div class="snap-cap">Type=Сontainer</div>
+      <div class="ds-list-container">
+        <div class="ds-list-container__item">
+          <div class="ds-list-container__content"><span class="ds-list-container__label">Title list</span></div>
+        </div>
+        <div class="ds-divider ds-divider--m"></div>
+        <div class="snap-content">
+          <div class="ds-list-item" role="button" tabindex="0">
+            <span class="ds-list-item__element-left"><svg class="snap-cb-off"><use href="#ic-check-off"/></svg><svg class="snap-cb-on"><use href="#ic-check-on"/></svg></span>
+            <div class="ds-list-item__content">
+              <span class="ds-list-item__label-up">Label up</span>
+              <span class="ds-list-item__text">List item text</span>
+              <span class="ds-list-item__label-down">Label down</span>
+            </div>
+            <span class="ds-list-item__element-right"><svg><use href="#ic-info"/></svg></span>
+          </div>
+          <div class="ds-list-item" role="button" tabindex="0">
+            <span class="ds-list-item__element-left"><svg class="snap-cb-off"><use href="#ic-check-off"/></svg><svg class="snap-cb-on"><use href="#ic-check-on"/></svg></span>
+            <div class="ds-list-item__content">
+              <span class="ds-list-item__label-up">Label up</span>
+              <span class="ds-list-item__text">List item text</span>
+              <span class="ds-list-item__label-down">Label down</span>
+            </div>
+            <span class="ds-list-item__element-right"><svg><use href="#ic-info"/></svg></span>
+          </div>
+          <div class="ds-list-item" role="button" tabindex="0">
+            <span class="ds-list-item__element-left"><svg class="snap-cb-off"><use href="#ic-check-off"/></svg><svg class="snap-cb-on"><use href="#ic-check-on"/></svg></span>
+            <div class="ds-list-item__content">
+              <span class="ds-list-item__label-up">Label up</span>
+              <span class="ds-list-item__text">List item text</span>
+              <span class="ds-list-item__label-down">Label down</span>
+            </div>
+            <span class="ds-list-item__element-right"><svg><use href="#ic-info"/></svg></span>
+          </div>
+          <div class="snap-vscroll" aria-hidden="true">
+            <div class="ds-scroll">
+              <div class="ds-scroll__background">
+                <div class="ds-scroll__knob"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: заголовок по слоям — инстанс List item (все слоты выключены, 258×36): собран контейнерными классами на тех же токенах, что и строки (--ds-list-item-* — отступы/gap/фон; текст — --ds-font-body-s-14-normal-medium-*), поэтому правка List item в Фигме → tokens.css меняет и строки, и заголовок. Divider — компонент (.ds-divider--m, одно состояние Type=Solid; контейнерный класс в css белый — №38; синий :hover из старого набора снят — №96). Скролл — компонент Scroll (Position=First): подложка 200×8 #fafafa r8, ползунок 96×8 #d6d6d6 r8 у верхнего края; в css Scroll ползунок с padding 10px (визуально 28px) и длина 184 — обойдено в fixes.css п. 19 (№95). Фиксированные width 258 / min-height 257 контейнера и строки 246 внутри — артбордные (№45). Пример — рабочая сборка: клик по строке переключает Selected (чекбокс заполняется, иконки акцентные), наведение и нажатие живые.</p>
+  </div>
+
+  <!-- 2. List item: набор 54101-7922 — 8 состояний -->
+  <div class="panel" data-vpanel="item" role="tabpanel" hidden>
+    <div class="snap-cells">
+      <div class="snap-cell">
+        <div class="snap-cap">State=Default</div>
+        <div class="ds-list-item">
+          <span class="ds-list-item__element-left"><svg><use href="#ic-check-off"/></svg></span>
+          <div class="ds-list-item__content">
+            <span class="ds-list-item__label-up">Label up</span>
+            <span class="ds-list-item__text">List item text</span>
+            <span class="ds-list-item__label-down">Label down</span>
+          </div>
+          <span class="ds-list-item__element-right"><svg><use href="#ic-info"/></svg></span>
+        </div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-cap">State=Hover</div>
+        <div class="st-hover">
+          <div class="ds-list-item">
+            <span class="ds-list-item__element-left"><svg><use href="#ic-check-off"/></svg></span>
+            <div class="ds-list-item__content">
+              <span class="ds-list-item__label-up">Label up</span>
+              <span class="ds-list-item__text">List item text</span>
+              <span class="ds-list-item__label-down">Label down</span>
+            </div>
+            <span class="ds-list-item__element-right"><svg><use href="#ic-info"/></svg></span>
+          </div>
+        </div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-cap">State=Press</div>
+        <div class="st-press">
+          <div class="ds-list-item">
+            <span class="ds-list-item__element-left"><svg><use href="#ic-check-off"/></svg></span>
+            <div class="ds-list-item__content">
+              <span class="ds-list-item__label-up">Label up</span>
+              <span class="ds-list-item__text">List item text</span>
+              <span class="ds-list-item__label-down">Label down</span>
+            </div>
+            <span class="ds-list-item__element-right"><svg><use href="#ic-info"/></svg></span>
+          </div>
+        </div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-cap">State=Negative</div>
+        <div class="ds-list-item ds-list-item--negative">
+          <span class="ds-list-item__element-left"><svg><use href="#ic-check-off"/></svg></span>
+          <div class="ds-list-item__content">
+            <span class="ds-list-item__label-up">Label up</span>
+            <span class="ds-list-item__text">List item text</span>
+            <span class="ds-list-item__label-down">Label down</span>
+          </div>
+          <span class="ds-list-item__element-right"><svg><use href="#ic-info"/></svg></span>
+        </div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-cap">State=Selected</div>
+        <div class="ds-list-item ds-list-item--selected">
+          <span class="ds-list-item__element-left"><svg><use href="#ic-check-on"/></svg></span>
+          <div class="ds-list-item__content">
+            <span class="ds-list-item__label-up">Label up</span>
+            <span class="ds-list-item__text">List item text</span>
+            <span class="ds-list-item__label-down">Label down</span>
+          </div>
+          <span class="ds-list-item__element-right"><svg><use href="#ic-info"/></svg></span>
+        </div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-cap">State=Link</div>
+        <div class="ds-list-item ds-list-item--link">
+          <span class="ds-list-item__element-left"><svg><use href="#ic-check-off"/></svg></span>
+          <div class="ds-list-item__content">
+            <span class="ds-list-item__label-up">Label up</span>
+            <span class="ds-list-item__text">List item text</span>
+            <span class="ds-list-item__label-down">Label down</span>
+          </div>
+          <span class="ds-list-item__element-right"><svg><use href="#ic-info"/></svg></span>
+        </div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-cap">State=Back selected</div>
+        <div class="ds-list-item ds-list-item--back-selected">
+          <span class="ds-list-item__element-left"><svg><use href="#ic-check-on"/></svg></span>
+          <div class="ds-list-item__content">
+            <span class="ds-list-item__label-up">Label up</span>
+            <span class="ds-list-item__text">List item text</span>
+            <span class="ds-list-item__label-down">Label down</span>
+          </div>
+          <span class="ds-list-item__element-right"><svg><use href="#ic-info"/></svg></span>
+        </div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-cap">State=Disable</div>
+        <div class="ds-list-item ds-list-item--disabled" aria-disabled="true">
+          <span class="ds-list-item__element-left"><svg><use href="#ic-check-off"/></svg></span>
+          <div class="ds-list-item__content">
+            <span class="ds-list-item__label-up">Label up</span>
+            <span class="ds-list-item__text">List item text</span>
+            <span class="ds-list-item__label-down">Label down</span>
+          </div>
+          <span class="ds-list-item__element-right"><svg><use href="#ic-info"/></svg></span>
+        </div>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: в css не реализованы состояния Selected / Back selected / Link / Negative, а тексты и слоты красили себя фоном (артефакт генератора) — обойдено в fixes.css п. 18 на токенах (№94). У Link акцентный только основной текст, Label up / Label down остаются серыми — как в узле. Иконка справа — «info» (точный svg-путь Figma), чекбоксы — скруглённая версия из Figma (как в Select).</p>
+  </div>
+
+  <!-- 3. Element: набор 54104-20956 — 9 контентов слота -->
+  <div class="panel" data-vpanel="element" role="tabpanel" hidden>
+    <div class="snap-els">
+      <div class="snap-col">
+        <div class="snap-cap">Content=Text default</div>
+        <span class="ds-element ds-element--text-default"><span class="ds-element__label">Text element</span></span>
+      </div>
+      <div class="snap-col">
+        <div class="snap-cap">Content=Icon size</div>
+        <span class="ds-element ds-element--icon-size"><span class="ds-element__icon"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.16667 14.1667H10.8333V9.16667H9.16667V14.1667ZM10 7.5C10.2361 7.5 10.434 7.42014 10.5937 7.26042C10.7535 7.10069 10.8333 6.90278 10.8333 6.66667C10.8333 6.43056 10.7535 6.23264 10.5937 6.07292C10.434 5.91319 10.2361 5.83333 10 5.83333C9.76389 5.83333 9.56597 5.91319 9.40625 6.07292C9.24653 6.23264 9.16667 6.43056 9.16667 6.66667C9.16667 6.90278 9.24653 7.10069 9.40625 7.26042C9.56597 7.42014 9.76389 7.5 10 7.5ZM10 18.3333C8.84722 18.3333 7.76389 18.1146 6.75 17.6771C5.73611 17.2396 4.85417 16.6458 4.10417 15.8958C3.35417 15.1458 2.76042 14.2639 2.32292 13.25C1.88542 12.2361 1.66667 11.1528 1.66667 10C1.66667 8.84722 1.88542 7.76389 2.32292 6.75C2.76042 5.73611 3.35417 4.85417 4.10417 4.10417C4.85417 3.35417 5.73611 2.76042 6.75 2.32292C7.76389 1.88542 8.84722 1.66667 10 1.66667C11.1528 1.66667 12.2361 1.88542 13.25 2.32292C14.2639 2.76042 15.1458 3.35417 15.8958 4.10417C16.6458 4.85417 17.2396 5.73611 17.6771 6.75C18.1146 7.76389 18.3333 8.84722 18.3333 10C18.3333 11.1528 18.1146 12.2361 17.6771 13.25C17.2396 14.2639 16.6458 15.1458 15.8958 15.8958C15.1458 16.6458 14.2639 17.2396 13.25 17.6771C12.2361 18.1146 11.1528 18.3333 10 18.3333ZM10 16.6667C11.8611 16.6667 13.4375 16.0208 14.7292 14.7292C16.0208 13.4375 16.6667 11.8611 16.6667 10C16.6667 8.13889 16.0208 6.5625 14.7292 5.27083C13.4375 3.97917 11.8611 3.33333 10 3.33333C8.13889 3.33333 6.5625 3.97917 5.27083 5.27083C3.97917 6.5625 3.33333 8.13889 3.33333 10C3.33333 11.8611 3.97917 13.4375 5.27083 14.7292C6.5625 16.0208 8.13889 16.6667 10 16.6667Z"/></svg></span></span>
+      </div>
+      <div class="snap-col">
+        <div class="snap-cap">Content=Image size</div>
+        <span class="ds-element ds-element--image-size"><span class="ds-element__image-size snap-el-img"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="currentColor"/></svg></span></span>
+      </div>
+      <div class="snap-col">
+        <div class="snap-cap">Content=Checkbox</div>
+        <span class="ds-element ds-element--checkbox"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4.16667 17.5C3.70833 17.5 3.31597 17.3368 2.98958 17.0104C2.66319 16.684 2.5 16.2917 2.5 15.8333V4.16667C2.5 3.70833 2.66319 3.31597 2.98958 2.98958C3.31597 2.66319 3.70833 2.5 4.16667 2.5H15.8333C16.2917 2.5 16.684 2.66319 17.0104 2.98958C17.3368 3.31597 17.5 3.70833 17.5 4.16667V15.8333C17.5 16.2917 17.3368 16.684 17.0104 17.0104C16.684 17.3368 16.2917 17.5 15.8333 17.5H4.16667ZM4.16667 15.8333H15.8333V4.16667H4.16667V15.8333Z"/></svg></span>
+      </div>
+      <div class="snap-col">
+        <div class="snap-cap">Content=Radio button</div>
+        <span class="ds-element ds-element--radio-button"><span class="material-icons" style="font-family:'Material Icons Outlined'">radio_button_unchecked</span></span>
+      </div>
+      <div class="snap-col">
+        <div class="snap-cap">Content=Indicator</div>
+        <span class="ds-element ds-element--indicator"><span class="snap-el-ind"></span></span>
+      </div>
+      <div class="snap-col">
+        <div class="snap-cap">Content=Slide toggle</div>
+        <span class="ds-element ds-element--slide-toggle"><svg class="snap-el-toggle" width="34" height="20" viewBox="0 0 34 20"><path d="M0 10C0 4.47715 4.47715 0 10 0H24C29.5228 0 34 4.47715 34 10V10C34 15.5228 29.5228 20 24 20H10C4.47715 20 0 15.5228 0 10V10Z" fill="currentColor"/><circle cx="10" cy="10" r="8" fill="#ffffff"/></svg></span>
+      </div>
+      <div class="snap-col">
+        <div class="snap-cap">Content=Icon group</div>
+        <span class="ds-element ds-element--icon-group"><span class="ds-icon-group"><span class="ds-icon-group__icon"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.16667 14.1667H10.8333V9.16667H9.16667V14.1667ZM10 7.5C10.2361 7.5 10.434 7.42014 10.5937 7.26042C10.7535 7.10069 10.8333 6.90278 10.8333 6.66667C10.8333 6.43056 10.7535 6.23264 10.5937 6.07292C10.434 5.91319 10.2361 5.83333 10 5.83333C9.76389 5.83333 9.56597 5.91319 9.40625 6.07292C9.24653 6.23264 9.16667 6.43056 9.16667 6.66667C9.16667 6.90278 9.24653 7.10069 9.40625 7.26042C9.56597 7.42014 9.76389 7.5 10 7.5ZM10 18.3333C8.84722 18.3333 7.76389 18.1146 6.75 17.6771C5.73611 17.2396 4.85417 16.6458 4.10417 15.8958C3.35417 15.1458 2.76042 14.2639 2.32292 13.25C1.88542 12.2361 1.66667 11.1528 1.66667 10C1.66667 8.84722 1.88542 7.76389 2.32292 6.75C2.76042 5.73611 3.35417 4.85417 4.10417 4.10417C4.85417 3.35417 5.73611 2.76042 6.75 2.32292C7.76389 1.88542 8.84722 1.66667 10 1.66667C11.1528 1.66667 12.2361 1.88542 13.25 2.32292C14.2639 2.76042 15.1458 3.35417 15.8958 4.10417C16.6458 4.85417 17.2396 5.73611 17.6771 6.75C18.1146 7.76389 18.3333 8.84722 18.3333 10C18.3333 11.1528 18.1146 12.2361 17.6771 13.25C17.2396 14.2639 16.6458 15.1458 15.8958 15.8958C15.1458 16.6458 14.2639 17.2396 13.25 17.6771C12.2361 18.1146 11.1528 18.3333 10 18.3333ZM10 16.6667C11.8611 16.6667 13.4375 16.0208 14.7292 14.7292C16.0208 13.4375 16.6667 11.8611 16.6667 10C16.6667 8.13889 16.0208 6.5625 14.7292 5.27083C13.4375 3.97917 11.8611 3.33333 10 3.33333C8.13889 3.33333 6.5625 3.97917 5.27083 5.27083C3.97917 6.5625 3.33333 8.13889 3.33333 10C3.33333 11.8611 3.97917 13.4375 5.27083 14.7292C6.5625 16.0208 8.13889 16.6667 10 16.6667Z"/></svg></span><span class="ds-icon-group__icon"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.16667 14.1667H10.8333V9.16667H9.16667V14.1667ZM10 7.5C10.2361 7.5 10.434 7.42014 10.5937 7.26042C10.7535 7.10069 10.8333 6.90278 10.8333 6.66667C10.8333 6.43056 10.7535 6.23264 10.5937 6.07292C10.434 5.91319 10.2361 5.83333 10 5.83333C9.76389 5.83333 9.56597 5.91319 9.40625 6.07292C9.24653 6.23264 9.16667 6.43056 9.16667 6.66667C9.16667 6.90278 9.24653 7.10069 9.40625 7.26042C9.56597 7.42014 9.76389 7.5 10 7.5ZM10 18.3333C8.84722 18.3333 7.76389 18.1146 6.75 17.6771C5.73611 17.2396 4.85417 16.6458 4.10417 15.8958C3.35417 15.1458 2.76042 14.2639 2.32292 13.25C1.88542 12.2361 1.66667 11.1528 1.66667 10C1.66667 8.84722 1.88542 7.76389 2.32292 6.75C2.76042 5.73611 3.35417 4.85417 4.10417 4.10417C4.85417 3.35417 5.73611 2.76042 6.75 2.32292C7.76389 1.88542 8.84722 1.66667 10 1.66667C11.1528 1.66667 12.2361 1.88542 13.25 2.32292C14.2639 2.76042 15.1458 3.35417 15.8958 4.10417C16.6458 4.85417 17.2396 5.73611 17.6771 6.75C18.1146 7.76389 18.3333 8.84722 18.3333 10C18.3333 11.1528 18.1146 12.2361 17.6771 13.25C17.2396 14.2639 16.6458 15.1458 15.8958 15.8958C15.1458 16.6458 14.2639 17.2396 13.25 17.6771C12.2361 18.1146 11.1528 18.3333 10 18.3333ZM10 16.6667C11.8611 16.6667 13.4375 16.0208 14.7292 14.7292C16.0208 13.4375 16.6667 11.8611 16.6667 10C16.6667 8.13889 16.0208 6.5625 14.7292 5.27083C13.4375 3.97917 11.8611 3.33333 10 3.33333C8.13889 3.33333 6.5625 3.97917 5.27083 5.27083C3.97917 6.5625 3.33333 8.13889 3.33333 10C3.33333 11.8611 3.97917 13.4375 5.27083 14.7292C6.5625 16.0208 8.13889 16.6667 10 16.6667Z"/></svg></span><span class="ds-icon-group__icon"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.16667 14.1667H10.8333V9.16667H9.16667V14.1667ZM10 7.5C10.2361 7.5 10.434 7.42014 10.5937 7.26042C10.7535 7.10069 10.8333 6.90278 10.8333 6.66667C10.8333 6.43056 10.7535 6.23264 10.5937 6.07292C10.434 5.91319 10.2361 5.83333 10 5.83333C9.76389 5.83333 9.56597 5.91319 9.40625 6.07292C9.24653 6.23264 9.16667 6.43056 9.16667 6.66667C9.16667 6.90278 9.24653 7.10069 9.40625 7.26042C9.56597 7.42014 9.76389 7.5 10 7.5ZM10 18.3333C8.84722 18.3333 7.76389 18.1146 6.75 17.6771C5.73611 17.2396 4.85417 16.6458 4.10417 15.8958C3.35417 15.1458 2.76042 14.2639 2.32292 13.25C1.88542 12.2361 1.66667 11.1528 1.66667 10C1.66667 8.84722 1.88542 7.76389 2.32292 6.75C2.76042 5.73611 3.35417 4.85417 4.10417 4.10417C4.85417 3.35417 5.73611 2.76042 6.75 2.32292C7.76389 1.88542 8.84722 1.66667 10 1.66667C11.1528 1.66667 12.2361 1.88542 13.25 2.32292C14.2639 2.76042 15.1458 3.35417 15.8958 4.10417C16.6458 4.85417 17.2396 5.73611 17.6771 6.75C18.1146 7.76389 18.3333 8.84722 18.3333 10C18.3333 11.1528 18.1146 12.2361 17.6771 13.25C17.2396 14.2639 16.6458 15.1458 15.8958 15.8958C15.1458 16.6458 14.2639 17.2396 13.25 17.6771C12.2361 18.1146 11.1528 18.3333 10 18.3333ZM10 16.6667C11.8611 16.6667 13.4375 16.0208 14.7292 14.7292C16.0208 13.4375 16.6667 11.8611 16.6667 10C16.6667 8.13889 16.0208 6.5625 14.7292 5.27083C13.4375 3.97917 11.8611 3.33333 10 3.33333C8.13889 3.33333 6.5625 3.97917 5.27083 5.27083C3.97917 6.5625 3.33333 8.13889 3.33333 10C3.33333 11.8611 3.97917 13.4375 5.27083 14.7292C6.5625 16.0208 8.13889 16.6667 10 16.6667Z"/></svg></span></span></span>
+      </div>
+      <div class="snap-col">
+        <div class="snap-cap">Content=Counter</div>
+        <span class="ds-element ds-element--counter"><span class="ds-badge ds-badge--counter ds-badge--negative">17</span></span>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: у Checkbox / Radio в агрегаторе index.css подключены только label-css (журнал №32/39) — контент слота собран точными svg-путями Figma и глифом Material Icons как в Select; «Icon size» — глиф ⓘ 20px (по узлу), «Icon group» — три ⓘ (по узлу набора, слот). Глифы слотов — 20px (иначе 24, обойдено в fixes п. 18).</p>
+  </div>
+
+  <!-- 4. Arrow list: набор 55939-13307 — 13 стрелок, раскладка набора (4 + 4 + 5) -->
+  <div class="panel" data-vpanel="arrow" role="tabpanel" hidden>
+    <div class="snap-arrows">
+      <div class="ds-arrow-list" title="arrow_left"><span class="ds-arrow-list__icon"><span class="material-icons" style="font-family:'Material Icons Outlined'">arrow_left</span></span></div>
+      <div class="ds-arrow-list" title="arrow_drop_up"><span class="ds-arrow-list__icon"><span class="material-icons" style="font-family:'Material Icons Outlined'">arrow_drop_up</span></span></div>
+      <div class="ds-arrow-list" title="arrow_right"><span class="ds-arrow-list__icon"><span class="material-icons" style="font-family:'Material Icons Outlined'">arrow_right</span></span></div>
+      <div class="ds-arrow-list" title="arrow_drop_down"><span class="ds-arrow-list__icon"><span class="material-icons" style="font-family:'Material Icons Outlined'">arrow_drop_down</span></span></div>
+      <span></span>
+      <div class="ds-arrow-list" title="keyboard_arrow_left"><span class="ds-arrow-list__icon"><span class="material-icons" style="font-family:'Material Icons Outlined'">keyboard_arrow_left</span></span></div>
+      <div class="ds-arrow-list" title="keyboard_arrow_up"><span class="ds-arrow-list__icon"><span class="material-icons" style="font-family:'Material Icons Outlined'">keyboard_arrow_up</span></span></div>
+      <div class="ds-arrow-list" title="keyboard_arrow_right"><span class="ds-arrow-list__icon"><span class="material-icons" style="font-family:'Material Icons Outlined'">keyboard_arrow_right</span></span></div>
+      <div class="ds-arrow-list" title="keyboard_arrow_down"><span class="ds-arrow-list__icon"><span class="material-icons" style="font-family:'Material Icons Outlined'">keyboard_arrow_down</span></span></div>
+      <span></span>
+      <div class="ds-arrow-list" title="arrow_back"><span class="ds-arrow-list__icon"><span class="material-icons" style="font-family:'Material Icons Outlined'">arrow_back</span></span></div>
+      <div class="ds-arrow-list" title="arrow_forward"><span class="ds-arrow-list__icon"><span class="material-icons" style="font-family:'Material Icons Outlined'">arrow_forward</span></span></div>
+      <div class="ds-arrow-list" title="arrow_downward_alt"><span class="ds-arrow-list__icon"><svg viewBox="0 0 24 24"><path d="M12 18L6 12L7.4 10.6L11 14.2V5H13V14.2L16.6 10.6L18 12L12 18Z"/></svg></span></div>
+      <div class="ds-arrow-list" title="arrow_upward_alt"><span class="ds-arrow-list__icon"><svg viewBox="0 0 24 24"><path d="M11 18V8.8L7.4 12.4L6 11L12 5L18 11L16.6 12.4L13 8.8V18H11Z"/></svg></span></div>
+      <div class="ds-arrow-list" title="unfold_less"><span class="ds-arrow-list__icon"><span class="material-icons" style="font-family:'Material Icons Outlined'">unfold_less</span></span></div>
+    </div>
+    <p class="snap-note">Пометки для ревью: arrow_downward_alt / arrow_upward_alt отсутствуют в Material Icons — поставлены точными svg-путями из Figma (журнал №90); остальные — глифы Material Icons Outlined по имени. Раскладка — как в наборе: 4 + 4 + 5 (шаг 40).</p>
+  </div>
+</div>
+
+<!-- svg-иконки — точные пути из Figma: чекбоксы (скруглённая версия, как в Select: Deselected — контур,
+     Selected — заливной с белой галочкой через fill-rule) и info (как в Form field input) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-check-off" viewBox="0 0 20 20">
+    <path d="M4.16667 17.5C3.70833 17.5 3.31597 17.3368 2.98958 17.0104C2.66319 16.684 2.5 16.2917 2.5 15.8333V4.16667C2.5 3.70833 2.66319 3.31597 2.98958 2.98958C3.31597 2.66319 3.70833 2.5 4.16667 2.5H15.8333C16.2917 2.5 16.684 2.66319 17.0104 2.98958C17.3368 3.31597 17.5 3.70833 17.5 4.16667V15.8333C17.5 16.2917 17.3368 16.684 17.0104 17.0104C16.684 17.3368 16.2917 17.5 15.8333 17.5H4.16667ZM4.16667 15.8333H15.8333V4.16667H4.16667V15.8333Z"/>
+  </symbol>
+  <symbol id="ic-check-on" viewBox="0 0 20 20">
+    <path fill-rule="evenodd" d="M8.83333 13.5L14.7083 7.625L13.5417 6.45833L8.83333 11.1667L6.45833 8.79167L5.29167 9.95833L8.83333 13.5ZM4.16667 17.5C3.70833 17.5 3.31597 17.3368 2.98958 17.0104C2.66319 16.684 2.5 16.2917 2.5 15.8333V4.16667C2.5 3.70833 2.66319 3.31597 2.98958 2.98958C3.31597 2.66319 3.70833 2.5 4.16667 2.5H15.8333C16.2917 2.5 16.684 2.66319 17.0104 2.98958C17.3368 3.31597 17.5 3.70833 17.5 4.16667V15.8333C17.5 16.2917 17.3368 16.684 17.0104 17.0104C16.684 17.3368 16.2917 17.5 15.8333 17.5H4.16667Z"/>
+  </symbol>
+  <symbol id="ic-info" viewBox="0 0 20 20">
+    <path d="M9.16667 14.1667H10.8333V9.16667H9.16667V14.1667ZM10 7.5C10.2361 7.5 10.434 7.42014 10.5937 7.26042C10.7535 7.10069 10.8333 6.90278 10.8333 6.66667C10.8333 6.43056 10.7535 6.23264 10.5937 6.07292C10.434 5.91319 10.2361 5.83333 10 5.83333C9.76389 5.83333 9.56597 5.91319 9.40625 6.07292C9.24653 6.23264 9.16667 6.43056 9.16667 6.66667C9.16667 6.90278 9.24653 7.10069 9.40625 7.26042C9.56597 7.42014 9.76389 7.5 10 7.5ZM10 18.3333C8.84722 18.3333 7.76389 18.1146 6.75 17.6771C5.73611 17.2396 4.85417 16.6458 4.10417 15.8958C3.35417 15.1458 2.76042 14.2639 2.32292 13.25C1.88542 12.2361 1.66667 11.1528 1.66667 10C1.66667 8.84722 1.88542 7.76389 2.32292 6.75C2.76042 5.73611 3.35417 4.85417 4.10417 4.10417C4.85417 3.35417 5.73611 2.76042 6.75 2.32292C7.76389 1.88542 8.84722 1.66667 10 1.66667C11.1528 1.66667 12.2361 1.88542 13.25 2.32292C14.2639 2.76042 15.1458 3.35417 15.8958 4.10417C16.6458 4.85417 17.2396 5.73611 17.6771 6.75C18.1146 7.76389 18.3333 8.84722 18.3333 10C18.3333 11.1528 18.1146 12.2361 17.6771 13.25C17.2396 14.2639 16.6458 15.1458 15.8958 15.8958C15.1458 16.6458 14.2639 17.2396 13.25 17.6771C12.2361 18.1146 11.1528 18.3333 10 18.3333ZM10 16.6667C11.8611 16.6667 13.4375 16.0208 14.7292 14.7292C16.0208 13.4375 16.6667 11.8611 16.6667 10C16.6667 8.13889 16.0208 6.5625 14.7292 5.27083C13.4375 3.97917 11.8611 3.33333 10 3.33333C8.13889 3.33333 6.5625 3.97917 5.27083 5.27083C3.97917 6.5625 3.33333 8.13889 3.33333 10C3.33333 11.8611 3.97917 13.4375 5.27083 14.7292C6.5625 16.0208 8.13889 16.6667 10 16.6667Z"/>
+  </symbol>
+</svg>
+
+<script>
+  /* табы — компонент ДС Tabs (как на стендах Select/Form field input/Button) */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.ds-tab[data-vtab]'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('[data-vpanel]'));
+  tabs.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      tabs.forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle('ds-tab--active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach(function (p) { p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab'); });
+    });
+  });
+
+  /* живая сборка примера: клик (и Enter/Space) по строке переключает Selected */
+  Array.prototype.forEach.call(document.querySelectorAll('.snap-live .ds-list-item'), function (row) {
+    function toggle() { row.classList.toggle('ds-list-item--selected'); }
+    row.addEventListener('click', toggle);
+    row.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+  });
+</script>
+</body>
+</html>

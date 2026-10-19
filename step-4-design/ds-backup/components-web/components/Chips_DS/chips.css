@@ -1,0 +1,127 @@
+.ds-chips {
+  width: fit-content;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: var(--ds-size-8x);
+  padding: var(--ds-chips-m-size-pad-top, 6px) var(--ds-chips-m-size-pad-right, 8px) var(--ds-chips-m-size-pad-bottom, 6px) var(--ds-chips-m-size-pad-left, 8px);
+  gap: var(--ds-chips-m-size-gap, 8px);
+  border-radius: var(--ds-chips-m-size-border-radius, 12px);
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-chips__label {
+  font-size: var(--ds-font-body-s-14-normal-regular-size);
+  line-height: var(--ds-font-body-s-14-normal-regular-line);
+  letter-spacing: var(--ds-font-body-s-14-normal-regular-spacing);
+  font-weight: var(--ds-font-body-s-14-normal-regular-weight);
+  color: var(--ds-color-chips-text-color, #333333);
+  white-space: nowrap;
+}
+.ds-chips__icon {
+  flex-shrink: 0;
+  width: var(--ds-size-5x);
+  height: var(--ds-size-5x);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ds-color-chips-icon-color);
+}
+.ds-chips__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ds-chips__icon svg path {
+  fill: currentColor;
+}
+.ds-chips__icon-size {
+  height: var(--ds-size-5x);
+  display: flex;
+  flex-direction: row;
+}
+.ds-chips__add {
+  height: var(--ds-size-5x);
+  display: flex;
+  flex-direction: row;
+  background: #ffffff;
+}
+.ds-chips__chip-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--ds-size-2-5x);
+}
+.ds-chips__chip-text {
+  display: flex;
+  flex-direction: row;
+  background: var(--ds-color-chips-text-color, #333333);
+  font-size: var(--ds-font-body-s-14-normal-regular-size);
+  line-height: var(--ds-font-body-s-14-normal-regular-line);
+  letter-spacing: var(--ds-font-body-s-14-normal-regular-spacing);
+  font-weight: var(--ds-font-body-s-14-normal-regular-weight);
+  color: var(--ds-color-chips-text-color, #333333);
+}
+.ds-chips__close {
+  height: var(--ds-size-5x);
+  display: flex;
+  flex-direction: row;
+  background: #ffffff;
+}
+.ds-chips--s {
+  gap: var(--ds-chips-s-size-gap, 4px);
+  padding: var(--ds-chips-s-size-pad-top, 4px) var(--ds-chips-s-size-pad-right, 6px) var(--ds-chips-s-size-pad-bottom, 4px) var(--ds-chips-s-size-pad-left, 6px);
+  border-radius: var(--ds-chips-s-size-border-radius, 8px);
+}
+.ds-chips--s .ds-chips__icon {
+  width: var(--ds-size-4x);
+  height: var(--ds-size-4x);
+}
+.ds-chips--outlined {
+  background: var(--ds-color-chips-outlined-default-background, #ffffff);
+  border: 1px solid var(--ds-color-chips-outlined-default-border-color, #e0e0e0);
+  color: var(--ds-color-chips-text-color, #333333);
+}
+.ds-chips--outlined:hover {
+  background: var(--ds-color-chips-outlined-hover-background, #ffffff);
+  border: 1px solid var(--ds-color-chips-outlined-hover-border-color, #9e9e9e);
+}
+.ds-chips--outlined:focus-visible {
+  background: var(--ds-color-chips-outlined-focus-background, #ffffff);
+}
+.ds-chips--outlined:active {
+  background: var(--ds-color-chips-outlined-press-background, #e0e0e0);
+  border: 1px solid var(--ds-color-chips-outlined-press-border-color, #e0e0e0);
+}
+.ds-chips--outlined:disabled {
+  background: var(--ds-color-chips-disable-background-outlined, #ffffff);
+  border: 1px solid var(--ds-color-chips-disable-border-color, #ebebeb);
+  color: var(--ds-color-chips-disable-text-color, #9e9e9e);
+}
+.ds-chips--outlined.ds-chips--disabled {
+  background: var(--ds-color-chips-disable-background-outlined, #ffffff);
+  border: 1px solid var(--ds-color-chips-disable-border-color, #ebebeb);
+  color: var(--ds-color-chips-disable-text-color, #9e9e9e);
+}
+.ds-chips--filled {
+  background: var(--ds-color-chips-filled-default-background, #f8f9fc);
+  color: var(--ds-color-chips-text-color, #333333);
+}
+.ds-chips--filled:hover {
+  background: var(--ds-color-chips-filled-hover-background, #f5f5f5);
+}
+.ds-chips--filled:active {
+  background: var(--ds-color-chips-filled-press-background, #e0e0e0);
+}
+.ds-chips--filled:disabled {
+  background: var(--ds-color-chips-disable-background-filled, #ebebeb);
+  color: var(--ds-color-chips-disable-text-color, #9e9e9e);
+}
+.ds-chips--filled.ds-chips--disabled {
+  background: var(--ds-color-chips-disable-background-filled, #ebebeb);
+  color: var(--ds-color-chips-disable-text-color, #9e9e9e);
+}
+.ds-chips--disabled {
+  pointer-events: none;
+}
+

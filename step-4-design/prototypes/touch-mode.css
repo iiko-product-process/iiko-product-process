@@ -1,0 +1,43 @@
+/* ============================================================
+   touch-mode.css — «тач-режим» прототипов.
+   Включает touch-mode.js: ширина кадра ≤ 768 (телефон/планшет),
+   реальное тач-устройство или ?touch=1 (выключить: ?touch=0).
+   Смысл: на тач-устройстве нет ховера — поэтому здесь вместо ховера
+   работает тап, а подсказки открываются долгим нажатием; вместо курсора — круг-«палец».
+   ============================================================ */
+body[data-touch]{-webkit-tap-highlight-color:transparent}
+
+/* Подсказки: ховер и фокус тултип не открывают (ховера на тач нет) —
+   только долгое нажатие; класс is-open вешает touch-mode.js */
+body[data-touch] .tip-wrap:hover .tip,
+body[data-touch] .tip-wrap:focus-within .tip{display:none}
+/* долгое нажатие: подсказка должна побеждать подавление ховера (тот же вес, ниже по файлу) */
+body[data-touch] .tip-wrap .tip.is-open{display:block}
+
+/* Действия строк: в тач-режиме от ховера не появляются —
+   раскрываются тапом (класс is-hover вешает touch-mode.js; фон+кнопки — как в макете).
+   Раскрытую строку (is-hover) правило не трогает — иначе гасило бы её же раскрытие */
+body[data-touch] .ds-table-content-row:not(.is-hover):hover .js-acts{visibility:hidden}
+
+/* «Палец» вместо курсора: в тач-режиме настоящий курсор в кадре скрыт, вместо него — круг ~44 px
+   (размер среднего пальца), который ходит за указателем; при нажатии — темнее и чуть меньше.
+   Элемент .touch-finger создаёт и двигает touch-mode.js */
+body[data-touch] .panel,
+body[data-touch] .panel *{cursor:none!important}
+.touch-finger{position:fixed;left:-100px;top:-100px;width:44px;height:44px;border-radius:50%;
+  transform:translate(-50%,-50%);pointer-events:none;z-index:300;display:none;
+  background:rgba(51,51,51,.16);border:1.5px solid rgba(51,51,51,.5);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);
+  transition:transform .08s ease,background .08s ease,border-color .08s ease}
+.touch-finger::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;border-radius:50%;
+  transform:translate(-50%,-50%);background:rgba(51,51,51,.55)}
+body[data-touch] .touch-finger.is-in{display:block}
+.touch-finger.is-press{transform:translate(-50%,-50%) scale(.9);background:rgba(51,51,51,.34);border-color:rgba(51,51,51,.75)}
+
+/* Свайп-прокрутка (touch-mode.js): протяжка «пальцем» не выделяет текст в прокручиваемых полосах */
+body[data-touch] .ds-tabs,
+body[data-touch] .table-wrap{user-select:none;-webkit-user-select:none}
+
+/* Тап по строке списка (touch-mode.js): подсветка нажатия живёт ~180 мс от тапа —
+   иначе :active (#E0E0E0) при быстром клике не успеваешь увидеть; цвет — токен ДС Press */
+body[data-touch] .ds-select-item.is-tap-press{background:var(--ds-color-select-item-press-background,#e0e0e0)}

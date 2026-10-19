@@ -1,0 +1,52 @@
+/* ============================================================
+   iiko DS Mobile — Sidenav (боковое меню)
+   ------------------------------------------------------------
+   Что меняется
+   ------------
+   1. Ширина: 200 / 260 px -> 360 px. Это единственная ширина, которую
+      называют обе платформы с числами (MD3 navigation drawer 360 dp,
+      Angular M3-токен drawer 360 px); 240 dp не подтверждает ни один источник.
+   2. На телефоне это модальный drawer поверх контента (режим over) с
+      затемнением Backdrop — сама панель задаёт геометрию, режим показа — страница.
+   3. Угол: радиус 16 px по кромке — M3-токен Angular (corner-large).
+
+   Что вместо него для коротких меню
+   ---------------------------------
+   MD3: navigation bar (высота 80 dp, индикатор 32 x 64, 3–5 пунктов) для
+   компактных экранов. Это отдельный компонент: если в приложении 3–5 пунктов,
+   на телефоне правильнее нижняя навигация, а не drawer.
+
+   Источники: рекомендации платформ.
+   Подключение: components-mobile/components/index.css
+   ============================================================ */
+
+/* Специфичность: у базовых правил ДС тоже два класса
+   (`.ds-sidenav-item--l1.ds-sidenav-item--expanded` = 0,2,0), а мобильный слой
+   подключается ПЕРЕД components-web/components/index.css — при равной
+   специфичности базовое правило перебило бы это. Поэтому поднимаем до 0,3,0. */
+[data-mode="mobile"] .ds-sidenav-view,
+[data-mode="mobile"] .ds-sidenav-header,
+[data-mode="mobile"] .ds-sidenav-item,
+[data-mode="mobile"] .ds-sidenav-item--l1.ds-sidenav-item--expanded.ds-sidenav-item--expanded,
+[data-mode="mobile"] .ds-sidenav-header--l2.ds-sidenav-header--expanded.ds-sidenav-header--expanded,
+[data-mode="mobile"] .ds-sidenav-footer--l1.ds-sidenav-footer--expanded.ds-sidenav-footer--expanded {
+  width: 360px;
+}
+
+/* панель подрезается по экрану: на телефоне 360 — это почти вся ширина */
+[data-mode="mobile"] .ds-sidenav-view {
+  max-width: 100%;
+}
+
+/* Высоты пунктов. В ДС пункт уровня 1 — 40 px (паддинги 12 + строка 16).
+   MD3 navigation drawer: active-indicator-height 56px — то есть строка пункта
+   56 px; тач-минимум 48 px (MD3 touch-target-size, Angular touch-target-size)
+   отдаём уровням 2–3.
+   Источники: рекомендации платформ (md3.sizes[2].quote, touch_target_quote). */
+[data-mode="mobile"] .ds-sidenav-item--l1 {
+  min-height: 56px;
+}
+[data-mode="mobile"] .ds-sidenav-item--l2,
+[data-mode="mobile"] .ds-sidenav-item--l3 {
+  min-height: 48px;
+}

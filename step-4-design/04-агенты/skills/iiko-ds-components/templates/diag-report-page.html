@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Диагностика страницы компонентов</title>
+<!--
+  Проба для владельца: считает метрики оболочки recommendations/index.html в ЕГО браузере
+  и сама отправляет их в лог serve.py (см. references/shell-page-and-shared-notes-block.md).
+  Копировать в DS/_audit/rec/checks/_diag.html (только внутри корня DS!), путь к оболочке — BASE ниже.
+  Адрес владельцу: http://127.0.0.1:8899/_audit/rec/checks/_diag.html?slug=autocomplete
+  Читать отчёт: execute_code + re.findall(r'_diag-report\?d=([^"&\s]+)', open('%LOCALAPPDATA%/Temp/serve8899.log').read())
+-->
+<style>
+html,body{margin:0;background:#fff;font:15px/22px 'Segoe UI',Arial,sans-serif;color:#111}
+h1{font-size:20px;margin:16px}
+#out{white-space:pre-wrap;margin:16px;font:14px/20px Consolas,monospace;background:#f7f8fa;border:1px solid #ddd;border-radius:8px;padding:12px}
+#shell{position:fixed;left:-5000px;top:0;width:1920px;height:1080px;border:0}
+#sent{margin:16px;color:#666;font-size:13px}
+</style>
+</head>
+<body>
+<h1>Диагностика страницы компонентов — просто дождись, пока заполнится отчёт</h1>
+<pre id="out">считаю…</pre>
+<div id="sent">…</div>
+<iframe id="shell"></iframe>
+<script>
+var BASE = '../../../iiko-ds-mobile/prototypes/recommendations/';
+var shell = document.getElementById('shell');
+var out = document.getElementById('out'), sent = document.getElementById('sent');
+var lines = [];
+function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+async function run() {
+  var v = new URLSearchParams(location.search);
+  var SLUG = v.get('slug') || 'autocomplete';
+  lines.push('МОЁ ОКНО: ' + innerWidth + ' x ' + innerHeight + ' | масштаб ' + (devicePixelRatio * 100) + '%');
+  shell.style.width = innerWidth + 'px';
+  shell.style.height = Math.max(innerHeight, 600) + 'px';
+  shell.setAttribute('src', BASE + 'index.html?diag=' + Date.now() + '#' + SLUG);
+  await new Promise(function (res) { shell.onload = res; });
+  await wait(6000);
+
+  var d = shell.contentDocument, w = shell.contentWindow;
+  var f = d.getElementById('frame'), fw = f.contentWindow, fd = f.contentDocument;
+  var fr = f.getBoundingClientRect();
+  var block = d.querySelector('.kit > div > .card');
+  var br = block.getBoundingClientRect();
+  var cards = [].slice.call(fd.querySelectorAll('div.wrap > .card'));
+  var bodies = [].slice.call(fd.querySelectorAll('div.wrap > *'));
+  var lastBlock = bodies.length ? bodies[bodies.length - 1].getBoundingClientRect().bottom : -1;
+  var lr = cards.length ? cards[cards.length - 1].getBoundingClientRect() : null;
+
+  lines.push('ВЕРСИЯ оболочки: ' + (w.VER || '?') + ' | атрибут scrolling у фрейма: ' + (f.getAttribute('scrolling') || 'нет'));
+  lines.push('ПОЛОСЫ: у оболочки вертикальная ' + (d.documentElement.scrollHeight > d.documentElement.clientHeight ? 'есть' : 'нет') +
+             ', горизонтальная ' + (d.documentElement.scrollWidth > d.documentElement.clientWidth ? 'ЕСТЬ' : 'нет') +
+             ' (' + d.documentElement.scrollWidth + '/' + d.documentElement.clientWidth + ')');
+  lines.push('ФРЕЙМ: элемент ' + Math.round(fr.width) + ' x ' + Math.round(fr.height) +
+             ' | внутреннее окно ' + fw.innerWidth + ' x ' + fw.innerHeight +
+             ' -> своя полоса: ' + (fw.innerWidth < Math.round(fr.width) - 1 ? 'ЕСТЬ' : 'нет'));
+  lines.push('СТРАНИЦА ВНУТРИ: документ ' + fd.documentElement.scrollHeight + ' x ' + fd.documentElement.scrollWidth +
+             ' | окно ' + fd.documentElement.clientHeight + ' x ' + fd.documentElement.clientWidth +
+             ' | overflow html ' + fw.getComputedStyle(fd.documentElement).overflowY + ' / body ' + fw.getComputedStyle(fd.body).overflowY +
+             ' | прокрутить можно на ' + (fd.documentElement.scrollHeight - fd.documentElement.clientHeight) + ' px');
+  lines.push('НИЗ СТРАНИЦЫ: последний блок кончается на ' + Math.round(lastBlock) + ', кадр кончается на ' + Math.round(fr.height) +
+             ' -> не показано ' + Math.round(fr.height - lastBlock) + ' px');
+  lines.push('БЛОК: W' + Math.round(br.width) + ' L' + Math.round(br.left) + ' R' + Math.round(br.right) +
+             ' | последняя карточка страницы: W' + (lr ? Math.round(lr.width) : '?') +
+             ' L' + (lr ? Math.round(fr.left + lr.left) : '?') + ' R' + (lr ? Math.round(fr.left + lr.right) : '?') +
+             ' | расхождение ' + (lr ? Math.round(br.width - lr.width) : '?') + ' px');
+  lines.push('ОТСТУП от кадра до блока: ' + Math.round(br.top - fr.bottom) + ' px');
+
+  var fonts = [];
+  try {
+    fonts.push('Roboto ' + (fd.fonts.check('16px Roboto') ? 'есть' : 'НЕТ'));
+    fonts.push('Material Icons ' + (fd.fonts.check('24px "Material Icons"') ? 'есть' : 'НЕТ'));
+    fonts.push('статус ' + fd.fonts.status);
+  } catch (e) { fonts.push('ошибка ' + e.message); }
+  lines.push('ШРИФТЫ во фрейме: ' + fonts.join(', '));
+
+  var badCss = [], okCss = 0;
+  [].forEach.call(fd.styleSheets, function (ss) {
+    try { ss.cssRules.length; okCss++; } catch (e) { badCss.push(ss.href || '(встроенный)'); }
+  });
+  lines.push('CSS во фрейме: подключено ' + fd.styleSheets.length + ', читается ' + okCss +
+             ', не читается: ' + (badCss.length ? badCss.join(' | ') : 'нет'));
+  var badCssShell = [];
+  [].forEach.call(d.styleSheets, function (ss) {
+    try { ss.cssRules.length; } catch (e) { badCssShell.push(ss.href); }
+  });
+  lines.push('CSS оболочки не читается: ' + (badCssShell.length ? badCssShell.join(' | ') : 'нет'));
+
+  var text = lines.join('\n');
+  out.textContent = text;
+  // отчёт уходит в лог serve.py обычным GET-запросом — POST и сторонние сервисы не нужны
+  var report = encodeURIComponent('DIAG|' + SLUG + '|' + text.replace(/\n/g, ' ~ '));
+  sent.textContent = 'отчёт отправлен: ' + report.length + ' символов';
+  (new Image()).src = './_diag-report?d=' + report + '&t=' + Date.now();
+}
+run().catch(function (e) { out.textContent = 'ERR ' + e.message + '\n' + lines.join('\n'); });
+</script>
+</body>
+</html>

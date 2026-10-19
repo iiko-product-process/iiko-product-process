@@ -1,0 +1,101 @@
+/* ── (было .ds-info-panel — удалено: в ДС для пояснений
+       используется компонент Banners, см. .ds-banner ниже) ── */
+
+/* ── Banners (компонент ДС для информационных сообщений) ───
+   Style: Accent / Positive / Warning / Negative / Neutral
+   ДС: padding 12px 16px, radius 12px, gap 8px, иконка 20px       */
+
+.ds-banner {
+
+  display: flex;
+  gap: var(--ds-space-2x);                                /* 8px */
+  box-sizing: border-box;
+  padding: var(--ds-space-3x) var(--ds-space-4x);          /* 12px 16px */
+  border-radius: var(--ds-radius-3x);                     /* 12px */
+  background: var(--ds-color-banners-accent-background);  /* #F0F5FF */
+  color: var(--ds-color-banners-text-color);              /* #333333 */
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-size: var(--ds-typography-body-font-size-s);       /* 14px */
+  line-height: var(--ds-typography-body-line-height-s);   /* 20px */
+  letter-spacing: var(--ds-typography-letter-spacing-s);
+
+}
+
+.ds-banner--horizontal {
+ flex-direction: row; align-items: center; 
+}
+
+.ds-banner--vertical {
+ flex-direction: column; 
+}
+
+.ds-banner--accent {
+ background: var(--ds-color-banners-accent-background); 
+}
+
+.ds-banner--positive {
+ background: var(--ds-color-banners-positive-background); 
+}
+
+.ds-banner--warning {
+ background: var(--ds-color-banners-warning-background); 
+}
+
+.ds-banner--negative {
+ background: var(--ds-color-banners-negative-background); 
+}
+
+.ds-banner--neutral {
+
+  background: var(--ds-color-banners-neutral-background);
+  border: 1px solid var(--ds-color-banners-border-color);
+
+}
+
+.ds-banner__icon {
+
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ds-color-banners-accent-icon-color);       /* #448AFF */
+
+}
+
+.ds-banner--positive .ds-banner__icon {
+ color: var(--ds-color-banners-positive-icon-color); 
+}
+
+.ds-banner--warning  .ds-banner__icon {
+ color: var(--ds-color-banners-warning-icon-color); 
+}
+
+.ds-banner--negative .ds-banner__icon {
+ color: var(--ds-color-banners-negative-icon-color); 
+}
+
+.ds-banner--neutral  .ds-banner__icon {
+ color: var(--ds-color-banners-neutral-icon-color); 
+}
+
+.ds-banner__row {
+
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2x);
+  width: 100%;
+
+}
+
+.ds-banner__text {
+ flex: 1; 
+}
+
+.ds-banner__buttons {
+
+  display: flex;
+  gap: var(--ds-space-2x);
+
+}

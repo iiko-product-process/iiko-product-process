@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search — демо стенд компонента</title>
+<!--
+  Демо стенд компонента Search (страница «Search_DS», 54368:1068). Папка: DS/components-web/components/Search_DS/.
+  Источник — набор «Search» (54453:1620) Figma «Iiko Web DS (New)»: 15 вариантов —
+  Size M (6: Default, Hover, Focus, Focus+Value, Completed, Disable), Size S (те же 6),
+  Size XS (3: Default, Hover, Disable). Блок примеров в канве не заведён — витрина набора.
+  Состав варианта (по узлам): Icon size (лупа 20) + текст «Search text»; у Focus+Value / Completed —
+  справа блок «Icons» (крестик очистки, 20×24). Ширина M/S — 243, XS — квадрат 36×36 круглый (радиус circular).
+  Пробел: рабочего поля ввода в компоненте нет — слоты под текст (журнал №9): в коде поиск работает только
+  через собственный input. Правки выгрузки — ручной слой п. «Search S» (fixes.css): у --s текст 16→14/20 и
+  высота 36 (в css оставался Body M), у __text снят фон-плашка (артефакт генератора).
+  Состояния: :hover (рамка #9e9e9e), :disabled — в css; Focus (рамка Accent) и Completed (текст #333) —
+  в css нет цвета рамки фокуса/значения как класса — показаны «замороженными» классами стенда st-* (значения —
+  токены Search/*). Журнал DS/fixes.md №111.
+-->
+<link rel="stylesheet" href="../../font.css">
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../index.css">
+<link rel="stylesheet" href="../../fixes.css">
+<style>
+  /* каркас демо-стенда — как у других стендов */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .view { padding: 24px; }
+  .view .ds-tabs { margin-bottom: 24px; }
+  .panel { width: fit-content; max-width: 1920px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  .snap-cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0; }
+  .snap-note { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 28px 0 0; max-width: 980px; }
+  .snap-sect { margin: 0 0 40px; }
+  .snap-sect:last-child { margin-bottom: 0; }
+  .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
+  .snap-cells { display: grid; grid-template-columns: repeat(3, max-content); gap: 28px 32px; align-items: start; }
+  .snap-cell { display: flex; flex-direction: column; gap: 10px; }
+
+  /* замороженные состояния (в css — только :hover/:disabled; значения — токены Search/*) */
+  .st-hover .ds-search { border: 1px solid var(--ds-color-search-hover-border-color, #9e9e9e); }
+  .st-focus .ds-search { border: 1px solid var(--ds-color-search-focus-border-color, #448aff); }
+  .st-focus .ds-search__label { color: var(--ds-color-search-focus-text-color, #d6d6d6); }
+  .st-focus-value .ds-search { border: 1px solid var(--ds-color-search-focusvalue-border-color, #448aff); }
+  .st-focus-value .ds-search__label { color: var(--ds-color-search-focusvalue-text-color, #333333); }
+  .st-completed .ds-search { border: 1px solid var(--ds-color-search-completed-border-color, #e0e0e0); }
+  .st-completed .ds-search__label { color: var(--ds-color-search-completed-text-color, #333333); }
+
+  /* иконки: svg-глифы по кадру контейнера */
+  .ds-search__icon svg { width: 100%; height: 100%; display: block; }
+  .ds-search__icon svg { fill: currentColor; }
+  .ds-search__right-icon { color: var(--ds-color-search-default-text-color, #d6d6d6); }
+  .ds-search__right-icon svg { width: 20px; height: 20px; display: block; }
+  .ds-search__right-icon svg { fill: currentColor; }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Search — демо стенд</span>
+  <span>набор Figma: Search (54453-1620) · 15 вариантов (M / S / XS × состояния)</span>
+</div>
+<div class="view">
+  <!-- Набор «Search» (54453-1620): 15 вариантов -->
+  <div class="panel">
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Size=M (243×48) — 6 состояний</div>
+      <div class="snap-cells">
+        <div class="snap-cell">
+          <div class="snap-cap">State=Default</div>
+          <div class="ds-search"><span class="ds-search__icon"><svg><use href="#ic-search"/></svg></span><span class="ds-search__label">Search text</span></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Hover (заморожен; в ДС — :hover)</div>
+          <span class="st-hover"><span class="ds-search"><span class="ds-search__icon"><svg><use href="#ic-search"/></svg></span><span class="ds-search__label">Search text</span></span></span>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Focus (пусто, плейсхолдер)</div>
+          <span class="st-focus"><span class="ds-search"><span class="ds-search__icon"><svg><use href="#ic-search"/></svg></span><span class="ds-search__label">Search text</span></span></span>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Focus+Value</div>
+          <span class="st-focus-value"><span class="ds-search"><span class="ds-search__icon"><svg><use href="#ic-search"/></svg></span><span class="ds-search__label">Search text</span><span class="ds-search__right-icon"><svg><use href="#ic-close-20"/></svg></span></span></span>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Completed</div>
+          <span class="st-completed"><span class="ds-search"><span class="ds-search__icon"><svg><use href="#ic-search"/></svg></span><span class="ds-search__label">Search text</span><span class="ds-search__right-icon"><svg><use href="#ic-close-20"/></svg></span></span></span>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Disable</div>
+          <div class="ds-search ds-search--disabled"><span class="ds-search__icon"><svg><use href="#ic-search"/></svg></span><span class="ds-search__label">Search text</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Size=S (243×36) — 6 состояний</div>
+      <div class="snap-cells">
+        <div class="snap-cell">
+          <div class="snap-cap">State=Default</div>
+          <div class="ds-search ds-search--s"><span class="ds-search__icon"><svg><use href="#ic-search"/></svg></span><span class="ds-search__label">Search text</span></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Hover (заморожен; в ДС — :hover)</div>
+          <span class="st-hover"><span class="ds-search ds-search--s"><span class="ds-search__icon"><svg><use href="#ic-search"/></svg></span><span class="ds-search__label">Search text</span></span></span>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Focus</div>
+          <span class="st-focus"><span class="ds-search ds-search--s"><span class="ds-search__icon"><svg><use href="#ic-search"/></svg></span><span class="ds-search__label">Search text</span></span></span>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Focus+Value</div>
+          <span class="st-focus-value"><span class="ds-search ds-search--s"><span class="ds-search__icon"><svg><use href="#ic-search"/></svg></span><span class="ds-search__label">Search text</span><span class="ds-search__right-icon"><svg><use href="#ic-close-20"/></svg></span></span></span>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Completed</div>
+          <span class="st-completed"><span class="ds-search ds-search--s"><span class="ds-search__icon"><svg><use href="#ic-search"/></svg></span><span class="ds-search__label">Search text</span><span class="ds-search__right-icon"><svg><use href="#ic-close-20"/></svg></span></span></span>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Disable</div>
+          <div class="ds-search ds-search--s ds-search--disabled"><span class="ds-search__icon"><svg><use href="#ic-search"/></svg></span><span class="ds-search__label">Search text</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Size=XS (36×36, круглый) — 3 состояния</div>
+      <div class="snap-cells">
+        <div class="snap-cell">
+          <div class="snap-cap">State=Default</div>
+          <div class="ds-search ds-search--xs"><span class="ds-search__icon"><svg><use href="#ic-search"/></svg></span></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Hover (заморожен; в ДС — :hover)</div>
+          <span class="st-hover"><span class="ds-search ds-search--xs"><span class="ds-search__icon"><svg><use href="#ic-search"/></svg></span></span></span>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">State=Disable</div>
+          <div class="ds-search ds-search--xs ds-search--disabled"><span class="ds-search__icon"><svg><use href="#ic-search"/></svg></span></div>
+        </div>
+      </div>
+    </div>
+
+    <p class="snap-note">Пометки для ревью: (а) рабочего поля ввода в компоненте нет — слоты под текст (журнал №9): в коде как поле поиска не работает, живой ввод нужно собирать самому (поле + иконки); на стенде — статичные состояния набора, как в Figma (интерактив там не показать); (б) у --s в css оставался текст Body M 16/24 и высота 42 — в наборе 14/20 и 36 (fixes, блок «Search S»); у __text в css фон = цвет текста (плашка, артефакт) — снят там же; (в) в css у Search из классов состояний только :hover (рамка #9e9e9e) и --disabled (фон #ebebeb, текст/иконка #9e9e9e); рамок Focus/Focus+Value/Completed и цвета значения как классов нет — заморожены стенд-классами st-* на токенах Search/* (в ДС довести состояние Focus); (г) крестик очистки — только при значении (Focus+Value, Completed), как в узлах «Icons»; (д) XS — квадрат с радиусом circular, только лупа (текста нет); (е) ширина M/S 243 — из набора, в контексте может тянуться обвязкой. Журнал №111.</p>
+  </div>
+</div>
+
+<!-- svg-иконки — точные пути из Figma: лупа (узел «search», 20) и крестик (54025:273 «close», 20) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-search" viewBox="0 0 20 20">
+    <path d="M16.3333 17.5L11.0833 12.25C10.6667 12.5833 10.1875 12.8472 9.64583 13.0417C9.10417 13.2361 8.52778 13.3333 7.91667 13.3333C6.40278 13.3333 5.12153 12.809 4.07292 11.7604C3.02431 10.7118 2.5 9.43056 2.5 7.91667C2.5 6.40278 3.02431 5.12153 4.07292 4.07292C5.12153 3.02431 6.40278 2.5 7.91667 2.5C9.43056 2.5 10.7118 3.02431 11.7604 4.07292C12.809 5.12153 13.3333 6.40278 13.3333 7.91667C13.3333 8.52778 13.2361 9.10417 13.0417 9.64583C12.8472 10.1875 12.5833 10.6667 12.25 11.0833L17.5 16.3333L16.3333 17.5ZM7.91667 11.6667C8.95833 11.6667 9.84375 11.3021 10.5729 10.5729C11.3021 9.84375 11.6667 8.95833 11.6667 7.91667C11.6667 6.875 11.3021 5.98958 10.5729 5.26042C9.84375 4.53125 8.95833 4.16667 7.91667 4.16667C6.875 4.16667 5.98958 4.53125 5.26042 5.26042C4.53125 5.98958 4.16667 6.875 4.16667 7.91667C4.16667 8.95833 4.53125 9.84375 5.26042 10.5729C5.98958 11.3021 6.875 11.6667 7.91667 11.6667Z"/>
+  </symbol>
+  <symbol id="ic-close-20" viewBox="0 0 20 20">
+    <path d="M5.33329 15.8333L4.16663 14.6667L8.83329 9.99999L4.16663 5.33332L5.33329 4.16666L9.99996 8.83332L14.6666 4.16666L15.8333 5.33332L11.1666 9.99999L15.8333 14.6667L14.6666 15.8333L9.99996 11.1667L5.33329 15.8333Z"/>
+  </symbol>
+</svg>
+</body>
+</html>

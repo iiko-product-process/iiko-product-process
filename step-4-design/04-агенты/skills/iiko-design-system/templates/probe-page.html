@@ -1,0 +1,49 @@
+<!-- Шаблон пробы для проверки страницы прототипа в headless Chrome.
+     Порядок: 1) взять копию проверяемой страницы, 2) вставить этот блок перед </body>,
+     3) подставить вместо __SPEC__ JSON вида {"card": {"sel": ".kds-card", "props": ["width"]}},
+     4) запустить:
+        chrome --headless --disable-gpu --no-first-run --user-data-dir=<свой профиль> \
+          --virtual-time-budget=9000 --window-size=1600,1000 --dump-dom file:///.../probe.html > out.html
+     5) забирать результат ТОЛЬКО из <pre id="probe">: тот же текст встречается в исходнике
+        вставленного скрипта внутри --dump-dom.
+     Проба синхронная и кликает (.click() вызывает обработчики сразу), поэтому до
+     дампа видны состояния «до» и «после». Виртуальное время обязательно: без него
+     load + setTimeout не успевают отработать. -->
+<pre id="probe"></pre>
+<script>
+window.addEventListener('load', function(){
+  setTimeout(function(){
+    var spec = __SPEC__;
+    var out = [];
+    function L(k, v){ out.push(k + ': ' + v); }
+
+    /* ── 1. разметка и размеры ── */
+    Object.keys(spec).forEach(function(k){
+      var el = document.querySelector(spec[k].sel);
+      if (!el){ L(k, 'НЕТ ЭЛЕМЕНТА ' + spec[k].sel); return; }
+      var c = getComputedStyle(el), parts = [];
+      spec[k].props.forEach(function(p){ parts.push(p + '=' + c[p]); });
+      var r = el.getBoundingClientRect();
+      L(k, Math.round(r.width) + 'x' + Math.round(r.height) + ' ' + parts.join(', '));
+    });
+
+    /* ── 2. интерактив: клик и замер «до/после» ── */
+    var btn = document.querySelector('[data-press]');
+    if (btn){
+      var row = btn.closest('[class*="row"], tr, li') || btn.parentElement;
+      L('строка до клика', Math.round(row.getBoundingClientRect().height));
+      btn.click();
+      var after = document.querySelector('[data-press]');
+      L('после клика', 'tag=' + after.tagName + ' text="' + after.textContent.trim() + '"' +
+        ' bg=' + getComputedStyle(after).backgroundColor + ' border=' + getComputedStyle(after).borderStyle);
+      L('строка после клика', Math.round(row.getBoundingClientRect().height));
+    }
+
+    /* ── 3. соседние блоки страницы (общий ли стор состояния) ── */
+    L('страница: переполнение по горизонтали',
+      (document.documentElement.scrollWidth - document.documentElement.clientWidth) + ' px');
+
+    document.getElementById('probe').textContent = 'START\n' + out.join('\n') + '\nEND';
+  }, 400);
+});
+</script>

@@ -1,0 +1,195 @@
+/* selection: checkbox/radio */
+/* ============================================================
+   iiko DS — Checkbox (чекбокс) и Radio button (радиокнопка)
+   Источник: Figma, страницы «🔵Готово 🧾 → Checkbox / Radio button»
+   Варианты: Normal / Error / Disable · Selected / Deselected / Indeterminate
+   Иконки — Material Icons 20px, цвета из токенов
+   ============================================================ */
+
+.ds-checkbox,
+.ds-radio {
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-space-2x);              /* 8px */
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  cursor: pointer;
+  user-select: none;
+
+}
+
+/* скрываем нативный контрол, рисуем иконку */
+.ds-checkbox__input,
+.ds-radio__input {
+
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+
+}
+
+.ds-checkbox__box,
+.ds-radio__box {
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--ds-color-icon-primary);            /* #616161 — deselected */
+  transition: color 0.15s ease;
+
+}
+
+/* иконки подставляются автоматически по состоянию контрола */
+.ds-checkbox__box::before {
+ content: 'check_box_outline_blank'; 
+}
+
+.ds-checkbox__label,
+.ds-radio__label {
+
+  font-size: var(--ds-typography-font-size-3-5x); /* 14px */
+  font-weight: var(--ds-typography-font-weight-regular);
+  letter-spacing: 0.25px;
+  line-height: 20px;
+  color: var(--ds-color-text-primary);            /* #333333 */
+
+}
+
+.ds-checkbox__label {
+ color: var(--ds-color-checkbox-label-text-color); 
+}
+
+/* ── Checkbox: выбран / не выбран / indeterminate ────────── */
+
+.ds-checkbox__box {
+ color: var(--ds-color-checkbox-normal-deselected-icon-color); 
+}
+
+.ds-checkbox__input:checked ~ .ds-checkbox__box {
+
+  color: var(--ds-color-checkbox-normal-selected-icon-color);             /* #448AFF */
+
+}
+
+.ds-checkbox__input:indeterminate ~ .ds-checkbox__box {
+
+  color: var(--ds-color-checkbox-normal-inderterminate-icon-color);       /* #448AFF */
+
+}
+
+.ds-checkbox__input:checked ~ .ds-checkbox__box::before {
+ content: 'check_box'; 
+}
+
+.ds-checkbox__input:indeterminate ~ .ds-checkbox__box::before {
+ content: 'indeterminate_check_box'; 
+}
+
+/* Checkbox label — обёртка (Form + Support) как авто-лейаут Figma: 20 + 4 + 16 = 40 */
+.ds-checkbox-wrap {
+
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+}
+
+.ds-checkbox-wrap .ds-checkbox {
+ align-self: flex-start; 
+}
+
+/* ── Error ───────────────────────────────────────────────── */
+
+.ds-checkbox--error .ds-checkbox__box,
+.ds-checkbox--error .ds-checkbox__input:checked ~ .ds-checkbox__box,
+.ds-checkbox--error .ds-checkbox__input:indeterminate ~ .ds-checkbox__box {
+
+  color: var(--ds-color-checkbox-error-icon-color);           /* #FF5252 */
+
+}
+
+.ds-checkbox--error .ds-checkbox__label,
+.ds-radio--error .ds-radio__label {
+
+  color: var(--ds-color-text-primary);  /* в Figma текст лейбла Error = #333333 (Text/Primary) */
+
+}
+
+/* ── Disabled ────────────────────────────────────────────── */
+
+.ds-checkbox--disabled,
+.ds-radio--disabled {
+
+  cursor: not-allowed;
+
+}
+
+.ds-checkbox--disabled .ds-checkbox__box {
+ color: var(--ds-color-checkbox-disable-deselected-icon-color); 
+}
+
+.ds-checkbox--disabled .ds-checkbox__input:checked ~ .ds-checkbox__box {
+ color: var(--ds-color-checkbox-disable-selected-icon-color); 
+}
+
+.ds-checkbox--disabled .ds-checkbox__input:indeterminate ~ .ds-checkbox__box {
+ color: var(--ds-color-checkbox-disable-inderterminate-icon-color); 
+}
+
+.ds-checkbox--disabled .ds-checkbox__label {
+ color: var(--ds-color-checkbox-label-text-disable-color); 
+}
+
+/* ── Группа контролов (Checkbox group / Radio button group) ─ */
+
+.ds-checkbox-group,
+.ds-radio-group {
+
+  display: flex;
+
+}
+
+.ds-checkbox-group--vertical,
+.ds-radio-group--vertical {
+ flex-direction: column; gap: var(--ds-space-2x); 
+}
+
+/* 8px */
+.ds-checkbox-group--horizontal,
+.ds-radio-group--horizontal {
+ flex-direction: row; gap: var(--ds-space-8x); 
+}
+
+/* 32px */
+
+/* ── Подпись под контролом (Support/Error text) ──────────── */
+
+.ds-checkbox__support,
+.ds-radio__support {
+
+  display: block;
+  margin-top: var(--ds-space-1x);                 /* 4px */
+  margin-left: 28px;                              /* выравнивание по тексту (Pad left support 7x) */
+  font-size: var(--ds-typography-font-size-3x);   /* 12px (Text support size) */
+  line-height: 16px;
+
+}
+
+.ds-checkbox__support {
+ color: var(--ds-color-checkbox-label-text-support-color); 
+}
+
+/* #616161 */
+.ds-checkbox--error ~ .ds-checkbox__support,
+.ds-radio--error .ds-radio__support {
+
+  color: var(--ds-color-text-negative);           /* #FF5252 */
+
+}

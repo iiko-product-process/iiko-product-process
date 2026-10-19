@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tree — демо стенд компонента</title>
+<!--
+  Демо стенд компонентов Tree (страница «🟡 Tree_DS», 56227:19988). Папка: DS/components-web/components/Tree_DS/.
+  ⚠ Страница помечена жёлтой меткой (в проработке): на канве пометки «https://material.angular.dev/components/tree/examples»,
+  «Вариант 1: для таблицы», «Вариант 2: для списков», «Это скопированный компонент из моего прошлого проекта».
+  Источник — канва Figma «Iiko Web DS (New)»: «Tree item» (5: Mode End/End-long/Middle/Middle-long/Start — сепараторы-линии
+  #D7D8D9, каркас 24×44), «Tree» (8: Level 2/3 × Mode End/Middle × For icon On/Off — композиции сепараторов) + два фрейма
+  с примерами списков (Frame 1000001654 — List item со стрелками раскрытия, Frame 1000001655 — List item с иконками папок;
+  строки 388×36, иконка 20, текст 14/20). css Tree — каркас (ds-tree/ds-tree-item: height 44, паддинг 11, линии #D7D8D9).
+  Журнал DS/fixes.md №135.
+-->
+<link rel="stylesheet" href="../../font.css">
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../index.css">
+<link rel="stylesheet" href="../../fixes.css">
+<style>
+  /* каркас демо-стенда */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .view { padding: 24px; }
+  .view .ds-tabs { margin-bottom: 24px; }
+  .panel { width: fit-content; max-width: 1920px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  .snap-cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0; }
+  .snap-note { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 28px 0 0; max-width: 980px; }
+  .snap-sect { margin: 0 0 40px; }
+  .snap-sect:last-child { margin-bottom: 0; }
+  .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
+  .snap-row { display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap; }
+  .snap-col { display: flex; flex-direction: column; gap: 10px; }
+  .snap-ex-caption { font-size: 14px; line-height: 28px; color: var(--ds-color-text-primary, #333333); margin: 0; }
+  /* линии-сепараторы (обвязка: рисуем схемы по данным канвы #D7D8D9) */
+  .snap-line-v { width: 1px; height: 44px; background: #d7d8d9; }
+  .snap-line-h { width: 44px; height: 1px; background: #d7d8d9; }
+  .snap-line-corner { width: 13px; height: 13px; border-left: 1px solid #d7d8d9; border-bottom: 1px solid #d7d8d9; }
+  .snap-line-corner-t { width: 13px; height: 13px; border-left: 1px solid #d7d8d9; border-top: 1px solid #d7d8d9; }
+  .snap-line-corner-long { width: 48px; height: 21px; border-left: 1px solid #d7d8d9; border-bottom: 1px solid #d7d8d9; }
+  .snap-tree-box { display: inline-flex; align-items: center; }
+  .snap-point { width: 4px; height: 4px; border-radius: 50%; background: #616161; margin: 0 8px; }
+  /* строки-примеры (List item-подобные, по фреймам канвы) */
+  .snap-li { display: flex; align-items: center; gap: 8px; width: 388px; height: 36px; font-size: 14px; line-height: 20px; color: #333; }
+  .snap-li__icon { width: 20px; height: 20px; display: inline-flex; color: #616161; flex-shrink: 0; }
+  .snap-li__icon svg { width: 100%; height: 100%; display: block; }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Tree — демо стенд (черновик компонента)</span>
+  <span>наборы Figma: Tree item (56227-19988, 5) · Tree (8) · примеры (2 фрейма списков)</span>
+</div>
+<div class="view">
+  <div class="ds-tabs" role="tablist" aria-label="Tree">
+    <button class="ds-tab ds-tab--active" role="tab" aria-selected="true" data-vtab="basic">Basic example</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="tree-item">Tree item</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="tree">Tree</button>
+  </div>
+
+  <!-- 2. Tree item (5 вариантов) -->
+  <div class="panel" data-vpanel="tree-item" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Tree item — 5 вариантов (сепараторы-линии #D7D8D9; каркас 24×44)</div>
+      <div class="snap-row" style="margin-top: 12px; align-items: flex-end;">
+        <div class="snap-col"><span class="snap-cap">Mode=End (уголок 24×13)</span>
+          <span class="snap-tree-box" style="height:44px;align-items:flex-end;"><span class="snap-line-corner"></span></span>
+        </div>
+        <div class="snap-col"><span class="snap-cap">Mode=Middle (вертикаль 13×44)</span>
+          <span class="snap-tree-box" style="height:44px;"><span class="snap-line-v"></span></span>
+        </div>
+        <div class="snap-col"><span class="snap-cap">Mode=Start (горизонталь 44×1)</span>
+          <span class="snap-tree-box" style="height:44px;"><span class="snap-line-h"></span></span>
+        </div>
+        <div class="snap-col"><span class="snap-cap">Mode=End-long (уголок с длинной ножкой 48)</span>
+          <span class="snap-tree-box" style="height:44px;align-items:flex-end;"><span class="snap-line-corner-long"></span></span>
+        </div>
+        <div class="snap-col"><span class="snap-cap">Mode=Middle-long (вертикаль 44)</span>
+          <span class="snap-tree-box" style="height:44px;"><span class="snap-line-v" style="height:44px;"></span></span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 3. Tree (8 вариантов) -->
+  <div class="panel" data-vpanel="tree" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Tree — 8 вариантов (Level 2/3 × Mode End/Middle × For icon On/Off): композиции сепараторов</div>
+      <div class="snap-row" style="margin-top: 12px;">
+        <div class="snap-col"><span class="snap-cap">Level=2 · End · icon On (ряд)</span>
+          <span class="snap-tree-box"><span class="snap-point"></span><span class="snap-line-h" style="width:24px;"></span></span>
+        </div>
+        <div class="snap-col"><span class="snap-cap">Level=2 · End · icon Off</span>
+          <span class="snap-tree-box"><span class="snap-line-corner"></span></span>
+        </div>
+        <div class="snap-col"><span class="snap-cap">Level=3 · End · icon On</span>
+          <span class="snap-tree-box"><span class="snap-line-corner"></span><span class="snap-line-h" style="width:24px;margin-left:4px;"></span></span>
+        </div>
+        <div class="snap-col"><span class="snap-cap">Level=2 · Middle · icon On</span>
+          <span class="snap-tree-box"><span class="snap-line-corner-t"></span><span class="snap-line-h" style="width:24px;margin-left:4px;"></span></span>
+        </div>
+        <div class="snap-col"><span class="snap-cap">Level=3 · Middle · icon Off</span>
+          <span class="snap-tree-box"><span class="snap-line-v"></span><span class="snap-line-v" style="margin-left:37px;"></span></span>
+        </div>
+      </div>
+      <span class="snap-cap" style="display:block;margin-top:8px;">В наборе 8 комбинаций; «For icon» добавляет точку-узел к связке.</span>
+    </div>
+
+    <p class="snap-note">Пометки для ревью: (а) ⚠ страница помечена жёлтой меткой (в проработке), на канве — пометки «https://material.angular.dev/components/tree/examples», «Вариант 1: для таблицы», «Вариант 2: для списков», «Это скопированный компонент из моего прошлого проекта» — компонент черновой, референс Material Angular; (б) в css у ds-tree/ds-tree-item — только каркас: height 44, паддинг 11, линии `--separator-stroke` #D7D8D9, модификаторы --end/--middle/--start; поведение/цвета узлов не определены; (в) сепараторы на стенде нарисованы схемами по данным канвы (штрихи того же цвета). Журнал №135.</p>
+  </div>
+
+  <!-- 1. Basic example: примеры канвы (Frame 1000001654 и 1000001655; строки 388×36) -->
+  <div class="panel" data-vpanel="basic" role="tabpanel">
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Примеры канвы: списки с раскрытием (Frame 1000001654 и 1000001655; строки 388×36)</div>
+      <div class="snap-row" style="margin-top: 12px;">
+        <div class="snap-col"><p class="snap-ex-caption">Вариант 1: для таблицы (стрелки раскрытия)</p>
+          <div class="snap-li"><span class="snap-li__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-right"/></svg></span>List item text</div>
+          <div class="snap-li"><span class="snap-li__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span>List item text</div>
+          <div class="snap-li" style="padding-left: 28px;"><span class="snap-li__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-right"/></svg></span>List item text</div>
+          <div class="snap-li" style="padding-left: 28px;">List item text</div>
+          <div class="snap-li" style="padding-left: 28px;"><span class="snap-li__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-right"/></svg></span>List item text</div>
+          <div class="snap-li"><span class="snap-li__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-right"/></svg></span>List item text</div>
+        </div>
+        <div class="snap-col"><p class="snap-ex-caption">Вариант 2: для списков (иконки папок)</p>
+          <div class="snap-li"><span class="snap-li__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-folder-open"/></svg></span>List item text</div>
+          <div class="snap-li"><span class="snap-li__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-folder-open"/></svg></span>List item text</div>
+          <div class="snap-li" style="padding-left: 28px;"><span class="snap-li__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-folder"/></svg></span>List item text</div>
+          <div class="snap-li" style="padding-left: 28px;">List item text</div>
+          <div class="snap-li" style="padding-left: 28px;"><span class="snap-li__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-folder"/></svg></span>List item text</div>
+          <div class="snap-li"><span class="snap-li__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-folder"/></svg></span>List item text</div>
+        </div>
+        <div class="snap-col" style="max-width: 340px;">
+          <span class="snap-cap">Строки в кадрах — из компонента List item (List_DS): иконка 20 + текст 14/20; отступы вложенности на стенде — обвязка (в канве строки одинаковой ширины 388, отступы строятся связками Tree item). На канве используется Menu (Container) 400×406 — пример компоновки дерева в меню.</span>
+        </div>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: (а) тексты канвы — заглушки «List item text»; (б) «скопированный из прошлого проекта» — стиль может отличаться от ДС; (в) при доработке компонента в Figma стенд будет дополнен (поведение раскрытия/сворачивания, состояния узлов). Журнал №135.</p>
+  </div>
+</div>
+
+<!-- иконки -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-kb-right" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12L8.59 7.41L10 6L16 12L10 18L8.59 16.59Z"/></symbol>
+  <symbol id="ic-kb-down" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17L16.59 8.59L18 10L12 16L6 10L7.41 8.59Z"/></symbol>
+  <symbol id="ic-folder" viewBox="0 0 24 24"><path d="M4 20C3.45 20 2.97917 19.8042 2.5875 19.4125C2.19583 19.0208 2 18.55 2 18V6C2 5.45 2.19583 4.97917 2.5875 4.5875C2.97917 4.19583 3.45 4 4 4H9.175C9.44167 4 9.69583 4.05 9.9375 4.15C10.1792 4.25 10.3917 4.39167 10.575 4.575L12 6H20C20.55 6 21.0208 6.19583 21.4125 6.5875C21.8042 6.97917 22 7.45 22 8V18C22 18.55 21.8042 19.0208 21.4125 19.4125C21.0208 19.8042 20.55 20 20 20H4ZM4 18H20V8H11.175L9.175 6H4V18Z"/></symbol>
+  <symbol id="ic-folder-open" viewBox="0 0 24 24"><path d="M4 20C3.45 20 2.97917 19.8042 2.5875 19.4125C2.19583 19.0208 2 18.55 2 18V6C2 5.45 2.19583 4.97917 2.5875 4.5875C2.97917 4.19583 3.45 4 4 4H10L12 6H20C20.55 6 21.0208 6.19583 21.4125 6.5875C21.8042 6.97917 22 7.45 22 8H12L10 6H4V18L6.4 10H22.5L19.7 18.5C19.55 18.9667 19.2875 19.3333 18.9125 19.6C18.5375 19.8667 18.125 20 17.675 20H4ZM6.5 18H17.5L19.5 12H8.5L6.5 18Z"/></symbol>
+</svg>
+
+<script>
+  /* табы стенда */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.ds-tab[data-vtab]'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('[data-vpanel]'));
+  tabs.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      tabs.forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle('ds-tab--active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach(function (p) { p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab'); });
+    });
+  });
+</script>
+</body>
+</html>

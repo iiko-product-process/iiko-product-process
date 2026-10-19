@@ -1,0 +1,69 @@
+.ds-dialog-view {
+  min-height: 364px;
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--ds-dialog-border-radius, 12px);
+  background: var(--ds-color-dialog-background, #ffffff);
+  box-shadow: var(--ds-shadow-shadows-12-dp-m);
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-dialog-view__label {
+  font-size: var(--ds-font-header-s-20-normal-medium-size);
+  line-height: var(--ds-font-header-s-20-normal-medium-line);
+  letter-spacing: var(--ds-font-header-s-20-normal-medium-spacing);
+  font-weight: var(--ds-font-header-s-20-normal-medium-weight);
+  color: var(--ds-color-dialog-header-title-color, #333333);
+  white-space: nowrap;
+}
+.ds-dialog-view__icon {
+  flex-shrink: 0;
+  width: var(--ds-size-3x);
+  height: var(--ds-size-3x);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ds-dialog-view__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ds-dialog-view__icon svg path {
+  fill: currentColor;
+}
+.ds-dialog-view__header {
+  display: flex;
+  flex-direction: column;
+  background: var(--ds-color-dialog-background, #ffffff);
+}
+.ds-dialog-view__divider {
+  height: var(--ds-size-0-25x);
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
+.ds-dialog-view__content {
+  display: flex;
+  flex-direction: row;
+  background: var(--ds-color-dialog-background, #ffffff);
+}
+.ds-dialog-view__scroll {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: var(--ds-scroll-pad-top, 2px) var(--ds-scroll-pad-right, 2px) var(--ds-scroll-pad-bottom, 2px) var(--ds-scroll-pad-left, 2px);
+}
+.ds-dialog-view__footer {
+  display: flex;
+  flex-direction: column;
+  background: var(--ds-color-dialog-background, #ffffff);
+}
+.ds-dialog-view__action {
+  height: 68px;
+  display: flex;
+  flex-direction: column;
+  padding: var(--ds-dialog-footer-pad-top, 16px) var(--ds-dialog-footer-pad-right, 24px) var(--ds-dialog-footer-pad-bottom, 16px) var(--ds-dialog-footer-pad-left, 24px);
+}
+

@@ -1,0 +1,15 @@
+# ── Мусор Python и кэши ──
+__pycache__/
+*.pyc
+
+# ── Рабочий мусор: пробы, бэкапы, служебные файлы ОС ──
+*.log
+*.tmp
+*.bak
+*.orig
+*.rej
+*.swp
+*~
+.DS_Store
+Thumbs.db
+desktop.ini

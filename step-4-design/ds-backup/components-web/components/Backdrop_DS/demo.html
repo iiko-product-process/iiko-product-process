@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backdrop — демо стенд компонента</title>
+<!--
+  Демо стенд компонента Backdrop (страница «Backdrop_DS», 53623:805). Папка: DS/components-web/components/Backdrop_DS/.
+  Источник — канва «Backdrop_DS» Figma «Iiko Web DS (New)»: набор «Backdrop» (53623:806) с единственным
+  вариантом Type=Default (380×240; заливка #333333, привязана к переменной 53625:15 «Backdrop/Background»,
+  палитра neutral-900; opacity 1). Примеров на канве нет — только набор и служебная шапка.
+  Backdrop — слой-подложка под модальные окна и меню (фон страницы за ним не перерисовывается, а накрывается):
+  в css у корня только растяжка (flex) и фон; «240» — размер примера (комментарий в backdrop.css: «height из
+  макета Figma: 240px — размер примера, задавайте по месту»). Использование в организмах — например шторка
+  шапки (журнал №105). Журнал DS/fixes.md №115.
+-->
+<link rel="stylesheet" href="../../font.css">
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../index.css">
+<link rel="stylesheet" href="../../fixes.css">
+<style>
+  /* каркас демо-стенда — как у других стендов */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .view { padding: 24px; }
+  .panel { width: fit-content; max-width: 1920px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  .snap-cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0; }
+  .snap-note { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 28px 0 0; max-width: 980px; }
+  .snap-sect { margin: 0 0 40px; }
+  .snap-sect:last-child { margin-bottom: 0; }
+  .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
+  .snap-col { display: flex; flex-direction: column; gap: 8px; }
+  /* витрина варианта: артборд 380×240 */
+  .snap-backdrop { width: 380px; height: 240px; }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Backdrop — демо стенд</span>
+  <span>набор Figma: Backdrop (53623-806, 1 вариант)</span>
+</div>
+<div class="view">
+  <div class="panel">
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Type=Default (артборд 380×240; заливка — Backdrop/Background, neutral-900 #333333)</div>
+      <div class="snap-col">
+        <div class="ds-backdrop snap-backdrop"></div>
+        <div class="snap-cap">в контексте растягивается по месту: высота/ширина — обвязка (в макете 240 — размер примера)</div>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: (а) в наборе один вариант — плотная заливка Backdrop/Background (neutral-900, opacity 1; полупрозрачность в компоненте не задана — если нужна, решается обвязкой); (б) корень — растяжка (flex + фон) без внутренностей: размер в контексте — по месту; (в) примеров на канве нет; применение — организмы (шторка шапки, см. журнал №105) и модальные сценарии (стенд Dialog — отдельно). Журнал №115.</p>
+  </div>
+</div>
+</body>
+</html>

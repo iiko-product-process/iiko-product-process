@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Card — демо стенд компонента</title>
+<!--
+  Демо стенд КОМПОНЕНТА Card (семейство). Папка: DS/components-web/components/Card_DS/.
+  Источник — страница Figma «Card_DS» (52916:15125). Наборы (порядок как в Figma, слева направо):
+    1) Card header  (52916:15126) — Content=Default (53745:3292), 500×117: Label up / Card title / Label down + разделитель снизу;
+    2) Card content (53744:3079)  — Type=Custom (58799:18962), 500×80;
+    3) Card footer  (53744:3139)  — Content=Default (53753:358), 501×61: разделитель + Accent-кнопка «Подробнее» (справа);
+    4) Card view    (53744:3181)  — Type=Filled (53766:240) / Outlined (53788:8947) / Shadow (53788:8993) / Custom (61667:100036), 501×256, Custom 500×80.
+  «Basic example» (первым) — живая сборка: шапка + контент + подвал, кнопка «Подробнее» кликабельна (счётчик в баре).
+  ВАЖНО (по дереву Figma): в сборке карточек шапка и подвал БЕЗ разделителей (116/60) — разделитель только
+  у отдельных вариантов шапки и подвала (117/61). Витрины статичные, как наборы; «замороженных» состояний нет
+  (в наборах только типы). Фон витрин — Surface/Default V2 (#F8F9FC), как фон наборов в Figma (белая Filled-карточка
+  иначе не отличается от белого).
+  Вид — сгенерированный слой ДС (card-view.css: ds-card*) + ручной слой ../../fixes.css п. 21 (выгрузка отстала
+  от Figma по паддингам; журнал DS/fixes.md №104). Содержимое слота контента — утилиты ДС ds-text-body-m-16-*
+  + цвет обвязкой (классов содержимого контента в выгрузке нет — №104).
+-->
+<link rel="stylesheet" href="../../font.css">
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../index.css">
+<link rel="stylesheet" href="../../fixes.css">
+<style>
+  /* каркас демо-стенда — как у других стендов (ср. components/Sidenav_DS/demo.html) */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .demo-bar__state { margin-left: 12px; color: var(--ds-color-text-secondary, #616161); font-variant-numeric: tabular-nums; }
+  .view { padding: 24px; }
+  .view .ds-tabs { margin-bottom: 24px; }
+  .panel { width: fit-content; max-width: 1160px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  /* ── обвязка стенда (не ДС) ─────────────────────────────────────────────── */
+  .snap-stage { background: var(--ds-paint-surface-default-v2, #f8f9fc); padding: 32px; }
+  .snap-col { display: flex; flex-direction: column; align-items: flex-start; }
+  .snap-cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin-bottom: 8px; }
+  .snap-w501 { width: 501px; }   /* ширина вариантов набора Card view — 501 (из Figma) */
+  .snap-w500 { width: 500px; }   /* шапка / контент / Custom — 500 (из Figma) */
+  /* зазоры колонки набора Card view: y 260→561→862 (зазор 45), 862→1183 (65) — числа из канвы Figma */
+  .snap-viewcol > .snap-item + .snap-item { margin-top: 45px; }
+  .snap-viewcol > .snap-item + .snap-item--last { margin-top: 65px; }
+  /* содержимое слота контента: классов в выгрузке нет (№104) — шрифт утилитами ДС, цвет и сброс margin — обвязка */
+  .snap-ct { color: var(--ds-color-text-primary, #333); margin: 0; }
+  .snap-cs { color: var(--ds-color-text-secondary, #616161); margin: 0; }
+  .snap-card-body { display: flex; flex-direction: column; gap: var(--ds-card-content-gap, 8px); width: 100%; }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Демо стенд Card</span>
+  <span class="demo-bar__state" id="state">Нажатий «Подробнее»: 0</span>
+</div>
+<div class="view">
+  <!-- табы — компонент ДС Tabs; переключение панелей — скрипт внизу страницы -->
+  <div class="ds-tabs" role="tablist" aria-label="Наборы страницы Card_DS">
+    <button class="ds-tab ds-tab--active" role="tab" data-vtab="basic" aria-selected="true">Basic example</button>
+    <button class="ds-tab" role="tab" data-vtab="header" aria-selected="false">Card header</button>
+    <button class="ds-tab" role="tab" data-vtab="content" aria-selected="false">Card content</button>
+    <button class="ds-tab" role="tab" data-vtab="footer" aria-selected="false">Card footer</button>
+    <button class="ds-tab" role="tab" data-vtab="view" aria-selected="false">Card view</button>
+  </div>
+
+  <!-- 1. Basic example: живая сборка (Filled) — кнопка «Подробнее» кликабельна -->
+  <div class="panel" data-vpanel="basic" role="tabpanel">
+    <div class="snap-stage">
+      <div class="ds-card ds-card--filled snap-w501">
+        <div class="ds-card__header">
+          <p class="ds-card__label-up">Label up</p>
+          <p class="ds-card__title">Card title</p>
+          <p class="ds-card__label-down">Label down</p>
+        </div>
+        <div class="ds-card__content">
+          <p class="ds-text-body-m-16-normal-medium snap-ct">Content title</p>
+          <p class="ds-text-body-m-16-normal-regular snap-cs">В блоке контента может быть всё что угодно</p>
+        </div>
+        <div class="ds-card__footer ds-card__footer--right">
+          <div class="ds-card__footer__action">
+            <button type="button" class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" id="btn-more"><span class="ds-btn__label">Подробнее</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Card header (52916:15126): Content=Default (53745:3292), 500×117 — разделитель снизу -->
+  <div class="panel" data-vpanel="header" role="tabpanel" hidden>
+    <div class="snap-stage">
+      <div class="snap-col">
+        <div class="snap-cap">Content=Default</div>
+        <div class="ds-card ds-card--filled snap-w500">
+          <div class="ds-card__header">
+            <p class="ds-card__label-up">Label up</p>
+            <p class="ds-card__title">Card title</p>
+            <p class="ds-card__label-down">Label down</p>
+          </div>
+          <div class="ds-card__divider"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Card content (53744:3079): Type=Custom (58799:18962), 500×80 -->
+  <div class="panel" data-vpanel="content" role="tabpanel" hidden>
+    <div class="snap-stage">
+      <div class="snap-col">
+        <div class="snap-cap">Type=Custom</div>
+        <div class="ds-card ds-card--custom snap-w500">
+          <div class="snap-card-body">
+            <p class="ds-text-body-m-16-normal-medium snap-ct">Content title</p>
+            <p class="ds-text-body-m-16-normal-regular snap-cs">В блоке контента может быть всё что угодно</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Card footer (53744:3139): Content=Default (53753:358), 501×61 — разделитель + действие -->
+  <div class="panel" data-vpanel="footer" role="tabpanel" hidden>
+    <div class="snap-stage">
+      <div class="snap-col">
+        <div class="snap-cap">Content=Default</div>
+        <div class="ds-card ds-card--filled snap-w501">
+          <div class="ds-card__footer ds-card__footer--right">
+            <div class="ds-card__divider"></div>
+            <div class="ds-card__footer__action">
+              <button type="button" class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Подробнее</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Card view (53744:3181): четыре типа; внутри сборки шапка/подвал без разделителей -->
+  <div class="panel" data-vpanel="view" role="tabpanel" hidden>
+    <div class="snap-stage">
+      <div class="snap-col snap-viewcol">
+        <div class="snap-item">
+          <div class="snap-cap">Type=Filled, Shadow=False, Border=False</div>
+          <div class="ds-card ds-card--filled snap-w501">
+            <div class="ds-card__header">
+              <p class="ds-card__label-up">Label up</p>
+              <p class="ds-card__title">Card title</p>
+              <p class="ds-card__label-down">Label down</p>
+            </div>
+            <div class="ds-card__content">
+              <p class="ds-text-body-m-16-normal-medium snap-ct">Content title</p>
+              <p class="ds-text-body-m-16-normal-regular snap-cs">В блоке контента может быть всё что угодно</p>
+            </div>
+            <div class="ds-card__footer ds-card__footer--right">
+              <div class="ds-card__footer__action">
+                <button type="button" class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Подробнее</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="snap-item">
+          <div class="snap-cap">Type=Outlined, Shadow=False, Border=True</div>
+          <div class="ds-card ds-card--outlined snap-w501">
+            <div class="ds-card__header">
+              <p class="ds-card__label-up">Label up</p>
+              <p class="ds-card__title">Card title</p>
+              <p class="ds-card__label-down">Label down</p>
+            </div>
+            <div class="ds-card__content">
+              <p class="ds-text-body-m-16-normal-medium snap-ct">Content title</p>
+              <p class="ds-text-body-m-16-normal-regular snap-cs">В блоке контента может быть всё что угодно</p>
+            </div>
+            <div class="ds-card__footer ds-card__footer--right">
+              <div class="ds-card__footer__action">
+                <button type="button" class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Подробнее</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="snap-item">
+          <div class="snap-cap">Type=Shadow, Shadow=True, Border=False</div>
+          <div class="ds-card ds-card--shadow snap-w501">
+            <div class="ds-card__header">
+              <p class="ds-card__label-up">Label up</p>
+              <p class="ds-card__title">Card title</p>
+              <p class="ds-card__label-down">Label down</p>
+            </div>
+            <div class="ds-card__content">
+              <p class="ds-text-body-m-16-normal-medium snap-ct">Content title</p>
+              <p class="ds-text-body-m-16-normal-regular snap-cs">В блоке контента может быть всё что угодно</p>
+            </div>
+            <div class="ds-card__footer ds-card__footer--right">
+              <div class="ds-card__footer__action">
+                <button type="button" class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Подробнее</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="snap-item snap-item--last">
+          <div class="snap-cap">Type=Custom, Shadow=False, Border=True</div>
+          <div class="ds-card ds-card--custom ds-card--outlined snap-w500">
+            <div class="snap-card-body">
+              <p class="ds-text-body-m-16-normal-medium snap-ct">Content title</p>
+              <p class="ds-text-body-m-16-normal-regular snap-cs">В блоке контента может быть всё что угодно</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  window.addEventListener('DOMContentLoaded', function () {
+    /* табы — компонент ДС Tabs: переключаем активный таб и панель */
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('.ds-tab[data-vtab]'));
+    var panels = Array.prototype.slice.call(document.querySelectorAll('[data-vpanel]'));
+    tabs.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        tabs.forEach(function (b) {
+          var on = b === btn;
+          b.classList.toggle('ds-tab--active', on);
+          b.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+        panels.forEach(function (p) {
+          p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab');
+        });
+      });
+    });
+    /* Basic example: кнопка «Подробнее» — живая (счётчик в баре) */
+    var n = 0;
+    document.getElementById('btn-more').addEventListener('click', function () {
+      n += 1;
+      document.getElementById('state').textContent = 'Нажатий «Подробнее»: ' + n;
+    });
+  });
+</script>
+</body>
+</html>

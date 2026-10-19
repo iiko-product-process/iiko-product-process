@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Гипотезы и оценка ICE × цели компании</title>
+<style>
+  :root{
+    --bg:#0e0e12; --panel:#16161c; --panel2:#1c1c24; --line:#26262f; --line2:#33333f;
+    --tx:#e8e8ea; --tx2:#9a9aa6; --tx3:#6a6a76;
+    --acc:#FF6A00; --acc2:#ff8a33; --acc-soft:#ff6a0018;
+    --ok:#2ec27e; --warn:#e7a200; --err:#ff4d4d; --blu:#7aa2ff;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:'Golos Text',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--tx);font-family:var(--sans);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1340px;margin:0 auto;padding:18px 22px 120px}
+
+  /* topbar */
+  .topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:14px 24px 16px;margin:0 -22px;
+    border-bottom:1px solid var(--line);position:sticky;top:0;z-index:35;background:var(--bg);transition:box-shadow .15s}
+  .topbar.stuck{box-shadow:0 10px 24px rgba(0,0,0,.42)}
+  .topbar.stuck{border-bottom-color:var(--line2)}
+  .topbar h1{font-size:21px;font-weight:700;letter-spacing:-.01em}
+  .topbar h1 .dot{color:var(--acc)}
+  .topbar .sub{font-size:13px;color:var(--tx2);margin-top:3px;max-width:660px}
+  .topbar .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+  .pill{font-family:var(--mono);font-size:12px;color:var(--tx2);border:1px solid var(--line);background:var(--panel);padding:6px 11px;border-radius:999px;white-space:nowrap}
+  .pill.acc{color:var(--acc2);border-color:#4a2a12;background:var(--acc-soft)}
+  .topbar .tleft{display:flex;align-items:center;gap:12px;min-width:0}
+  /* боковое меню списков */
+  .burger{flex:0 0 auto;width:38px;height:38px;padding:0;display:inline-flex;align-items:center;justify-content:center;position:relative;
+    background:var(--panel2);border:1px solid var(--line2);border-radius:10px;color:var(--tx);cursor:pointer;transition:.15s}
+  .burger:hover{border-color:var(--acc);color:var(--acc2)}
+  .burger span{flex:0 0 16px;width:16px;height:2px;display:block;background:currentColor;border-radius:2px;position:relative}
+  .burger span::before,.burger span::after{content:"";position:absolute;left:0;right:0;height:2px;background:currentColor;border-radius:2px}
+  .burger span::before{top:-5px}.burger span::after{top:5px}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .18s;z-index:40}
+  .scrim.on{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;left:0;height:100%;width:330px;max-width:86vw;background:var(--panel);border-right:1px solid var(--line2);
+    transform:translateX(-102%);transition:transform .2s ease;z-index:41;display:flex;flex-direction:column}
+  .drawer.on{transform:none;box-shadow:0 0 40px rgba(0,0,0,.55)}
+  .dhead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 16px 12px;border-bottom:1px solid var(--line)}
+  .dhead b{font-size:14px}
+  .dclose{background:none;border:0;color:var(--tx3);font-size:18px;cursor:pointer;padding:2px 7px;border-radius:8px}
+  .dclose:hover{color:var(--tx);background:var(--panel2)}
+  .dlist{overflow:auto;padding:10px;display:flex;flex-direction:column;gap:6px}
+  .ditem{text-align:left;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 11px;cursor:pointer;color:var(--tx);font-family:var(--sans);transition:.15s}
+  .ditem:hover{border-color:var(--line2)}
+  .ditem.cur{border-color:var(--acc);background:var(--acc-soft)}
+  .ditem .t{font-size:13.5px;font-weight:600;display:flex;align-items:baseline;gap:8px;justify-content:space-between}
+  .ditem .n{font-size:11.5px;color:var(--tx3);white-space:nowrap;font-weight:400}
+  .ditem .p{margin-top:4px;font-size:12px;color:var(--tx2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .ditem .b{margin-top:7px;display:inline-block;font-size:11px;border-radius:999px;padding:1px 9px;color:var(--acc2);background:var(--acc-soft);border:1px solid #ff6a0040}
+  .ditem .b.gen{color:var(--tx2);background:var(--panel);border-color:var(--line2)}
+  .dfoot{padding:12px 14px;border-top:1px solid var(--line);font-size:12px;color:var(--tx3)}
+  @media print{.burger,.drawer,.scrim{display:none !important}}
+
+  /* tabs */
+  .tabs{display:flex;gap:6px;padding:14px 0 0;flex-wrap:wrap}
+  .tab{font-family:var(--sans);font-size:14px;font-weight:600;color:var(--tx2);background:none;border:1px solid transparent;border-bottom:2px solid transparent;border-radius:10px 10px 0 0;padding:11px 16px;cursor:pointer;transition:.14s;display:flex;align-items:center;gap:9px}
+  .tab .n{width:20px;height:20px;border-radius:6px;background:var(--line2);color:var(--tx2);font-family:var(--mono);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .tab:hover{color:var(--tx)}
+  .tab.active{color:var(--tx);border-color:var(--line);border-bottom-color:var(--acc);background:var(--panel)}
+  .tab.active .n{background:var(--acc);color:#141414}
+  .tabbar-line{height:1px;background:var(--line);margin-bottom:16px}
+  section[role=tabpanel]{display:none}
+  section[role=tabpanel].active{display:block}
+  section[role=tabpanel]:focus{outline:none}
+
+  /* layout */
+  .cols{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:16px;align-items:start}
+  .cols.rev{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}
+  @media (max-width:1080px){.cols,.cols.rev{grid-template-columns:1fr}}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 16px 18px;margin-bottom:16px}
+  .panel > h2{font-size:15px;font-weight:700;display:flex;align-items:center;gap:9px;margin-bottom:4px}
+  .panel > h2 .n{width:22px;height:22px;border-radius:7px;background:var(--acc);color:#111;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:var(--mono);flex:0 0 auto}
+  .panel .hint{font-size:12.5px;color:var(--tx3);margin:4px 0 12px}
+  .panel > h2.bighead{font-size:17px;padding-bottom:11px;border-bottom:1px solid var(--line);margin-bottom:15px}
+  .panel > h2.bighead .n{width:24px;height:24px;border-radius:8px;font-size:13px}
+  .editpill{display:none;font-size:11px;font-weight:600;color:var(--acc2);border:1px solid #4a2a12;background:var(--acc-soft);border-radius:999px;padding:2px 9px;margin-left:4px}
+  .editpill.on{display:inline-block}
+  tbody tr.editing td{background:#211d14}
+  tbody tr.editing td:first-child{box-shadow:inset 3px 0 0 var(--acc)}
+  .stack{display:flex;flex-direction:column;gap:16px}
+  .stack > .panel{margin-bottom:0}
+
+  /* карточка формы: слева описание и критерии, справа итог и кнопка */
+  #formCard .fgrid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(290px,.65fr);gap:24px;align-items:center}
+  @media (max-width:1100px){#formCard .fgrid{grid-template-columns:1fr}}
+  .secth{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:14px;letter-spacing:-.01em}
+  .scol{display:flex;flex-direction:column;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .scol .result{background:none;border:none;padding:0;margin:0}
+  .scol .btnrow{margin-top:18px}
+  .scol .formula{font-size:12.5px}
+  .btnrow.stacked{flex-direction:column;align-items:stretch}
+  .btnrow.stacked button{width:100%;display:flex;align-items:center;justify-content:center}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .tagdemo{font-size:10px;font-family:var(--mono);color:var(--tx3);border:1px solid var(--line2);border-radius:6px;padding:1px 5px;margin-left:6px;vertical-align:1px}
+  .panel.plain > h2 .n{background:var(--line2);color:var(--tx2)}
+  /* вкладка «Цели и веса»: две карточки в линию на всю ширину страницы */
+  .goalcols{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start;width:100%}
+  .goalcols > .panel{margin-bottom:0}
+  @media (max-width:1100px){.goalcols{grid-template-columns:1fr}}
+
+  /* fields */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  @media (max-width:620px){.grid2,.grid3{grid-template-columns:1fr}}
+  label.f{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--tx2)}
+  input,select,textarea{background:var(--panel2);border:1px solid var(--line2);color:var(--tx);font-family:var(--sans);font-size:13.5px;padding:9px 11px;border-radius:10px;outline:none;width:100%}
+  textarea{resize:vertical;min-height:54px;font-size:13px}
+  input:focus,select:focus,textarea:focus{border-color:var(--acc)}
+  input[type=range]{padding:0;height:22px;accent-color:var(--acc);background:none;border:none}
+  .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .rngrow{display:grid;grid-template-columns:1fr 46px;gap:10px;align-items:center}
+  .rngrow .val{font-family:var(--mono);font-size:14px;text-align:right;color:var(--tx)}
+  .anch{font-size:11.5px;color:var(--tx3);margin-top:3px}
+
+  /* информер «i» с подсказкой */
+  .i{position:relative;display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;border:1px solid var(--line2);color:var(--tx3);font-size:10px;font-family:var(--mono);font-style:normal;cursor:help;flex:0 0 auto;line-height:1;vertical-align:middle;user-select:none}
+  .i:hover,.i:focus{border-color:var(--acc);color:var(--acc2);outline:none}
+  .i::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 9px);transform:translateX(-50%);width:min(280px,62vw);background:#1f1f28;border:1px solid var(--line2);border-radius:10px;padding:9px 11px;font-size:11.5px;line-height:1.45;color:var(--tx2);text-align:left;font-family:var(--sans);font-weight:400;white-space:normal;opacity:0;pointer-events:none;transition:.12s;z-index:55;box-shadow:0 10px 26px #0007}
+  .i::before{content:"";position:absolute;left:50%;bottom:calc(100% + 3px);transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--line2);opacity:0;transition:.12s;z-index:56;pointer-events:none}
+  .i:hover::after,.i:focus::after,.i:hover::before,.i:focus::before{opacity:1}
+  .i.left::after{left:auto;right:-4px;transform:none}
+  .i.left::before{left:auto;right:2px;transform:none}
+  .i.right::after{left:-4px;right:auto;transform:none}
+  .i.right::before{left:2px;right:auto;transform:none}
+  .f > .lab{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--tx2)}
+  .sharehead{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--tx3);margin-bottom:6px}
+
+  /* основное поле «Гипотеза» */
+  .fprimary > textarea{font-size:15px;line-height:1.45;min-height:60px;padding:12px 13px;resize:vertical;overflow:hidden}
+  .fprimary .fmt{display:block;font-size:11.5px;color:var(--tx3);margin-top:6px}
+  .fprimary .fmt b{color:var(--tx2);font-weight:600}
+  .fprimary .fmt.warn{color:var(--warn)} .fprimary .fmt.warn b{color:var(--warn)}
+  .fprimary .fmt.ok{color:var(--ok)} .fprimary .fmt.ok b{color:var(--ok)}
+  .crithead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:16px 0 9px;font-size:12px;color:var(--tx3)}
+  .crithead select{width:270px}
+  @media (max-width:620px){.crithead{flex-direction:column;align-items:flex-start}.crithead select{width:100%}}
+
+  /* buttons */
+  button{font-family:var(--sans);font-size:13px;cursor:pointer;border-radius:10px;padding:9px 14px;border:1px solid var(--line2);background:var(--panel2);color:var(--tx);transition:.14s}
+  button:hover{border-color:var(--acc);color:var(--acc2)}
+  button.primary{background:var(--acc);border-color:var(--acc);color:#141414;font-weight:700}
+  button.primary:hover{background:var(--acc2);border-color:var(--acc2);color:#141414}
+  button.ghost{background:none}
+  button.tiny{padding:4px 9px;font-size:12px;border-radius:8px}
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+  /* goal rows */
+  .goal{display:grid;grid-template-columns:1fr 104px 34px;gap:8px;align-items:center;margin-bottom:8px}
+  @media (max-width:820px){.goal{grid-template-columns:1fr 80px 34px}.goal select{grid-column:1/-1}}
+  .goal .del{color:var(--tx3);border-color:transparent;background:none;font-size:15px;padding:4px 8px}
+  .goal .del:hover{color:var(--err);border-color:var(--err)}
+
+  /* result */
+  .result{background:linear-gradient(180deg,#1b1b23,#17171e);border:1px solid var(--line2);border-radius:13px;padding:14px 15px;margin-top:14px}
+  .score{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+  .score .big{font-family:var(--mono);font-size:40px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+  .score .big.ok{color:var(--ok)} .score .big.warn{color:var(--warn)} .score .big.err{color:var(--err)}
+  .score .cap{font-size:12px;color:var(--tx3);margin-bottom:4px}
+  .formula{font-family:var(--mono);font-size:13px;color:var(--tx2);margin-top:10px;background:#131318;border:1px solid var(--line);border-radius:10px;padding:10px 12px;word-break:break-word}
+  .formula b{color:var(--tx)} .formula .g{color:var(--acc2)}
+  .tier{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line2);color:var(--tx2)}
+  .warnbox{margin-top:10px;font-size:12.5px;color:var(--warn);border:1px dashed #4a3a12;background:#221c0e;border-radius:10px;padding:9px 11px;display:none}
+  .warnbox.on{display:block}
+  .okbox{margin-top:10px;font-size:12.5px;color:var(--ok);border:1px dashed #17402e;background:#0e1f18;border-radius:10px;padding:9px 11px;display:none}
+  .okbox.on{display:block}
+
+  /* goal share rows */
+  .share{display:grid;grid-template-columns:1fr 120px;gap:8px;align-items:center;margin-bottom:7px;font-size:12.5px;color:var(--tx2)}
+  .share select{font-size:13px}
+
+  /* ranking */
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line)}
+  tbody td{vertical-align:top}
+  th{font-size:11.5px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;font-weight:600;white-space:nowrap}
+  td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+  tr.r1 td{background:#1d1a14}
+  tr.r1 .rank{color:var(--acc2);font-weight:700}
+  .rank{font-family:var(--mono);color:var(--tx3)}
+  .tname{max-width:420px}
+  .tname .g{font-size:11.5px;color:var(--tx3);display:block;margin-top:2px}
+  .act{color:var(--tx3);background:none;border-color:transparent;padding:4px 6px}
+  .act:hover{color:var(--err);border-color:var(--err)}
+  .empty{color:var(--tx3);font-size:13px;padding:16px 2px;text-align:left}
+  .empty b{color:var(--tx2);font-weight:600}
+
+  /* docs */
+  details{border:1px solid var(--line);border-radius:12px;padding:0;margin-bottom:10px;background:var(--panel)}
+  details summary{cursor:pointer;padding:13px 15px;font-size:14px;font-weight:600;list-style:none;display:flex;align-items:center;gap:9px}
+  details summary::-webkit-details-marker{display:none}
+  details summary .chev{margin-left:auto;color:var(--tx3);font-family:var(--mono);font-size:12px}
+  details[open] summary{border-bottom:1px solid var(--line)}
+  details .body{padding:14px 15px 16px;font-size:13.5px;color:var(--tx2)}
+  details .body p{margin-bottom:9px}
+  details .body ul,details .body ol{margin:0 0 10px 18px}
+  details .body li{margin-bottom:5px}
+  details .body b{color:var(--tx)}
+  .mono{font-family:var(--mono);font-size:12.5px;color:var(--tx)}
+  .tbl-sm th,.tbl-sm td{padding:6px 7px;font-size:12.5px}
+  .ex{background:#131318;border:1px solid var(--line);border-radius:10px;padding:11px 12px;margin:8px 0;font-family:var(--mono);font-size:12.5px;color:var(--tx2)}
+  .ex b{color:var(--tx)} .ex .hl{color:var(--acc2)}
+  footer{margin-top:22px;font-size:12px;color:var(--tx3);border-top:1px solid var(--line);padding-top:12px}
+  /* выбор гипотез в работу + отправка в Jira через Hermes */
+  th.selcol,td.selcol{width:34px;text-align:center}
+  th.selcol{font-size:10px;letter-spacing:.02em}
+  td.selcol input{width:16px;height:16px;accent-color:var(--acc);cursor:pointer}
+  .jcell{width:110px}
+  .jkey{width:96px;font-family:var(--mono);font-size:12px;padding:5px 7px;background:var(--bg2);border:1px solid var(--line2);border-radius:8px;color:var(--tx)}
+  a.jlink{font-family:var(--mono);font-size:12.5px;color:var(--acc2);text-decoration:none;border-bottom:1px dashed rgba(255,140,50,.5)}
+  .panel > h2.listhead{margin-bottom:10px}
+  .listmeta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 12px}
+  .listmeta input{font-family:var(--sans);font-size:12.5px;padding:6px 9px;background:var(--bg2);border:1px solid var(--line2);border-radius:8px;color:var(--tx)}
+  .listmeta input.ltitle{width:280px;font-weight:600}
+  .listmeta input.lprob{width:340px}
+  .listmeta .linfo{font-size:12px;color:var(--tx3);white-space:nowrap}
+  .listmeta .lswitch{font-family:var(--sans);font-size:12.5px;padding:6px 9px;background:var(--bg2);border:1px solid var(--line2);border-radius:8px;color:var(--tx);width:300px}
+  .askopen{margin-left:6px;padding:7px 14px;font-weight:600}
+  .askmbox{max-width:640px;gap:10px}
+  .askmbox textarea{min-height:120px;font-family:var(--sans);font-size:13.5px;line-height:1.5}
+  .askhelp{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--tx2);background:var(--panel2);
+    border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .askhelp b{font-size:12.5px;color:var(--tx)}
+  .askhelp .asknote{margin-top:2px;color:var(--tx3)}
+  .askstate{font-size:12.5px;color:var(--tx3);min-height:16px}
+  .askstate.run{color:var(--warn)}
+  .askstate.ok{color:var(--ok)}
+  .askstate.err{color:var(--err)}
+  .askmbox .btnrow{margin-top:2px}
+  .bychip{display:inline-block;margin-left:8px;font-size:11px;border-radius:999px;padding:1px 8px;vertical-align:1px;white-space:nowrap}
+  .bychip.h{color:#8fd6ff;background:#15324a;border:1px solid #1f567e}
+  .bychip.m{color:var(--tx2);background:var(--panel2);border:1px solid var(--line2)}
+  .fromchip{display:inline-block;margin-left:8px;font-size:11px;color:var(--acc2);background:var(--acc-soft);border:1px solid #ff6a0040;border-radius:999px;padding:1px 8px;vertical-align:1px}
+  .listmeta .savestate{margin-left:auto;font-size:12px;color:var(--tx3);white-space:nowrap}
+  .listmeta .savestate.ok{color:#7ec87e}
+  .listmeta .savestate.err{color:#ff8a8a}
+  .panel > h2 .go{margin-left:auto;flex:0 0 auto;font-family:var(--sans);font-size:12.5px;font-weight:600;padding:7px 14px;white-space:nowrap}
+  .modal{position:fixed;inset:0;background:rgba(6,6,10,.72);display:none;align-items:center;justify-content:center;z-index:80;padding:20px}
+  .modal.on{display:flex}
+  .mbox{background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:18px;max-width:820px;width:100%;max-height:86vh;display:flex;flex-direction:column;gap:12px}
+  .mbox h3{margin:0;font-size:16px}
+  .mbox textarea{min-height:320px;font-family:var(--mono);font-size:12.5px;line-height:1.5;background:var(--bg2);color:var(--tx);border:1px solid var(--line2);border-radius:10px;padding:12px;resize:vertical}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#1f1f28;border:1px solid var(--line2);color:var(--tx);font-size:13px;padding:10px 16px;border-radius:11px;opacity:0;transition:.2s;pointer-events:none;z-index:60}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  @media print{
+    body{background:#fff;color:#000}.wrap{max-width:none}
+    button,.no-print,.tabs,.tabbar-line{display:none!important}
+    section[role=tabpanel]{display:block!important;page-break-before:always}
+    .panel{border-color:#ddd}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="tleft">
+      <button class="burger" id="burger" title="Списки гипотез" aria-label="Списки гипотез"><span></span></button>
+      <h1>Гипотезы и оценка ICE × цели компании</h1>
+    </div>
+    <div class="meta">
+      <span class="pill acc">Шаг 2 · дискавери</span>
+      <span class="pill">v1.4 · 29.09.2026</span>
+      <span class="pill">формула: I·C·E·G</span>
+      <button class="primary askopen" id="askOpen" style="display:none" title="Попросить Hermes дополнить этот список">🤖 Спросить Hermes</button>
+    </div>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab active" role="tab" aria-selected="true" aria-controls="tab-score" data-tab="score" id="t-score"><span class="n">1</span>Оценка гипотезы</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="tab-goals" data-tab="goals" id="t-goals"><span class="n">2</span>Цели и веса</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="tab-doc" data-tab="doc" id="t-doc"><span class="n">3</span>Как считается</button>
+  </div>
+  <div class="tabbar-line"></div>
+
+  <!-- ============ ВКЛАДКА 1: ОЦЕНКА + СПИСОК ============ -->
+  <section role="tabpanel" id="tab-score" class="active" aria-labelledby="t-score" tabindex="-1">
+    <div class="panel" id="formCard">
+      <div class="fgrid">
+        <div class="fcol">
+        <h3 class="secth">Описание гипотезы <span class="editpill" id="editNote">редактируется</span></h3>
+
+        <label class="f fprimary">Гипотеза
+          <textarea id="hName" rows="2" placeholder="Если …, тогда …, так как …"></textarea>
+          <span class="fmt" id="fmtHint">Формат: <b>Если</b> … , <b>тогда</b> … , <b>так как</b> …</span>
+        </label>
+
+        <div class="grid2" style="margin:14px 0 0">
+          <label class="f">Метрика цели: baseline → target
+            <input id="hMetric" placeholder="например: 0% → 100% гипотез по шаблону">
+          </label>
+          <label class="f">Источник данных
+            <input id="hSrc" placeholder="выгрузка Jira / дашборд / лог скилла">
+          </label>
+        </div>
+
+        <h3 class="secth" style="margin-top:22px">Критерии оценки <span class="i right" tabindex="0" data-tip="Шкалы 1–10 по трём критериям: I — влияние на метрику цели, C — уверенность в оценке, E — лёгкость внедрения. Балл = I × C × E × G.">i</span></h3>
+
+        <div id="iceFields">
+          <div class="grid3">
+            <label class="f">
+              <span class="lab">I — влияние <span class="i right" tabindex="0" data-tip="Анкеры: 1–2 косметика/удобство; 3–4 эффект виден, но метрику цели не двигает; 5–6 сдвиг метрики цели на 1–3%; 7–8 на 3–10%; 9–10 больше 10% или разблокирует цель целиком.">i</span></span>
+              <div class="rngrow"><input type="range" id="fI" min="1" max="10" step="1" value="7"><span class="val" id="vI">7</span></div>
+            </label>
+            <label class="f">
+              <span class="lab">C — уверенность <span class="i" tabindex="0" data-tip="Шкала 1–10 = 10–100%. 10 — подтверждено данными/АБ-тестом; 8 — данные + интервью или бенчмарки; 6 — бенчмарки и экспертиза без пользователей; 4 — только экспертное мнение. Ниже 4 (40%) — гипотеза идёт в research, а не в спринт.">i</span></span>
+              <div class="rngrow"><input type="range" id="fC" min="1" max="10" step="1" value="7"><span class="val" id="vC">7</span></div>
+            </label>
+            <label class="f">
+              <span class="lab">E — лёгкость <span class="i left" tabindex="0" data-tip="Анкеры: 10 — почти без усилий (меньше 1 SP); 8 — 1–3 SP; 6 — 3–8 SP; 4 — 8–20 SP; 2 — больше 20 SP или несколько команд. В ICE лёгкость умножает балл: чем дешевле внедрить, тем выше место.">i</span></span>
+              <div class="rngrow"><input type="range" id="fE" min="1" max="10" step="1" value="7"><span class="val" id="vE">7</span></div>
+            </label>
+          </div>
+        </div>
+
+
+        <div style="margin-top:14px">
+          <div class="sharehead">Цели гипотезы <span class="i right" tabindex="0" data-tip="Сам список целей и их веса настраиваются на вкладке «Цели и веса». Здесь выбираете, на какие цели работает гипотеза: до двух целей. α — какая часть ожидаемого эффекта измеряется метрикой этой цели; доли в сумме = 1.0. Если эффект ни с одной целью не связан — цель не выбираем, применится базовый коэффициент 1.0.">i</span></div>
+          <div id="shareList"></div>
+        </div>
+
+        </div>
+
+        <aside class="scol">
+          <div class="result">
+            <div class="score">
+              <div>
+                <div class="cap">Итоговый балл (0–2000)</div>
+                <div class="big" id="score">—</div>
+              </div>
+              <div>
+                <div class="cap">норм. 0–1000</div>
+                <div class="big" id="scoreNorm" style="font-size:24px">—</div>
+              </div>
+            </div>
+            <div style="margin-top:10px"><span class="tier" id="tier">—</span></div>
+            <div class="formula" id="fBreakdown">заполните форму — расчёт появится здесь</div>
+            <div class="okbox" id="okbox"></div>
+            <div class="warnbox" id="warnbox"></div>
+          </div>
+
+          <div class="btnrow stacked">
+            <button class="primary" id="addH">Добавить гипотезу в список</button>
+            <button class="ghost" id="clearForm">Очистить форму</button>
+            <button class="ghost" id="cancelEdit" style="display:none">Отмена редактирования</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <div class="panel">
+        <h2 class="listhead"><span class="n">С</span>Список гипотез <span class="i left" tabindex="0" data-tip="Список гипотез — либо общий (всё, что создано или внесено продактом вручную), либо по одной конкретной проблеме: это видно в строке над таблицей, там же название и проблема. Кнопки под таблицей: «Открыть список…» — загрузить список из файла, «Сохранить список» — выгрузить в файл, «Синхронизировать с Hermes» — отправить список в чат, чтобы он попал в репозиторий, «Создать задачу» — одна задача в Jira по отмеченным гипотезам. Рейтинг пересчитывается живьём при смене весов целей; must-гипотезы стоят внизу, вне рейтинга.">i</span><button class="ghost go no-print" id="sendJira" disabled title="Отметьте гипотезы в колонке «в работу» — все они войдут в ОДНУ задачу в Jira">Создать задачу</button></h2>
+        <div class="listmeta no-print">
+          <input class="ltitle" id="listTitle" placeholder="Название списка" autocomplete="off">
+          <input class="lprob" id="listProblem" placeholder="Проблема (для списка по проблеме)" autocomplete="off">
+          <span class="linfo" id="listInfo">0 гипотез</span>
+          <span class="savestate" id="saveState"></span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th class="selcol" title="Отметить гипотезы, над которыми будет вестись работа">в работу</th><th>#</th><th>Гипотеза</th><th class="num">база</th><th class="num">G</th><th class="num">балл</th><th>Jira</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="rankBody"></tbody>
+        </table>
+        <div class="btnrow no-print">
+          <button class="tiny ghost" id="openList">Открыть список…</button>
+          <button class="tiny ghost" id="saveList">Сохранить список</button>
+          <button class="tiny ghost" id="syncList">Синхронизировать с Hermes</button>
+          <button class="tiny ghost" id="expCsv">Экспорт CSV</button>
+          <button class="tiny ghost" onclick="window.print()">Печать / PDF</button>
+          <button class="tiny ghost" id="loadSeed">Демо-список</button>
+          <button class="tiny ghost" id="resetAll">Очистить список</button>
+          <input type="file" id="fileInput" accept=".json,application/json" style="display:none">
+        </div>
+      </div>
+  </section>
+
+  <!-- ============ ВКЛАДКА 2: ЦЕЛИ И ВЕСА ============ -->
+  <section role="tabpanel" id="tab-goals" aria-labelledby="t-goals" tabindex="-1">
+    <div class="goalcols">
+
+    <div class="panel">
+      <h2><span class="n">G</span>Цели и их веса</h2>
+      <div id="goalList" style="margin-top:14px"></div>
+      <div class="btnrow">
+        <button class="tiny" id="addGoal">+ цель</button>
+        <button class="tiny ghost" id="resetGoals">Сбросить к шаблону</button>
+      </div>
+    </div>
+
+    <div class="panel plain">
+      <h2><span class="n">i</span>Референс и правила заполнения</h2>
+      <table class="tbl-sm" style="margin-top:12px">
+        <thead><tr><th>Уровень цели</th><th class="num">коэффициент</th><th>Как определяем</th></tr></thead>
+        <tbody>
+          <tr><td>North Star / BHAG</td><td class="num">2.0</td><td>цель на карте стратегии, горизонт года и дальше</td></tr>
+          <tr><td>Годовая цель компании</td><td class="num">1.7</td><td>входит в цели года (например, «оцифровать и оптимизировать процессы, +20% для критичных к 2027»)</td></tr>
+          <tr><td>Квартальная цель продукта</td><td class="num">1.4</td><td>OKR квартала команды или продукта</td></tr>
+          <tr><td>Поддерживающая, гигиена</td><td class="num">1.0</td><td>базовый уровень: польза есть, отдельной цели не назначено</td></tr>
+          <tr><td>Фон / эксперименты</td><td class="num">0.8</td><td>полезно, но не привязано к цели квартала</td></tr>
+          <tr><td>Обязательное</td><td class="num">0</td><td>закон, безопасность, блокеры, SLA — вне рейтинга, дорожка «must»</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="secth" style="margin-top:22px">Правила заполнения целей</h3>
+      <ol style="font-size:13.5px;color:var(--tx2);margin-left:18px;line-height:1.6">
+        <li>Название — коротко и с уровнем: «Годовая: …», «Квартальная: …» — так сразу видно горизонт цели.</li>
+        <li>Коэффициент ставится по уровню из референса: North Star 2.0 · годовая 1.7 · квартальная 1.4 · поддерживающая 1.0 · фон 0.8. Рабочий диапазон — 0.8–2.0.</li>
+        <li>Обязательные цели (закон, безопасность, инциденты, SLA) заполняются коэффициентом 0 — гипотезы на них идут вне рейтинга, дорожкой «must».</li>
+        <li>Список целей — один на квартал и одинаковый для всех продуктов; коэффициенты фиксируются до старта квартала.</li>
+        <li>Гипотеза ссылается максимум на две цели; доли эффекта α в сумме дают 1.0.</li>
+        <li>При изменении списка или коэффициентов рейтинг гипотез пересобирается автоматически, история решений сохраняется.</li>
+      </ol>
+    </div>
+
+    </div>
+  </section>
+
+  <!-- ============ ВКЛАДКА 3: КАК СЧИТАЕТСЯ ============ -->
+  <section role="tabpanel" id="tab-doc" aria-labelledby="t-doc" tabindex="-1">
+    <div>
+        <div class="panel plain">
+          <h2><span class="n">?</span>Зачем коэффициент целей</h2>
+          <div class="hint" style="margin-bottom:6px">Коротко: без него рейтинг выбирает «что дешевле сделать», а не «что важнее для компании».</div>
+          <p style="font-size:13.5px;color:var(--tx2)">Обычный ICE не различает гипотезы по значимости цели, на которую они влияют: гипотеза с высокой уверенностью и низкой сложностью выигрывает у более скромной, даже если вторая работает на приоритет стратегии. Коэффициент G добавляет этот слой — управляемо и с измеримым порогом.</p>
+        </div>
+
+        <details open>
+          <summary>Формула и смысл коэффициента G <span class="chev">▾</span></summary>
+          <div class="body">
+            <p><span class="mono">Балл = I × C × E × G</span></p>
+            <p>где <b>G — коэффициент целей</b>: <span class="mono">G = Σ (αⱼ × gⱼ)</span> — сумма долей эффекта гипотезы, умноженных на вес каждой цели. α — какая часть ожидаемого эффекта ложится на цель <i>j</i> (доли в сумме = 1), g — вес цели из квартального списка.</p>
+            <p>Базовая шкала не меняется: ICE даёт 1–1000, G даёт множитель 0.8–2.0, итог живёт в диапазоне <b>80–2000</b>. Если эффект гипотезы ни с одной целью не связан, применяется базовый коэффициент 1.0 — гипотеза идёт в общий поток.</p>
+          </div>
+        </details>
+
+        <details open>
+          <summary>Порог кроссовера — почему это управляемо <span class="chev">▾</span></summary>
+          <div class="body">
+            <p>Гипотеза B обходит гипотезу A, когда <span class="mono">G<sub>B</sub> / G<sub>A</sub> &gt; база<sub>A</sub> / база<sub>B</sub></span>. Разница весов целей должна перекрыть разницу базовых баллов — вес не «продавливает» любое решение, у него есть измеримый порог.</p>
+            <div class="ex">A: цель с весом g = 1.0 · I7·C8·E8 = <b>448</b> → 448 × 1.0 = <b>448</b><br>B: цель с весом g = 2.0 · I6·C7·E6 = <b>252</b> → 252 × 2.0 = <span class="hl"><b>504</b></span> → <b>B выше</b><br>порог: g<sub>B</sub> &gt; 448 / 252 = <b>1.78</b> — при весе 1.6 та же B даёт 403 и остаётся ниже A</div>
+            <p>Практический вывод: чтобы «перевесить», веса целей должны различаться заметно (условно от 1.5×). Это заставляет офис расставлять приоритеты осознанно, а не раздавать всем максимальный вес.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Анкеры критериев (чтобы разные люди ставили одинаково) <span class="chev">▾</span></summary>
+          <div class="body">
+            <p><b>I — влияние:</b> 1–2 косметика/удобство; 3–4 эффект виден, но метрику цели не двигает; 5–6 сдвиг метрики цели 1–3%; 7–8 3–10%; 9–10 &gt;10% или разблокирует цель целиком.</p>
+            <p><b>C — уверенность</b> (1–10 = %): 10 подтверждено данными/АБ-тестом; 8 данные + интервью/бенчмарки; 6 бенчмарки + экспертиза без пользователей; 4 только экспертное мнение. <b>Ниже 4 — не в спринт, а в research.</b></p>
+            <p><b>E — лёгкость:</b> 10 без усилий (&lt;1 SP); 8 1–3 SP; 6 3–8 SP; 4 8–20 SP; 2 &gt;20 SP или несколько команд.</p>
+            <p><b>α — доля эффекта:</b> ставьте по вопросу «какая часть ожидаемого результата измеряется метрикой этой цели». Если эффект вообще не привязан к цели — α = 0, гипотеза идёт в общий поток с g = 1.0.</p>
+            <p><b>Уровни решения:</b> A ≥ 700 — брать в спринт; B ≥ 400 — шорт-лист; C ≥ 200 — бэклог; D — отложить. C &lt; 40% — research. Must — вне рейтинга.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Правила и защита от накрутки <span class="chev">▾</span></summary>
+          <div class="body">
+            <ol>
+              <li>Веса целей публикует офис раз в квартал, единые для всех команд.</li>
+              <li>C &lt; 40% → research, а не спринт (правило Шага 2).</li>
+              <li>Must-задачи (закон, безопасность, инциденты, SLA) в рейтинге не участвуют — у них отдельная дорожка.</li>
+              <li>α обосновывается данными/бенчмарком, а не «нам так кажется выгоднее».</li>
+              <li>Не больше 2 целей на гипотезу — иначе α размывается и вес теряет смысл.</li>
+              <li>Портфельное правило: не более половины ёмкости спринта на одну цель (кроме стратегической) — чтобы всё не уезжало на North Star.</li>
+              <li>Рейтинг живёт один квартал: при новом списке целей он пересобирается, но история сохраняется.</li>
+              <li>Прозрачность: в задаче видны формула, вклад цели и источник данных — при разборе любой может пересчитать.</li>
+            </ol>
+          </div>
+        </details>
+
+        <details>
+          <summary>Как этим пользоваться (процесс) <span class="chev">▾</span></summary>
+          <div class="body">
+            <ol>
+              <li>Продуктовый офис публикует список целей квартала и веса — 1 раз, до старта квартала (вкладка «Цели и веса»).</li>
+              <li>Команда или продакт заполняет форму на каждую гипотезу из бэклога (5–10 штук на первый прогон — как в плане Шага 2). Гипотеза — в формате «Если …, тогда …, так как …»: форма подсказывает, каких частей не хватает.</li>
+              <li>Скоринг-сессия 30–60 минут: спорные I / C / α обсуждаются, а не «дорисовываются».</li>
+              <li>Список → топ-1–3 в спринт; по каждой выбранной фиксируется baseline — это вход для шага «Проверка гипотезы».</li>
+              <li>Отклонённое не выбрасывается: остаётся в журнале гипотез с баллом и причиной.</li>
+            </ol>
+          </div>
+        </details>
+
+        <details>
+          <summary>Что осталось решить (открытые вопросы) <span class="chev">▾</span></summary>
+          <div class="body">
+            <ul>
+              <li>Утвердить список целей квартала и веса — кто именно и в какой форме их публикует.</li>
+              <li>Формальная фиксация: Confluence-страница (как «первое действие» Шага 2) или таблица на доске Miro.</li>
+              <li>Нужен ли автоматический подтяг данных для I / R (аккаунты за 2 недели, % к MRR модуля) — иначе это ручной ввод.</li>
+              <li>Судьба must-дорожки: кто ведёт и как она попадает в ёмкость спринта.</li>
+            </ul>
+          </div>
+        </details>
+
+    </div>
+  </section>
+
+  <footer>
+    Инструмент оценки гипотез · Шаг 2 «Формирование и приоритизация гипотез» · v1.1 · 29.09.2026 ·
+    база: ICE из таблицы плана Miro (15.09.2026) · данные хранятся локально в браузере (localStorage), ничего не отправляется.
+  </footer>
+</div>
+<div class="modal" id="sendModal">
+  <div class="mbox">
+    <h3>Задача в Jira по выбранным гипотезам</h3>
+    <div class="hint" id="sendHint"></div>
+    <textarea id="sendText" spellcheck="false"></textarea>
+    <div class="askstate" id="sendState"></div>
+    <div class="btnrow" style="margin-top:0">
+      <button class="primary" id="sendGo">Создать задачу в Jira</button>
+      <button class="ghost" id="copyPkg">Скопировать текст</button>
+      <button class="ghost" id="closeModal">Закрыть</button>
+    </div>
+  </div>
+</div>
+<div class="modal" id="askModal">
+  <div class="mbox askmbox">
+    <h3>🤖 Спросить Hermes</h3>
+    <div class="hint" id="askHint">Опишите словами, что сделать со списком — Hermes дополнит его сам.</div>
+    <div class="askhelp">
+      <b>Что можно писать:</b>
+      <span>• дополнить список гипотезами: «добавь 3 гипотезы про мобильную версию шапки»;</span>
+      <span>• переформулировать: «приведи гипотезы по периоду к формату Если …, тогда …, так как …»;</span>
+      <span>• пересчитать оценки: «пересмотри ICE у гипотез про период, C у них завышена»;</span>
+      <span>• разобрать проблему: «собери контекст по проблеме пустого состояния отчётов и предложи гипотезы».</span>
+      <span class="asknote">Hermes возьмёт файл этого списка из репозитория, дополнит его, закоммитит в GitHub — таблица обновится сама. Ответ занимает 1–3 минуты, окно можно закрыть, работа не прервётся.</span>
+    </div>
+    <textarea id="askText" placeholder="напр.: добавь 3 гипотезы про мобильную версию шапки — компактная шапка, фильтры в панели, липкий период"></textarea>
+    <div class="askstate" id="askState"></div>
+    <div class="btnrow" style="margin-top:0">
+      <button class="primary" id="askSend">Отправить Hermes</button>
+      <button class="ghost" id="askClose">Закрыть</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Списки гипотез">
+  <div class="dhead"><b>Списки гипотез</b><button class="dclose" id="dclose" title="Закрыть">✕</button></div>
+  <div class="dlist" id="drawerList"></div>
+  <div class="dfoot" id="drawerFoot"></div>
+</aside>
+
+<script>
+(function(){
+  "use strict";
+  /* ---------- данные ---------- */
+  var DEF_GOALS = [
+    {id:"ns",  name:"North Star 2027", g:2.0, kind:"north"},
+    {id:"g32", name:"Годовая: цифровизация процессов, +20% критичных", g:1.7, kind:"year"},
+    {id:"q",   name:"Квартальная: OKR продукта", g:1.4, kind:"quarter"},
+    {id:"sup", name:"Поддерживающие задачи", g:1.0, kind:"support"},
+    {id:"bg",  name:"Эксперименты и фон", g:0.8, kind:"bg"},
+    {id:"must",name:"Обязательное: закон, безопасность", g:0, kind:"must"}
+  ];
+  var KEY_BASE = "iiko_hypo_v6:";      /* состояние хранится по каждому списку отдельно */
+  var LAST_KEY = "iiko_hypo_last";     /* id последнего открытого списка */
+  var EMB = (window.__HYPOTHESES__ && typeof window.__HYPOTHESES__==="object") ? window.__HYPOTHESES__ : null;
+  var SERVER = (window.__SERVER__ && window.__SERVER__.api) ? window.__SERVER__ : null;   /* режим сервера: списки сохраняются на сервер */
+  var DASH = (window.__DASH__ && window.__DASH__.api && window.__DASH__.dataDir) ? window.__DASH__ : null;   /* режим дашборда: списки читаются и пишутся файлами репозитория через API дашборда */
+
+  /* демо-список: показывает все состояния полей (с метрикой и без, с источником и без, research, must) */
+  var SEED = [
+    {name:"Если ввести единый шаблон гипотезы с чек-листом из 9 пунктов, тогда 100% гипотез в спринте будут оформлены одинаково и пройдут ИИ-валидацию, так как продакту не придётся каждый раз собирать структуру заново",
+     metric:"0% → 100% гипотез по шаблону", src:"выгрузка Jira", mode:"ice", I:7,C:7,E:7, goals:[["g32",1]]},
+    {name:"Если добавить скилл-валидатор гипотез на Hermes, тогда доля гипотез, проходящих проверку без переписывания, вырастет, так как валидатор ловит пропущенные метрики и способы проверки",
+     metric:"", src:"лог скилла", mode:"ice", I:7,C:6,E:7, goals:[["g32",1]]},
+    {name:"Если зафиксировать правило «гипотеза без плана проверки не берётся в спринт», тогда непроверенных гипотез по итогам спринта останется не больше 10%, так как фильтр срабатывает на входе в спринт",
+     metric:"0% → ≤10% непроверенных гипотез", src:"", mode:"ice", I:6,C:7,E:8, goals:[["q",1]]},
+    {name:"Если собрать матрицу «тип гипотезы → способ проверки», тогда продакт будет выбирать способ проверки без пересогласования, так как варианты уже описаны и подкреплены практикой",
+     metric:"", src:"", mode:"ice", I:6,C:7,E:7, goals:[]},
+    {name:"Если провести интервью с 5 клиентами по внедрению Корнера, тогда поймём барьеры подключения и повысим процент внедрения, так как увидим реальные причины отказа",
+     metric:"% внедрения Корнера: baseline → уточняется после интервью", src:"транскрибации интервью", mode:"ice", I:5,C:3,E:6, goals:[["g32",1]]},
+    {name:"Если закрыть требования законодательства по маркировке в отчёте об остатках, тогда снимем риск блокировки продаж, так как требования регулятора обязательны к исполнению",
+     metric:"100% требований регулятора покрыто", src:"список требований регулятора", mode:"ice", I:8,C:9,E:4, goals:[["must",1]]},
+    {name:"Если вынести трекеры в Matomo Tag Manager, тогда продуктовые команды смогут править события без релиза фронта, так как контейнер подгружается отдельно от сборки",
+     metric:"доля правок трекеров без релиза фронта", src:"админка Matomo", mode:"ice", I:6,C:6,E:5, goals:[["q",1]]}
+  ];
+  function seedItems(){
+    return SEED.map(function(s,i){
+      var o={id:"seed"+i, demo:true};
+      for(var k in s) if(Object.prototype.hasOwnProperty.call(s,k)) o[k]=s[k];
+      o.goals = s.goals.map(function(g){ return [g[0], g[1]]; });
+      return o;
+    });
+  }
+
+  var S = load();
+  function load(){
+    /* 1) данные, встроенные в файл (собранный список) 2) последний открытый список 3) черновик с демо */
+    if(EMB && EMB.items){
+      return {goals:(EMB.goals&&EMB.goals.length?EMB.goals.slice():DEF_GOALS.slice()), items:EMB.items.slice(),
+              list:EMB.list||{id:"imported", title:"Список из файла"}, tab:"score"};
+    }
+    try{
+      var last = localStorage.getItem(LAST_KEY);
+      if(last){
+        var raw = localStorage.getItem(KEY_BASE+last);
+        if(raw){ var o = JSON.parse(raw); if(o && o.goals && o.goals.length){ o.items = o.items||[]; o.tab = o.tab||"score"; o.list = o.list||{id:last,title:last}; return o; } }
+      }
+    }catch(e){}
+    return {goals: DEF_GOALS.slice(), items: seedItems(), tab:"score",
+            list:{id:"obshiy-spisok", title:"Общий список гипотез", type:"general"}};
+  }
+  function listKey(){ return KEY_BASE + ((S.list && S.list.id) || "local"); }
+  function save(){
+    try{
+      localStorage.setItem(listKey(), JSON.stringify(S));
+      localStorage.setItem(LAST_KEY, (S.list && S.list.id) || "local");
+    }catch(e){}
+    if(SERVER) queueServerSave();
+  }
+  function mkItem(name,I,C,E,goals,extra){
+    var it = {id:"h"+Date.now()+Math.floor(Math.random()*999), name:name||"Гипотеза без названия", goals:goals||[], metric:"", src:"", mode:"ice"};
+    if(extra) for(var k in extra) it[k]=extra[k];
+    else { it.I=I; it.C=C; it.E=E; }
+    return it;
+  }
+  function gOf(id){ for(var i=0;i<S.goals.length;i++) if(S.goals[i].id===id) return S.goals[i]; return null; }
+  function isMust(item){ return item.goals.some(function(g){ var gl=gOf(g[0]); return gl && gl.kind==="must"; }); }
+  function Gof(item){
+    if(!item.goals.length) return 1.0;
+    var sum=0, tot=0;
+    item.goals.forEach(function(g){
+      var gl=gOf(g[0]); if(!gl || gl.kind==="must") return;
+      sum += Number(g[1]) * Number(gl.g); tot += Number(g[1]);
+    });
+    if(tot===0) return 1.0;
+    if(Math.abs(tot-1)>0.001) sum = sum/tot;   /* нормализация долей */
+    return sum;
+  }
+  function base(item){
+    return Number(item.I)*Number(item.C)*Number(item.E);
+  }
+  function score(item){ return base(item)*Gof(item); }
+  function tierOf(sc, item){
+    if(isMust(item)) return "must · вне рейтинга";
+    var c = Number(item.C)*10;
+    if(c < 40) return "research (C < 40%)";
+    if(sc>=700) return "A · брать в спринт";
+    if(sc>=400) return "B · в шорт-лист";
+    if(sc>=200) return "C · бэклог";
+    return "D · отложить";
+  }
+
+  /* ---------- утилиты ---------- */
+  var $=function(id){return document.getElementById(id)};
+  var toastT;
+  function toast(msg){ var t=$("toast"); t.textContent=msg; t.classList.add("on"); clearTimeout(toastT); toastT=setTimeout(function(){t.classList.remove("on")},1800); }
+  function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]}) }
+
+  /* ---------- вкладки ---------- */
+  function showTab(name){
+    ["score","goals","doc"].forEach(function(t){
+      var sec=$("tab-"+t), btn=$("t-"+t), on=(t===name);
+      sec.classList.toggle("active", on);
+      btn.classList.toggle("active", on);
+      btn.setAttribute("aria-selected", on?"true":"false");
+    });
+    S.tab=name; save();
+  }
+  document.querySelectorAll(".tab").forEach(function(b){ b.onclick=function(){ showTab(b.dataset.tab); }; });
+  document.querySelector(".tabs").addEventListener("keydown", function(e){
+    if(e.key!=="ArrowRight" && e.key!=="ArrowLeft") return;
+    var names=["score","goals","doc"], cur=names.indexOf(S.tab), next=names[(cur+(e.key==="ArrowRight"?1:names.length-1))%names.length];
+    showTab(next); $("t-"+next).focus();
+  });
+
+  /* ---------- цели ---------- */
+  function renderGoals(){
+    var box=$("goalList"); box.innerHTML="";
+    if(!S.goals.length){ box.innerHTML='<div class="empty">Целей нет — добавьте хотя бы одну. Пока список пуст, коэффициент G = 1.0 для всех гипотез.</div>'; return; }
+    S.goals.forEach(function(g,i){
+      var row=document.createElement("div"); row.className="goal";
+      row.innerHTML =
+        '<input class="gname" data-i="'+i+'" value="'+esc(g.name)+'" placeholder="например: Годовая: рост MRR">'+
+        '<input class="gweight num" data-i="'+i+'" type="number" min="0" max="2" step="0.1" value="'+g.g+'" title="коэффициент цели, 0.8–2.0">'+
+        '<button class="del tiny" data-i="'+i+'" title="Удалить цель">✕</button>';
+      box.appendChild(row);
+    });
+    box.querySelectorAll(".gname").forEach(function(el){ el.oninput=function(){ S.goals[el.dataset.i].name=el.value; save(); renderRank(); renderShares(); }; });
+    box.querySelectorAll(".gweight").forEach(function(el){ el.oninput=function(){
+        var v=Math.max(0,Math.min(2,Number(el.value)||0)); S.goals[el.dataset.i].g=v;
+        save(); renderRank(); renderResult(); }; });
+    box.querySelectorAll(".del").forEach(function(el){ el.onclick=function(){
+        S.goals.splice(el.dataset.i,1); save(); renderGoals(); renderShares(); renderRank(); renderResult(); }; });
+  }
+
+  /* ---------- доли по целям в форме ---------- */
+  var shareRows=[["sup",1]];
+  function renderShares(){
+    if(S.goals.length){ shareRows.forEach(function(sr){ if(!gOf(sr[0])) sr[0]=S.goals[0].id; }); }
+    var box=$("shareList"); box.innerHTML="";
+    var avail=S.goals.filter(function(g){return g.kind!=="must"});
+    if(!avail.length){ box.innerHTML='<div class="empty">Сначала добавьте цели на вкладке «Цели и веса» — сейчас применяется базовый коэффициент 1.0.</div>'; return; }
+    shareRows.forEach(function(sr,idx){
+      var row=document.createElement("div"); row.className="share";
+      var opts=avail.map(function(g){
+        return '<option value="'+g.id+'"'+(g.id===sr[0]?" selected":"")+'>'+esc(g.name)+' · g='+g.g+'</option>';}).join("");
+      row.innerHTML='<select data-i="'+idx+'">'+opts+'</select>'+
+        '<input class="num" data-i="'+idx+'" type="number" min="0" max="1" step="0.1" value="'+sr[1]+'" title="доля эффекта α">';
+      box.appendChild(row);
+    });
+    box.querySelectorAll("select").forEach(function(el){ el.onchange=function(){ shareRows[el.dataset.i][0]=el.value; renderResult(); }; });
+    box.querySelectorAll("input").forEach(function(el){ el.oninput=function(){ shareRows[el.dataset.i][1]=Math.max(0,Math.min(1,Number(el.value)||0)); renderResult(); }; });
+    if(shareRows.length<2){
+      var d=document.createElement("div"); d.className="btnrow";
+      var cfg=document.createElement("button"); cfg.className="tiny ghost"; cfg.textContent="Настроить цели и веса →";
+      cfg.onclick=function(){ showTab("goals"); };
+      var add=document.createElement("button"); add.className="tiny ghost"; add.textContent="+ вторая цель (до 2)";
+      add.onclick=function(){
+        var used=shareRows.map(function(s){return s[0]});
+        var free=avail.filter(function(g){return used.indexOf(g.id)<0})[0]; if(!free) return;
+        shareRows.push([free.id,0.5]); shareRows[0][1]=0.5; renderShares(); renderResult();
+      };
+      d.appendChild(add); d.appendChild(cfg); box.appendChild(d);
+    }
+  }
+
+  /* ---------- форма ---------- */
+  function formItem(){
+    return {id:"tmp", upd:Date.now(), by:"human", name:$("hName").value, metric:$("hMetric").value, src:$("hSrc").value, mode:"ice",
+      I:Number($("fI").value), C:Number($("fC").value), E:Number($("fE").value),
+      goals:shareRows.filter(function(s){return Number(s[1])>0}).slice()};
+  }
+  function renderResult(){
+    var it=formItem(), b=base(it), g=Gof(it), sc=b*g, t=tierOf(sc,it);
+    var el=$("score"); el.textContent=Math.round(sc);
+    el.className="big "+(t.indexOf("A")===0?"ok":(t.indexOf("D")===0?"err":"warn"));
+    $("scoreNorm").textContent=Math.round(sc/2);
+    $("tier").textContent=t;
+    var goalTxt=it.goals.length ? it.goals.map(function(gg){ var gl=gOf(gg[0]); return (gl?gl.name:"?")+" × α"+gg[1]+" (g="+(gl?gl.g:0)+")"; }).join("  +  ") : "цели не выбраны — базовый коэффициент 1.0";
+    $("fBreakdown").innerHTML = "I "+it.I+" × C "+it.C+" × E "+it.E+" = <b>"+b+"</b> &nbsp;×&nbsp; <span class='g'>G "+g.toFixed(2)+"</span> → <b>"+Math.round(sc)+"</b><br>"+goalTxt;
+    var wb=$("warnbox"), ob=$("okbox");
+    var cVal=Number(it.C)*10;
+    wb.classList.toggle("on", cVal<40);
+    if(cVal<40) wb.textContent="C = "+cVal+"% (<40%) → правило Шага 2: такая гипотеза уходит в research, а не в спринт.";
+    if(!it.goals.length){ ob.classList.add("on"); ob.textContent="Эффект не привязан к цели — применён базовый коэффициент 1.0 (гипотеза идёт в общий поток)."; }
+    else ob.classList.remove("on");
+  }
+  function clearForm(){ exitEdit(); $("hName").value=""; growName(); chkFmt(); $("hMetric").value=""; $("hSrc").value=""; shareRows=[["sup",1]]; renderShares(); renderResult(); }
+
+  /* ---------- основное поле «Гипотеза»: авторастяжение + подсказка формата ---------- */
+  function growName(){ var el=$("hName"); el.style.height="auto"; el.style.height=Math.max(60, el.scrollHeight)+"px"; }
+  var FMT_DEF='Формат: <b>Если</b> … , <b>тогда</b> … , <b>так как</b> … <span style="color:var(--tx3)">— например: «Если ввести единый шаблон гипотезы, тогда все гипотезы будут оформлены одинаково, так как продакт не изобретает структуру заново»</span>';
+  function fmtMissing(){
+    var v=$("hName").value.trim().toLowerCase(), miss=[];
+    if(v.indexOf("если")<0) miss.push("если");
+    if(v.indexOf("тогда")<0) miss.push("тогда");
+    if(v.indexOf("так как")<0 && v.indexOf("потому что")<0) miss.push("так как");
+    return miss;
+  }
+  function chkFmt(){
+    var v=$("hName").value.trim(), el=$("fmtHint"), miss=fmtMissing();
+    el.classList.remove("ok","warn");
+    if(v.length<15){ el.innerHTML=FMT_DEF; return; }
+    if(!miss.length){ el.classList.add("ok"); el.innerHTML="Формат соблюдён: <b>Если</b> … , <b>тогда</b> … , <b>так как</b> …"; }
+    else { el.classList.add("warn"); el.innerHTML="Не хватает: <b>"+miss.join("</b>, <b>")+"</b> — формат «<b>Если</b> … , <b>тогда</b> … , <b>так как</b> …»"; }
+  }
+
+  /* ---------- список ---------- */
+  function sorted(){
+    var arr=S.items.slice();
+    arr.sort(function(a,b){
+      var am=isMust(a)?1:0, bm=isMust(b)?1:0;
+      if(am!==bm) return am-bm;
+      return score(b)-score(a);
+    });
+    return arr;
+  }
+  function renderRank(){
+    var body=$("rankBody"); body.innerHTML="";
+    var arr=sorted();
+    if(!arr.length){
+      body.innerHTML='<tr><td colspan="8" class="empty">Список пуст. <b>Заполните форму слева</b> и нажмите «Добавить в список» — гипотеза появится здесь с баллом и местом в рейтинге.</td></tr>';
+      return;
+    }
+    var place=0;
+    arr.forEach(function(it){
+      var must=isMust(it); if(!must) place++;
+      var tr=document.createElement("tr"); if(place===1&&!must) tr.className="r1";
+      if(it.id===editingId) tr.className="editing";
+      var goalTxt=it.goals.length ? it.goals.map(function(gg){ var gl=gOf(gg[0]); return (gl?gl.name.split("(")[0].trim():"?")+(gg[1]!=1?" α"+gg[1]:""); }).join(" + ") : "без цели";
+      tr.innerHTML='<td class="selcol"><input type="checkbox" class="pick" data-id="'+it.id+'"'+(it.sel?" checked":"")+' title="Взять в работу"></td>'+
+        '<td class="rank">'+(must?"must":place)+'</td>'+
+        '<td class="tname">'+esc(it.name)+(it.demo?'<span class="tagdemo">демо</span>':'')
+          +(it.by==="hermes"?'<span class="bychip h" title="Гипотезу предложил Hermes">🤖 Hermes</span>':(it.by==="human"?'<span class="bychip m" title="Гипотезу добавили вручную">✍️ вручную</span>':''))
+          +(it.srcList?'<span class="fromchip">из «'+esc(it.srcListTitle||it.srcList)+'»</span>':'')+(it.metric?'<span class="g">метрика: '+esc(it.metric)+'</span>':'')+'<span class="g">'+esc(goalTxt)+(it.src?' · '+esc(it.src):'')+'</span></td>'+
+        '<td class="num">'+Math.round(base(it))+'</td>'+
+        '<td class="num">'+Gof(it).toFixed(2)+'</td>'+
+        '<td class="num"><b>'+Math.round(score(it))+'</b></td>'+
+        '<td class="jcell">'+(it.jira
+            ? '<a class="jlink" href="https://jira.iiko.ru/browse/'+esc(it.jira)+'" target="_blank" rel="noopener">'+esc(it.jira)+'</a>'
+            : '<input class="jkey" data-id="'+it.id+'" placeholder="PB-…" title="Впишите ключ задачи из Jira, когда она создана">')+'</td>'+
+        '<td style="white-space:nowrap"><button class="act tiny edit" data-id="'+it.id+'" title="Редактировать">✎</button>'+
+        '<button class="act tiny del" data-id="'+it.id+'" title="Удалить">✕</button></td>';
+      body.appendChild(tr);
+    });
+    body.querySelectorAll("button.del").forEach(function(el){ el.onclick=function(){
+      if(el.dataset.id===editingId) exitEdit();
+      S.items=S.items.filter(function(x){return x.id!==el.dataset.id}); save(); renderRank(); }; });
+    body.querySelectorAll("button.edit").forEach(function(el){ el.onclick=function(){ editItem(el.dataset.id); }; });
+    renderListMeta();
+    body.querySelectorAll("input.pick").forEach(function(el){ el.onchange=function(){
+      var it=S.items.filter(function(x){return x.id===el.dataset.id})[0];
+      if(it){ it.sel=el.checked; save(); updateSel(); } }; });
+    body.querySelectorAll("input.jkey").forEach(function(el){ el.onchange=function(){
+      var it=S.items.filter(function(x){return x.id===el.dataset.id})[0];
+      if(it){ it.jira=el.value.trim().toUpperCase(); save(); renderRank(); } }; });
+  }
+
+  /* ---------- редактирование гипотезы из списка ---------- */
+  var editingId=null;
+  function exitEdit(){
+    editingId=null;
+    $("addH").textContent="Добавить в список";
+    $("cancelEdit").style.display="none";
+    $("editNote").classList.remove("on");
+    renderRank();
+  }
+  function loadItem(it){
+    editingId=it.id;
+    $("hName").value=it.name||""; $("hMetric").value=it.metric||""; $("hSrc").value=it.src||"";
+    $("fI").value=(it.I||7); $("vI").textContent=(it.I||7);
+    $("fC").value=(it.C||7); $("vC").textContent=(it.C||7);
+    $("fE").value=(it.E||7); $("vE").textContent=(it.E||7);
+    shareRows = (it.goals&&it.goals.length) ? it.goals.map(function(g){ return [g[0], Number(g[1])]; }) : [["sup",1]];
+    renderShares(); growName(); chkFmt(); renderResult();
+    $("addH").textContent="Сохранить изменения";
+    $("cancelEdit").style.display="inline-flex";
+    $("editNote").classList.add("on");
+    renderRank();
+    showTab("score");
+    var tb=document.querySelector(".topbar");
+    var y=$("formCard").getBoundingClientRect().top + window.pageYOffset - ((tb?tb.offsetHeight:0) + 14);
+    window.scrollTo({top:y, behavior:"smooth"});
+    toast("Редактирование — измените поля и нажмите «Сохранить изменения»");
+  }
+  function editItem(id){ var it=S.items.filter(function(x){return x.id===id})[0]; if(it) loadItem(it); }
+
+  /* ---------- экспорт ---------- */
+  function download(name, text, type){
+    var blob=new Blob([text],{type:type||"text/plain;charset=utf-8"});
+    var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href)},1500);
+  }
+  function csv(){
+    var rows=[["место","гипотеза","метрика","источник","цели","база","G","балл","в работе","Jira","автор","режим"]];
+    sorted().forEach(function(it,i){
+      rows.push([isMust(it)?"must":(i+1), it.name, it.metric, it.src,
+        it.goals.map(function(gg){var gl=gOf(gg[0]);return (gl?gl.name:"?")+" α"+gg[1]}).join(" | "),
+        Math.round(base(it)), Gof(it).toFixed(2), Math.round(score(it)), it.sel?"да":"", it.jira||"",
+        (it.by==="hermes"?"Hermes":(it.by==="human"?"вручную":"")), it.mode]);
+    });
+    return rows.map(function(r){ return r.map(function(c){ c=String(c==null?"":c); return /[;"\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c; }).join(";"); }).join("\n");
+  }
+
+  /* ---------- боковое меню списков (бургер) ---------- */
+  function pluralG(n){ return n + " " + plural(n, "гипотеза", "гипотезы", "гипотез"); }
+  function currentListEntry(){
+    return [{id:(S.list&&S.list.id)||"local",
+             title:(S.list&&S.list.title)||"Черновик (локально)",
+             type:(S.list&&S.list.type)||"general",
+             problem:(S.list&&S.list.problem)||null,
+             count:S.items.length}];
+  }
+  function renderDrawer(lists){
+    var box=$("drawerList"); if(!box) return;
+    lists = lists || [];
+    var cur=(S.list&&S.list.id)||"";
+    box.innerHTML = "";
+    if(!lists.length){ box.innerHTML='<div style="padding:8px 4px;color:var(--tx3);font-size:12.5px">Списков пока нет.</div>'; }
+    lists.forEach(function(l){
+      var b=document.createElement("button");
+      b.className="ditem"+(l.id===cur?" cur":"");
+      b.innerHTML='<div class="t"><span>'+esc(l.title||l.id)+'</span><span class="n">'+pluralG(l.count||0)+'</span></div>'
+        +(l.problem?'<div class="p">'+esc(l.problem)+'</div>':'')
+        +'<span class="b'+(l.type==="problem"?"":" gen")+'">'+(l.type==="problem"?"список по проблеме":"общий список")+'</span>';
+      b.onclick=function(){ gotoList(l.id); };
+      box.appendChild(b);
+    });
+    var foot=$("drawerFoot");
+    if(foot) foot.textContent = (SERVER||DASH)
+      ? "Списки хранятся в репозитории процесса: каждая правка сохраняется автоматически."
+      : "Файловый режим: список один. Чтобы переключаться между списками, откройте прототип по ссылке сервиса.";
+  }
+  function gotoList(id){
+    closeDrawer();
+    if((S.list&&S.list.id)===id) return;
+    if(serverDirty) pushServer();
+    var q="?list="+encodeURIComponent(id);
+    if(DASH){ try{ window.parent.location.search=q; return; }catch(e){} location.href=location.pathname+q; return; }
+    if(SERVER){ location.search=q; return; }
+    toast("В файловом режиме список один — переключение работает на сервере");
+  }
+  function openDrawer(){ $("drawer").classList.add("on"); $("scrim").classList.add("on"); }
+  function closeDrawer(){ $("drawer").classList.remove("on"); $("scrim").classList.remove("on"); }
+  function initDrawer(){
+    if(!$("burger")) return;
+    $("burger").onclick=openDrawer;
+    $("scrim").onclick=closeDrawer;
+    $("dclose").onclick=closeDrawer;
+    document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeDrawer(); });
+    renderDrawer(currentListEntry());
+  }
+
+  /* ---------- закреплённая шапка: тень, когда страница прокручена ---------- */
+  function initSticky(){
+    var tb=document.querySelector(".topbar"); if(!tb) return;
+    var fn=function(){ if(window.pageYOffset>6) tb.classList.add("stuck"); else tb.classList.remove("stuck"); };
+    window.addEventListener("scroll", fn, {passive:true}); fn();
+  }
+
+  /* ---------- канал «сайт → Hermes»: кнопка в шапке + поп-ап ---------- */
+  function setAsk(text, cls){ var el=$("askState"); if(!el) return; el.textContent=text||""; el.className="askstate"+(cls?" "+cls:""); }
+  function setAskBtn(text, disabled){ var b=$("askOpen"); if(!b) return; b.textContent=text; b.disabled=!!disabled; }
+  function initAsk(){
+    if(!SERVER || !$("askOpen")) return;      /* канал работает только в серверном режиме */
+    $("askOpen").style.display="";
+    $("askOpen").onclick=openAsk;
+    $("askClose").onclick=closeAsk;
+    $("askModal").onclick=function(e){ if(e.target===this) closeAsk(); };
+    document.addEventListener("keydown", function(e){ if(e.key==="Escape" && $("askModal").classList.contains("on")) closeAsk(); });
+    $("askSend").onclick=askSend;
+    $("askText").addEventListener("keydown", function(e){ if(e.key==="Enter" && (e.metaKey||e.ctrlKey)){ e.preventDefault(); askSend(); } });
+  }
+  function openAsk(){
+    var h=$("askHint");
+    if(h) h.textContent="Опишите словами, что сделать со списком «"+((S.list&&(S.list.title||S.list.id))||"этот список")+"» — Hermes посмотрит контекст, дополнит файл списка и закоммитит в GitHub.";
+    $("askModal").classList.add("on");
+    setTimeout(function(){ $("askText").focus(); }, 60);
+  }
+  function closeAsk(){ $("askModal").classList.remove("on"); }
+  function askSend(){
+    var text=$("askText").value.trim(); if(!text) return;
+    $("askSend").disabled=true; setAskBtn("🤖 Hermes работает…", true);
+    setAsk("отправляю запрос…", "run");
+    fetch(SERVER.api+"/ask", {method:"POST", headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({list:(S.list&&S.list.id)||SERVER.list, text:text})})
+      .then(function(r){ return r.json().then(function(j){ return {ok:r.ok, j:j}; }); })
+      .then(function(res){
+        if(!res.ok) throw new Error((res.j&&res.j.error)||"запрос не принят");
+        $("askText").value="";
+        askPoll(res.j.task, 0);
+      })
+      .catch(function(e){ setAsk("не вышло: "+e.message, "err"); setAskBtn("🤖 Спросить Hermes", false); $("askSend").disabled=false; });
+  }
+  function askPoll(taskId, n){
+    if(n>300){ setAsk("Hermes долго не отвечает — проверьте список позже", "err"); setAskBtn("🤖 Спросить Hermes", false); $("askSend").disabled=false; return; }
+    fetch(SERVER.api+"/ask/"+encodeURIComponent(taskId)).then(function(r){ return r.json(); }).then(function(d){
+      if(d.status==="running"){ setAsk("Hermes думает… "+Math.round(d.seconds||0)+" с", "run"); setTimeout(function(){ askPoll(taskId, n+1); }, 2000); return; }
+      if(d.status==="done"){
+        setAsk("готово: "+(d.message||"список обновлён"), "ok");
+        setTimeout(reloadList, 1300);
+        return;
+      }
+      setAsk("не получилось: "+(d.message||d.status), "err"); setAskBtn("🤖 Спросить Hermes", false); $("askSend").disabled=false;
+    }).catch(function(e){ setAsk("нет связи: "+e.message, "err"); setAskBtn("🤖 Спросить Hermes", false); $("askSend").disabled=false; });
+  }
+  function reloadList(){
+    if(serverDirty) pushServer();
+    var lid=(S.list&&S.list.id)||SERVER.list;
+    setTimeout(function(){ location.href=location.pathname+"?list="+encodeURIComponent(lid); }, 400);
+  }
+
+  /* ---------- режим дашборда: файлы репозитория через /api/fs ---------- */
+  var dashToken=null;
+  function dashAuth(){ return dashToken ? {"Authorization":"Bearer "+dashToken} : {}; }
+  function dashFetch(url, opts){
+    opts = opts||{}; opts.credentials = "same-origin";
+    opts.headers = Object.assign({}, opts.headers||{}, dashAuth());
+    return fetch(url, opts).then(function(r){
+      if(r.status===401 || r.status===403) throw new Error("нужен вход в дашборд Hermes");
+      if(!r.ok) throw new Error("HTTP "+r.status);
+      return r;
+    });
+  }
+  function dashInitToken(){   /* в режиме без авторизации дашборд кладёт токен в index.html */
+    return fetch("/", {credentials:"same-origin"}).then(function(r){ return r.text(); }).then(function(html){
+      var m=html.match(/__HERMES_SESSION_TOKEN__\s*=\s*"([^"]+)"/); if(m) dashToken=m[1];
+    }).catch(function(){});
+  }
+  function dashListIndex(){
+    return dashFetch(DASH.api+"/fs/list?path="+encodeURIComponent(DASH.dataDir+"/lists")).then(function(r){ return r.json(); }).then(function(d){
+      var files=(d.entries||[]).filter(function(e){ return !e.isDirectory && /\.json$/.test(e.name); });
+      return Promise.all(files.map(function(e){
+        var id=e.name.replace(/\.json$/,"");
+        return dashFetch(DASH.api+"/fs/read-text?path="+encodeURIComponent(DASH.dataDir+"/lists/"+e.name))
+          .then(function(r){ return r.json(); })
+          .then(function(f){ var data=JSON.parse(f.content||"{}"), m=data.list||{};
+            return {id:id, title:m.title||id, count:(data.items||[]).length, problem:m.problem||null, type:m.type||"general"}; })
+          .catch(function(){ return {id:id, title:id, count:0, problem:null, type:"general"}; });
+      }));
+    });
+  }
+  function dashWrite(keepalive){
+    var lid=(S.list&&S.list.id)||DASH.list;
+    return fetch(DASH.api+"/fs/write-text", {method:"POST", credentials:"same-origin", keepalive:!!keepalive,
+      headers: Object.assign({"Content-Type":"application/json"}, dashAuth()),
+      body: JSON.stringify({path: DASH.dataDir+"/lists/"+lid+".json", content: JSON.stringify(exportData(), null, 1)})})
+      .then(function(r){
+        if(r.status===401 || r.status===403) throw new Error("нужен вход в дашборд Hermes");
+        if(!r.ok) throw new Error("HTTP "+r.status);
+        return r;
+      });
+  }
+
+  /* ---------- серверный режим: списки на сервере, автосохранение ---------- */
+  var serverTimer=null, serverDirty=false;
+  function setSaveState(text, cls){ var el=$("saveState"); if(!el) return; el.textContent=text||""; el.className="savestate"+(cls?" "+cls:""); }
+  var suppressSave=false;
+  function queueServerSave(){ if((!SERVER && !DASH) || suppressSave) return; serverDirty=true; setSaveState("есть изменения…"); clearTimeout(serverTimer); serverTimer=setTimeout(pushServer, 1500); }
+  function pushServer(keepalive){
+    if((!SERVER && !DASH) || !serverDirty) return;
+    serverDirty=false; setSaveState("сохраняю…");
+    var lid=(S.list&&S.list.id)||(DASH?DASH.list:SERVER.list);
+    var flow = DASH
+      ? dashWrite(keepalive).then(function(){ return {ok:true, j:{git:"правки сохранены в файле репозитория"}}; })
+      : fetch(SERVER.api+"/lists/"+encodeURIComponent(lid), {method:"PUT", keepalive:!!keepalive, headers:{"Content-Type":"application/json"}, body:JSON.stringify(exportData())})
+          .then(function(r){ return r.json().then(function(j){ return {ok:r.ok, j:j}; }); });
+    flow.then(function(res){
+        if(!res.ok) throw new Error((res.j&&res.j.error)||"ошибка сохранения");
+        setSaveState("сохранено ✓ "+new Date().toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"}), "ok");
+        if(res.j && res.j.git) $("saveState").title=res.j.git;
+      })
+      .catch(function(e){ serverDirty=true; setSaveState("не сохранилось: "+e.message, "err"); });
+  }
+  /* Досыл несохранённого: закрытие вкладки, уход на другую страницу, сворачивание окна.
+     keepalive у fetch и отдельный обработчик на скрытие вкладки — чтобы правка
+     не потерялась, если страницу закрыли сразу после создания гипотезы. */
+  function flushPending(){ if(serverDirty) pushServer(true); }
+  window.addEventListener("beforeunload", flushPending);
+  window.addEventListener("pagehide", flushPending);
+  document.addEventListener("visibilitychange", function(){ if(document.visibilityState==="hidden") flushPending(); });
+  function initServerUi(){
+    if(!SERVER && !DASH) return;
+    ["openList","saveList","syncList"].forEach(function(id){ var el=$(id); if(el) el.style.display="none"; });
+
+    if(DASH){   /* в дашборде список читается из файла репозитория */
+      dashInitToken().then(function(){
+        return dashFetch(DASH.api+"/fs/read-text?path="+encodeURIComponent(DASH.dataDir+"/lists/"+DASH.list+".json"));
+      }).then(function(r){ return r.json(); }).then(function(f){
+        suppressSave=true; applyData(JSON.parse(f.content||"{}"), "Список загружен"); suppressSave=false;
+        if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+        renderListMeta();
+      }).catch(function(e){ setSaveState("список не загрузился: "+e.message, "err"); });
+    }
+    var ready = DASH ? dashInitToken().then(dashListIndex)
+                     : fetch(SERVER.api+"/lists").then(function(r){ return r.json(); }).then(function(d){ return d.lists||[]; });
+    ready.then(function(lists){ renderDrawer(lists); }).catch(function(){});
+    var foot=document.querySelector("footer");
+    if(foot) foot.textContent = DASH
+      ? "Инструмент оценки гипотез · Шаг 2 «Формирование и приоритизация гипотез» · списки читаются и сохраняются в репозитории процесса iiko-product-process через дашборд Hermes."
+      : "Инструмент оценки гипотез · Шаг 2 «Формирование и приоритизация гипотез» · списки сохраняются на сервере и в репозитории процесса iiko-product-process.";
+    setSaveState(DASH ? "дашборд · правки сохраняются в репозиторий" : "сервер · сохранение автоматическое", "ok");
+  }
+
+  /* ---------- списки гипотез: открыть / сохранить / синхронизировать ---------- */
+  function today(){ return new Date().toISOString().slice(0,10); }
+  function plural(n,a,b,c){ var m10=n%10, m100=n%100; if(m10===1&&m100!==11) return a; if(m10>=2&&m10<=4&&(m100<10||m100>=20)) return b; return c; }
+  function renderListMeta(){
+    var l=S.list||{}, n=S.items.length;
+    if(document.activeElement!==$("listTitle")) $("listTitle").value=l.title||"";
+    if(document.activeElement!==$("listProblem")) $("listProblem").value=l.problem||"";
+    var parts=[n+" "+plural(n,"гипотеза","гипотезы","гипотез")];
+    if(l.type==="problem") parts.push("список по проблеме");
+    if(l.updated) parts.push("обновлён "+l.updated);
+    $("listInfo").textContent=parts.join(" · ");
+  }
+  function exportData(){
+    var list=Object.assign({}, S.list||{});
+    list.updated=today();
+    return {list:list, goals:S.goals, items:S.items.map(function(x){
+      var o={}; for(var k in x){ if(k!=="sel" && k!=="tab") o[k]=x[k]; } return o;
+    })};
+  }
+  function applyData(d, label){
+    if(!d || !d.items) throw new Error("в файле нет списка гипотез");
+    S={goals:(d.goals&&d.goals.length?d.goals:DEF_GOALS.slice()), items:d.items||[],
+       list:d.list||{id:"imported", title:"Список из файла"}, tab:"score"};
+    S.items.forEach(function(x,i){ if(!x.id) x.id="h"+Date.now()+"_"+i; x.goals=x.goals||[]; });
+    save(); renderGoals(); renderShares(); renderRank(); renderResult(); renderListMeta();
+    toast(label+": "+S.items.length+" "+plural(S.items.length,"гипотеза","гипотезы","гипотез"));
+  }
+  $("listTitle").oninput=function(){ S.list=S.list||{}; S.list.title=this.value; save(); renderListMeta(); };
+  $("listProblem").oninput=function(){ S.list=S.list||{}; S.list.problem=this.value; if(this.value) S.list.type="problem"; save(); renderListMeta(); };
+  $("openList").onclick=function(){ $("fileInput").click(); };
+  $("fileInput").onchange=function(){
+    var f=this.files && this.files[0]; if(!f) return;
+    var r=new FileReader();
+    r.onload=function(){
+      try{ applyData(JSON.parse(String(r.result)), "Список загружен"); }
+      catch(e){ toast("Не удалось открыть файл: "+e.message); }
+    };
+    r.readAsText(f); this.value="";
+  };
+  $("saveList").onclick=function(){
+    var txt=JSON.stringify(exportData(),null,1), name=((S.list&&S.list.id)||"spisok")+".json";
+    if(window.showSaveFilePicker){
+      window.showSaveFilePicker({suggestedName:name, types:[{description:"JSON", accept:{"application/json":[".json"]}}]})
+        .then(function(h){ return h.createWritable(); })
+        .then(function(w){ return w.write(txt).then(function(){ return w.close(); }); })
+        .then(function(){ toast("Список сохранён в файл — можно коммитить в репозиторий"); })
+        .catch(function(e){ if(e && e.name==="AbortError") return; download(name, txt, "application/json"); toast("Файл скачан"); });
+    } else { download(name, txt, "application/json"); toast("Файл скачан — пришлите его в чат Hermes для коммита"); }
+  };
+  $("syncList").onclick=function(){
+    var payload=JSON.stringify({action:"sync_hypotheses_list", data:exportData()},null,1);
+    copyText(payload, function(okCopy){
+      if(okCopy){ toast("Список скопирован — вставьте в чат Hermes, он закоммитит его в репозиторий"); }
+      else { download(((S.list&&S.list.id)||"spisok")+".json", payload, "application/json"); toast("Скопировать не удалось — файл скачан, пришлите его в чат"); }
+    });
+  };
+
+  /* ---------- одна задача в Jira по выбранным гипотезам ---------- */
+  var JIRA_PROJECT="PB", JIRA_TYPE="Story";   /* всегда Story в проект Product backlog */
+  function updateSel(){ $("sendJira").disabled = selItems().length===0; }
+
+  function goalsText(it){
+    return it.goals.length ? it.goals.map(function(gg){
+      var gl=gOf(gg[0]); return (gl?gl.name:"?")+(Number(gg[1])!==1?" (α "+gg[1]+")":""); }).join(" + ") : "без цели (базовый коэффициент 1.0)";
+  }
+  function selItems(){ return S.items.filter(function(x){return x.sel;}); }
+
+  /* текст запроса: одна задача на весь отобранный набор — гипотезы не разбиваются */
+  function buildTaskRequest(sel){
+    var ids=sel.map(function(it){ return it.id; }).join(", ");
+    var lid=(S.list&&S.list.id)||SERVER.list, title=(S.list&&(S.list.title||S.list.id))||lid;
+    var L=[];
+    L.push("Создай ОДНУ задачу в Jira по выбранным гипотезам — все "+sel.length+" идут в одну задачу, не разбивать на разные.");
+    L.push("Список: «"+title+"» (id: "+lid+") · проект "+JIRA_PROJECT+" · тип "+JIRA_TYPE+".");
+    L.push("Гипотезы (id): "+ids+".");
+    L.push("Описание задачи — требования: как реализовать выбранные гипотезы в рамках этой задачи; данные гипотез (формулировки, метрики, источники, оценки, баллы, цели) в описание не дублировать — они остаются на странице списка.");
+    L.push("После создания впиши ключ задачи в поле jira каждой из этих гипотез, прогони aggregate и закоммить список.");
+    L.push("Верни ключ и ссылку задачи.");
+    return L.join("\n");
+  }
+  function copyText(str, done){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(str).then(function(){ done(true); }, function(){ done(fallbackCopy(str)); });
+    } else { done(fallbackCopy(str)); }
+  }
+  function fallbackCopy(str){
+    var ta=document.createElement("textarea"); ta.value=str; ta.style.position="fixed"; ta.style.top="-1000px";
+    document.body.appendChild(ta); ta.select(); var r=false; try{ r=document.execCommand("copy"); }catch(e){}
+    document.body.removeChild(ta); return r;
+  }
+  function setSend(text, cls){ var el=$("sendState"); if(!el) return; el.textContent=text||""; el.className="askstate"+(cls?" "+cls:""); }
+  function openSend(){
+    var sel=selItems();
+    if(!sel.length){ toast("Отметьте гипотезы в колонке «в работу»"); return; }
+    $("sendHint").innerHTML="Отобрано гипотез: <b>"+sel.length+"</b> · все войдут в <b>одну задачу</b> (проект <b>"+JIRA_PROJECT+"</b>, тип <b>"+JIRA_TYPE+"</b>). "+
+      (SERVER ? "Hermes оформит требования и вернёт ключ — он подставится в колонку «Jira»."
+              : "Создание задачи работает в режиме сервиса (по ссылке); здесь можно скопировать текст и вставить его в чат Hermes.");
+    $("sendText").value=buildTaskRequest(sel);
+    setSend("", "");
+    $("sendGo").style.display = SERVER ? "" : "none";
+    $("sendModal").classList.add("on");
+  }
+  function sendTask(){
+    if(!SERVER){ toast("Создание задачи работает в режиме сервиса (по ссылке)"); return; }
+    var text=$("sendText").value.trim(); if(!text) return;
+    $("sendGo").disabled=true; setSend("отправляю запрос…", "run");
+    fetch(SERVER.api+"/ask", {method:"POST", headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({list:(S.list&&S.list.id)||SERVER.list, text:text, mode:"task"})})
+      .then(function(r){ return r.json().then(function(j){ return {ok:r.ok, j:j}; }); })
+      .then(function(res){
+        if(!res.ok) throw new Error((res.j&&res.j.error)||"запрос не принят");
+        sendPoll(res.j.task, 0);
+      })
+      .catch(function(e){ setSend("не вышло: "+e.message, "err"); $("sendGo").disabled=false; });
+  }
+  function sendPoll(taskId, n){
+    if(n>300){ setSend("Hermes долго не отвечает — проверьте список позже", "err"); $("sendGo").disabled=false; return; }
+    fetch(SERVER.api+"/ask/"+encodeURIComponent(taskId)).then(function(r){ return r.json(); }).then(function(d){
+      if(d.status==="running"){ setSend("Hermes работает… "+Math.round(d.seconds||0)+" с", "run"); setTimeout(function(){ sendPoll(taskId, n+1); }, 2000); return; }
+      if(d.status==="done"){ setSend("✅ "+(d.message||"задача создана"), "ok"); setTimeout(reloadList, 1800); return; }
+      setSend("не получилось: "+(d.message||d.status), "err"); $("sendGo").disabled=false;
+    }).catch(function(e){ setSend("нет связи: "+e.message, "err"); $("sendGo").disabled=false; });
+  }
+  $("sendJira").onclick=openSend;
+  $("sendGo").onclick=sendTask;
+  $("closeModal").onclick=function(){ $("sendModal").classList.remove("on"); };
+  $("sendModal").onclick=function(ev){ if(ev.target===$("sendModal")) $("sendModal").classList.remove("on"); };
+  $("copyPkg").onclick=function(){
+    copyText($("sendText").value, function(okCopy){
+      if(okCopy){ toast("Текст скопирован — вставьте его в чат Hermes (⌘/Ctrl+V)"); }
+      else { $("sendText").focus(); $("sendText").select(); toast("Скопируйте вручную: текст выделен, нажмите ⌘/Ctrl+C"); }
+    });
+  };
+
+  /* ---------- инициализация ---------- */
+  showTab(S.tab);
+  renderGoals(); renderShares(); renderRank(); renderResult(); updateSel(); initDrawer(); initServerUi(); initAsk(); initSticky();
+  ["fI","fC","fE"].forEach(function(id){ $(id).oninput=function(){ $("v"+id.slice(1)).textContent=this.value; renderResult(); }; });
+  ["hMetric","hSrc"].forEach(function(id){ var el=$(id); el.oninput=function(){ renderResult(); }; el.onchange=function(){ renderResult(); }; });
+  $("hName").oninput=function(){ growName(); chkFmt(); renderResult(); };
+  $("hName").onchange=function(){ renderResult(); };
+  growName(); chkFmt();
+  $("addH").onclick=function(){
+    var it=formItem(); if(!it.name){ toast("Заполните поле «Гипотеза»"); $("hName").focus(); return; }
+    var miss=fmtMissing();
+    if(editingId){
+      var t=S.items.filter(function(x){return x.id===editingId})[0];
+      if(t){
+        t.name=it.name; t.metric=it.metric; t.src=it.src; t.goals=it.goals;
+        t.I=it.I; t.C=it.C; t.E=it.E;
+        delete t.demo;   /* отредактированная запись перестаёт быть демо */
+      }
+      save(); clearForm();
+      toast("Изменения сохранены");
+      return;
+    }
+    it.id="h"+Date.now(); S.items.push(it); save(); renderRank(); clearForm();
+    toast(miss.length ? "Добавлено. Проверьте формат: Если … , тогда … , так как …" : "Добавлено в список");
+  };
+  $("cancelEdit").onclick=function(){ clearForm(); toast("Редактирование отменено"); };
+  $("clearForm").onclick=clearForm;
+  $("addGoal").onclick=function(){ S.goals.push({id:"g"+Date.now(), name:"", g:1.0, kind:"custom"}); save(); renderGoals(); renderShares(); renderRank(); renderResult(); };
+  $("resetGoals").onclick=function(){ S.goals=DEF_GOALS.slice(); save(); renderGoals(); renderShares(); renderRank(); renderResult(); toast("Цели сброшены к шаблону"); };
+  $("resetAll").onclick=function(){ S.items=[]; save(); renderRank(); toast("Список очищен"); };
+  $("loadSeed").onclick=function(){ S.items=seedItems(); save(); renderRank(); toast("Загружен демо-список: все состояния полей"); };
+  $("expCsv").onclick=function(){ download("ocenka-gipotez_2026-09-29.csv", "\ufeff"+csv(), "text/csv;charset=utf-8"); };
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+build/
+__pycache__/
+*.pyc
+
+# служебное сервиса: логи и файл авторизации (в git не попадают)
+.hypoproto/
+.hypoproto-auth.txt

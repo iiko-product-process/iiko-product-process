@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Datepicker — демо стенд компонента</title>
+<!--
+  Демо стенд КОМПОНЕНТА Datepicker (семейство). Папка: DS/components-web/components/Datepicker_DS/.
+  Табы — компонент ДС Tabs (Tabs_DS/tabs.css: ds-tabs / ds-tab / ds-tab--active); переключение панелей — скрипт стенда.
+  Порядок табов — как в Фигме (слева направо), первым — сборка: 1) Basic example (живое поле + раскрывашка),
+  2) Input Datepicker (Empty / Populated — узел 58548-4764), 3) Elements Datepicker (ячейки — узел 58501-4220),
+  4) Control Panel Datepicker (Control / Week / Calendar — узел 58501-4052), 5) Datepicker (Day / Year / Month — узел 58509-5439).
+  Табы 2–5 — статичные витрины вариантов, как наборы Figma (интерактив — только в «Сборке»);
+  состояния Hover/Press показаны «замороженно» (классы st-hover/st-press — те же токены, что у :hover/:active).
+  Вид — сгенерированный слой ДС + ручной слой ../../fixes.css; разметку и поведение строит datepicker.js.
+  Данные — актуальные: текущий месяц и сегодняшняя дата.
+-->
+<link rel="stylesheet" href="../../font.css">
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../index.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined">
+<link rel="stylesheet" href="../../fixes.css">
+<script src="datepicker.js" defer></script>
+<style>
+  /* каркас демо-стенда — как у других стендов (ср. organisms/app-header/demo.html) */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .demo-bar__state { margin-left: 12px; color: var(--ds-color-text-secondary, #616161); font-variant-numeric: tabular-nums; }
+  .view { padding: 24px; }
+  .view .ds-tabs { margin-bottom: 24px; }
+  .panel { width: fit-content; max-width: 1160px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  /* обвязка примеров на стенде (не ДС) */
+  .cards { display: flex; gap: 32px; align-items: flex-start; }
+  .card__cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin-bottom: 8px; }
+  .fields { display: flex; flex-direction: column; align-items: flex-start; gap: 40px; }
+  .rows { display: flex; flex-direction: column; gap: 20px; }
+  .row { display: flex; align-items: center; gap: 12px; }
+  .row__cap { width: 220px; flex: none; font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); }
+  .demo-w280 { width: 280px; }
+  /* витрина Elements — раскладка как в наборе Figma: колонки вариантов × строки состояний */
+  .el-band { display: flex; align-items: flex-start; }
+  .el-col { display: flex; flex-direction: column; align-items: center; gap: 22px; }
+  .el-band--cells > .el-col { margin-right: 60px; }
+  .el-band--cells > .el-col:nth-child(2) { margin-right: 64px; }
+  .el-band--cells > .el-col:nth-child(3) { margin-right: 105px; }
+  .el-band--cells > .el-col:last-child { margin-right: 0; }
+  .el-band--lower { margin-top: 68px; }
+  .el-band--lower .el-col { margin-right: 24px; }
+  .el-band--lower .el-col.el-col--month { margin-left: 54px; margin-right: 0; }
+  /* стенд: «замороженные» состояния Hover/Press для витрин (в ДС это :hover/:active — те же токены) */
+  .st-hover.ds-elements--cell.ds-elements--default, .st-hover .ds-elements--cell.ds-elements--default,
+  .st-hover.ds-elements--cell.ds-elements--today, .st-hover .ds-elements--cell.ds-elements--today { background: var(--ds-color-elements-datepicker-cell-default-hover-background, #f5f5f5); }
+  .st-press.ds-elements--cell.ds-elements--default, .st-press .ds-elements--cell.ds-elements--default,
+  .st-press.ds-elements--cell.ds-elements--today, .st-press .ds-elements--cell.ds-elements--today { background: var(--ds-color-elements-datepicker-cell-default-press-background, #e0e0e0); }
+  .st-hover.ds-elements--cell.ds-elements--selected, .st-hover .ds-elements--cell.ds-elements--selected { background: var(--ds-color-elements-datepicker-cell-selected-hover-background, #3969d5); }
+  .st-press.ds-elements--cell.ds-elements--selected, .st-press .ds-elements--cell.ds-elements--selected { background: var(--ds-color-elements-datepicker-cell-selected-press-background, #2651b5); }
+  /* у range наведения-слоя нет; в press — серый кружок на ячейке поверх подсветки (как в Figma) */
+  .st-hover.ds-elements__range-highlight-middle .ds-elements--cell,
+  .st-hover .ds-elements__range-highlight-middle .ds-elements--cell { background: transparent; }
+  .st-hover.ds-elements--year.ds-elements--default, .st-hover .ds-elements--year.ds-elements--default,
+  .st-hover.ds-elements--year.ds-elements--today, .st-hover .ds-elements--year.ds-elements--today { background: var(--ds-color-elements-datepicker-year-default-hover-background, #f5f5f5); }
+  .st-press.ds-elements--year.ds-elements--default, .st-press .ds-elements--year.ds-elements--default,
+  .st-press.ds-elements--year.ds-elements--today, .st-press .ds-elements--year.ds-elements--today { background: var(--ds-color-elements-datepicker-year-default-press-background, #e0e0e0); }
+  .st-hover.ds-elements--year.ds-elements--selected, .st-hover .ds-elements--year.ds-elements--selected { background: var(--ds-color-elements-datepicker-year-selected-hover-background, #3969d5); }
+  .st-press.ds-elements--year.ds-elements--selected, .st-press .ds-elements--year.ds-elements--selected { background: var(--ds-color-elements-datepicker-year-selected-press-background, #2651b5); }
+  .st-hover.ds-elements--month.ds-elements--default, .st-hover .ds-elements--month.ds-elements--default { background: var(--ds-color-elements-datepicker-month-default-hover-background, #f5f5f5); }
+  .st-press.ds-elements--month.ds-elements--default, .st-press .ds-elements--month.ds-elements--default { background: var(--ds-color-elements-datepicker-month-default-press-background, #e0e0e0); }
+  .material-icons { font-family: 'Material Icons Outlined'; }   /* иконки — только аутлайн (правило) */
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Демо стенд Datepicker</span>
+  <span class="demo-bar__state" id="state">Выбрано: —</span>
+</div>
+<div class="view">
+  <!-- табы — компонент ДС Tabs; переключение панелей — скрипт внизу страницы -->
+  <div class="ds-tabs" role="tablist" aria-label="Компоненты семейства Datepicker">
+    <button class="ds-tab ds-tab--active" role="tab" data-vtab="assembly" aria-selected="true">Basic example</button>
+    <button class="ds-tab" role="tab" data-vtab="input" aria-selected="false">Input Datepicker</button>
+    <button class="ds-tab" role="tab" data-vtab="elements" aria-selected="false">Elements Datepicker</button>
+    <button class="ds-tab" role="tab" data-vtab="panel" aria-selected="false">Control Panel Datepicker</button>
+    <button class="ds-tab" role="tab" data-vtab="datepicker" aria-selected="false">Datepicker</button>
+  </div>
+
+  <!-- 1. Basic example: живое поле + раскрывашка (как пример «Focus» — «По меню календарь» в Figma) -->
+  <div class="panel" data-vpanel="assembly" role="tabpanel">
+    <div class="fields">
+      <div id="asm-example"></div>
+    </div>
+  </div>
+
+  <!-- 2. Input Datepicker: Empty / Populated (узел 58548-4764) — статичные витрины вариантов (без выпадашки) -->
+  <div class="panel" data-vpanel="input" role="tabpanel" hidden>
+    <div class="fields">
+      <div>
+        <div class="card__cap">Empty</div>
+        <div id="inp-empty"></div>
+      </div>
+      <div>
+        <div class="card__cap">Populated</div>
+        <div id="inp-populated"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Elements Datepicker: ячейки — день / месяц / год (узел 58501-4220; колонки — варианты, строки — состояния, как в наборе Figma) -->
+  <div class="panel" data-vpanel="elements" role="tabpanel" hidden>
+    <div class="el-band el-band--cells">
+      <div class="el-col">
+        <span class="ds-elements ds-elements--cell ds-elements--default"><span class="ds-elements__label">00</span></span>
+        <span class="st-hover ds-elements ds-elements--cell ds-elements--default"><span class="ds-elements__label">00</span></span>
+        <span class="st-press ds-elements ds-elements--cell ds-elements--default"><span class="ds-elements__label">00</span></span>
+        <span class="ds-elements ds-elements--cell ds-elements--default ds-elements--disabled"><span class="ds-elements__label">00</span></span>
+      </div>
+      <div class="el-col">
+        <span class="ds-elements ds-elements--cell ds-elements--today"><span class="ds-elements__label">00</span></span>
+        <span class="st-hover ds-elements ds-elements--cell ds-elements--today"><span class="ds-elements__label">00</span></span>
+        <span class="st-press ds-elements ds-elements--cell ds-elements--today"><span class="ds-elements__label">00</span></span>
+        <span class="ds-elements ds-elements--cell ds-elements--today ds-elements--disabled"><span class="ds-elements__label">00</span></span>
+      </div>
+      <div class="el-col">
+        <!-- выбранный вариант в наборе Figma — 3 состояния (disabled у Selected не нарисован) -->
+        <span class="ds-elements ds-elements--cell ds-elements--selected"><span class="ds-elements__label">00</span></span>
+        <span class="st-hover ds-elements ds-elements--cell ds-elements--selected"><span class="ds-elements__label">00</span></span>
+        <span class="st-press ds-elements ds-elements--cell ds-elements--selected"><span class="ds-elements__label">00</span></span>
+      </div>
+      <div class="el-col">
+        <span class="ds-elements__range-highlight-middle"><span class="ds-elements ds-elements--cell ds-elements--default"><span class="ds-elements__label">00</span></span></span>
+        <span class="st-hover ds-elements__range-highlight-middle"><span class="ds-elements ds-elements--cell ds-elements--default"><span class="ds-elements__label">00</span></span></span>
+        <span class="st-press ds-elements__range-highlight-middle"><span class="ds-elements ds-elements--cell ds-elements--default"><span class="ds-elements__label">00</span></span></span>
+        <span class="ds-elements__range-highlight-middle ds-elements--disabled"><span class="ds-elements ds-elements--cell ds-elements--default"><span class="ds-elements__label">00</span></span></span>
+      </div>
+    </div>
+    <div class="el-band el-band--lower">
+      <div class="el-col">
+        <span class="ds-elements ds-elements--year ds-elements--default"><span class="ds-elements__label">2025</span></span>
+        <span class="st-hover ds-elements ds-elements--year ds-elements--default"><span class="ds-elements__label">2025</span></span>
+        <span class="st-press ds-elements ds-elements--year ds-elements--default"><span class="ds-elements__label">2025</span></span>
+        <span class="ds-elements ds-elements--year ds-elements--default ds-elements--disabled"><span class="ds-elements__label">2025</span></span>
+      </div>
+      <div class="el-col">
+        <span class="ds-elements ds-elements--year ds-elements--today"><span class="ds-elements__label">2025</span></span>
+        <span class="st-hover ds-elements ds-elements--year ds-elements--today"><span class="ds-elements__label">2025</span></span>
+        <span class="st-press ds-elements ds-elements--year ds-elements--today"><span class="ds-elements__label">2025</span></span>
+        <span class="ds-elements ds-elements--year ds-elements--today ds-elements--disabled"><span class="ds-elements__label">2025</span></span>
+      </div>
+      <div class="el-col">
+        <!-- выбранный год в наборе Figma — 3 состояния (disabled у Selected не нарисован) -->
+        <span class="ds-elements ds-elements--year ds-elements--selected"><span class="ds-elements__label">2025</span></span>
+        <span class="st-hover ds-elements ds-elements--year ds-elements--selected"><span class="ds-elements__label">2025</span></span>
+        <span class="st-press ds-elements ds-elements--year ds-elements--selected"><span class="ds-elements__label">2025</span></span>
+      </div>
+      <div class="el-col el-col--month">
+        <span class="ds-elements ds-elements--month ds-elements--default"><span class="ds-control-panel__label">Апрель</span><span class="ds-control-panel__icon"><span class="material-icons">arrow_drop_down</span></span></span>
+        <span class="st-hover ds-elements ds-elements--month ds-elements--default"><span class="ds-control-panel__label">Апрель</span><span class="ds-control-panel__icon"><span class="material-icons">arrow_drop_down</span></span></span>
+        <span class="st-press ds-elements ds-elements--month ds-elements--default"><span class="ds-control-panel__label">Апрель</span><span class="ds-control-panel__icon"><span class="material-icons">arrow_drop_down</span></span></span>
+        <span class="ds-elements ds-elements--month ds-elements--default ds-elements--disabled"><span class="ds-control-panel__label">Апрель</span><span class="ds-control-panel__icon"><span class="material-icons">arrow_drop_down</span></span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Control Panel Datepicker: Control / Week / Calendar (узел 58501-4052) -->
+  <div class="panel" data-vpanel="panel" role="tabpanel" hidden>
+    <div class="rows">
+      <div>
+        <div class="card__cap">Control</div>
+        <div class="ds-control-panel ds-control-panel--control">
+          <span class="ds-elements ds-elements--month ds-elements--default">
+            <span class="ds-control-panel__label">Октябрь 2026</span>
+            <span class="ds-control-panel__icon"><span class="material-icons">arrow_drop_down</span></span>
+          </span>
+          <span class="ds-control-panel__button-icon-group">
+            <span class="ds-control-panel__button-icon"><span class="material-icons">chevron_left</span></span>
+            <span class="ds-control-panel__button-icon"><span class="material-icons">chevron_right</span></span>
+          </span>
+        </div>
+      </div>
+      <div>
+        <div class="card__cap">Week</div>
+        <div class="ds-control-panel ds-control-panel--week">
+          <div class="ds-datepicker__elements">
+            <span class="ds-datepicker__label">ПН</span>
+            <span class="ds-datepicker__label">ВТ</span>
+            <span class="ds-datepicker__label">СР</span>
+            <span class="ds-datepicker__label">ЧТ</span>
+            <span class="ds-datepicker__label">ПТ</span>
+            <span class="ds-datepicker__label">СБ</span>
+            <span class="ds-datepicker__label">ВС</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card__cap">Calendar</div>
+        <div class="ds-control-panel ds-control-panel--calendar">
+          <div id="cp-calendar" class="demo-w280"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Datepicker: три вида как в узле 58509-5439 (Day / Year / Month) — статичные витрины -->
+  <div class="panel" data-vpanel="datepicker" role="tabpanel" hidden>
+    <div class="cards">
+      <div>
+        <div class="card__cap">Day</div>
+        <div id="cal-day"></div>
+      </div>
+      <div>
+        <div class="card__cap">Year</div>
+        <div id="cal-year"></div>
+      </div>
+      <div>
+        <div class="card__cap">Month</div>
+        <div id="cal-month"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  window.addEventListener('DOMContentLoaded', function () {
+    var today = new Date();   /* актуальные данные: текущий месяц и сегодня */
+    var st = document.getElementById('state');
+    function show(s, e) {
+      st.textContent = 'Выбрано: ' + Datepicker.fmtFull(s) +
+        (e && e.getTime() !== s.getTime() ? ' - ' + Datepicker.fmtFull(e) : '');
+    }
+
+    /* 1. Basic example: одно живое поле, календарь открыт сразу (пример «Focus»), выбор даты работает */
+    Datepicker.mountInput(document.getElementById('asm-example'), { open: true, onPick: show });
+
+    /* 2. Input Datepicker: Empty / Populated — статичные поля (без выпадашки) */
+    Datepicker.mountInput(document.getElementById('inp-empty'), { static: true });
+    Datepicker.mountInput(document.getElementById('inp-populated'), { static: true, value: today });
+
+    /* 4. Control Panel: вариант «Calendar» — сетка дней из статичной сборки */
+    var tmpCal = document.createElement('div');
+    tmpCal.style.display = 'none';
+    document.body.appendChild(tmpCal);
+    Datepicker.mount(tmpCal, { static: true });
+    document.getElementById('cp-calendar').appendChild(tmpCal.querySelector('.ds-datepicker__days'));
+    tmpCal.remove();
+
+    /* 5. Datepicker: три вида (Day / Year / Month) — статичные, как узлы Figma;
+       в дне — «сегодня» кольцом и выбранное 12-е (как в макете: today + selected) */
+    var sel12 = new Date(today.getFullYear(), today.getMonth(), 12);
+    Datepicker.mount(document.getElementById('cal-day'), { static: true, start: sel12, end: sel12 });
+    Datepicker.mount(document.getElementById('cal-year'), { static: true, mode: 'year' });
+    Datepicker.mount(document.getElementById('cal-month'), { static: true, mode: 'month' });
+
+    /* Табы — компонент ДС Tabs: переключаем активный таб и панель */
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('.ds-tab[data-vtab]'));
+    var panels = Array.prototype.slice.call(document.querySelectorAll('[data-vpanel]'));
+    tabs.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        tabs.forEach(function (b) {
+          var on = b === btn;
+          b.classList.toggle('ds-tab--active', on);
+          b.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+        panels.forEach(function (p) {
+          p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab');
+        });
+      });
+    });
+  });
+</script>
+</body>
+</html>

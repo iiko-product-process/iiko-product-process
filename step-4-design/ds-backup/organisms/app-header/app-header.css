@@ -1,0 +1,166 @@
+/* app-header.css — СКВОЗНАЯ шапка приложения («App bars: top») — организм дизайн-системы (DS/organisms/app-header).
+   Макет-источник (актуальный): Figma «Отчеты» (g4R3DRXWMiiTgZvNtrelLI), node 4318:51379 — десктоп, высота 64.
+   Бургер и лого iiko — наши (в макете их нет: «шапка, не считая бургера и лого»); в шапке они
+   видны только в адаптиве (<760) — в широком состоянии логотип живёт в шапке меню, а шапка
+   приложения начинается правее меню (макет 59160:21175).
+   Разметку строит app-header.js (один источник на все страницы-кадры).
+   Ассеты — локальные SVG в этой папке (глифы из макета); глиф магазина — Material Icons Outlined `storefront`
+   (в экспорте Figma ассет подменялся: отдавал check_box_outline_blank).
+   Пробелы ДС, закрытые локально (геометрия, тень, цвета, пороги), — журнал DS/fixes.md (пп. 68–72);
+   в коде пометки «пробел ДС №N».
+   Адаптив (планшет/мобильный) — по прежним макетам E-invioice (429:19815, 1818:73188): нового
+   адаптивного макета шапки нет — ждём (структура адаптива сохранена, данные общие). */
+
+.apph {
+  position: relative;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 8px 16px;
+  background: #fff;
+  box-sizing: border-box;
+  z-index: 3;
+  /* Shadows/02 dp из макета «Отчеты» (в токенах ДС такого нет — пробел ДС №69) */
+  box-shadow: 0 2px 1px rgba(158, 158, 158, .14), 0 3px .5px rgba(158, 158, 158, .12), 0 1px 2.5px rgba(158, 158, 158, .2);
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.apph * { box-sizing: border-box; }
+.apph img { display: block; }
+.apph__item { cursor: pointer; }   /* кликабельные зоны; поведения меню ждём отдельной спецификацией */
+/* №100: обёртки-спаны иконок — flex: иначе inline-flex контейнер садится на базовую линию
+   строки и уезжает вверх на 2px (было у 📅 / «?» / колокола). */
+.apph__cal, .apph__help, .apph__bell { display: flex; align-items: center; justify-content: center; }
+
+/* ── Левая группа: бургер + логотип (только адаптив, <760), затем выбор ресторанов ── */
+.apph__left { display: flex; align-items: center; gap: 24px; height: 32px; flex: none; }
+.apph__logo-block { display: none; align-items: center; gap: 16px; height: 32px; }
+/* в широком состоянии бургера и лого в шапке нет — логотип в шапке меню (макет 59160:21175) */
+.apph--mini .apph__logo-block,
+.apph--mobile .apph__logo-block { display: flex; }
+.apph__logo-wrap { display: flex; flex-direction: column; padding-bottom: 4px; }
+.apph__store { align-items: center; }   /* №101: корень — компонент ds-text-ui (гэп/высота/раскладка от него); обвязка — центр в шапке */
+.apph__store-icon { color: #757575; }   /* #757575 из макета — пробел ДС №70; размер — от контейнера Icon size */
+/* .apph__store-name — хук для js (обновление имени); стили — от ds-text-ui__label (№101) */
+
+/* ── Центр: табы периода + пилюля даты (идут сразу за магазином, как в макете) ── */
+.apph__center { display: flex; align-items: center; gap: 16px; height: 36px; flex: none; }
+.apph__tabs { display: flex; height: 36px; }
+.apph__tab {
+  width: 38px; height: 36px; display: flex; align-items: center; justify-content: center;
+  position: relative; background: #fff; cursor: pointer;
+  font: var(--ds-font-caption-l-12-caps-medium); letter-spacing: .4px; text-transform: uppercase;
+  color: var(--ds-palette-neutral-950, #212121);
+  padding-bottom: 2px;   /* резерв под подчёркивание есть у всех табов: текст не прыгает при переключении */
+}
+.apph__tab--active { color: var(--ds-color-text-accent, #448aff); }
+.apph__tab--active::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; border-radius: 10px; background: var(--ds-color-brand-accent-default, #448aff); }
+.apph__pill { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 8px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); border-radius: 16px; background: #fff; }
+.apph__select { display: flex; align-items: center; gap: 4px; }
+.apph__nav { width: 24px; height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; background: #fff; }
+.apph__date { display: flex; align-items: center; gap: 4px; padding: 0 8px; height: 100%; }
+.apph__date-text { text-align: center; font: 400 14px/20px 'Roboto'; letter-spacing: .25px; color: var(--ds-palette-neutral-950, #212121); white-space: nowrap; }
+
+/* ── Правая группа: «Поиск», помощь, уведомления (в макете имя пользователя не показывается) ── */
+.apph__right { margin-left: auto; display: flex; align-items: center; gap: 16px; flex: none; }
+
+/* ── Планшетный брейк-бэнд (481–1160): табы скрыты; кнопка «Поиск» не помещается — убираем.
+   Структура — по прежним планшетным макетам E-invioice; нового адаптива ждём. ── */
+.apph--tablet .apph__tabs { display: none; }
+.apph--tablet .apph__search { display: none; }
+
+/* ── Планшетный «мини» (до 760): пилюля не помещается; бургер и лого — уже здесь (адаптив) ── */
+.apph--mini .apph__pill { display: none; }
+
+/* ── Мобильный макет (1818:73188, 360, полоса 56): только бургер слева, справа — пилюля-диапазон,
+   tune и шестерёнка с бейджем «2» (класс ставит app-header.js, ≤480) ── */
+.apph--mobile { height: 56px; }
+.apph--mobile .apph__left { height: 24px; }
+.apph--mobile .apph__logo-block { gap: 0; }
+.apph--mobile .apph__logo-wrap,
+.apph--mobile .apph__store,
+.apph--mobile .apph__center,
+.apph--mobile .apph__right { display: none; }
+.apph__mright { display: none; }
+.apph--mobile .apph__mright { position: absolute; top: 10px; right: 16px; height: 36px; display: flex; align-items: center; gap: 16px; }
+.apph__mpill { display: flex; align-items: center; height: 36px; padding: 0 12px 0 0; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); border-radius: 16px; background: #fff; overflow: hidden; }
+.apph__mdate { padding: 0 12px; font: 400 14px/20px 'Roboto'; letter-spacing: .25px; color: var(--ds-palette-neutral-950, #212121); white-space: nowrap; }
+.apph__badge-wrap { position: relative; }
+.apph__badge { position: absolute; left: 10px; bottom: 10px; padding: 1px 4px; border-radius: 100px; background: #ff5252; font: 500 10px/12px 'Roboto'; letter-spacing: .5px; color: #fff; }   /* #ff5252 из макета — пробел ДС №70 */
+
+/* ── Границы «экрана» в подложках устройств: шапка (верхние углы) и кадр (нижние) повторяют
+   внутренние радиусы рамок: десктоп 30−14=16, планшет 30−16=14, телефон 38−14=24.
+   Иначе острые углы контента залезают на скругления безеля (специфика обвязки, не ДС — пробел ДС №72). ── */
+body.device-desktop:not(.ui-clean) .apph { border-top-left-radius: 16px; border-top-right-radius: 16px; }
+body.device-tablet:not(.ui-clean) .apph { border-top-left-radius: 14px; border-top-right-radius: 14px; }
+body.device-phone:not(.ui-clean) .apph { border-top-left-radius: 24px; border-top-right-radius: 24px; }
+body.device-desktop:not(.ui-clean) .frame { border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; }
+body.device-tablet:not(.ui-clean) .frame { border-bottom-left-radius: 14px; border-bottom-right-radius: 14px; }
+body.device-phone:not(.ui-clean) .frame { border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; }
+
+/* ── Интерактив шапки: правая панель и поповеры ─────────────────
+   Панель («Выберите ресторан» — макет 3368:33082; уведомления — условные) —
+   ОРГАНИЗМ app-right-panel (organisms/app-right-panel): каркас — карточка
+   Card (Type=Shadow, без скруглений), шапка с заголовком и крестиком (20px),
+   скроллящийся контент, подвал с действиями; затемнение — Backdrop
+   (.app-rp-scrim.ds-backdrop). Разметку строит app-header.js; css/js организма
+   подтягиваются автоматически (ensureHeaderDeps).
+   Здесь остаются только стили СОДЕРЖИМОГО панели (поиск, строки, разделители) —
+   область .apph-panel; «Поиск» — пока заглушка (панели нет — ждём макет).
+   Компоненты внутри — из ДС: ds-search, ds-checkbox, ds-slide-toggle,
+   ds-list-item, ds-menu-*, ds-elements/datepicker, ds-btn.
+   Локальные правки к ДС — пробелы №73–76 (DS/fixes.md). */
+
+/* поле поиска в панелях: оболочка — ds-search (ДС), внутри — настоящий input */
+.apph-field { width: 100%; }
+.apph-field__input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: 400 14px/20px 'Roboto'; letter-spacing: .25px; color: var(--ds-color-text-primary, #333333); }
+.apph-field__input::placeholder { color: #bdbdbd; }
+.apph-field .material-icons { color: var(--ds-color-text-secondary, #616161); }
+
+/* строки — ds-list-item, но в макете они 48px и на всю ширину панели
+   (в ДС у list-item min-height 68 и фикс. ширина — локальная правка, пробел ДС №73) */
+.apph-panel .ds-list-item { width: 100%; min-height: 48px; padding: 12px 16px; align-items: center; cursor: pointer; }
+.apph-row__cb { pointer-events: none; }   /* клик по строке переключает, чекбокс — только вид */
+.apph-row__check { flex: none; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; color: var(--ds-color-text-secondary, #616161); font-size: 24px; }
+.apph-row__name { flex: 1; min-width: 0; font: 400 14px/24px 'Roboto'; letter-spacing: .1px; color: #212121; }
+.apph-row__name--md { font-weight: 500; font-size: 14px; line-height: 20px; letter-spacing: .25px; }
+.apph-row__chev { flex: none; cursor: pointer; color: var(--ds-color-text-secondary, #616161); }
+.apph-row__more { flex: none; color: var(--ds-color-text-secondary, #616161); cursor: pointer; }
+.apph-panel .apph-row--child { padding-left: 64px; }   /* отступ вложенных строк — из макета */
+.apph-store__meta { display: flex; align-items: center; gap: 16px; min-height: 36px; }
+.apph-store__count { font: 500 16px/24px 'Roboto'; letter-spacing: .5px; color: #212121; }
+.apph-vdiv { flex: none; width: 1px; height: 16px; background: #e0e0e0; }
+.apph-panel .ds-divider { display: block; height: 1px; flex: none; background: var(--ds-color-divider-solid-default-color, #e0e0e0); }
+.apph-row--notif .apph-row__name { display: flex; flex-direction: column; }
+.apph-row__time { font-size: 12px; line-height: 16px; letter-spacing: .4px; color: var(--ds-color-text-secondary, #616161); }
+
+/* меню помощи — ds-menu-container (в ДС min-height 418 — локальная правка, пробел ДС №74) */
+.apph-menu { position: absolute; top: 52px; right: 16px; z-index: 7; }
+.apph-menu[hidden] { display: none; }
+.apph-menu .ds-menu-container { min-height: 0; width: 240px; }
+.apph-menu .ds-menu-item { min-height: 40px; width: 100%; align-items: center; cursor: pointer; }
+
+/* календарь — компонент Datepicker: сетка, состояния и правки ДС живут в компоненте
+   (components-web/components/Datepicker_DS/datepicker.js + components-web/fixes.css,
+   журнал №75). Здесь — только поповер шапки: позиция и тень «Shadows/08 dp» из макета */
+.apph-cal { position: absolute; top: 52px; z-index: 7; }
+.apph-cal[hidden] { display: none; }
+.apph-cal .ds-datepicker { background: #fff; box-shadow: 0 8px 10px 1px rgba(158, 158, 158, .14), 0 3px 14px 3px rgba(158, 158, 158, .12), 0 5px 5px 0 rgba(158, 158, 158, .2); }
+
+/* ── Конструктор блоков шапки: класс apph--no-<блок> скрывает блок ────────
+   Блоки: store (рестораны), tabs (д/н/м/г/п), range (пилюля диапазона),
+   cal (иконка календаря), search, help, bell. Класс ставится по data-hdr у скрипта
+   подключения (перечислены показываемые блоки; нет атрибута — всё) или вручную —
+   живой конструктор на демо-стенде («Настройки» справа). */
+.apph--no-store .apph__store,
+.apph--no-tabs .apph__tabs,
+.apph--no-range .apph__select,
+.apph--no-cal .apph__cal,
+.apph--no-search .apph__search,
+.apph--no-help .apph__help,
+.apph--no-bell .apph__bell { display: none !important; }
+
+/* если в пилюле не осталось видимых блоков (сняты и «Диапазон дат», и «Календарь») —
+   скрываем и саму пилюлю: пустая рамка не должна оставаться (десктоп и мобильная полоса) */
+.apph--no-range.apph--no-cal .apph__pill,
+.apph--no-range.apph--no-cal .apph__mpill { display: none !important; }

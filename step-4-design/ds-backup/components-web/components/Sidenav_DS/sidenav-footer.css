@@ -1,0 +1,61 @@
+.ds-sidenav-footer {
+  display: flex;
+  width: 260px;
+  padding: var(--ds-sidenav-footer-l2-pad-top, 12px) var(--ds-sidenav-footer-l2-pad-right, 16px) var(--ds-sidenav-footer-l2-pad-bottom, 12px) var(--ds-sidenav-footer-l2-pad-left, 16px);
+  gap: var(--ds-sidenav-footer-l2-gap, 12px);
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-sidenav-footer__label {
+  font-size: var(--ds-font-caption-l-12-normal-regular-size);
+  line-height: var(--ds-font-caption-l-12-normal-regular-line);
+  letter-spacing: var(--ds-font-caption-l-12-normal-regular-spacing);
+  font-weight: var(--ds-font-caption-l-12-normal-regular-weight);
+  color: var(--ds-color-sidenav-footer-l2-text-color, #616161);
+  white-space: nowrap;
+}
+.ds-sidenav-footer__logo-iiko {
+  height: var(--ds-size-4x);
+  display: flex;
+  flex-direction: row;
+  background: #ffffff;
+}
+.ds-sidenav-footer__vector {
+  height: 9.8px;
+  display: flex;
+  flex-direction: row;
+  background: var(--ds-color-sidenav-footer-l2-logo, #ff5252);
+}
+.ds-sidenav-footer__divider {
+  height: var(--ds-size-4x);
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
+.ds-sidenav-footer__ver-7-8-6-29440 {
+  display: flex;
+  flex-direction: row;
+  background: var(--ds-color-sidenav-footer-l2-text-color, #616161);
+  font-size: var(--ds-font-caption-l-12-normal-regular-size);
+  line-height: var(--ds-font-caption-l-12-normal-regular-line);
+  letter-spacing: var(--ds-font-caption-l-12-normal-regular-spacing);
+  font-weight: var(--ds-font-caption-l-12-normal-regular-weight);
+  color: var(--ds-color-sidenav-footer-l2-text-color, #616161);
+}
+.ds-sidenav-footer--l2.ds-sidenav-footer--expanded {
+  flex-direction: row;
+  align-items: center;
+  background: var(--ds-color-sidenav-footer-l2-background, #ffffff);
+  color: var(--ds-color-sidenav-footer-l2-text-color, #616161);
+}
+.ds-sidenav-footer--l1.ds-sidenav-footer--expanded {
+  width: 200px;
+  flex-direction: column;
+  color: var(--ds-color-sidenav-item-l1-text-color, #ffffff);
+}
+.ds-sidenav-footer--l1.ds-sidenav-footer--collapsed {
+  width: 52px;
+  flex-direction: column;
+  color: var(--ds-color-text-accent, #448aff);
+}
+

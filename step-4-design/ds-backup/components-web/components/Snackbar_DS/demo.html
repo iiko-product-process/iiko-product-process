@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snackbar — демо стенд компонента</title>
+<!--
+  Демо стенд компонента Snackbar (страница «Snackbar_DS», 54373:2203). Папка: DS/components-web/components/Snackbar_DS/.
+  Источник — канва Figma «Iiko Web DS (New)»: набор «Snackbar» (4 варианта: Type Single/Complex × Mode Dark/Light;
+  Single 370×56: [info 20][текст 14/20][Button S 61×28][close 20] + Progress 4px #448AFF; Complex 370×108:
+  [info][title 20 + close][description 16][Bottom actions — Button group 28] + Progress), набор «Element left»
+  (5 стилей: Neutral/Accent/Positive/Warning/Negative — глиф info 20) + блок «Snackbar (Examples)» (2256×2332):
+  сцены на рабочих экранах и наборы инстансов разных высот; тексты: «Товары добавлены», «Не удалось сохранить изменения»,
+  «Товар «Салат Цезарь» удален», «Ошибка интеграции. Код: 34553-…», «Документ база гостей.xsl загружен ошибками. Ошибок: 5».
+  ⚠ css: `.ds-snackbar__label` жёстко белый (фикс п. 4 — вариант Light перекрашивает лейбл), Complex-dark ширина в css 232
+  (на канве 370) — решить в ДС; цвета глифов Element left по стилям — из токенов. Журнал DS/fixes.md №130.
+-->
+<link rel="stylesheet" href="../../font.css">
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../index.css">
+<link rel="stylesheet" href="../../fixes.css">
+<style>
+  /* каркас демо-стенда */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .view { padding: 24px; }
+  .view .ds-tabs { margin-bottom: 24px; }
+  .panel { width: fit-content; max-width: 1920px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  .snap-cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0; }
+  .snap-note { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 28px 0 0; max-width: 980px; }
+  .snap-sect { margin: 0 0 40px; }
+  .snap-sect:last-child { margin-bottom: 0; }
+  .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
+  .snap-row { display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap; }
+  .snap-col { display: flex; flex-direction: column; gap: 14px; }
+  .snap-ex-caption { font-size: 14px; line-height: 28px; color: var(--ds-color-text-primary, #333333); margin: 0; }
+  /* обвязка: ширина 370 по канве (в css у complex-dark 232) */
+  .snap-sb { width: 370px; }
+  .snap-sb .ds-snackbar__body { width: 100%; box-sizing: border-box; }
+  .snap-sb .ds-snackbar__content { flex: 1 1 auto; }
+  .snap-sb__btn { display: inline-flex; align-items: center; padding: 4px 8px; border: 0; border-radius: 8px; background: var(--ds-color-button-accent-filled-default-background, #448aff); color: #ffffff; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer; }
+  .snap-sb--light .snap-sb__btn { background: none; color: var(--ds-color-button-accent-outlined-default-text-color, #448aff); }
+  .snap-sb__close { width: 20px; height: 20px; display: inline-flex; color: #ffffff; }
+  .snap-sb--light .snap-sb__close { color: #616161; }
+  .snap-sb__close svg { width: 100%; height: 100%; display: block; }
+  .snap-sb__col { display: flex; flex-direction: column; gap: 8px; flex: 1 1 auto; }
+  .snap-sb__title-row { display: flex; align-items: flex-start; gap: 8px; }
+  .snap-sb__title { flex: 1; font-size: 14px; line-height: 20px; }
+  .snap-sb__desc { font-size: 12px; line-height: 16px; opacity: .8; }
+  .snap-sb__actions { display: flex; gap: 8px; }
+  .snap-sb__el-left { width: 20px; height: 20px; display: inline-flex; flex-shrink: 0; }
+  .snap-sb__el-left svg { width: 100%; height: 100%; display: block; }
+  /* сцена */
+  .snap-scene { position: relative; width: 640px; height: 300px; background: #f8f9fc; border-radius: 12px; overflow: hidden; }
+  .snap-scene__dim { position: absolute; inset: 0; background: #333333; opacity: .35; }
+  .snap-scene .snap-sb { position: absolute; left: 24px; bottom: 24px; }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Snackbar — демо стенд</span>
+  <span>набор Figma: Snackbar (54373-2203, 4) · Element left (5 стилей) · примеры (сцены + инстансы)</span>
+</div>
+<div class="view">
+  <div class="ds-tabs" role="tablist" aria-label="Snackbar">
+    <button class="ds-tab ds-tab--active" role="tab" aria-selected="true" data-vtab="basic">Basic example</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="snackbar">Snackbar</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="element-left">Element left</button>
+  </div>
+
+  <!-- 2. Snackbar (набор 54373:2203, 4 варианта) -->
+  <div class="panel" data-vpanel="snackbar" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Snackbar — 4 варианта (Type × Mode; Single: [info][текст][кнопка][close] + Progress)</div>
+      <div class="snap-row" style="margin-top: 12px;">
+        <div class="snap-col">
+          <span class="snap-cap">Type=Single, Mode=Dark (#424242)</span>
+          <div class="ds-snackbar ds-snackbar--single ds-snackbar--dark snap-sb">
+            <div class="ds-snackbar__body">
+              <span class="ds-snackbar__icon" style="color:#ffffff;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
+              <div class="ds-snackbar__content"><span class="ds-snackbar__label">Snackbar title with link</span></div>
+              <button class="snap-sb__btn">Button</button>
+              <span class="snap-sb__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span>
+            </div>
+            <div class="ds-snackbar__progress"></div>
+          </div>
+        </div>
+        <div class="snap-col">
+          <span class="snap-cap">Type=Single, Mode=Light (#FFFFFF)</span>
+          <div class="ds-snackbar ds-snackbar--single ds-snackbar--light snap-sb snap-sb--light">
+            <div class="ds-snackbar__body">
+              <span class="ds-snackbar__icon" style="color:#616161;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
+              <div class="ds-snackbar__content"><span class="ds-snackbar__label">Snackbar title with link</span></div>
+              <button class="snap-sb__btn">Button</button>
+              <span class="snap-sb__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span>
+            </div>
+            <div class="ds-snackbar__progress"></div>
+          </div>
+        </div>
+        <div class="snap-col">
+          <span class="snap-cap">Type=Complex, Mode=Dark (title + description + actions)</span>
+          <div class="ds-snackbar ds-snackbar--complex ds-snackbar--dark snap-sb">
+            <div class="ds-snackbar__body" style="align-items:flex-start;">
+              <span class="ds-snackbar__icon" style="color:#ffffff;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
+              <div class="snap-sb__col">
+                <div class="snap-sb__title-row"><span class="snap-sb__title">Snackbar title with link</span><span class="snap-sb__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></div>
+                <span class="snap-sb__desc">Snackbar description with link</span>
+                <div class="snap-sb__actions"><button class="snap-sb__btn">Button</button><button class="snap-sb__btn" style="background:none;color:#ffffff;opacity:.8;">Button</button></div>
+              </div>
+            </div>
+            <div class="ds-snackbar__progress"></div>
+          </div>
+        </div>
+        <div class="snap-col">
+          <span class="snap-cap">Type=Complex, Mode=Light</span>
+          <div class="ds-snackbar ds-snackbar--complex ds-snackbar--light snap-sb snap-sb--light">
+            <div class="ds-snackbar__body" style="align-items:flex-start;">
+              <span class="ds-snackbar__icon" style="color:#616161;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
+              <div class="snap-sb__col">
+                <div class="snap-sb__title-row"><span class="snap-sb__title" style="color:#333;">Snackbar title with link</span><span class="snap-sb__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></div>
+                <span class="snap-sb__desc" style="color:#616161;">Snackbar description with link</span>
+                <div class="snap-sb__actions"><button class="snap-sb__btn">Button</button><button class="snap-sb__btn" style="color:#616161;background:none;">Button</button></div>
+              </div>
+            </div>
+            <div class="ds-snackbar__progress"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 3. Element left (5 стилей) -->
+  <div class="panel" data-vpanel="element-left" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Element left — 5 стилей (глиф info 20; цвета — токенами стилей)</div>
+      <div class="snap-row" style="margin-top: 8px; align-items:center;">
+        <span class="snap-col"><span class="snap-cap">Neutral</span><span class="ds-element-left ds-element-left__info" style="background:none;"><span class="snap-sb__el-left" style="color:#ffffff;background:#424242;border-radius:4px;padding:0;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span></span>
+        <span class="snap-col"><span class="snap-cap">Accent</span><span class="ds-element-left" style="background:none;"><span class="snap-sb__el-left" style="color:var(--ds-color-icon-accent, #448aff);"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span></span>
+        <span class="snap-col"><span class="snap-cap">Positive</span><span class="ds-element-left" style="background:none;"><span class="snap-sb__el-left" style="color:var(--ds-color-icon-positive, #14b456);"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span></span>
+        <span class="snap-col"><span class="snap-cap">Warning</span><span class="ds-element-left" style="background:none;"><span class="snap-sb__el-left" style="color:var(--ds-color-icon-warning, #ffab40);"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span></span>
+        <span class="snap-col"><span class="snap-cap">Negative</span><span class="ds-element-left" style="background:none;"><span class="snap-sb__el-left" style="color:var(--ds-color-icon-negative, #ff5252);"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span></span>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: (а) Single 370×56 (r8) + Progress 4px #448AFF снизу; Complex 370×108: title 20 + description 16 + Bottom actions (Button group 28); тексты-заглушки «Snackbar title with link» / «Snackbar description with link»; (б) в css Complex-dark ширина 232px, у Light 370 — на канве оба 370 (на стенде 370, обвязка) — сверить/решить в ДС; (в) `.ds-snackbar__label` в css жёстко белый — Light-варианты обойдены фиксом п. 4 (color inherit); (г) Element left: стили различаются цветом глифа (цвета взяты токенами icon/*; точные значения сверить по канве); (д) кнопка внутри Single — по канве Button с белым фоном/акцентным лейблом (на стенде — заливка accent с белым текстом — уточнить по канве). Журнал №130.</p>
+  </div>
+
+  <!-- 1. Basic example: сцены из канвы (тексты дословно) -->
+  <div class="panel" data-vpanel="basic" role="tabpanel">
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Сцены из канвы (тексты дословно)</div>
+      <div class="snap-row" style="margin-top: 12px;">
+        <div class="snap-col">
+          <p class="snap-ex-caption">Single поверх рабочего экрана (Dark)</p>
+          <div class="snap-scene">
+            <div class="snap-scene__dim"></div>
+            <div class="ds-snackbar ds-snackbar--single ds-snackbar--dark snap-sb">
+              <div class="ds-snackbar__body">
+                <span class="ds-snackbar__icon" style="color:#ffffff;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
+                <div class="ds-snackbar__content"><span class="ds-snackbar__label">Товары добавлены</span></div>
+                <button class="snap-sb__btn">Отменить</button>
+                <span class="snap-sb__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span>
+              </div>
+              <div class="ds-snackbar__progress"></div>
+            </div>
+          </div>
+        </div>
+        <div class="snap-col">
+          <p class="snap-ex-caption">Complex с описанием (Dark)</p>
+          <div class="ds-snackbar ds-snackbar--complex ds-snackbar--dark snap-sb">
+            <div class="ds-snackbar__body" style="align-items:flex-start;">
+              <span class="ds-snackbar__icon" style="color:#ffffff;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
+              <div class="snap-sb__col">
+                <div class="snap-sb__title-row"><span class="snap-sb__title">Не удалось сохранить изменения</span><span class="snap-sb__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></div>
+                <span class="snap-sb__desc">Проверьте соединение и попробуйте ещё раз</span>
+                <div class="snap-sb__actions"><button class="snap-sb__btn">Повторить</button></div>
+              </div>
+            </div>
+            <div class="ds-snackbar__progress"></div>
+          </div>
+          <p class="snap-ex-caption" style="margin-top: 6px;">Длинный код ошибки</p>
+          <div class="ds-snackbar ds-snackbar--complex ds-snackbar--dark snap-sb">
+            <div class="ds-snackbar__body" style="align-items:flex-start;">
+              <span class="ds-snackbar__icon" style="color:#ffffff;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
+              <div class="snap-sb__col">
+                <div class="snap-sb__title-row"><span class="snap-sb__title">Ошибка интеграции. Код: 34553-243234-2345-23-3435-4566-456-989894-238742-234234-345435-3</span></div>
+              </div>
+            </div>
+            <div class="ds-snackbar__progress"></div>
+          </div>
+        </div>
+        <div class="snap-col">
+          <p class="snap-ex-caption">Single (Light) — «Товар «Салат Цезарь» удален»</p>
+          <div class="ds-snackbar ds-snackbar--single ds-snackbar--light snap-sb snap-sb--light">
+            <div class="ds-snackbar__body">
+              <span class="ds-snackbar__icon" style="color:#616161;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
+              <div class="ds-snackbar__content"><span class="ds-snackbar__label">Товар «Салат Цезарь» удален</span></div>
+              <button class="snap-sb__btn">Вернуть</button>
+              <span class="snap-sb__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span>
+            </div>
+            <div class="ds-snackbar__progress"></div>
+          </div>
+          <p class="snap-ex-caption" style="margin-top: 6px;">Single (Light) — «Документ база гостей.xsl загружен ошибками. Ошибок: 5»</p>
+          <div class="ds-snackbar ds-snackbar--single ds-snackbar--light snap-sb snap-sb--light">
+            <div class="ds-snackbar__body">
+              <span class="ds-snackbar__icon" style="color:#616161;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
+              <div class="ds-snackbar__content"><span class="ds-snackbar__label">Документ база гостей.xsl загружен ошибками. Ошибок: 5</span></div>
+              <span class="snap-sb__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span>
+            </div>
+            <div class="ds-snackbar__progress"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="snap-note">Пометки для ревью: (а) тексты — с канвы (вторые кнопки/строки в кадрах типа «Повторить»/«Отменить» добавлены для читаемости сценария — в канве в инстансах кнопки подписаны «Item L1»/«Button»); (б) на канве множество инстансов высотой 44–152 (вариации контента: только текст, текст+кнопка, стек снизу) — показаны репрезентативные; (в) сцены на канве — полные экраны (Sidenav + Content + Backdrop + Drawer); на стенде — упрощённая подложка; (г) перелив кнопки в Single по канве — Button с белым фоном и акцентным текстом, на стенде — заливка; уточнить по узлу. Журнал №130.</p>
+  </div>
+</div>
+
+<!-- иконки -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-info" viewBox="0 0 24 24"><path d="M11 17H13V11H11V17ZM12 9C12.2833 9 12.5208 8.90417 12.7125 8.7125C12.9042 8.52083 13 8.28333 13 8C13 7.71667 12.9042 7.47917 12.7125 7.2875C12.5208 7.09583 12.2833 7 12 7C11.7167 7 11.4792 7.09583 11.2875 7.2875C11.0958 7.47917 11 7.71667 11 8C11 8.28333 11.0958 8.52083 11.2875 8.7125C11.4792 8.90417 11.7167 9 12 9ZM12 22C10.6167 22 9.31667 21.7375 8.1 21.2125C6.88333 20.6875 5.825 19.975 4.925 19.075C4.025 18.175 3.3125 17.1167 2.7875 15.9C2.2625 14.6833 2 13.3833 2 12C2 10.6167 2.2625 9.31667 2.7875 8.1C3.3125 6.88333 4.025 5.825 4.925 4.925C5.825 4.025 6.88333 3.3125 8.1 2.7875C9.31667 2.2625 10.6167 2 12 2C13.3833 2 14.6833 2.2625 15.9 2.7875C17.1167 3.3125 18.175 4.025 19.075 4.925C19.975 5.825 20.6875 6.88333 21.2125 8.1C21.7375 9.31667 22 10.6167 22 12C22 13.3833 21.7375 14.6833 21.2125 15.9C20.6875 17.1167 19.975 18.175 19.075 19.075C18.175 19.975 17.1167 20.6875 15.9 21.2125C14.6833 21.7375 13.3833 22 12 22ZM12 20C14.2333 20 16.125 19.225 17.675 17.675C19.225 16.125 20 14.2333 20 12C20 9.76667 19.225 7.875 17.675 6.325C16.125 4.775 14.2333 4 12 4C9.76667 4 7.875 4.775 6.325 6.325C4.775 7.875 4 9.76667 4 12C4 14.2333 4.775 16.125 6.325 17.675C7.875 19.225 9.76667 20 12 20Z"/></symbol>
+  <symbol id="ic-close-20" viewBox="0 0 20 20"><path d="M5.33333 15.8333L4.16667 14.6667L8.83333 10L4.16667 5.33333L5.33333 4.16667L10 8.83333L14.6667 4.16667L15.8333 5.33333L11.1667 10L15.8333 14.6667L14.6667 15.8333L10 11.1667L5.33333 15.8333Z"/></symbol>
+</svg>
+
+<script>
+  /* табы стенда */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.ds-tab[data-vtab]'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('[data-vpanel]'));
+  tabs.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      tabs.forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle('ds-tab--active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach(function (p) { p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab'); });
+    });
+  });
+</script>
+</body>
+</html>

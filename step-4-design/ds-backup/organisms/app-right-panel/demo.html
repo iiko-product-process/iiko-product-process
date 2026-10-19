@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>app-right-panel — демо стенд правой панели</title>
+<!--
+  Демо стенд ОРГАНИЗМА «правая панель» (app-right-panel).
+  Панель — обычная карточка (Card, Type=Shadow), только без скруглений углов: прижата к правому краю
+  контейнера, во всю высоту; ширина — по контенту (можно зафиксировать через --app-rp-width на .app-rp);
+  шапка — карточная (Card title + крестик; иконка — стандарт 20px, ds-icon-size--5x), контент скроллится,
+  подвал — снизу; затемнение — Backdrop.
+  Контент и подвал на стенде показаны как в карточке (Content title / текст; кнопка «Подробнее» справа) —
+  для понимания; наполнение панели — любое (формы, таблицы, настройки, табы, фильтры — слот контента).
+  Закрытие: крестик / клик по фону (Backdrop) / Esc. Открыта одна панель за раз. API: window.AppRightPanel.
+-->
+<link rel="stylesheet" href="../../components-web/font.css">
+<link rel="stylesheet" href="../../components-web/tokens.css">
+<link rel="stylesheet" href="../../components-web/styles.css">
+<link rel="stylesheet" href="../../components-web/components/index.css">
+<link rel="stylesheet" href="../../components-web/fixes.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined">
+<!-- app-right-panel — правая панель: один источник стилей и поведения -->
+<link rel="stylesheet" href="app-right-panel.css?v=2">
+<script src="app-right-panel.js?v=1" defer></script>
+<style>
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0);
+    font-size: 13px;
+  }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .demo-bar__btn {
+    height: 28px; padding: 0 12px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0);
+    border-radius: var(--ds-radius-2x, 8px); background: transparent; font: inherit; cursor: pointer;
+  }
+  .demo-bar__btn:hover { background: var(--ds-color-button-neutral-hover, #f5f5f5); }
+  .demo-bar__state { margin-left: 12px; color: var(--ds-color-text-secondary, #616161); font-variant-numeric: tabular-nums; }
+  .demo-bar__hint { color: var(--ds-color-text-secondary, #616161); }
+  .view { padding: 24px; }
+  .panel { position: relative; width: 1280px; height: 720px; overflow: hidden; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  .frame { padding: 24px 32px; box-sizing: border-box; }
+  .frame h1 { font-size: 24px; line-height: 24px; font-weight: 500; margin: 0 0 12px; }
+  .frame p { font-size: 14px; line-height: 20px; max-width: 640px; color: var(--ds-color-text-primary, #333); }
+
+  /* иконки — только аутлайн */
+  .material-icons { font-family: 'Material Icons Outlined'; }
+
+  /* содержимое слота контента — как в карточке (Card_DS/demo.html): шрифт — утилиты ДС,
+     цвет и сброс UA-margin <p> — обвязка стенда (классов содержимого контента в выгрузке нет; журнал №104) */
+  .snap-ct { color: var(--ds-color-text-primary, #333); margin: 0; }
+  .snap-cs { color: var(--ds-color-text-secondary, #616161); margin: 0; }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Демо стенд app-right-panel</span>
+  <button class="demo-bar__btn" data-rp-open="panel">Открыть панель</button>
+  <span class="demo-bar__state" id="demo-state">…</span>
+  <span class="demo-bar__hint">· закрытие: крестик / клик по фону / Esc</span>
+</div>
+<div class="view">
+  <div class="panel" id="panel">
+    <div class="frame">
+      <h1>Правая панель</h1>
+      <p>Обычная карточка (Type=Shadow), только без скруглений углов. Панель прижата к правому краю,
+        во всю высоту: шапка с заголовком и крестиком, скроллящийся контент, подвал — снизу.
+        Ширина — по контенту.</p>
+      <p>Контент и подвал показаны как в карточке — для понимания. Наполнение может быть любое:
+        формы, таблицы, настройки, табы, фильтры.</p>
+    </div>
+
+    <!-- Панель — каркас: карточка (Type=Shadow) без скруглений; контент и подвал — как в карточке -->
+    <div class="app-rp-scrim ds-backdrop" data-rp-scrim="panel" hidden></div>
+    <aside class="app-rp" data-rp="panel" hidden aria-label="Панель">
+      <div class="ds-card ds-card--shadow app-rp__frame">
+        <div class="ds-card__header">
+          <p class="ds-card__title app-rp__title">Заголовок панели</p>
+          <span class="app-rp__close" role="button" tabindex="0" aria-label="Закрыть">
+            <span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><span class="material-icons">close</span></span>
+          </span>
+        </div>
+        <div class="ds-card__content">
+          <p class="ds-text-body-m-16-normal-medium snap-ct">Content title</p>
+          <p class="ds-text-body-m-16-normal-regular snap-cs">В блоке контента может быть всё что угодно</p>
+        </div>
+        <div class="ds-card__footer ds-card__footer--right">
+          <div class="ds-card__footer__action">
+            <button type="button" class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Подробнее</span></button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+
+
+  </div>
+</div>
+<script>
+  window.addEventListener('DOMContentLoaded', function () {
+    var state = document.getElementById('demo-state');
+    document.addEventListener('app-rp-open', function (e) { state.textContent = 'панель открыта (' + e.detail.id + ')'; });
+    document.addEventListener('app-rp-close', function (e) { state.textContent = 'панель закрыта (' + e.detail.id + ')'; });
+  });
+</script>
+</body>
+</html>

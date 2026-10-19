@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Исследования в продукте - часть 1</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230A0A0B'/><rect x='9' y='8' width='5' height='16' rx='1' fill='%23FF5252'/><rect x='18' y='8' width='5' height='16' rx='1' fill='%23FFFFFF'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0A0B; --panel:#0F0F12; --panel2:#131317;
+  --red:#FF5252; --red-soft:rgba(255,82,82,.09); --red-line:rgba(255,82,82,.5);
+  --text:#FFFFFF; --body:#E9E9EC; --muted:#C0C0C7; --faint:#8A8A93;
+  --hair:rgba(255,255,255,.12); --hair2:rgba(255,255,255,.19);
+  --mono:ui-monospace,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+::selection{background:var(--red);color:#0A0A0B}
+.app{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+.stage{position:relative;width:1920px;height:1080px;flex:none;background:var(--bg);transform-origin:center center;overflow:hidden}
+
+.slide{position:absolute;inset:0;padding:96px 120px 170px;display:flex;flex-direction:column;opacity:0;visibility:hidden;overflow:hidden;transition:opacity .45s ease,visibility 0s linear .45s}
+.slide.active{opacity:1;visibility:visible;transition:opacity .45s ease,visibility 0s}
+
+.anim{opacity:0}
+.slide.active .anim{animation:rise .55s cubic-bezier(.22,.61,.36,1) both;animation-delay:var(--d,0s)}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+.kicker{display:flex;align-items:center;gap:18px;font-size:22px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#AEAEB6;margin-bottom:26px}
+.sq{display:block;width:12px;height:12px;background:var(--red);flex:none}
+h2{font-size:64px;font-weight:700;letter-spacing:-.01em;line-height:1.08;margin-bottom:52px}
+.ic{width:30px;height:30px;stroke:#8A8A93;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:none}
+section[data-screen="titul"]{background-image:radial-gradient(920px 920px at calc(100% + 240px) -240px,rgba(255,82,82,.17),rgba(255,82,82,0) 62%)}
+
+/* ===== 01 title ===== */
+.t-brand{position:absolute;top:96px;left:120px;font-size:20px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);font-weight:500}
+.t-date{position:absolute;top:96px;right:120px;font-size:20px;letter-spacing:.08em;color:var(--faint)}
+.t-inner{height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:36px}
+.t-mark{font-size:298px;font-weight:900;letter-spacing:-.045em;line-height:.8;display:flex}
+.t-mark .ii{color:var(--red)}
+.t-mark .ui{color:#fff}
+.t-rule{width:220px;height:6px;background:var(--red);margin:58px 0 46px}
+.t-title{font-size:52px;font-weight:500;margin-bottom:16px}
+.t-sub{font-size:30px;font-weight:400;color:var(--muted)}
+
+/* ===== rows list ===== */
+.rows{margin-top:2px}
+.rows .row{display:flex;gap:26px;align-items:flex-start;padding:24px 0}
+.rows .row:last-child{border-bottom:0}
+.rows .row p{font-size:32px;line-height:1.32;color:var(--body)}
+.rows .row .sq{margin-top:12px}
+.rows .row .ic{margin-left:auto;align-self:center}
+.mini-rows .row{padding:19px 0}
+.mini-rows .row p{font-size:26px}
+
+/* ===== 03 constructor ===== */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px 72px;margin-bottom:56px}
+.bullet{display:flex;gap:22px;align-items:flex-start}
+.bullet p{font-size:28px;line-height:1.36;color:var(--body)}
+.bullet .sq{margin-top:11px}
+.mocks{display:flex;gap:30px;align-items:center;padding:36px 44px;border:1px solid var(--hair);border-radius:16px;background:var(--panel)}
+.m-btnfill{height:56px;padding:0 30px;display:flex;align-items:center;background:var(--red);color:#0A0A0B;border-radius:10px;font-size:22px;font-weight:500;flex:none}
+.m-btnout{height:56px;padding:0 30px;display:flex;align-items:center;border:1.5px solid rgba(255,255,255,.35);border-radius:10px;font-size:22px;font-weight:500;color:#fff;flex:none}
+.m-input{width:230px;border:1.5px solid rgba(255,255,255,.22);border-radius:10px;padding:9px 16px;background:var(--panel2);flex:none}
+.m-input .l{font-size:15px;color:var(--faint);margin-bottom:2px}
+.m-input .v{font-size:20px;color:var(--body)}
+.m-check{display:flex;align-items:center;gap:12px;font-size:21px;color:var(--body);flex:none}
+.m-check .box{width:26px;height:26px;border-radius:7px;background:var(--red);display:flex;align-items:center;justify-content:center;color:#0A0A0B;font-size:18px;font-weight:700}
+.m-toggle{width:54px;height:30px;border-radius:999px;background:var(--red);position:relative;flex:none}
+.m-toggle i{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;background:#fff}
+.m-chip{border:1px solid var(--red-line);color:var(--red);border-radius:999px;padding:9px 20px;font-size:20px;font-weight:500;flex:none}
+.m-table{width:150px;flex:none;display:flex;flex-direction:column;gap:9px;padding:2px 0}
+.m-table .h{height:10px;border-radius:5px;background:rgba(255,255,255,.3)}
+.m-table .r{height:8px;border-radius:4px;background:#26262C}
+.m-table .r:nth-child(3){width:72%}
+.mocks-cap{margin-top:26px;font-size:21px;color:var(--faint)}
+
+/* ===== 04 flow ===== */
+.flow{display:flex;align-items:stretch;margin:6px 0 52px}
+.node{width:430px;flex:none;border:1px solid var(--hair);border-radius:16px;background:var(--panel);padding:32px 36px;display:flex;flex-direction:column;min-height:272px}
+.node .nic{width:42px;height:42px;stroke:var(--red);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;margin-bottom:18px}
+.node h3{font-size:34px;font-weight:700;margin-bottom:14px}
+.node p{font-size:22px;color:var(--muted);line-height:1.4}
+.node .tag{margin-top:auto;font-size:17px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:500;padding-top:20px}
+.conn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-width:130px}
+.conn .lbl{font-size:18px;letter-spacing:.08em;text-transform:uppercase;color:#AEAEB6;font-weight:500}
+.conn svg{display:block}
+.lead1{font-size:30px;font-weight:500;margin-bottom:16px}
+.lead2{font-size:24px;color:var(--muted)}
+
+/* ===== 05 cards ===== */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-bottom:42px}
+.card{border:1px solid var(--hair);border-radius:16px;background:var(--panel);padding:36px 38px;min-height:216px;display:flex;flex-direction:column}
+.card .num{font-size:64px;font-weight:700;line-height:1;margin-bottom:22px}
+.card .num .r{color:var(--red)}
+.card .cap{font-size:20px;color:var(--muted);line-height:1.38;margin-top:auto}
+.card.text .big{font-size:31px;font-weight:500;line-height:1.2;margin-bottom:16px}
+.card.text .cap{margin-top:0}
+.card.visual .big2{font-size:22px;font-weight:500;margin:16px 0 7px}
+.card.visual .cap{font-size:20px;color:var(--faint);margin-top:0}
+.caption{font-size:21px;color:var(--faint)}
+/* app skeleton */
+.sk{border:1px solid var(--hair2);border-radius:10px;background:#0C0C0F;overflow:hidden}
+.sk-top{height:24px;background:#17171B;display:flex;align-items:center;gap:6px;padding:0 10px}
+.sk-top i{width:8px;height:8px;border-radius:50%;background:#2A2A30}
+.sk-top .b{width:86px;height:8px;border-radius:4px;background:#26262C;margin-left:6px}
+.sk-body{display:flex;height:70px}
+.sk-side{width:84px;background:#111114;border-right:1px solid var(--hair);padding:9px 10px;display:flex;flex-direction:column;gap:7px}
+.sk-side i{height:7px;border-radius:3px;background:#26262C;display:block}
+.sk-side i:first-child{background:rgba(255,82,82,.5)}
+.sk-main{flex:1;padding:9px 12px;display:flex;flex-direction:column;gap:8px}
+.sk-main i{height:8px;border-radius:4px;background:#202026;display:block}
+.sk-main i:nth-child(1){width:58%}
+.sk-main i:nth-child(2){width:88%}
+.sk-main i:nth-child(3){width:44%}
+.ct{display:flex;align-items:center;gap:12px;font-size:16px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--red)}
+.cico{width:24px;height:24px;stroke:var(--red);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ct + .cap{margin-top:16px}
+.card.lead{justify-content:center}
+/* repo chips */
+.repos{display:flex;flex-direction:column;gap:8px}
+.repo{border:1px solid var(--hair2);border-radius:9px;padding:9px 12px;display:flex;align-items:center;gap:10px;font-size:17px;font-weight:500}
+.repo .rd{width:9px;height:9px;border-radius:50%;background:var(--red);flex:none}
+.repo + .repo .rd{background:#3A3A42}
+.repo .sub{font-size:13px;color:var(--faint);font-weight:400}
+
+/* ===== 06 speed ===== */
+.sflow{display:flex;align-items:center;margin:4px 0 48px}
+.in-group{display:flex;flex-direction:column;gap:12px;flex:none}
+.in-chip{border:1px solid var(--hair2);border-radius:14px;background:var(--panel);padding:20px 28px;font-size:24px;color:var(--body);display:flex;flex-direction:column;gap:4px;min-width:340px}
+.in-chip .s{font-size:17px;color:var(--faint);letter-spacing:.02em}
+.plus{align-self:flex-start;color:var(--red);font-size:22px;font-weight:700;padding-left:28px}
+.big-conn{flex:none;width:110px;display:flex;align-items:center;justify-content:center}
+.ai-node{flex:none;background:var(--red);color:#0A0A0B;border-radius:14px;padding:26px 34px;display:flex;flex-direction:column;gap:6px}
+.ai-node .t{font-size:30px;font-weight:700}
+.ai-node .s{font-size:17px;font-weight:500;opacity:.75}
+.out-wrap{flex:none;display:flex;flex-direction:column;align-items:flex-start}
+.pwin{width:560px;border:1px solid var(--hair2);border-radius:14px;background:#0C0C0F;overflow:hidden}
+.pwin-top{height:38px;background:#17171B;display:flex;align-items:center;gap:8px;padding:0 16px}
+.pwin-top i{width:10px;height:10px;border-radius:50%;background:#2A2A30}
+.pwin-top .url{height:14px;flex:0 0 250px;margin-left:10px;background:#101013;border-radius:7px}
+.pwin-body{display:flex}
+.pwin-side{width:150px;border-right:1px solid var(--hair);background:#111114;padding:16px 14px;display:flex;flex-direction:column;gap:11px;flex:none}
+.pwin-side i{height:11px;border-radius:5px;background:#26262C;display:block}
+.pwin-side i.on{background:rgba(255,82,82,.55)}
+.pwin-main{flex:1;padding:18px 22px;display:flex;flex-direction:column;gap:12px}
+.pwin-body .r{display:flex;gap:10px;align-items:center}
+.pwin-body .rowbar{height:14px;border-radius:7px;background:#202026;flex:1}
+.pwin-body .b-red{height:32px;width:130px;border-radius:8px;background:var(--red);flex:none;margin-left:auto}
+.pwin-body .b-out{height:32px;width:130px;border-radius:8px;border:1.5px solid rgba(255,255,255,.28);flex:none;margin-left:auto}
+.pwin-cap{margin-top:16px;font-size:19px;color:var(--faint)}
+.chip-line{display:flex;align-items:center;gap:22px;margin-top:34px}
+.chip-line .lbl{font-size:21px;color:#AEAEB6;flex:none}
+.mono{flex:1;border:1px solid var(--hair2);background:var(--panel);border-radius:10px;padding:15px 22px;font-family:var(--mono);font-size:19px;color:var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mono .acc{color:var(--red)}
+.note{margin-top:24px;font-size:20px;color:var(--faint);line-height:1.5}
+
+/* ===== 07 statement ===== */
+.statement{font-size:64px;font-weight:700;line-height:1.16;letter-spacing:-.01em;max-width:1560px;margin-bottom:64px}
+.statement .acc{color:var(--red)}
+.cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:56px}
+.col3 .idx{font-size:20px;color:var(--red);font-weight:500;letter-spacing:.12em;margin-bottom:16px}
+.col3 h4{font-size:27px;font-weight:500;margin-bottom:12px}
+.col3 p{font-size:22px;color:var(--muted);line-height:1.5}
+
+/* ===== 08 compare ===== */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:44px;margin-bottom:46px}
+.cmp{border:1px solid var(--hair);border-radius:16px;background:var(--panel);padding:38px 44px;display:flex;flex-direction:column;min-height:424px}
+.cmp.st{border-color:rgba(255,82,82,.38)}
+.cmp h3{font-size:22px;letter-spacing:.16em;text-transform:uppercase;color:#AEAEB6;font-weight:500;margin-bottom:30px}
+.cmp.st h3{color:var(--red)}
+.steps{display:flex;flex-direction:column;gap:21px}
+.step{font-size:25px;color:#DEDEE2;display:flex;gap:18px;align-items:baseline}
+.step .n{color:var(--faint);font-size:18px;width:36px;flex:none;font-variant-numeric:tabular-nums}
+.cmp .total{margin-top:auto;font-size:46px;font-weight:700;display:flex;align-items:center;gap:16px}
+.clock{width:36px;height:36px;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.cmp.now .total{color:#AEAEB6}
+.cmp.now .clock{stroke:#AEAEB6}
+.cmp.st .total{color:var(--red)}
+.cmp.st .clock{stroke:var(--red)}
+.tri{display:flex;gap:64px}
+.tri .item{display:flex;gap:18px;align-items:flex-start;flex:1}
+.tri .item .sq{margin-top:9px;width:10px;height:10px}
+.tri .item p{font-size:22px;color:var(--muted);line-height:1.45}
+.tri .item p b{color:var(--body);font-weight:500}
+
+/* ===== 09 hero ===== */
+.hero-line{font-size:86px;font-weight:700;line-height:1.1;letter-spacing:-.015em;margin-bottom:58px;max-width:1600px}
+.hero-line .acc{color:var(--red)}
+
+/* ===== 10 roles ===== */
+.roles .row{display:flex;gap:26px;align-items:flex-start;padding:24px 0}
+.roles .row:last-child{border-bottom:0}
+.roles .role{width:430px;flex:none;display:flex;gap:20px;align-items:flex-start;font-size:28px;font-weight:500}
+.roles .role .sq{margin-top:11px}
+.roles .txt{font-size:27px;color:#D9D9DE;line-height:1.36;padding-top:2px}
+.roles .row .ic{margin-left:auto;align-self:center}
+
+/* ===== 11 steps ===== */
+.steps5 .row{display:flex;gap:26px;padding:24px 0}
+.steps5 .row:last-child{border-bottom:0}
+.steps5 .n{font-size:24px;color:var(--red);font-weight:500;width:58px;flex:none;padding-top:7px;font-variant-numeric:tabular-nums}
+.steps5 p{font-size:28px;color:var(--body);line-height:1.36}
+.linkchip{margin-top:46px;display:inline-flex;align-items:center;gap:18px;border:1px solid var(--hair2);border-radius:12px;padding:20px 30px;font-size:24px;color:var(--body);background:var(--panel);align-self:flex-start}
+.linkchip .acc{color:var(--red);font-weight:500}
+.linkchip .dim{color:var(--faint);font-size:20px}
+
+/* ===== 12 stats ===== */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-bottom:34px}
+.stat{border:1px solid var(--hair);border-radius:16px;background:var(--panel);padding:40px 40px;min-height:242px;display:flex;flex-direction:column}
+.stat .n{font-size:104px;font-weight:700;line-height:.95;letter-spacing:-.02em;margin-bottom:26px}
+.stat .n .r{color:var(--red)}
+.stat .n.mid{font-size:84px}
+.stat .lbl{margin-top:auto;font-size:22px;color:var(--muted);line-height:1.38}
+
+/* ===== 13 roadmap ===== */
+.road{position:relative;padding-left:48px}
+.road:before{content:"";position:absolute;left:11px;top:22px;bottom:22px;width:2px;background:linear-gradient(180deg,var(--red),rgba(255,82,82,.12))}
+.road .row{position:relative;display:flex;align-items:center;gap:36px;padding:26px 0}
+.road .row:before{content:"";position:absolute;left:-44px;top:50%;transform:translateY(-50%);width:14px;height:14px;border-radius:50%;background:#0A0A0B;border:2px solid var(--red)}
+.road .chip{flex:none;width:200px;text-align:center;font-size:17px;letter-spacing:.1em;text-transform:uppercase;font-weight:500;border-radius:999px;padding:11px 0}
+.chip.wip{background:var(--red);color:#0A0A0B}
+.chip.on{border:1px solid rgba(255,255,255,.22);color:#D9D9DE}
+.chip.goal{border:1px solid var(--red-line);color:var(--red)}
+.road p{font-size:29px;color:var(--body);line-height:1.3}
+
+/* ===== 14 final ===== */
+.fin-h{font-size:66px;font-weight:700;line-height:1.14;letter-spacing:-.015em;max-width:1600px;margin-bottom:52px}
+.fin-h .acc{color:var(--red)}
+.fin-rows .row{padding:24px 0}
+.fin-rows .row p{font-size:26px}
+.callout{margin-top:auto;border:1px solid var(--red-line);background:var(--red-soft);border-radius:16px;padding:32px 40px;display:flex;align-items:center;gap:30px}
+.callout .lab{flex:none;font-size:19px;letter-spacing:.16em;text-transform:uppercase;color:var(--red);font-weight:500}
+.callout p{font-size:28px;color:#fff}
+
+/* ===== v4: визуальные блоки ===== */
+[data-screen="problema"] h2{margin-bottom:50px}
+[data-screen="problema"] .rows .row{padding:19px 0}
+[data-screen="problema"] .badrow{margin-top:14px}
+[data-screen="fakt"] .cards{gap:22px;margin-bottom:32px}
+[data-screen="fakt"] .card{padding:30px 34px}
+[data-screen="fakt"] .vbox{height:96px;margin-bottom:14px}
+[data-screen="fakt"] .pmob{height:96px;padding:12px 11px}
+[data-screen="fakt"] .codebox{padding:10px 14px;line-height:1.7}
+.badrow{display:flex;flex-direction:column;align-items:stretch;margin-top:26px;padding:20px 34px 24px;border:1px solid var(--hair);border-radius:16px;background:var(--panel)}
+.bad-b{display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:500;flex:1}
+.bb1{height:60px;background:var(--red);color:#0A0A0B;border-radius:16px}
+.bb2{height:46px;border:2px solid #8A8A93;border-radius:2px;color:#D9D9DE;font-weight:400}
+.bb3{height:56px;border:1.5px solid rgba(255,255,255,.35);border-radius:999px;color:#fff}
+.bb4{height:44px;background:#3A3A42;color:#AEAEB6;border-radius:8px;font-size:17px}
+.bb5{height:64px;border:1.5px dashed rgba(255,82,82,.65);border-radius:10px;color:var(--red)}
+.bad-cap{margin-top:18px;font-size:20px;color:var(--faint)}
+.bad-cap b{color:var(--red);font-weight:500}
+.badhead{font-size:17px;letter-spacing:.12em;text-transform:uppercase;color:#AEAEB6;font-weight:500;margin-bottom:18px}
+.badhead span{color:var(--red)}
+.badline{display:flex;gap:24px;align-items:flex-end}
+.badcol{flex:1;display:flex;flex-direction:column;gap:12px;justify-content:flex-end}
+.badcol .bad-b{flex:none;width:100%}
+.bad-pl{font-size:15px;color:#8A8A93;letter-spacing:.04em;text-align:center}
+/* титул: мини-детали */
+.tk-strip{display:flex;gap:16px;margin-top:46px}
+.tk{border:1px solid var(--hair2);border-radius:10px;background:var(--panel);padding:10px 16px;display:flex;align-items:center}
+.tk .mb{height:34px;padding:0 20px;border-radius:8px;background:var(--red);color:#0A0A0B;font-size:16px;font-weight:500;display:flex;align-items:center}
+.tk .mf{width:128px;height:34px;border:1.5px solid rgba(255,255,255,.2);border-radius:8px;background:var(--panel2);display:flex;align-items:center;padding:0 12px;font-size:15px;color:var(--faint)}
+.tk .mt{width:42px;height:24px;border-radius:999px;background:var(--red);position:relative}
+.tk .mt i{position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:#fff}
+.tk .mc{width:24px;height:24px;border-radius:7px;background:var(--red);color:#0A0A0B;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.tk .mch{border:1px solid var(--red-line);color:var(--red);border-radius:999px;padding:6px 16px;font-size:15px;font-weight:500}
+/* слайд 3: витрина в два ряда */
+.mocks{flex-direction:column;align-items:stretch;gap:24px;padding:32px 44px}
+.mrow{display:flex;gap:32px;align-items:center}
+.m-tabs{display:flex;gap:28px;border-bottom:1px solid var(--hair2);padding-bottom:9px;flex:none}
+.m-tabs span{font-size:20px;color:var(--muted);padding-bottom:7px;font-weight:500}
+.m-tabs span.on{color:#fff;border-bottom:3px solid var(--red)}
+.m-select{width:210px;height:52px;border:1.5px solid rgba(255,255,255,.22);border-radius:10px;background:var(--panel2);display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-size:20px;color:var(--body);flex:none}
+.m-select svg{width:18px;height:18px;stroke:#AEAEB6;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+/* слайд 5: картинки в карточках */
+.vbox{height:104px;display:flex;align-items:center;margin-bottom:16px;overflow:hidden}
+.mcg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
+.mcg i{height:24px;border-radius:6px;background:#202026;display:block}
+.mcg i.hl{background:var(--red)}
+.swg{display:flex;gap:9px}
+.swg i{width:36px;height:36px;border-radius:9px;display:block;border:1px solid var(--hair2)}
+.codebox{width:100%;border:1px solid var(--hair2);border-radius:10px;background:#0C0C0F;padding:12px 16px;font-family:var(--mono);font-size:14px;line-height:1.75}
+.codebox div{white-space:nowrap;overflow:hidden}
+.codebox .c1{color:#AEAEB6}
+.codebox .c2{color:#E9E9EC}
+.codebox .c3{color:var(--red)}
+.pmob{width:92px;height:104px;border:2px solid var(--hair2);border-radius:16px;padding:14px 11px;display:flex;flex-direction:column;gap:8px;background:#0C0C0F;flex:none}
+.pmob i{height:7px;border-radius:3px;background:#202026;display:block}
+.pmob i:first-child{background:rgba(255,82,82,.55)}
+/* слайд 7: пиктограммы */
+.col3 .pict{height:200px;border:1px solid var(--hair);border-radius:14px;background:var(--panel);margin-bottom:24px;display:flex;align-items:center;justify-content:center;gap:18px;padding:14px}
+.pcg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:216px}
+.pcg i{height:40px;border-radius:8px;background:#202026;display:block}
+.pcg i.hl{background:rgba(255,82,82,.75)}
+.pdoc{width:92px;height:124px;border:1.5px solid var(--hair2);border-radius:10px;padding:16px 14px;display:flex;flex-direction:column;gap:11px;flex:none}
+.pdoc i{height:9px;border-radius:4px;background:#26262C;display:block}
+.pdoc i:nth-child(2){width:92%}
+.pdoc i:nth-child(3){width:78%}
+.pdoc i:nth-child(4){width:96%}
+.pdoc i:nth-child(5){width:64%}
+.pdoc i:first-child{background:rgba(255,82,82,.55);width:70%}
+.pspark{width:40px;height:40px;flex:none}
+.pwin-m{width:170px;height:118px;border:1.5px solid var(--hair2);border-radius:10px;background:#0C0C0F;padding:16px 14px;display:flex;flex-direction:column;gap:11px;position:relative;flex:none}
+.pwin-m i{height:11px;border-radius:5px;background:#202026;display:block}
+.pwin-m i:nth-child(3){width:72%}
+.pwin-m i:nth-child(4){width:90%}
+.pwin-m i:first-child{width:55%}
+.pwin-m i:nth-child(2){width:85%}
+.pcheck{position:absolute;right:-13px;bottom:-13px;width:42px;height:42px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;color:#0A0A0B;font-size:22px;font-weight:700}
+/* слайд 8: полосы времени */
+.tbar{height:14px;border-radius:7px;margin-top:16px}
+.cmp.now .tbar{width:100%;background:#3A3A42}
+.cmp.st .tbar{width:22%;min-width:60px;background:var(--red)}
+/* слайд 9: пирамида */
+.lyt{display:flex;gap:64px;align-items:flex-start}
+.lyt .rows{flex:1}
+.stack{flex:none;width:470px;display:flex;flex-direction:column;gap:12px;padding-top:6px}
+.layer{border:1px solid var(--hair2);border-radius:14px;padding:20px 26px;background:var(--panel);display:flex;flex-direction:column;gap:5px}
+.layer .lt{font-size:21px;font-weight:500}
+.layer .ls{font-size:16px;color:var(--faint)}
+.layer.acc{border-color:var(--red-line);background:var(--red-soft)}
+.layer.acc .lt{color:var(--red)}
+.larrow{display:flex;justify-content:center;height:22px;align-items:center}
+.larrow svg{width:22px;height:22px;stroke:#AEAEB6;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+/* слайд 10: артефакты ролей */
+.art{flex:none;width:150px;height:64px;display:flex;align-items:center;justify-content:flex-end;gap:9px;overflow:hidden;margin-left:auto;align-self:center}
+.achart{display:flex;align-items:flex-end;gap:7px;height:56px}
+.achart i{width:13px;border-radius:4px 4px 0 0;background:#3A3A42;display:block}
+.achart i.hl{background:var(--red)}
+.awin{width:96px;height:58px;border:1.5px solid var(--hair2);border-radius:9px;background:#0C0C0F;overflow:hidden;flex:none}
+.awin .t{height:12px;background:#17171B;display:flex;align-items:center;gap:4px;padding:0 7px}
+.awin .t i{width:5px;height:5px;border-radius:50%;background:#2A2A30;display:block}
+.awin .b{padding:8px 9px;display:flex;flex-direction:column;gap:6px}
+.awin .b i{height:6px;border-radius:3px;background:#202026;display:block}
+.awin .b i:first-child{width:60%}
+.aart{width:96px;height:58px;border:1.5px solid var(--hair2);border-radius:9px;position:relative;background:#0C0C0F;flex:none}
+.aart .c{position:absolute;left:10px;top:10px;width:16px;height:16px;border-radius:50%;background:var(--red)}
+.aart .b1{position:absolute;left:34px;top:13px;width:44px;height:8px;border-radius:4px;background:#26262C}
+.aart .b2{position:absolute;left:10px;top:36px;width:68px;height:8px;border-radius:4px;background:#202026}
+.acode{font-family:var(--mono);font-size:14px;line-height:1.85;text-align:right;white-space:nowrap}
+.acode .l1{color:#E9E9EC}
+.acode .l2{color:var(--red)}
+.alist{width:104px;display:flex;flex-direction:column;gap:9px}
+.alist .li{display:flex;align-items:center;gap:8px}
+.alist .li i{width:10px;height:10px;border-radius:3px;background:#3A3A42;flex:none;display:block}
+.alist .li.hl i{background:var(--red)}
+.alist .li span{height:7px;border-radius:3px;background:#26262C;flex:1;display:block}
+/* слайд 11: мокап GitHub */
+.sidewrap{display:flex;gap:56px}
+.sidewrap .steps5{flex:1}
+.sidewrap .steps5 p{font-size:26px}
+.ghmock{flex:none;width:500px;align-self:center;border:1px solid var(--hair2);border-radius:16px;background:#0C0C0F;overflow:hidden}
+.ghm-top{height:42px;background:#17171B;display:flex;align-items:center;gap:7px;padding:0 16px}
+.ghm-top i{width:9px;height:9px;border-radius:50%;background:#2A2A30;display:block}
+.ghm-top .u{margin-left:8px;font-family:var(--mono);font-size:14px;color:#AEAEB6}
+.ghm-body{padding:16px 18px;display:flex;flex-direction:column;gap:11px}
+.ghm-repo{border:1px solid var(--hair);border-radius:10px;padding:13px 16px;display:flex;align-items:center;gap:12px;font-size:18px}
+.ghm-repo .d{width:9px;height:9px;border-radius:50%;background:#3A3A42;flex:none}
+.ghm-repo .s{color:var(--faint);font-size:14px;margin-left:auto}
+.ghm-repo.hot{border-color:var(--red-line)}
+.ghm-repo.hot .d{background:var(--red)}
+.gh-tx{display:flex;flex-direction:column;gap:3px}
+.gh-tx b{font-size:19px;font-weight:500;color:#E9E9EC}
+.gh-tx .gh-sub{font-size:14px;color:#8A8A93}
+.gh-prev{margin-left:auto;display:flex;gap:9px;align-items:center;flex:none}
+.gh-prev i{display:block;border:1.5px solid rgba(255,255,255,.22);border-radius:6px}
+.gh-prev-cmp i{width:40px;height:28px}
+.gh-prev-cmp i:nth-child(2){border-color:var(--red);background:var(--red-soft)}
+.gh-prev-prt i{width:30px;height:36px}
+.gh-prev-prt i:nth-child(3){background:#26262C}
+.gh-go{margin-left:auto;font-size:17px;color:var(--red);font-weight:500;flex:none}
+.ghmock-xl .ghm-repo{padding:16px 18px}
+.ghm-repo.hot .s{color:var(--red)}
+/* слайд 14: знак в плашке */
+.callout .cm{margin-left:auto;font-size:44px;font-weight:900;letter-spacing:-.03em;flex:none;line-height:.8}
+.callout .cm .ii{color:var(--red)}
+.callout .cm .ui{color:#fff;opacity:.85}
+
+/* ===== v5: уровни (детали -> блоки -> экраны) ===== */
+.lvls{display:flex;align-items:flex-start;margin-top:6px}
+.lvl-1,.lvl-3{width:400px;flex:none}
+.lvl-2{flex:1;min-width:0}
+.lvl-head{font-size:18px;letter-spacing:.12em;text-transform:uppercase;color:#AEAEB6;font-weight:500;margin-bottom:18px}
+.lvl-body{display:flex;flex-direction:column;gap:16px;align-items:flex-start}
+.lvlar{width:80px;flex:none;display:flex;align-items:center;justify-content:center;align-self:center}
+.lvlar svg{width:56px;height:24px;display:block}
+.grid22{border:1px solid var(--hair);border-radius:16px;background:var(--panel);padding:20px 22px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.cmx{border:1px solid var(--hair2);border-radius:12px;background:#0C0C0F;padding:14px 16px;display:flex;flex-direction:column;gap:9px;justify-content:center}
+.cmx .c-title{font-size:16px;font-weight:500;color:#fff}
+.ttbl{display:flex;flex-direction:column;font-size:14px}
+.ttbl .tr{display:flex;gap:10px;padding:7px 6px;border-bottom:1px solid var(--hair);align-items:center}
+.ttbl .tr:last-child{border-bottom:0}
+.ttbl .tr.h{color:#8A8A93;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding-bottom:5px}
+.ttbl .tr span:first-child{flex:1.3;color:#E9E9EC;white-space:nowrap;overflow:hidden}
+.ttbl .tr span:nth-child(2){flex:.7;color:#C0C0C7;white-space:nowrap}
+.ttbl .tr.h span:first-child,.ttbl .tr.h span:nth-child(2){color:#8A8A93}
+.ttbl .tr.sel{background:rgba(255,82,82,.08);border-radius:8px;border-bottom:0}
+.tst{border:1px solid var(--red-line);color:var(--red);border-radius:999px;padding:2px 10px;font-size:11px;flex:none}
+.tst.off{border-color:rgba(255,255,255,.25);color:#AEAEB6}
+.fld{display:flex;flex-direction:column;gap:5px}
+.fld .fl{font-size:12px;color:#AEAEB6}
+.fld .fi{height:32px;border:1.5px solid rgba(255,255,255,.22);border-radius:8px;background:var(--panel2);display:flex;align-items:center;padding:0 10px;font-size:14px;color:#E9E9EC}
+.fbtns{display:flex;gap:10px;margin-top:4px}
+.fb1{height:32px;padding:0 14px;border-radius:8px;background:var(--red);color:#0A0A0B;font-size:13px;font-weight:500;display:flex;align-items:center}
+.fb2{height:32px;padding:0 14px;border-radius:8px;border:1.5px solid rgba(255,255,255,.3);color:#E9E9EC;font-size:13px;display:flex;align-items:center}
+.mmenu{display:flex;flex-direction:column;gap:3px;font-size:15px}
+.mmenu span{padding:8px 12px;border-radius:8px;color:#C0C0C7;display:flex;align-items:center}
+.mmenu span.on{background:var(--red-soft);color:#fff;box-shadow:inset 3px 0 0 var(--red)}
+.dlg .d-title{font-size:16px;font-weight:500;color:#fff}
+.dlg .d-txt{font-size:13px;color:#AEAEB6}
+.wsc{width:100%;border:1.5px solid var(--hair2);border-radius:12px;background:#0C0C0F;overflow:hidden}
+.wsc-top{height:26px;background:#17171B;display:flex;align-items:center;gap:6px;padding:0 10px}
+.wsc-top i{width:8px;height:8px;border-radius:50%;background:#2A2A30;display:block}
+.wsc-body{display:flex;height:152px}
+.wsc-side{width:86px;border-right:1px solid var(--hair);background:#111114;padding:10px;display:flex;flex-direction:column;gap:8px}
+.wsc-side i{height:8px;border-radius:4px;background:#26262C;display:block}
+.wsc-side i.on{background:rgba(255,82,82,.55)}
+.wsc-main{flex:1;padding:12px 14px;display:flex;flex-direction:column;gap:10px;justify-content:center}
+.wb{height:9px;border-radius:4px;background:#202026}
+.w40{width:40%}.w80{width:80%}.w60{width:60%}
+.wrow{display:flex;align-items:center;gap:12px}
+.wbtn{height:28px;padding:0 14px;border-radius:7px;background:var(--red);color:#0A0A0B;font-size:13px;font-weight:500;display:flex;align-items:center;flex:none}
+
+/* ===== v6: слайды-детали ===== */
+.dwrap{display:flex;gap:56px;align-items:stretch;flex:1;min-height:0;margin-top:2px}
+.dvis{flex:1;border:1px solid var(--hair);border-radius:16px;background:var(--panel);display:flex;align-items:center;justify-content:center;padding:36px 40px}
+.dpts{flex:none;width:520px;display:flex;flex-direction:column;justify-content:center;gap:30px}
+.dp{display:flex;gap:20px;align-items:flex-start}
+.dp .sq{margin-top:10px}
+.dp p{font-size:26px;color:#D9D9DE;line-height:1.36}
+/* каталог компонентов */
+.cat{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;width:100%;max-width:1010px}
+.cati{border:1px solid var(--hair2);border-radius:12px;background:#0C0C0F;padding:20px 16px 14px;display:flex;flex-direction:column;align-items:center;gap:16px;min-height:150px;justify-content:center}
+.ct-lb{font-size:15px;color:#AEAEB6}
+.ct-sk{height:56px;display:flex;align-items:center;justify-content:center}
+.sk-btn{height:36px;padding:0 18px;border-radius:9px;background:var(--red);color:#0A0A0B;font-size:15px;font-weight:500;display:flex;align-items:center}
+.sk-field{width:132px;height:36px;border:1.5px solid rgba(255,255,255,.25);border-radius:9px;background:var(--panel2);display:flex;align-items:center;padding:0 12px;font-size:14px;color:#C0C0C7}
+.sk-tbl{width:122px;display:flex;flex-direction:column;gap:7px}
+.sk-tbl i{height:8px;border-radius:3px;background:#26262C;display:block}
+.sk-tbl i:first-child{background:rgba(255,82,82,.5)}
+.sk-menu{width:112px;display:flex;flex-direction:column;gap:8px}
+.sk-menu i{height:9px;border-radius:4px;background:#26262C;display:block}
+.sk-menu i:first-child{background:rgba(255,82,82,.55)}
+.sk-dlg{width:132px;height:62px;border:1.5px solid var(--hair2);border-radius:9px;padding:9px 10px;display:flex;flex-direction:column;gap:7px}
+.sk-dlg i{height:7px;border-radius:3px;background:#26262C;display:block}
+.sk-dlg i:first-child{width:55%;background:rgba(255,82,82,.45)}
+.sk-graph{display:flex;align-items:flex-end;gap:7px;height:52px}
+.sk-graph i{width:14px;border-radius:4px 4px 0 0;background:#3A3A42;display:block}
+.sk-graph i:last-child{background:var(--red)}
+.sk-st{height:30px;padding:0 14px;border-radius:999px;border:1px solid var(--red-line);color:var(--red);font-size:14px;display:flex;align-items:center}
+.sk-cal{display:grid;grid-template-columns:repeat(4,11px);gap:6px}
+.sk-cal i{width:11px;height:11px;border-radius:3px;background:#26262C;display:block}
+.sk-cal i.on{background:var(--red)}
+/* токены */
+.tk2{display:flex;flex-direction:column;gap:30px;width:100%}
+.tkrow{display:flex;align-items:center;gap:30px}
+.tk-lb{flex:none;width:220px;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:#8A8A93;font-weight:500}
+.swrow{display:flex;gap:12px}
+.swrow i{width:44px;height:44px;border-radius:10px;display:block;border:1px solid var(--hair2)}
+.tsp{display:flex;align-items:baseline;gap:28px}
+.tsp .t1{font-size:32px;font-weight:700}
+.tsp .t2{font-size:22px;color:#D9D9DE}
+.tsp .t3{font-size:15px;color:#AEAEB6}
+.sprow{display:flex;align-items:center;gap:14px}
+.sprow .spb{height:14px;border-radius:7px;background:#3A3A42;display:block}
+.sprow .rad{width:44px;height:44px;background:#202026;border:1.5px solid var(--hair2);display:block;margin-left:10px}
+.sprow .rad.r12{border-radius:12px}
+.sprow .rad.r8{border-radius:8px}
+/* код */
+.kodwrap{display:flex;flex-direction:column;gap:22px;width:100%}
+.kodcard{border:1px solid var(--hair2);border-radius:12px;background:#0C0C0F;padding:20px 24px;display:flex;flex-direction:column;gap:12px}
+.kod-lb{font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#8A8A93;font-weight:500}
+.tree2{font-family:var(--mono);font-size:18px;line-height:1.8;color:#D9D9DE}
+.tree2 .ind{color:#AEAEB6;padding-left:24px}
+.mono2{font-family:var(--mono);font-size:16px;color:#D9D9DE;white-space:nowrap;overflow:hidden}
+.mono2 .acc{color:var(--red)}
+/* мобильные */
+.devs{display:flex;gap:34px;align-items:flex-end}
+.dev{display:flex;flex-direction:column;align-items:center;gap:16px}
+.dev-tab{width:350px;height:250px;border:2px solid var(--hair2);border-radius:18px;background:#0C0C0F;overflow:hidden;display:flex;flex-direction:column}
+.dev-top{height:30px;background:#17171B;display:flex;align-items:center;gap:6px;padding:0 14px}
+.dev-top i{width:8px;height:8px;border-radius:50%;background:#2A2A30;display:block}
+.dev-body{padding:16px 18px;display:flex;flex-direction:column;gap:12px;flex:1}
+.dbar{height:10px;border-radius:5px;background:#202026}
+.dbar.w70{width:70%}.dbar.w80{width:80%}.dbar.w60{width:60%}.dbar.w50{width:50%}
+.dchip{border:1px solid var(--red-line);color:var(--red);border-radius:999px;padding:4px 12px;font-size:13px;align-self:flex-start}
+.dbtn{height:34px;width:120px;border-radius:8px;background:var(--red)}
+.dev-ph{width:168px;height:330px;border:2px solid var(--hair2);border-radius:24px;background:#0C0C0F;padding:16px 13px;display:flex;flex-direction:column;gap:12px}
+.dev-ph .dbtn{width:100%;margin-top:auto}
+.dev-cap{font-size:16px;color:#AEAEB6}
+/* готовые решения (организмы) */
+.orgs{display:flex;gap:28px;width:100%;align-items:stretch}
+.org{flex:1;border:1px solid var(--hair2);border-radius:12px;background:#0C0C0F;padding:18px 18px 14px;display:flex;flex-direction:column;gap:16px}
+.org .m{flex:1;display:flex;flex-direction:column;justify-content:center;gap:10px}
+.org-cap{font-size:15px;color:#AEAEB6;text-align:center}
+/* github */
+.ghwrap{display:flex;flex-direction:column;align-items:center;gap:22px;width:100%}
+.ghtags{display:flex;gap:14px}
+.ghtag{border:1px solid var(--hair2);border-radius:999px;padding:9px 20px;font-size:16px;color:#D9D9DE}
+.ghtag.hot{border-color:var(--red-line);color:var(--red)}
+
+/* ===== титул: схема процесса справа ===== */
+.t-scheme{position:absolute;right:120px;top:330px;width:800px;display:flex;flex-direction:column;gap:16px}
+.ts-flow{display:flex;align-items:center}
+.ts-node{width:240px;height:108px;border:1px solid var(--hair2);border-radius:14px;background:var(--panel);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;flex:none}
+.ts-node .n-t{font-size:24px;font-weight:500;color:#E9E9EC}
+.ts-node .n-s{font-size:15px;color:var(--faint)}
+.ts-node.acc{border-color:var(--red-line);background:var(--red-soft)}
+.ts-node.acc .n-t{color:var(--red)}
+.ts-node.acc .n-s{color:#D9D9DE}
+.ts-ic{width:32px;height:32px;display:block}
+.ts-arr{width:40px;height:24px;flex:none;display:block}
+.ts-ups{display:flex;justify-content:space-between}
+.ts-upw{width:240px;display:flex;justify-content:center;flex:none}
+.ts-up{width:24px;height:46px;display:block;opacity:.62}
+.ts-base{background:var(--red-soft);border:1px solid var(--red-line);border-radius:16px;padding:26px 30px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:140px}
+.ts-base .b-t{font-size:23px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.ts-base .b-s{font-size:17px;color:#D9D9DE}
+.callout .ctxt{display:flex;flex-direction:column;gap:8px;min-width:0}
+.callout .call-sub{font-size:20px;color:#fff;opacity:.72}
+/* ===== токены: подробная сетка ===== */
+.tkgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px;width:100%}
+.tkcard{border:1px solid var(--hair2);border-radius:12px;background:#0C0C0F;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.tkcard.wide{grid-column:span 2}
+.tk-lb2{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#8A8A93;font-weight:500}
+.tk-lb2 .mono-s{font-family:var(--mono);font-size:12px;color:#8A8A93;letter-spacing:0;text-transform:none}
+.csw{display:flex;gap:20px}
+.cswi{display:flex;flex-direction:column;align-items:center;gap:8px}
+.cswi i{width:46px;height:46px;border-radius:10px;border:1px solid var(--hair2);display:block}
+.cswi span{font-family:var(--mono);font-size:11px;color:#AEAEB6}
+.trow2{display:flex;align-items:baseline;justify-content:space-between;gap:14px}
+.trow2 .sm{font-weight:700}
+.trow2 .val{font-family:var(--mono);font-size:13px;color:#AEAEB6;flex:none}
+.srow2{display:flex;align-items:center;gap:16px}
+.srow2 .spb2{height:12px;border-radius:6px;background:#3A3A42;display:block;flex:none}
+.srow2 .num{font-family:var(--mono);font-size:13px;color:#AEAEB6}
+.rswi{display:flex;gap:26px}
+.rswi .ri{display:flex;flex-direction:column;align-items:center;gap:8px}
+.rswi .slot{height:62px;display:flex;align-items:center}
+.rswi .box{width:62px;height:62px;background:#202026;border:1.5px solid var(--hair2);display:block}
+.rswi .rv{font-family:var(--mono);font-size:12px;color:#AEAEB6}
+.lpage{background:#F4F4F6;border-radius:10px;padding:16px 20px;display:flex;gap:18px;align-items:center;justify-content:center}
+.lcard{width:92px;height:56px;border-radius:8px;background:#fff}
+.lcard.s1{box-shadow:0 2px 6px rgba(0,0,0,.14)}
+.lcard.s2{box-shadow:0 10px 22px rgba(0,0,0,.22)}
+
+/* ===== код: дерево, листинги, спецификация ===== */
+.kodgrid .tkcard{padding:14px 16px;gap:10px}
+.filetree{font-family:var(--mono);font-size:15px;line-height:1.6;color:#D9D9DE;white-space:pre}
+.filetree .fdim{color:#8A8A93}
+.filetree .facc{color:var(--red)}
+.codepane{font-family:var(--mono);font-size:13px;line-height:1.65;color:#D9D9DE;white-space:pre;overflow:hidden}
+.codepane .cp-t{color:#AEAEB6}
+.codepane .cp-a{color:#D9D9DE}
+.codepane .cp-v{color:var(--red)}
+.codepane .cp-c{color:#8A8A93}
+.specrows{display:flex;flex-direction:column;gap:8px}
+.specrow{display:flex;gap:10px;font-size:13.5px;line-height:1.3}
+.specrow b{color:#AEAEB6;font-weight:500;flex:none;width:112px}
+.specrow span{color:#D9D9DE}
+.note2{font-size:13px;color:#8A8A93}
+
+/* ===== веб-мок на слайде сред ===== */
+.dev-web{width:400px;height:270px;border:2px solid var(--hair2);border-radius:16px;background:#0C0C0F;overflow:hidden;display:flex;flex-direction:column}
+.dev-bodyw{flex:1;display:flex}
+.wside{width:92px;border-right:1px solid var(--hair);background:#111114;padding:14px 12px;display:flex;flex-direction:column;gap:9px}
+.wside i{height:9px;border-radius:4px;background:#26262C;display:block}
+.wside i:first-child{background:rgba(255,82,82,.55)}
+.wmain{flex:1;padding:16px;display:flex;flex-direction:column;gap:12px}
+.wmain .dbtn{width:130px}
+/* ===== v11: готовые решения крупнее ===== */
+.orgs{gap:30px}
+.org{padding:24px 24px 18px;gap:20px}
+.org .m{gap:14px}
+.org-cap{font-size:17px}
+.orgs .sk-top{height:34px;padding:0 14px}
+.orgs .sk-top i{width:10px;height:10px}
+.orgs .sk-top .b{width:150px;height:10px}
+.orgs .sk-body{height:150px}
+.orgs .sk-side{width:124px;padding:14px;gap:11px}
+.orgs .sk-side i{height:10px;border-radius:4px}
+.orgs .sk-main{padding:14px 16px;gap:12px}
+.orgs .sk-main i{height:11px;border-radius:5px}
+.orgs .sk-bbtn{display:block;margin-top:auto;width:96px;height:26px;border-radius:7px;background:var(--red)}
+.orgs .ttbl{font-size:17px}
+.orgs .ttbl .tr{padding:12px 8px;gap:14px}
+.orgs .ttbl .tr.h{font-size:12px}
+.orgs .tst{padding:3px 12px;font-size:13px}
+.orgs .c-title{font-size:21px;font-weight:500;color:#fff}
+.orgs .fld .fl{font-size:14px}
+.orgs .fld .fi{height:40px;font-size:16px}
+.orgs .fbtns{margin-top:8px;gap:12px}
+.orgs .fb1,.orgs .fb2{height:40px;padding:0 18px;font-size:15px}
+
+/* ===== тени: ступени dp ===== */
+.shr{display:flex;gap:10px}
+.shi{flex:1;display:flex;flex-direction:column;gap:7px;align-items:center}
+.shi i{width:100%;height:60px;border-radius:10px;display:block;border:1px solid rgba(255,255,255,.06)}
+.shi .dpn{font-family:var(--mono);font-size:11px;color:#AEAEB6}
+
+.c-lead{font-size:24px;color:#C0C0C7;margin:-26px 0 16px;max-width:1560px}
+[data-screen="constructor"] .c-lead{margin:-20px 0 30px}
+
+/* v21: финальные схемы (vyvody/itog) */
+.vywrap{display:flex;gap:56px;align-items:flex-start}
+.vywrap .rows{flex:0 0 1150px}
+.vyc{flex:1;min-width:0;border:1px solid var(--hair);border-radius:16px;padding:30px 28px;display:flex;flex-direction:column;align-items:center;background:#101013}
+.vyc-node{width:100%;border-radius:12px;padding:20px 24px}
+.vyc-sys{background:var(--red-soft);border:1px solid var(--red-line)}
+.vyc-prd{background:#191920;border:1px solid var(--hair)}
+.vyc-t{display:block;font-size:24px;font-weight:600;color:#fff}
+.vyc-s{display:block;margin-top:6px;font-size:16px;color:#AEAEB6}
+.vyc-arrows{width:100%;display:flex;justify-content:space-between;padding:14px 30px;align-items:center}
+.vyc-arr{display:flex;flex-direction:column;align-items:center;gap:8px}
+.vyc-arr span{font-size:13px;line-height:1.35;color:#AEAEB6;text-align:center}
+.vyc-arr svg{display:block}
+.fnrow{display:flex;align-items:center;gap:18px;margin-top:30px}
+.fn-node{flex:1;display:flex;align-items:center;gap:16px;border:1px solid var(--hair);border-radius:14px;padding:18px 22px;background:#101013;min-width:0}
+.fn-n{flex:none;font-family:var(--mono);font-size:16px;color:var(--red);border:1px solid var(--red-line);width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.fn-tx{min-width:0}
+.fn-t{display:block;font-size:21px;font-weight:600;color:#fff;line-height:1.2}
+.fn-s{display:block;margin-top:4px;font-size:15px;color:#AEAEB6}
+.fn-arr{flex:none;display:block}
+.tk3{grid-template-columns:repeat(3,1fr)}
+.tk3 .csw{flex-wrap:wrap;gap:14px 44px}
+.szr2{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1.5px solid #3A3A42;padding:0 10px}
+.szr2 .tk{flex:1;display:flex;justify-content:center}
+.szr2 .tk i{width:2px;background:#55555E;display:block;border-radius:1px}
+.szn{display:flex;justify-content:space-between;padding:8px 10px 0}
+.szn span{flex:1;text-align:center;font-family:var(--mono);font-size:11px;color:#AEAEB6}
+
+.t-link{position:absolute;top:96px;right:120px;display:flex;align-items:center;gap:14px;text-decoration:none;z-index:2}
+.t-link i{width:10px;height:10px;border-radius:50%;background:var(--red);display:block;flex:none}
+.t-link .tl-cap{font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:#8A8A93;font-weight:500}
+.t-link .tl-url{font-family:var(--mono);font-size:19px;color:#D9D9DE;border-bottom:1.5px solid rgba(255,82,82,.45);padding-bottom:3px;transition:color .2s,border-color .2s}
+.t-link:hover .tl-url{color:#fff;border-color:var(--red)}
+
+/* компактнее: три входа на слайде «Скорость» */
+[data-screen="skorost"] .sflow{margin:2px 0 30px}
+[data-screen="skorost"] .in-group{gap:9px}
+[data-screen="skorost"] .in-chip{padding:13px 26px}
+[data-screen="skorost"] .rows .row{padding:15px 0}
+[data-screen="skorost"] .chip-line{margin-top:26px}
+[data-screen="skorost"] .note{margin-top:16px}
+
+/* ===== HUD ===== */
+.hud{position:absolute;left:120px;right:120px;bottom:42px;display:flex;align-items:center;justify-content:space-between;z-index:5;pointer-events:none}
+.brand{pointer-events:auto;background:none;border:0;color:var(--faint);font:inherit;font-size:19px;letter-spacing:.04em;cursor:pointer;display:flex;align-items:center;gap:14px;padding:0;border-radius:8px}
+.brand b{font-weight:700}
+.brand .ii{color:var(--red)}
+.brand .ui{color:#fff}
+.brand:hover{color:#D9D9DE}
+.brand:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.hud-r{display:flex;align-items:center;gap:18px;pointer-events:auto}
+.counter{font-size:20px;color:#AEAEB6;min-width:112px;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:.08em}
+.nav{width:52px;height:52px;border-radius:50%;border:1px solid var(--hair2);background:rgba(255,255,255,.02);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .2s,opacity .2s,background .2s}
+.nav:hover{border-color:var(--red-line);background:rgba(255,82,82,.06)}
+.nav:disabled{opacity:.22;cursor:default}
+.nav:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.nav svg{width:20px;height:20px;display:block}
+.nav.small{width:44px;height:44px}
+.progress{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(255,255,255,.07);z-index:5}
+.progress i{display:block;height:100%;width:0;background:var(--red);transition:width .45s ease}
+.hint{position:absolute;left:50%;bottom:130px;transform:translateX(-50%) translateY(10px);background:rgba(255,255,255,.06);border:1px solid var(--hair2);border-radius:999px;padding:14px 30px;font-size:20px;color:#D9D9DE;opacity:0;transition:opacity .5s ease,transform .5s ease;z-index:6;pointer-events:none;backdrop-filter:blur(4px)}
+.hint.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (prefers-reduced-motion: reduce){
+  .slide{transition:none}
+  .slide.active .anim{animation:none;opacity:1}
+  .progress i{transition:none}
+  .hint{transition:none}
+}
+
+@media print{
+  body{overflow:visible;background:#0A0A0B}
+  .app{position:static;display:block}
+  .stage{transform:none!important;width:1920px;height:1080px}
+  .slide{position:relative;inset:auto;opacity:1!important;visibility:visible!important;page-break-after:always;width:1920px;height:1080px}
+  .hud,.hint,.progress{display:none!important}
+  .slide .anim{opacity:1!important;animation:none!important}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  @page{size:1920px 1080px;margin:0}
+}
+
+/* v34: панель проверки (13) + лента продуктов (15) */
+.chkpanel{margin-top:36px;border:1px solid var(--hair2);border-radius:16px;background:var(--panel);padding:26px 40px 30px}
+.chklabel{font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:18px}
+.chkgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px 56px}
+.chki{display:flex;align-items:center;gap:16px}
+.chkc{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--red-line);color:var(--red);display:flex;align-items:center;justify-content:center;font-size:15px;flex:none}
+.chki p{font-size:22px;color:var(--body)}
+.prodline{margin-top:36px}
+.pl-label{font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:16px}
+.pl-row{display:flex;gap:16px}
+.prodchip{flex:1;display:flex;align-items:center;justify-content:center;gap:12px;border:1px solid var(--hair2);border-radius:14px;padding:17px 12px;font-size:21px;color:#D9D9DE}
+.prodchip svg{width:22px;height:22px;flex:none;stroke:#BEBEC6}
+
+/* ==== слайды обучения: таблица джоб/гипотез и панель ==== */
+.tblwrap{border:1px solid var(--hair2);border-radius:16px;background:var(--panel);padding:26px 36px 20px;margin-top:26px}
+.hyptbl{width:100%;border-collapse:collapse}
+.hyptbl th{text-align:left;font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:#8A8A93;font-weight:500;padding:0 22px 14px 0}
+.hyptbl td{font-size:20px;line-height:1.36;color:#D9D9DE;padding:15px 22px 15px 0;border-top:1px solid var(--hair);vertical-align:top}
+.hyptbl th:last-child,.hyptbl td:last-child{padding-right:0}
+.hyptbl td.seg{width:236px;color:#fff;font-weight:500}
+.hyptbl td.job{width:400px;color:#C0C0C7}
+.hyptbl tr.key td{color:#fff}
+.hyptbl tr.key td.hyp b{color:var(--red)}
+.hyptbl td.hyp b{color:#fff;font-weight:500}
+
+/* ==== таблицы гипотез: компактные строки, вариант с методами ==== */
+.tblwrap{padding:22px 34px 18px}
+.hyptbl td{font-size:19px;line-height:1.34;padding:13px 20px 13px 0}
+.hyptbl th{font-size:14px;padding:0 20px 12px 0}
+.hyptbl td.seg{width:198px}
+.hyptbl td.job{width:412px}
+.hyptbl.m4 td{font-size:18px;padding:12px 16px 12px 0}
+.hyptbl.m4 td.seg{width:150px}
+.hyptbl.m4 td.job{width:300px;font-size:17px}
+.hyptbl.m4 td.hyp{width:520px}
+.hyptbl.m4 td.meth{color:#fff}
+</style>
+</head>
+<body>
+
+
+
+<div class="app">
+  <div class="scaler" id="scaler">
+    <div class="stage" id="stage">
+
+      <!-- 01 Титул -->
+      <section class="slide" data-screen="titul">
+        <div class="t-brand anim">iiko · продуктовый процесс</div>
+        <div class="t-date anim" style="--d:.04s">Обучение · часть 1</div>
+        <div class="t-inner">
+          <div class="t-mark anim" style="--d:.05s;font-size:120px"><span class="ii">иссле</span><span class="ui">дования</span></div>
+          <div class="t-rule anim" style="--d:.14s"></div>
+          <h1 class="t-title anim" style="--d:.2s">Зачем исследовать и когда это не нужно</h1>
+          <p class="t-sub anim" style="--d:.26s">Вариативность решения · долгий и быстрый заход · JTBD · гипотезы · методы проверки</p>
+        </div>
+        <div class="t-scheme">
+          <div class="ts-flow">
+            <div class="ts-node anim" style="--d:.3s"><svg class="ts-ic" viewBox="0 0 24 24" fill="none"><circle cx="10.6" cy="10.6" r="6.4" stroke="#D9D9DE" stroke-width="2"/><path d="M15.4 15.4L20 20" stroke="#D9D9DE" stroke-width="2" stroke-linecap="round"/></svg><span class="n-t">Проблема</span></div>
+            <svg class="ts-arr anim" style="--d:.34s" viewBox="0 0 40 24" fill="none"><path d="M2 12H28" stroke="#FF5252" stroke-width="2" stroke-linecap="round"/><path d="M26 4l12 8-12 8" stroke="#FF5252" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div class="ts-node acc anim" style="--d:.38s"><svg class="ts-ic" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="7.9" r="6.1" stroke="#FF5252" stroke-width="2"/><rect x="9.2" y="16.6" width="5.6" height="4" rx="1.3" stroke="#FF5252" stroke-width="2"/></svg><span class="n-t">Гипотеза</span><span class="n-s">если…, тогда…, так как…</span></div>
+            <svg class="ts-arr anim" style="--d:.42s" viewBox="0 0 40 24" fill="none"><path d="M2 12H28" stroke="#FF5252" stroke-width="2" stroke-linecap="round"/><path d="M26 4l12 8-12 8" stroke="#FF5252" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div class="ts-node anim" style="--d:.46s"><svg class="ts-ic" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.6" stroke="#D9D9DE" stroke-width="2"/><path d="M8 12.4l2.6 2.6L16 9.6" stroke="#D9D9DE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="n-t">Проверка</span></div>
+          </div>
+          <div class="ts-ups">
+            <div class="ts-upw"><svg class="ts-up anim" style="--d:.5s" viewBox="0 0 24 46" fill="none"><path d="M12 44V8" stroke="#FF5252" stroke-width="2" stroke-linecap="round"/><path d="M5 15l7-7 7 7" stroke="#FF5252" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="ts-upw"><svg class="ts-up anim" style="--d:.54s" viewBox="0 0 24 46" fill="none"><path d="M12 44V8" stroke="#FF5252" stroke-width="2" stroke-linecap="round"/><path d="M5 15l7-7 7 7" stroke="#FF5252" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="ts-upw"><svg class="ts-up anim" style="--d:.58s" viewBox="0 0 24 46" fill="none"><path d="M12 44V8" stroke="#FF5252" stroke-width="2" stroke-linecap="round"/><path d="M5 15l7-7 7 7" stroke="#FF5252" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+          <div class="ts-base anim" style="--d:.62s">
+            <svg class="ts-ic" viewBox="0 0 24 24" fill="none"><rect x="4.4" y="3.6" width="15.2" height="16.8" rx="2.4" stroke="#F2F2F4" stroke-width="2"/><path d="M8 8.6h8M8 12.4h8M8 16.2h4.6" stroke="#F2F2F4" stroke-width="2" stroke-linecap="round"/></svg>
+            <span class="b-t">Исследование</span>
+            <span class="b-s">метод · выборка · вывод</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 02 Логика -->
+      <section class="slide" data-screen="logika">
+        <div class="kicker anim"><i class="sq"></i><span>02 · Логика</span></div>
+        <h2 class="anim" style="--d:.06s">Проверки нужны там, где есть выбор</h2>
+        <div class="rows">
+          <div class="row anim" style="--d:.1s"><i class="sq"></i><p>Решение одно и очевидное — это <b>задача</b>: её берут в работу, а не исследуют</p></div>
+          <div class="row anim" style="--d:.16s"><i class="sq"></i><p>Точного решения нет — есть <b>вариативность</b>: появляется почва для гипотез и проверок</p></div>
+          <div class="row anim" style="--d:.22s"><i class="sq"></i><p>Гейт простой: <b>сколько разных решений допускает задача?</b></p></div>
+        </div>
+        <div class="callout anim" style="--d:.34s">
+          <span class="lab">Правило</span>
+          <div class="ctxt"><p>Нет вариативности — нет предмета исследования</p><span class="call-sub">даже полная починка одной кнопки сдвигает путь с нуля</span></div>
+          <div class="cm"><span class="ii">?</span></div>
+        </div>
+      </section>
+
+      <!-- 03 Пример без вариативности -->
+      <section class="slide" data-screen="primer-net">
+        <div class="kicker anim"><i class="sq"></i><span>03 · Пример</span></div>
+        <h2 class="anim" style="--d:.06s">Задача без вариативности: кнопка не работает</h2>
+        <div class="compare">
+          <div class="cmp now anim" style="--d:.12s">
+            <h3>Что видим</h3>
+            <div class="steps">
+              <div class="step"><span class="n">01</span>Пользователи не переходят к оформлению заказа</div>
+              <div class="step"><span class="n">02</span>При поиске причины: кнопка «К оформлению/оплате» в корзине не работает</div>
+            </div>
+            <div class="total">проблема понятна</div>
+          </div>
+          <div class="cmp st anim" style="--d:.18s">
+            <h3>Что делаем</h3>
+            <div class="steps">
+              <div class="step"><span class="n">01</span>Чиним кнопку</div>
+              <div class="step"><span class="n">02</span>Больше ничего не меняем — этого достаточно</div>
+              <div class="step"><span class="n">03</span>Из нуля получаем хоть что-то рабочее</div>
+            </div>
+            <div class="total">исследование не нужно</div>
+          </div>
+        </div>
+        <div class="caption anim" style="--d:.3s">Проблема явная, решение одно — это задача в работу, а не проблема. Что ещё попадает в такие задачи — на следующем слайде</div>
+      </section>
+
+      <!-- 04 Что ещё не исследуют -->
+      <section class="slide" data-screen="chto-eshe">
+        <div class="kicker anim"><i class="sq"></i><span>04 · Что ещё не исследуют</span></div>
+        <h2 class="anim" style="--d:.06s">Решение задано формулировкой или извне</h2>
+        <div class="cols3" style="margin-top:22px;row-gap:40px">
+          <div class="col3 anim" style="--d:.12s">
+            <div class="idx">01</div>
+            <h4>Баги и технические ошибки</h4>
+            <p>Падает, не отвечает, таймаут, ошибка интеграции: заказ из агрегатора не дошёл в кассу</p>
+          </div>
+          <div class="col3 anim" style="--d:.18s">
+            <div class="idx">02</div>
+            <h4>Расчёты и данные</h4>
+            <p>Сумма в чеке, остаток на складе, потерянная или задвоенная запись, битая выгрузка и печатная форма</p>
+          </div>
+          <div class="col3 anim" style="--d:.24s">
+            <div class="idx">03</div>
+            <h4>Регресс</h4>
+            <p>Раньше работало — после релиза перестало. Решение одно: вернуть прежнее поведение</p>
+          </div>
+          <div class="col3 anim" style="--d:.3s">
+            <div class="idx">04</div>
+            <h4>Явные ошибки опыта</h4>
+            <p>Не то название («Оплатить» вместо «Оформить заказ»), не та иконка, текст не про этот экран</p>
+          </div>
+          <div class="col3 anim" style="--d:.36s">
+            <div class="idx">05</div>
+            <h4>Требования извне</h4>
+            <p>Закон и норматив, правила платёжных систем и фискализации, требования партнёра: выбор задан документом</p>
+          </div>
+          <div class="col3 anim" style="--d:.42s">
+            <div class="idx">06</div>
+            <h4>Доступ и безопасность</h4>
+            <p>Роль видит чужие данные, доступ остался у уволенного, норма производительности нарушена</p>
+          </div>
+        </div>
+        <div class="caption anim" style="--d:.48s;margin-top:24px">Общий признак один: вариантов решения нет — либо решение видно из формулировки, либо оно задано извне</div>
+      </section>
+
+      <!-- 05 Пример с вариативностью -->
+      <section class="slide" data-screen="primer-da">
+        <div class="kicker anim"><i class="sq"></i><span>05 · Пример</span></div>
+        <h2 class="anim" style="--d:.06s">Задача с вариативностью: причина неизвестна</h2>
+        <div class="cols3" style="margin-top:26px">
+          <div class="col3 anim" style="--d:.14s">
+            <div class="idx">01</div>
+            <h4>Что видим</h4>
+            <p>Пользователи редко переходят к оформлению заказа</p>
+          </div>
+          <div class="col3 anim" style="--d:.2s">
+            <div class="idx">02</div>
+            <h4>Чего нет</h4>
+            <p>Техническая возможность есть, явных препятствий для действия нет — и точного решения тоже</p>
+          </div>
+          <div class="col3 anim" style="--d:.26s">
+            <div class="idx">03</div>
+            <h4>Что это даёт</h4>
+            <p>Вариативность: можно строить гипотезы о причинах и думать, как их проверять</p>
+          </div>
+        </div>
+        <div class="note anim" style="--d:.32s">Отличие от предыдущего примера: там проблема явная и решение одно, здесь — только наблюдение и вопрос «почему»</div>
+        <div class="callout anim" style="--d:.38s">
+          <span class="lab">Итог</span>
+          <div class="ctxt"><p>Вариативность — это и есть разрешение на исследование</p><span class="call-sub">одно очевидное решение такого разрешения не даёт</span></div>
+        </div>
+      </section>
+
+      <!-- 06 Два захода -->
+      <section class="slide" data-screen="dva-zahoda">
+        <div class="kicker anim"><i class="sq"></i><span>06 · Два захода</span></div>
+        <h2 class="anim" style="--d:.06s">Разница — в числе выходов к пользователям</h2>
+        <div class="compare">
+          <div class="cmp now anim" style="--d:.12s">
+            <h3>Долгий</h3>
+            <div class="steps">
+              <div class="step"><span class="n">01</span>Запустили качественные и количественные исследования</div>
+              <div class="step"><span class="n">02</span>Сформировали проблемы из полученных данных</div>
+              <div class="step"><span class="n">03</span>Построили гипотезы на их основе</div>
+              <div class="step"><span class="n">04</span>Пошли ещё раз к клиентам — проверять гипотезы</div>
+            </div>
+            <div class="total">3 выхода к людям</div>
+          </div>
+          <div class="cmp st anim" style="--d:.18s">
+            <h3>Быстрый — рекомендуем</h3>
+            <div class="steps">
+              <div class="step"><span class="n">01</span>Формулируем проблему, не выходя за ней к пользователям</div>
+              <div class="step"><span class="n">02</span>Строим гипотезы на её основе</div>
+              <div class="step"><span class="n">03</span>К людям идём, только когда есть что проверять</div>
+            </div>
+            <div class="total">1 выход</div>
+          </div>
+        </div>
+        <div class="caption anim" style="--d:.3s">Долгий заход — три выхода к пользователям вместо одного. Быстрый — проблема формулируется до выхода, а к людям идём, когда есть что проверять</div>
+      </section>
+
+      <!-- 07 Долгий заход -->
+      <section class="slide" data-screen="dolgiy">
+        <div class="kicker anim"><i class="sq"></i><span>07 · Долгий заход — не рекомендуем</span></div>
+        <h2 class="anim" style="--d:.06s">Долгий заход: идём за проблемой к людям</h2>
+        <div class="rows">
+          <div class="row anim" style="--d:.1s"><i class="sq"></i><p>Проблемы не знаем, хотим улучшить что-то эфемерное</p></div>
+          <div class="row anim" style="--d:.16s"><i class="sq"></i><p>Идём к пользователям почти без подготовки: «что вам нравится / не нравится?»</p></div>
+          <div class="row anim" style="--d:.22s"><i class="sq"></i><p>Свои гипотезы в таком исследовании не проверяем — и обычно ни к чему не приходим</p></div>
+        </div>
+        <div class="callout anim" style="--d:.34s">
+          <span class="lab">Где хорош</span>
+          <div class="ctxt"><p>Когда идёт на постоянной основе и параллельно работе</p><span class="call-sub">данные приходят сами — конкретные системы разберём на следующем слайде</span></div>
+        </div>
+      </section>
+
+      <!-- 08 Системы постоянного сбора -->
+      <section class="slide" data-screen="postoyanno">
+        <div class="kicker anim"><i class="sq"></i><span>08 · Где долгий заход работает</span></div>
+        <h2 class="anim" style="--d:.06s">Системы, которые собирают данные постоянно</h2>
+        <div class="cols3" style="margin-top:22px;row-gap:38px">
+          <div class="col3 anim" style="--d:.12s">
+            <div class="idx">01</div>
+            <h4>Продуктовая аналитика</h4>
+            <p>Matomo: события, воронки, разделы, устройства. Видно, как реально пользуются продуктом — идёт непрерывно</p>
+          </div>
+          <div class="col3 anim" style="--d:.18s">
+            <div class="idx">02</div>
+            <h4>NPS</h4>
+            <p>Регулярный опрос «порекомендуете ли нас»: волны, динамика по сегментам и по продуктам</p>
+          </div>
+          <div class="col3 anim" style="--d:.24s">
+            <div class="idx">03</div>
+            <h4>CSI</h4>
+            <p>Индекс удовлетворённости по взаимодействиям: поддержка, внедрение, обучение, аккаунт-менеджер</p>
+          </div>
+          <div class="col3 anim" style="--d:.3s">
+            <div class="idx">04</div>
+            <h4>tNPS</h4>
+            <p>Оценка сразу после конкретного события: обращение в поддержку, внедрение, доставка — видно, что именно испортило опыт</p>
+          </div>
+          <div class="col3 anim" style="--d:.36s">
+            <div class="idx">05</div>
+            <h4>Обращения в поддержку</h4>
+            <p>Pyrus: реальные сценарии сбоев и формулировки клиентов — частотность и массовость болей без интервью</p>
+          </div>
+          <div class="col3 anim" style="--d:.42s">
+            <div class="idx">06</div>
+            <h4>Отзывы и встречи</h4>
+            <p>Отзывы в сторах и на маркетплейсах, чаты и регулярные встречи с клиентами: голос клиента (VoC) копится сам</p>
+          </div>
+        </div>
+        <div class="caption anim" style="--d:.48s;margin-top:22px">Общий признак: система работает без отдельного проекта — мы читаем то, что она уже накопила. Условие — разметка событий: без неё метрика не видит путь</div>
+      </section>
+
+      <!-- 09 Быстрый заход: что такое JTBD -->
+      <section class="slide" data-screen="bystry">
+        <div class="kicker anim"><i class="sq"></i><span>09 · Быстрый заход — рекомендуем</span></div>
+        <h2 class="anim" style="--d:.06s">Быстрый заход: начинаем с формулировки проблемы</h2>
+        <div class="callout anim" style="--d:.12s;margin-top:0;background:var(--panel);border-color:var(--hair2)">
+          <span class="lab" style="color:#AEAEB6">Заход</span>
+          <div class="ctxt"><p>Проблему формулируем до выхода к пользователям</p><span class="call-sub">методов много — сегодня разберём один: JTBD</span></div>
+        </div>
+        <div class="rows">
+          <div class="row anim" style="--d:.22s"><i class="sq"></i><p><b>JTBD</b> — про найм: пользователь «нанимает» продукт, фичу или предмет на выполнение задачи</p></div>
+          <div class="row anim" style="--d:.28s"><i class="sq"></i><p>Джоба описывает <b>работу пользователя</b> и её «чтобы» — не наше решение</p></div>
+          <div class="row anim" style="--d:.34s"><i class="sq"></i><p>Результат JTBD — <b>центр всего исследования</b>: от джоб строятся гипотезы и метод проверки</p></div>
+        </div>
+      </section>
+
+      <!-- 10 Формула джобы -->
+      <section class="slide" data-screen="formula-dzhoby">
+        <div class="kicker anim"><i class="sq"></i><span>10 · Формула джобы</span></div>
+        <h2 class="anim" style="--d:.06s">Формула джобы</h2>
+        <div class="statement anim" style="--d:.1s;font-size:44px;margin-bottom:40px">Когда <span class="acc">[ситуация]</span>, я хочу <span class="acc">[сделать действие]</span>, чтобы <span class="acc">[получить результат]</span></div>
+        <div class="chkpanel anim" style="--d:.16s;margin-top:0">
+          <div class="chklabel">Из чего состоит формула</div>
+          <div class="chkgrid">
+            <div class="chki"><span class="chkc">&#10003;</span><p>Когда — в какой ситуации человек оказался</p></div>
+            <div class="chki"><span class="chkc">&#10003;</span><p>Хочу — что он делает сам</p></div>
+            <div class="chki"><span class="chkc">&#10003;</span><p>Чтобы — какой результат ему нужен</p></div>
+          </div>
+        </div>
+        <div class="note anim" style="--d:.24s">В джобе нет «если…, тогда…, так как…»: решения в ней нет. Как только появилось решение — это уже гипотеза</div>
+        <div class="callout anim" style="--d:.3s">
+          <span class="lab">Пример</span>
+          <div class="ctxt"><p>Когда я хочу добавить кетчуп к своей еде, я хочу вылить его сам, чтобы не ждать взрослых</p><span class="call-sub">джоба ребёнка: работы видно, решения в ней нет</span></div>
+        </div>
+      </section>
+
+      <!-- 11 Джоба и гипотеза -->
+      <section class="slide" data-screen="otlichie">
+        <div class="kicker anim"><i class="sq"></i><span>11 · Ключевое отличие</span></div>
+        <h2 class="anim" style="--d:.06s">Джоба и гипотеза строятся похоже</h2>
+        <div class="compare">
+          <div class="cmp now anim" style="--d:.12s">
+            <h3>Джоба — пример</h3>
+            <div class="step" style="font-size:24px;color:#fff">Когда я хочу добавить кетчуп к своей еде, я хочу вылить его сам, чтобы не ждать взрослых</div>
+            <div class="steps" style="margin-top:26px">
+              <div class="step"><span class="n">01</span>Нашего решения внутри нет</div>
+              <div class="step"><span class="n">02</span>Строится от работы: когда…, я хочу…, чтобы…</div>
+            </div>
+            <div class="total">что нужно сделать</div>
+          </div>
+          <div class="cmp st anim" style="--d:.18s">
+            <h3>Гипотеза — пример</h3>
+            <div class="step" style="font-size:24px;color:#fff">Если сопло станет шире, тогда ребёнок нальёт больше кетчупа за один раз, так как поток легче дозировать нажатием</div>
+            <div class="steps" style="margin-top:26px">
+              <div class="step"><span class="n">01</span>Решение уже внутри — от него гипотеза и строится</div>
+              <div class="step"><span class="n">02</span>Строится от решения: если…, тогда…, так как…</div>
+            </div>
+            <div class="total">что мы предлагаем</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 12 Сегменты -->
+      <section class="slide" data-screen="segmenty">
+        <div class="kicker anim"><i class="sq"></i><span>12 · Как усилить метод</span></div>
+        <h2 class="anim" style="--d:.06s">Разбить джобы по группам и сегментам</h2>
+        <div class="rows">
+          <div class="row anim" style="--d:.1s"><i class="sq"></i><p>Сегмент показывает, <b>на каких пользователей работают джобы</b></p></div>
+          <div class="row anim" style="--d:.16s"><i class="sq"></i><p>Сегменты бывают <b>ролевые</b>: кто человек — ребёнок, взрослый, покупатель</p></div>
+          <div class="row anim" style="--d:.22s"><i class="sq"></i><p>И <b>поведенческие</b> — шире ролей: дотошные, всеядные, аккуратные и неаккуратные во время еды, и другие</p></div>
+          <div class="row anim" style="--d:.28s"><i class="sq"></i><p>Один человек попадает в <b>разные сегменты</b> в зависимости от ситуации, а не навсегда</p></div>
+          <div class="row anim" style="--d:.34s"><i class="sq"></i><p>То же упражнение помогает в опросах: вопросы задаём только тем сегментам, кто может дать качественный ответ</p></div>
+        </div>
+        <div class="callout anim" style="--d:.42s">
+          <span class="lab">Итог этапа</span>
+          <div class="ctxt"><p>Список джоб, разбитых по возможным сегментам</p><span class="call-sub">Дальше разберём на примере: одна проблема — джобы по сегментам</span></div>
+        </div>
+      </section>
+
+      <!-- 13 Кетчуп: джобы по ролевым сегментам -->
+      <section class="slide" data-screen="primer-dzhoby">
+        <div class="kicker anim"><i class="sq"></i><span>13 · Пример (учебный) · ролевые сегменты</span></div>
+        <h2 class="anim" style="--d:.06s">Кетчуп: джобы на одну проблему</h2>
+        <div class="caption anim" style="--d:.1s;margin-bottom:26px">Проблема: производитель хочет повысить продажи — товар есть, вкус нравится, но расход кетчупа в семье низкий</div>
+        <div class="roles">
+          <div class="row anim" style="--d:.16s"><div class="role"><i class="sq"></i>Ребёнок</div><div class="txt">Когда я хочу добавить кетчуп к своей еде, я хочу вылить его сам, чтобы не ждать взрослых</div></div>
+          <div class="row anim" style="--d:.22s"><div class="role"><i class="sq"></i>Ребёнок</div><div class="txt">Когда я выливаю кетчуп, я хочу, чтобы получилось столько, сколько мне нравится, чтобы еда была вкусной</div></div>
+          <div class="row anim" style="--d:.28s"><div class="role"><i class="sq"></i>Взрослый, накрывает на стол</div><div class="txt">Когда я накрываю на стол, я хочу быстро добавить кетчуп всем, чтобы не отвлекаться от готовки</div></div>
+          <div class="row anim" style="--d:.34s"><div class="role"><i class="sq"></i>Взрослый, покупает</div><div class="txt">Когда я выбираю кетчуп для семьи, я хочу упаковку, с которой справится ребёнок, чтобы он не зависел от меня</div></div>
+          <div class="row anim" style="--d:.4s"><div class="role"><i class="sq"></i>Взрослый</div><div class="txt">Когда кетчуп заканчивается, я хочу вылить его до конца, чтобы не выбрасывать остатки</div></div>
+        </div>
+      </section>
+
+      <!-- 14 Кетчуп: джобы по поведенческим сегментам -->
+      <section class="slide" data-screen="primer-dzhoby-p">
+        <div class="kicker anim"><i class="sq"></i><span>14 · Пример (учебный) · поведенческие сегменты</span></div>
+        <h2 class="anim" style="--d:.06s">Те же работы — у широких сегментов</h2>
+        <div class="caption anim" style="--d:.1s;margin-bottom:26px">Сегменты шире ролей: один взрослый может быть дотошным, всеядным или аккуратным — и работать с кетчупом по-разному</div>
+        <div class="roles">
+          <div class="row anim" style="--d:.16s"><div class="role"><i class="sq"></i>Дотошные</div><div class="txt">Когда я выбираю кетчуп, я хочу видеть состав и происхождение, чтобы не кормить семью непонятным продуктом</div></div>
+          <div class="row anim" style="--d:.24s"><div class="role"><i class="sq"></i>Всеядные</div><div class="txt">Когда кетчуп закончился, я хочу взять привычную упаковку без раздумий, чтобы не тратить время на выбор</div></div>
+          <div class="row anim" style="--d:.32s"><div class="role"><i class="sq"></i>Аккуратные</div><div class="txt">Когда я наливаю кетчуп, я хочу не запачкать край и скатерть, чтобы потом не убирать</div></div>
+          <div class="row anim" style="--d:.4s"><div class="role"><i class="sq"></i>Неаккуратные</div><div class="txt">Когда я выдавливаю кетчуп, я хочу вылить сразу много и не целиться, чтобы быстрее начать есть</div></div>
+        </div>
+      </section>
+
+      <!-- 15 Переход к гипотезам -->
+      <section class="slide" data-screen="perehod">
+        <div class="kicker anim"><i class="sq"></i><span>15 · Переход к гипотезам</span></div>
+        <h2 class="anim" style="--d:.06s">Джобы собраны — проблема сформулирована</h2>
+        <div class="rows">
+          <div class="row anim" style="--d:.1s"><i class="sq"></i><p>У каждой джобы есть своё <b>«чтобы»</b>: понятно, зачем пользователю результат</p></div>
+          <div class="row anim" style="--d:.16s"><i class="sq"></i><p>Джобы разложены по сегментам: видно, <b>кого именно</b> касается проблема</p></div>
+          <div class="row anim" style="--d:.22s"><i class="sq"></i><p>Проблема сформулирована <b>без выхода к пользователям</b> — это и есть быстрый заход</p></div>
+        </div>
+        <div class="callout anim" style="--d:.34s">
+          <span class="lab">Дальше</span>
+          <div class="ctxt"><p>От джоб переходим к гипотезам: что мы предлагаем сделать</p><span class="call-sub">гипотеза отвечает на джобу — и в ней уже есть решение</span></div>
+        </div>
+      </section>
+
+      <!-- 16 Формула гипотезы -->
+      <section class="slide" data-screen="gipotezy">
+        <div class="kicker anim"><i class="sq"></i><span>16 · Гипотезы</span></div>
+        <h2 class="anim" style="--d:.06s">Формула гипотезы</h2>
+        <div class="statement anim" style="--d:.1s;font-size:44px;margin-bottom:40px">Если <span class="acc">[предлагаемое изменение]</span>, тогда <span class="acc">[что изменится]</span>, так как <span class="acc">[причина изменения]</span></div>
+        <div class="chkpanel anim" style="--d:.16s;margin-top:0">
+          <div class="chklabel">Из чего состоит формула</div>
+          <div class="chkgrid">
+            <div class="chki"><span class="chkc">&#10003;</span><p>Если — что мы предлагаем сделать</p></div>
+            <div class="chki"><span class="chkc">&#10003;</span><p>Тогда — что изменится у пользователя</p></div>
+            <div class="chki"><span class="chkc">&#10003;</span><p>Так как — почему это произойдёт</p></div>
+          </div>
+        </div>
+        <div class="callout anim" style="--d:.3s">
+          <span class="lab">Пример</span>
+          <div class="ctxt"><p>Если упаковка открывается одной рукой, тогда кетчуп будет попадать на стол чаще, так как исчезает шаг «достать и открутить»</p><span class="call-sub">одна из гипотез по джобам — главную разберём на следующих слайдах</span></div>
+        </div>
+      </section>
+
+      <!-- 17 Гипотезы: ролевые сегменты -->
+      <section class="slide" data-screen="gipotezy-role">
+        <div class="kicker anim"><i class="sq"></i><span>17 · Гипотезы по джобам · 1/2</span></div>
+        <h2 class="anim" style="--d:.06s;margin-bottom:32px">Ролевые сегменты: гипотеза на каждую джобу</h2>
+        <div class="tblwrap anim" style="--d:.12s;margin-top:0">
+            <table class="hyptbl">
+            <tr><th>Сегмент</th><th>Джоба — когда, хочу, чтобы</th><th>Гипотеза — если, тогда, так как</th></tr>
+            <tr class="key"><td class="seg">Ребёнок</td><td class="job">Когда я хочу добавить кетчуп к своей еде, я хочу вылить его сам, чтобы не ждать взрослых</td><td class="hyp"><b>Если корпус упаковки станет мягким</b>, тогда ребёнок сможет выдавливать кетчуп самостоятельно, так как мягкую упаковку не нужно трясти и стучать по дну, а также её проще доверить ребёнку, так как она не бьётся</td></tr>
+            <tr><td class="seg">Ребёнок</td><td class="job">Когда я выливаю кетчуп, я хочу, чтобы получилось столько, сколько мне нравится, чтобы еда была вкусной</td><td class="hyp">Если сопло станет шире, тогда ребёнок нальёт больше за один раз, так как поток легче дозировать нажатием</td></tr>
+            <tr><td class="seg">Взрослый, накрывает на стол</td><td class="job">Когда я накрываю на стол, я хочу быстро добавить кетчуп всем, чтобы не отвлекаться от готовки</td><td class="hyp">Если упаковка открывается одной рукой, тогда кетчуп будет попадать на стол чаще, так как исчезает шаг «достать и открутить»</td></tr>
+            <tr><td class="seg">Взрослый, покупает</td><td class="job">Когда я выбираю кетчуп для семьи, я хочу упаковку, с которой справится ребёнок, чтобы он не зависел от меня</td><td class="hyp">Если на упаковке видно, что ей пользуется ребёнок, тогда взрослый выберет её, так как это снимает его заботу</td></tr>
+            <tr><td class="seg">Взрослый</td><td class="job">Когда кетчуп заканчивается, я хочу вылить его до конца, чтобы не выбрасывать остатки</td><td class="hyp">Если мягкая упаковка сжимается полностью, тогда семья будет выбирать наш продукт, а не конкурента, так как у нас продукт не остаётся на дне</td></tr>
+            </table>
+        </div>
+        <div class="caption anim" style="--d:.3s;margin-top:16px">Выделенная строка — главная гипотеза: она и привела к переходу от стеклянной бутылки к мягкой упаковке</div>
+      </section>
+
+      <!-- 18 Гипотезы: поведенческие сегменты -->
+      <section class="slide" data-screen="gipotezy-beh">
+        <div class="kicker anim"><i class="sq"></i><span>18 · Гипотезы по джобам · 2/2</span></div>
+        <h2 class="anim" style="--d:.06s;margin-bottom:32px">Поведенческие сегменты: гипотеза на каждую джобу</h2>
+        <div class="tblwrap anim" style="--d:.12s;margin-top:0">
+            <table class="hyptbl">
+            <tr><th>Сегмент</th><th>Джоба — когда, хочу, чтобы</th><th>Гипотеза — если, тогда, так как</th></tr>
+            <tr><td class="seg">Дотошные</td><td class="job">Когда я выбираю кетчуп, я хочу видеть состав и происхождение, чтобы не кормить семью непонятным продуктом</td><td class="hyp">Если состав и происхождение вынести на лицевую сторону, тогда дотошный выберет нашу упаковку, так как ему не придётся искать информацию отдельно</td></tr>
+            <tr><td class="seg">Всеядные</td><td class="job">Когда кетчуп закончился, я хочу взять привычную упаковку без раздумий, чтобы не тратить время на выбор</td><td class="hyp">Если упаковка остаётся узнаваемой на полке, тогда всеядный возьмёт её по привычке, так как решение принимается за секунды</td></tr>
+            <tr><td class="seg">Аккуратные</td><td class="job">Когда я наливаю кетчуп, я хочу не запачкать край и скатерть, чтобы потом не убирать</td><td class="hyp">Если сделать упаковку мягкой, тогда будет меньше шансов испачкаться, так как не нужно трясти стеклянную бутылку: при резком взмахе вниз кетчуп вылетает и брызгает от удара — всё вокруг в кетчупе</td></tr>
+            <tr><td class="seg">Неаккуратные</td><td class="job">Когда я выдавливаю кетчуп, я хочу вылить сразу много и не целиться, чтобы быстрее начать есть</td><td class="hyp">Если мягкую упаковку можно сжать всей рукой, тогда неаккуратный выльет больше, так как точный дозатор ему не нужен</td></tr>
+            </table>
+        </div>
+        <div class="caption anim" style="--d:.3s;margin-top:16px">Те же джобы, но у широких сегментов. Мягкая упаковка всплывает дважды — у ребёнка и у аккуратных: одно изменение закрывает несколько джоб</div>
+      </section>
+
+      <!-- 19 Чем проверить: ролевые сегменты -->
+      <section class="slide" data-screen="metody-role">
+        <div class="kicker anim"><i class="sq"></i><span>19 · Как проверить · 1/2</span></div>
+        <h2 class="anim" style="--d:.06s;margin-bottom:28px">Джобы → гипотезы → чем проверяем</h2>
+        <div class="tblwrap anim" style="--d:.12s;margin-top:0">
+            <table class="hyptbl m4">
+            <tr><th>Сегмент</th><th>Джоба</th><th>Гипотеза</th><th>Чем проверяем</th></tr>
+            <tr class="key"><td class="seg">Ребёнок</td><td class="job">Когда я хочу добавить кетчуп к своей еде, я хочу вылить его сам, чтобы не ждать взрослых</td><td class="hyp"><b>Если корпус упаковки станет мягким</b>, тогда ребёнок сможет выдавливать кетчуп самостоятельно, так как мягкую упаковку не нужно трясти и стучать по дну, а также её проще доверить ребёнку, так как она не бьётся</td><td class="meth">Юзабилити-тест упаковки с детьми + домашний тест с замером расхода</td></tr>
+            <tr><td class="seg">Ребёнок</td><td class="job">Когда я выливаю кетчуп, я хочу, чтобы получилось столько, сколько мне нравится, чтобы еда была вкусной</td><td class="hyp">Если сопло станет шире, тогда ребёнок нальёт больше за один раз, так как поток легче дозировать нажатием</td><td class="meth">Домашний тест: расход кетчупа на семью за две недели</td></tr>
+            <tr><td class="seg">Взрослый, накрывает на стол</td><td class="job">Когда я накрываю на стол, я хочу быстро добавить кетчуп всем, чтобы не отвлекаться от готовки</td><td class="hyp">Если упаковка открывается одной рукой, тогда кетчуп будет попадать на стол чаще, так как исчезает шаг «достать и открутить»</td><td class="meth">Контекстное интервью на кухне (наблюдение) + юзабилити-тест</td></tr>
+            <tr><td class="seg">Взрослый, покупает</td><td class="job">Когда я выбираю кетчуп для семьи, я хочу упаковку, с которой справится ребёнок, чтобы он не зависел от меня</td><td class="hyp">Если на упаковке видно, что ей пользуется ребёнок, тогда взрослый выберет её, так как это снимает его заботу</td><td class="meth">Тест концепции этикетки + shelf-тест: выбор на полке</td></tr>
+            <tr><td class="seg">Взрослый</td><td class="job">Когда кетчуп заканчивается, я хочу вылить его до конца, чтобы не выбрасывать остатки</td><td class="hyp">Если мягкая упаковка сжимается полностью, тогда семья будет выбирать наш продукт, а не конкурента, так как у нас продукт не остаётся на дне</td><td class="meth">Домашний тест с контролем остатков + пилот и A/B-тест</td></tr>
+            </table>
+        </div>
+        <div class="caption anim" style="--d:.3s;margin-top:14px">Метод подбирается под гипотезу: где-то достаточно юзабилити-теста, где-то нужен замер расхода или пилот с A/B</div>
+      </section>
+
+      <!-- 20 Чем проверить: поведенческие сегменты -->
+      <section class="slide" data-screen="metody-beh">
+        <div class="kicker anim"><i class="sq"></i><span>20 · Как проверить · 2/2</span></div>
+        <h2 class="anim" style="--d:.06s;margin-bottom:28px">Джобы → гипотезы → чем проверяем</h2>
+        <div class="tblwrap anim" style="--d:.12s;margin-top:0">
+            <table class="hyptbl m4">
+            <tr><th>Сегмент</th><th>Джоба</th><th>Гипотеза</th><th>Чем проверяем</th></tr>
+            <tr><td class="seg">Дотошные</td><td class="job">Когда я выбираю кетчуп, я хочу видеть состав и происхождение, чтобы не кормить семью непонятным продуктом</td><td class="hyp">Если состав и происхождение вынести на лицевую сторону, тогда дотошный выберет нашу упаковку, так как ему не придётся искать информацию отдельно</td><td class="meth">Интервью с дотошными покупателями + A/B этикетки в пилоте</td></tr>
+            <tr><td class="seg">Всеядные</td><td class="job">Когда кетчуп закончился, я хочу взять привычную упаковку без раздумий, чтобы не тратить время на выбор</td><td class="hyp">Если упаковка остаётся узнаваемой на полке, тогда всеядный возьмёт её по привычке, так как решение принимается за секунды</td><td class="meth">Shelf-тест и замер узнаваемости упаковки (brand recall)</td></tr>
+            <tr><td class="seg">Аккуратные</td><td class="job">Когда я наливаю кетчуп, я хочу не запачкать край и скатерть, чтобы потом не убирать</td><td class="hyp">Если сделать упаковку мягкой, тогда будет меньше шансов испачкаться, так как не нужно трясти стеклянную бутылку: при резком взмахе вниз кетчуп вылетает и брызгает от удара — всё вокруг в кетчупе</td><td class="meth">Юзабилити-тест с задачей «налить и не запачкать» + наблюдение, как трясут бутылку</td></tr>
+            <tr><td class="seg">Неаккуратные</td><td class="job">Когда я выдавливаю кетчуп, я хочу вылить сразу много и не целиться, чтобы быстрее начать есть</td><td class="hyp">Если мягкую упаковку можно сжать всей рукой, тогда неаккуратный выльет больше, так как точный дозатор ему не нужен</td><td class="meth">Наблюдение на кухне + домашний тест с замером расхода</td></tr>
+            </table>
+        </div>
+        <div class="caption anim" style="--d:.3s;margin-top:14px">Выбор метода — отдельная тема следующей части: что дешевле и проще, что дороже и сложнее</div>
+      </section>
+
+      <!-- 21 Когда исследование всё-таки нужно -->
+      <section class="slide" data-screen="kogda-nuzhno">
+        <div class="kicker anim"><i class="sq"></i><span>21 · Возврат к вопросу</span></div>
+        <h2 class="anim" style="--d:.06s">Когда исследование всё-таки нужно</h2>
+        <div class="rows">
+          <div class="row anim" style="--d:.1s"><i class="sq"></i><p>По кетчупу <b>экспертное мнение уже есть</b>: одна мягкая упаковка закрывает сразу несколько джоб</p></div>
+          <div class="row anim" style="--d:.16s"><i class="sq"></i><p>Если упаковки уже такие есть и мы научились ими пользоваться — <b>сработает</b>, это видно на полке</p></div>
+          <div class="row anim" style="--d:.22s"><i class="sq"></i><p>Когда решение встречаешь <b>впервые</b>, тебя считают за идиота — и веры на слово нет</p></div>
+          <div class="row anim" style="--d:.28s"><i class="sq"></i><p>Поэтому строим <b>доказательную базу</b>: подтверждаем гипотезу исследованием, а не «мне кажется»</p></div>
+        </div>
+        <div class="callout anim" style="--d:.38s">
+          <span class="lab">Правило</span>
+          <div class="ctxt"><p>Исследуем там, где цена ошибки выше цены проверки</p><span class="call-sub">чем крупнее изменение и чем меньше аналогов вокруг, тем нужнее доказательства</span></div>
+          <div class="cm"><span class="ii">?</span></div>
+        </div>
+      </section>
+
+      <!-- 22 Как выбирать тип исследования -->
+      <section class="slide" data-screen="kak-vybrat">
+        <div class="kicker anim"><i class="sq"></i><span>22 · Тип исследования</span></div>
+        <h2 class="anim" style="--d:.06s">Тип исследования вырастает из гипотезы</h2>
+        <div class="cols3" style="margin-top:26px">
+          <div class="col3 anim" style="--d:.14s">
+            <div class="idx">01</div>
+            <h4>Из джобы</h4>
+            <p>Видно, с кем говорить и что смотреть: у какой работы и в каком сегменте всё ломается</p>
+          </div>
+          <div class="col3 anim" style="--d:.2s">
+            <div class="idx">02</div>
+            <h4>Из гипотезы</h4>
+            <p>Когда гипотеза сформулирована, понятно, какими способами можно подтвердить, что она есть</p>
+          </div>
+          <div class="col3 anim" style="--d:.26s">
+            <div class="idx">03</div>
+            <h4>Что дальше</h4>
+            <p>Конкретные способы разберём позже: качественные и количественные исследования — что и когда брать</p>
+          </div>
+        </div>
+        <div class="note anim" style="--d:.34s">Метод не выбирается «просто так» и не берётся из привычки: сначала джоба и гипотеза — потом способ проверки</div>
+        <div class="callout anim" style="--d:.4s">
+          <span class="lab">Логика</span>
+          <div class="ctxt"><p>Сначала гипотеза, потом метод — не наоборот</p><span class="call-sub">в таблице «чем проверяем» метод появляется из формулировки гипотезы</span></div>
+        </div>
+      </section>
+
+      <!-- 23 Для чего проводим исследование -->
+      <section class="slide" data-screen="zachem">
+        <div class="kicker anim"><i class="sq"></i><span>23 · Для чего</span></div>
+        <h2 class="anim" style="--d:.06s">Проводим исследование, чтобы что</h2>
+        <div class="rows">
+          <div class="row anim" style="--d:.1s"><i class="sq"></i><p><b>Подтвердить гипотезу</b>: доказать, что предложенное изменение даёт эффект</p></div>
+          <div class="row anim" style="--d:.16s"><i class="sq"></i><p>Или доказать, что гипотеза <b>имеет право на существование</b> — и её можно брать в работу</p></div>
+          <div class="row anim" style="--d:.22s"><i class="sq"></i><p>Решение принимаешь <b>не ты один</b>: нужен аргумент, который предъявишь команде и руководству</p></div>
+          <div class="row anim" style="--d:.28s"><i class="sq"></i><p><b>Опровергнуть</b> — тоже результат: сэкономленная разработка лучше ненужной фичи</p></div>
+        </div>
+        <div class="callout anim" style="--d:.38s">
+          <span class="lab">На выходе</span>
+          <div class="ctxt"><p>Однозначный ответ по гипотезе и принятое решение</p><span class="call-sub">а не отчёт на полке: «данные собрали, посмотрели, пошли дальше»</span></div>
+        </div>
+      </section>
+
+      <!-- 24 Какое исследование считаем успешным -->
+      <section class="slide" data-screen="uspeshnoe">
+        <div class="kicker anim"><i class="sq"></i><span>24 · Критерии успеха</span></div>
+        <h2 class="anim" style="--d:.06s">Какое исследование считаем успешным</h2>
+        <div class="cols3" style="margin-top:20px;row-gap:34px">
+          <div class="col3 anim" style="--d:.12s">
+            <div class="idx">01</div>
+            <h4>Принято решение</h4>
+            <p>Гипотеза ушла в работу или получила отказ — с аргументом, а не «данные неоднозначные»</p>
+          </div>
+          <div class="col3 anim" style="--d:.18s">
+            <div class="idx">02</div>
+            <h4>Подтверждена данными</h4>
+            <p>Эффект виден в метрике: было → стало по числам, а не на словах</p>
+          </div>
+          <div class="col3 anim" style="--d:.24s">
+            <div class="idx">03</div>
+            <h4>Влияние на бизнес</h4>
+            <p>Выросла целевая метрика: прибыль, выручка, удержание, доля — или снизились потери</p>
+          </div>
+          <div class="col3 anim" style="--d:.3s">
+            <div class="idx">04</div>
+            <h4>Ничего не сломали</h4>
+            <p>Смежные метрики не просели: нет регресса, обращений в поддержку не стало больше</p>
+          </div>
+          <div class="col3 anim" style="--d:.36s">
+            <div class="idx">05</div>
+            <h4>Уложились в срок и бюджет</h4>
+            <p>Проверка обошлась дешевле, чем стоила бы ошибка в решении</p>
+          </div>
+          <div class="col3 anim" style="--d:.42s">
+            <div class="idx">06</div>
+            <h4>Опровержение — тоже успех</h4>
+            <p>Мы не потратили разработку, релиз и поддержку на то, что не работает</p>
+          </div>
+          <div class="col3 anim" style="--d:.48s">
+            <div class="idx">07</div>
+            <h4>Результат воспроизводится</h4>
+            <p>Сработало на пилоте — раскатываем на всех: эффект не на одном удачном ресторане</p>
+          </div>
+          <div class="col3 anim" style="--d:.54s">
+            <div class="idx">08</div>
+            <h4>Ответ стал знанием</h4>
+            <p>Результат лёг в базу: следующая команда не исследует это заново</p>
+          </div>
+        </div>
+        <div class="caption anim" style="--d:.6s;margin-top:20px">Общий признак: успех — это принятое решение, подкреплённое данными. Критерий 05 — с исключением: иногда проверка в бою дешевле исследования (следующий слайд)</div>
+      </section>
+
+      <!-- 25 Исключение: проверка в бою -->
+      <section class="slide" data-screen="isklyuchenie">
+        <div class="kicker anim"><i class="sq"></i><span>25 · Исключение из правил</span></div>
+        <h2 class="anim" style="--d:.06s">Иногда дешевле проверить в бою</h2>
+        <div class="compare">
+          <div class="cmp now anim" style="--d:.12s">
+            <h3>Исследование</h3>
+            <div class="steps">
+              <div class="step"><span class="n">01</span>Часы исследователей, дизайнеров и других участников: подготовка, рекрутинг, обработка</div>
+              <div class="step"><span class="n">02</span>Выпускаем сразу качественный продукт, но эффект видно позже</div>
+              <div class="step"><span class="n">03</span>Решение принимается до релиза</div>
+            </div>
+            <div class="total">дороже в человеко-часах</div>
+          </div>
+          <div class="cmp st anim" style="--d:.18s">
+            <h3>Проверка в бою</h3>
+            <div class="steps">
+              <div class="step"><span class="n">01</span>Часы разработки: сделали и раскатали на прод</div>
+              <div class="step"><span class="n">02</span>Эффект видно в метрике сразу — на реальных пользователях</div>
+              <div class="step"><span class="n">03</span>Не нужны ни сценарии, ни синтез, ни гонорары респондентам</div>
+            </div>
+            <div class="total">быстрее и дешевле</div>
+          </div>
+        </div>
+        <div class="callout anim" style="--d:.32s">
+          <span class="lab">Условие</span>
+          <div class="ctxt"><p>Проверяем в бою, если это не несёт репутационных рисков</p><span class="call-sub">риск для репутации, данных или денег клиента — возвращаемся к исследованию</span></div>
+          <div class="cm"><span class="ii">!</span></div>
+        </div>
+      </section>
+
+      <!-- 26 Что оставляем на потом -->
+      <section class="slide" data-screen="dalshe">
+        <div class="kicker anim"><i class="sq"></i><span>26 · Оставляем на потом</span></div>
+        <h2 class="anim" style="--d:.06s">Что разбираем дальше</h2>
+        <div class="compare">
+          <div class="cmp now anim" style="--d:.12s">
+            <h3>Виды исследований</h3>
+            <div class="steps">
+              <div class="step"><span class="n">01</span>Качественные: интервью, контекстное наблюдение, юзабилити-тест — отвечают на «почему» и «как»</div>
+              <div class="step"><span class="n">02</span>Количественные: опросы, аналитика, A/B-тесты — отвечают на «сколько» и «как часто»</div>
+              <div class="step"><span class="n">03</span>Разберём каждый: когда брать, сколько стоит по времени и людям, что на выходе</div>
+            </div>
+            <div class="total">что и когда применять</div>
+          </div>
+          <div class="cmp st anim" style="--d:.18s">
+            <h3>Метрики в B2B</h3>
+            <div class="steps">
+              <div class="step"><span class="n">01</span>Какие метрики бывают: продукт, ресторан, бизнес — и какая на что влияет</div>
+              <div class="step"><span class="n">02</span>Как искать проблемы метриками: от цифры к вопросу «почему так»</div>
+              <div class="step"><span class="n">03</span>Когда метрика про успех, а когда про провал, и как это связано с пользователями и прибылью</div>
+            </div>
+            <div class="total">где искать проблемы</div>
+          </div>
+        </div>
+        <div class="caption anim" style="--d:.3s">Эти две темы — следующая часть: сегодня разобрали, зачем и когда исследовать, и как из джоб вырастают гипотезы и методы</div>
+      </section>
+
+      <!-- 27 Итог -->
+      <section class="slide" data-screen="itog">
+        <div class="kicker anim"><i class="sq"></i><span>27 · Итог</span></div>
+        <div class="fin-h anim" style="--d:.08s">Исследование — это <span class="acc">проверка гипотез</span>, а не поиск проблем вслепую</div>
+        <div class="rows fin-rows">
+          <div class="row anim" style="--d:.2s"><i class="sq"></i><p>Есть вариативность решения — есть что исследовать</p></div>
+          <div class="row anim" style="--d:.26s"><i class="sq"></i><p>Джобы по сегментам дают проблему, гипотезы — предложения, метод — способ проверки</p></div>
+          <div class="row anim" style="--d:.32s"><i class="sq"></i><p>Успех — принятое решение, подкреплённое данными: метрика и деньги, и ничего не сломали</p></div>
+        </div>
+        <div class="callout anim" style="--d:.38s">
+          <span class="lab">Вопрос дня</span>
+          <div class="ctxt"><p>Сколько решений допускает задача?</p><span class="call-sub">одно — задача в работу · два и больше — исследование и гипотезы</span></div>
+          <div class="cm"><span class="ii">?</span></div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <div class="hud" id="hud">
+    <button class="brand" id="brand" aria-label="В начало" title="В начало">
+      <span><b class="ii">иссле</b><b class="ui">дования</b></span>
+      <span>· iiko, продуктовый процесс</span>
+    </button>
+    <div class="hud-r">
+      <span class="counter" id="counter">01 / 27</span>
+      <button class="nav small" id="home" aria-label="В начало" title="В начало">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M5.5 5v14M19 5l-9 7 9 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="nav" id="prev" aria-label="Предыдущий слайд" title="Назад">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M15 5L8 12L15 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="nav" id="next" aria-label="Следующий слайд" title="Вперёд">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 5L16 12L9 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="progress"><i id="bar"></i></div>
+  <div class="hint" id="hint">Листать: ← → · F - во весь экран · Home - в начало</div>
+
+</div>
+
+
+
+<script>
+(function(){
+  var stage = document.getElementById('stage');
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var N = slides.length;
+  var idx = 0;
+  var counter = document.getElementById('counter');
+  var bar = document.getElementById('bar');
+  var prev = document.getElementById('prev');
+  var next = document.getElementById('next');
+  var home = document.getElementById('home');
+  var brand = document.getElementById('brand');
+  var KEY = 'iiko-research-deck-v1';
+
+  function fit(){
+    var k = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    stage.style.transform = 'scale(' + k + ')';
+  }
+
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+
+  // номера в кикерах = позиции слайдов (всегда совпадают со счётчиком)
+  for (var ki = 0; ki < N; ki++) {
+    var kv = slides[ki].querySelector('.kicker span');
+    if (!kv) continue;
+    kv.textContent = pad(ki + 1) + ' · ' + kv.textContent.replace(/^\d+\s*·\s*/, '');
+  }
+
+  function show(i, persist){
+    if (i < 0 || i > N - 1) return;
+    idx = i;
+    for (var j = 0; j < N; j++) slides[j].classList.toggle('active', j === i);
+    counter.textContent = pad(i + 1) + ' / ' + N;
+    bar.style.width = ((i + 1) / N * 100) + '%';
+    prev.disabled = (i === 0);
+    next.disabled = (i === N - 1);
+    home.disabled = (i === 0);
+  }
+
+  function toggleFull(){
+    if (!document.fullscreenElement) {
+      if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen();
+    }
+  }
+
+  prev.addEventListener('click', function(){ show(idx - 1); });
+  next.addEventListener('click', function(){ show(idx + 1); });
+  home.addEventListener('click', function(){ show(0); });
+  brand.addEventListener('click', function(){ show(0); });
+
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if (k === 'ArrowRight' || k === 'ArrowDown' || k === 'PageDown' || k === ' ') { show(idx + 1); e.preventDefault(); }
+    else if (k === 'ArrowLeft' || k === 'ArrowUp' || k === 'PageUp') { show(idx - 1); e.preventDefault(); }
+    else if (k === 'Home') { show(0); e.preventDefault(); }
+    else if (k === 'End') { show(N - 1); e.preventDefault(); }
+    else if (k === 'f' || k === 'F' || k === 'а' || k === 'А') { toggleFull(); }
+  });
+
+  var tx = null, ty = null;
+  document.addEventListener('touchstart', function(e){
+    tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+  }, {passive: true});
+  document.addEventListener('touchend', function(e){
+    if (tx === null) return;
+    var dx = e.changedTouches[0].clientX - tx;
+    var dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) show(idx + (dx < 0 ? 1 : -1));
+    tx = null; ty = null;
+  }, {passive: true});
+
+  fit();
+  window.addEventListener('resize', fit);
+
+  var start = 0;
+  try {
+    // всегда открываем с первого слайда; убираем хвост #sN, если он остался в ссылке
+    if (location.hash) { history.replaceState(null, '', location.pathname + location.search); }
+  } catch (e) {}
+  show(start);
+
+  try {
+    if (!localStorage.getItem('iiko-research-hint-1')) {
+      localStorage.setItem('iiko-research-hint-1', '1');
+      var hint = document.getElementById('hint');
+      setTimeout(function(){
+        hint.classList.add('show');
+        setTimeout(function(){ hint.classList.remove('show'); }, 5200);
+      }, 900);
+    }
+  } catch (e) {}
+
+  /* для проверки из консоли */
+  window.deckGo = function(n){ show(n - 1); };
+  window.deckState = function(){ return { idx: idx, total: N }; };
+  window.deckFit = fit;
+})();
+</script>
+</body>
+</html>

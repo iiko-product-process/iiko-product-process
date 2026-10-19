@@ -1,0 +1,148 @@
+/* ============================================================
+   iiko DS — Stepper (Step + Stepper line)
+   Источник: Figma, страница «Stepper»
+   Step: h24 (Background=Off) / h32 r8 fill #FAFAFA (Background=On)
+         gap 8, Element left 24×24, текст 14/400
+   Selected: текст #448AFF, иконка #448AFF
+   ============================================================ */
+
+.ds-stepper {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2x);                                  /* 8px */
+  background: var(--ds-color-stepper-background);
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* ── Шаг ──────────────────────────────────────────────────── */
+
+.ds-step {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-space-2x);                                  /* 8px */
+  box-sizing: border-box;
+  min-height: 24px;
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--ds-color-stepper-default-text-color);        /* #333333 */
+  font-family: inherit;
+  font-size: var(--ds-typography-body-font-size-s);         /* 14px */
+  font-weight: var(--ds-typography-font-weight-regular);    /* 400 */
+  line-height: var(--ds-typography-body-line-height-s);     /* 20px */
+  letter-spacing: var(--ds-typography-letter-spacing-s);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* Background=On — подложка */
+.ds-step--bg {
+  min-height: 32px;
+  padding: var(--ds-space-1x) var(--ds-space-2x);
+  border-radius: var(--ds-radius-2x);                       /* 8px */
+  background: var(--ds-color-stepper-default-background);   /* #FAFAFA */
+}
+
+.ds-step:hover {
+  color: var(--ds-color-stepper-hover-text-color);          /* #448AFF */
+}
+.ds-step--bg:hover { background: var(--ds-color-stepper-hover-background); }
+
+.ds-step--selected {
+  color: var(--ds-color-stepper-selected-text-color);       /* #448AFF */
+}
+.ds-step--bg.ds-step--selected {
+  background: var(--ds-color-stepper-selected-background);  /* #F5F9FF */
+  border: 1px solid var(--ds-color-stepper-selected-border-color);
+}
+
+.ds-step--disabled,
+.ds-step:disabled {
+  color: var(--ds-color-stepper-disable-text-color);        /* #9E9E9E */
+  pointer-events: none;
+}
+
+.ds-step--error { color: var(--ds-color-stepper-error-text-color); }
+
+/* ── Номер / иконка шага (Element left 24×24) ─────────────── */
+
+.ds-step__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--ds-radius-circular);                 /* 9999px */
+  color: var(--ds-color-stepper-default-icon-color);        /* #616161 */
+  font-size: var(--ds-typography-body-font-size-s);         /* 14px */
+  line-height: 20px;
+}
+
+/* выбранный шаг — залитый акцентный круг с белой цифрой */
+.ds-step--selected .ds-step__num {
+  background: var(--ds-color-brand-accent-default);         /* #448AFF */
+  color: var(--ds-color-text-inversive);                    /* #FFFFFF */
+}
+.ds-step--disabled .ds-step__num { color: var(--ds-color-stepper-disable-icon-color); }
+.ds-step--error .ds-step__num    { color: var(--ds-color-stepper-error-icon-color); }
+
+.ds-step__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  color: var(--ds-color-stepper-icon-color);
+}
+.ds-step__icon svg { width: 24px; height: 24px; display: block; }
+.ds-step__icon svg path { fill: currentColor; }
+
+/* ── Разделитель между шагами (Stepper divider) ───────────── */
+
+.ds-stepper__divider {
+  flex-shrink: 0;
+  width: 8px;
+  height: 1px;
+  background: var(--ds-color-stepper-divider-color);         /* #616161 */
+}
+
+/* ============================================================
+   Stepper button (Figma 55419:7330) — счётчик шагов + кнопки навигации
+   12 вариантов: Type=Filled|Outlined × Position=First|Middle|Last
+                 × Content=Text|Icon      (высота ряда 36, gap 16)
+   Состав из Figma (что писать в разметке):
+     Position=First  → одна кнопка «Далее» (иконка справа keyboard_arrow_right)
+     Position=Middle → Button group (gap 8): «Назад» (keyboard_arrow_left слева)
+                       + «Далее» (keyboard_arrow_right справа)
+     Position=Last   → одна кнопка «Назад» (keyboard_arrow_left слева)
+     Content=Text    → .ds-btn.ds-btn--m ; Content=Icon → .ds-button-icon (36×36)
+     Type=Filled     → .ds-btn--accent.ds-btn--filled  (#448AFF + тень)
+     Type=Outlined   → .ds-btn--accent.ds-btn--outlined (рамка 1px #448AFF)
+   ============================================================ */
+
+.ds-stepper-button {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-4x);                                  /* 16px */
+  min-height: 36px;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* «N из M» — TEXT 14/500 lh20 #333333 */
+.ds-stepper-button__counter {
+  flex-shrink: 0;
+  color: var(--ds-color-text-primary);                      /* #333333 */
+  font-size: var(--ds-typography-body-font-size-s);         /* 14px */
+  font-weight: var(--ds-typography-font-weight-medium);     /* 500 */
+  line-height: var(--ds-typography-body-line-height-s);     /* 20px */
+  white-space: nowrap;
+}
+
+/* Button group / Button icon group внутри — gap 8 */
+.ds-stepper-button__group {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2x);                                  /* 8px */
+}

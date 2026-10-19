@@ -1,0 +1,67 @@
+.ds-control-panel-2 {
+  display: flex;
+  flex-direction: row;
+  width: 280px;
+  padding: var(--ds-size-1x) 0 var(--ds-size-1x) 0;
+  gap: 74px;
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-control-panel-2__label {
+  font-size: var(--ds-font-body-s-14-normal-regular-size);
+  line-height: var(--ds-font-body-s-14-normal-regular-line);
+  letter-spacing: var(--ds-font-body-s-14-normal-regular-spacing);
+  font-weight: var(--ds-font-body-s-14-normal-regular-weight);
+  color: var(--ds-color-text-primary, #333333);
+  white-space: nowrap;
+}
+.ds-control-panel-2__icon {
+  flex-shrink: 0;
+  width: var(--ds-size-5x);
+  height: var(--ds-size-5x);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ds-control-panel-2__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ds-control-panel-2__icon svg path {
+  fill: currentColor;
+}
+.ds-control-panel-2__elements {
+  display: flex;
+  flex-direction: row;
+  gap: var(--ds-size-2x);
+  padding: var(--ds-size-2-5x) var(--ds-size-1x) var(--ds-size-2-5x) var(--ds-size-2x);
+  border-radius: var(--ds-radius-circular, 9999px);
+  background: var(--ds-color-brand-neutral-default, #ffffff);
+}
+.ds-control-panel-2__month {
+  display: flex;
+  flex-direction: row;
+  background: var(--ds-color-text-primary, #333333);
+  font-size: var(--ds-font-body-s-14-normal-regular-size);
+  line-height: var(--ds-font-body-s-14-normal-regular-line);
+  letter-spacing: var(--ds-font-body-s-14-normal-regular-spacing);
+  font-weight: var(--ds-font-body-s-14-normal-regular-weight);
+  color: var(--ds-color-text-primary, #333333);
+}
+.ds-control-panel-2__button-icon-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--ds-button-icon-gap, 8px);
+}
+.ds-control-panel-2--control {
+  align-items: center;
+  color: var(--ds-color-text-primary, #333333);
+}
+.ds-control-panel-2--time {
+  width: fit-content;
+  padding: var(--ds-size-0-5x) 0 var(--ds-size-0-5x) 0;
+  color: var(--ds-color-text-primary, #333333);
+}
+

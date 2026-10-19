@@ -1,0 +1,48 @@
+/* ============================================================
+   iiko DS Mobile — Table (таблица)
+   ------------------------------------------------------------
+   Что меняется
+   ------------
+   1. Строки: 36 px -> 52 px (данные) и 36 -> 56 (шапка). Это официальные
+      токены MD3, которые же берёт Angular Material: строка заголовка 56,
+      строка данных 52, футер 52.
+   2. Паддинг ячейки 16 px — рабочее значение Angular Material; у нас в
+      токенах ячейки 8.
+   3. Содержимое таблицы на телефоне прокручивается по горизонтали или
+      превращается в карточки — это структура страницы (типовой подход:
+      данные карточками/списками, горизонтальный скролл как запасной вариант).
+   4. Редактирование ячеек, фильтры и сортировка — в шторке снизу.
+
+   Откуда числа
+   ------------
+   Это случай, где платформенная рекомендация практически одна: MD3 отдаёт
+   только токены (56 / 52 / 52 dp, обводки 1 dp, title-small и body-medium) без
+   страницы спецификации, iOS HIG — только стили без чисел, а всю рабочую
+   обвязку (паддинг ячейки 16, высоты 56/52/52) даёт Angular Material.
+
+   Источники: рекомендации платформ.
+   Подключение: components-mobile/components/index.css
+   ============================================================ */
+
+[data-mode="mobile"] .ds-table-header-row,
+[data-mode="mobile"] .ds-table-header-cell {
+  min-height: 56px;
+}
+
+[data-mode="mobile"] .ds-table-content-row,
+[data-mode="mobile"] .ds-table-content-cell,
+[data-mode="mobile"] .ds-input-cell,
+[data-mode="mobile"] .ds-select-cell,
+[data-mode="mobile"] .ds-form-field-cell,
+[data-mode="mobile"] .ds-table-chips-input {
+  min-height: 52px;
+}
+
+[data-mode="mobile"] .ds-table-content-cell,
+[data-mode="mobile"] .ds-table-header-cell,
+[data-mode="mobile"] .ds-input-cell,
+[data-mode="mobile"] .ds-select-cell,
+[data-mode="mobile"] .ds-element-form-field__input-cell {
+  padding-left: var(--ds-space-4x);
+  padding-right: var(--ds-space-4x);
+}

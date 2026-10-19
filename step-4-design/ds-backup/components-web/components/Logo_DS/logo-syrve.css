@@ -1,0 +1,15 @@
+.ds-logo-syrve {
+  height: 72px;
+  display: flex;
+  flex-direction: row;
+  background: #ffffff;
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-logo-syrve__vector {
+  height: 70.9px;
+  display: flex;
+  flex-direction: row;
+  background: #00062b;
+}
+

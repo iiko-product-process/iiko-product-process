@@ -1,0 +1,55 @@
+.ds-input-datepicker {
+  min-height: 48px;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-input-datepicker__label {
+  font-size: var(--ds-font-body-m-16-normal-regular-size);
+  line-height: var(--ds-font-body-m-16-normal-regular-line);
+  letter-spacing: var(--ds-font-body-m-16-normal-regular-spacing);
+  font-weight: var(--ds-font-body-m-16-normal-regular-weight);
+  color: var(--ds-color-form-field-input-label-text-color, #616161);
+  white-space: nowrap;
+}
+.ds-input-datepicker__icon {
+  flex-shrink: 0;
+  width: var(--ds-size-5x);
+  height: var(--ds-size-5x);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ds-input-datepicker__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ds-input-datepicker__icon svg path {
+  fill: currentColor;
+}
+.ds-input-datepicker__frame {
+  height: 48px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--ds-form-field-gap-input-frame, 8px);
+  padding: var(--ds-form-field-m-size-pad-input-top, 12px) var(--ds-form-field-m-size-pad-input-right, 12px) var(--ds-form-field-m-size-pad-input-bottom, 12px) var(--ds-form-field-m-size-pad-input-left, 12px);
+  border-radius: var(--ds-form-field-border-radius, 12px);
+  background: var(--ds-color-form-field-input-filled-background, #f8f9fc);
+  border: 1px solid var(--ds-color-form-field-filled-default-border-color, #e0e0e0);
+}
+.ds-input-datepicker__support {
+  display: flex;
+  flex-direction: row;
+}
+.ds-input-datepicker--empty {
+  color: var(--ds-color-form-field-input-label-text-color, #616161);
+}
+.ds-input-datepicker--populated {
+  color: var(--ds-color-form-field-filled-default-label-text-color, #616161);
+}
+

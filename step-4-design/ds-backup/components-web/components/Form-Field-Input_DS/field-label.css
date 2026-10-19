@@ -1,0 +1,13 @@
+/* ── Подпись группы полей (label над полем) ───────────────── */
+
+.ds-field-label {
+
+  display: block;
+  color: var(--ds-color-text-primary);                    /* #333333 */
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-size: var(--ds-typography-font-size-3-5x);         /* 14px */
+  font-weight: var(--ds-typography-font-weight-medium);   /* 500 */
+  letter-spacing: var(--ds-typography-letter-spacing-s);
+  line-height: 20px;
+
+}

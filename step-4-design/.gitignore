@@ -1,0 +1,14 @@
+# ── Служебный мусор ОС и редакторов ──
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+*.tmp
+*.bak
+*.orig
+*.rej
+
+# ── Кэш Python (в скиллах есть скрипты) ──
+__pycache__/
+*.pyc

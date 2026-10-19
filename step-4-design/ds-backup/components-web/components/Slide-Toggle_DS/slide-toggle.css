@@ -1,0 +1,116 @@
+/* ============================================================
+   iiko DS — Slide toggle
+   Источник: Figma, страница «Slide toggle»
+   Трек 34×20 r12; кнопка (Oval) 16×16 r9999 белая
+   Off: фон #9E9E9E (hover #757575) · On: #448AFF (hover #3969D5)
+   Disable: #E0E0E0, текст #9E9E9E
+   Title 14/400 #333333 · Support down 12px #616161
+   ============================================================ */
+
+.ds-slide-toggle {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--ds-space-1x);                                    /* 4px */
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* строка: переключатель + заголовок + иконка */
+.ds-slide-toggle__row {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2x);                                    /* 8px */
+  cursor: pointer;
+}
+
+/* нативный чекбокс скрыт */
+.ds-slide-toggle__input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/* трек */
+.ds-slide-toggle__track {
+  position: relative;
+  flex-shrink: 0;
+  width: 34px;
+  height: 20px;
+  border-radius: var(--ds-radius-3x);                         /* 12px */
+  background: var(--ds-color-slide-toggle-deselected-default-background); /* #9E9E9E */
+  transition: background-color .15s ease;
+}
+
+/* кнопка-кружок */
+.ds-slide-toggle__track::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--ds-radius-circular);                   /* 9999px */
+  background: var(--ds-color-slide-toggle-knob-color);        /* #FFFFFF */
+  transition: transform .15s ease;
+}
+
+.ds-slide-toggle__row:hover .ds-slide-toggle__track {
+  background: var(--ds-color-slide-toggle-deselected-hover-background);   /* #757575 */
+}
+
+/* включён */
+.ds-slide-toggle__input:checked + .ds-slide-toggle__track {
+  background: var(--ds-color-slide-toggle-selected-default-background);   /* #448AFF */
+}
+.ds-slide-toggle__input:checked + .ds-slide-toggle__track::after {
+  transform: translateX(14px);
+}
+.ds-slide-toggle__row:hover .ds-slide-toggle__input:checked + .ds-slide-toggle__track {
+  background: var(--ds-color-slide-toggle-selected-hover-background);     /* #3969D5 */
+}
+
+/* disabled */
+.ds-slide-toggle__input:disabled + .ds-slide-toggle__track {
+  background: var(--ds-color-slide-toggle-deselected-disable-background); /* #E0E0E0 */
+}
+.ds-slide-toggle__input:checked:disabled + .ds-slide-toggle__track {
+  background: var(--ds-color-slide-toggle-selected-disable-background);
+}
+.ds-slide-toggle--disabled { pointer-events: none; }
+.ds-slide-toggle--disabled .ds-slide-toggle__title {
+  color: var(--ds-color-slide-toggle-deselected-disable-text-color);      /* #9E9E9E */
+}
+
+/* тексты */
+.ds-slide-toggle__title {
+  color: var(--ds-color-slide-toggle-text-color);             /* #333333 */
+  font-size: var(--ds-typography-body-font-size-s);           /* 14px */
+  font-weight: var(--ds-typography-font-weight-regular);      /* 400 */
+  line-height: var(--ds-typography-body-line-height-s);       /* 20px */
+  letter-spacing: var(--ds-typography-letter-spacing-s);
+}
+
+.ds-slide-toggle__support {
+  color: var(--ds-color-slide-toggle-text-support-color);      /* #616161 */
+  font-size: var(--ds-typography-caption-font-size-l);         /* 12px */
+  line-height: var(--ds-typography-caption-line-height-l);     /* 16px */
+  letter-spacing: var(--ds-typography-letter-spacing-s);
+  padding-left: 42px;                                          /* под текст: трек 34 + gap 8 */
+}
+.ds-slide-toggle--error .ds-slide-toggle__support {
+  color: var(--ds-color-slide-toggle-text-error-color);        /* #FF5252 */
+}
+
+/* иконка-подсказка в строке */
+.ds-slide-toggle__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--ds-color-icon-primary);                         /* #616161 */
+}
+.ds-slide-toggle__icon svg { width: 20px; height: 20px; display: block; }
+.ds-slide-toggle__icon svg path { fill: currentColor; }

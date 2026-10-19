@@ -1,0 +1,75 @@
+.ds-sidenav-header {
+  display: flex;
+  align-items: center;
+  width: 200px;
+  padding: var(--ds-sidenav-header-pad-top, 12px) var(--ds-sidenav-header-l1-expanded-pad-right, 16px) var(--ds-sidenav-header-pad-bottom, 12px) var(--ds-sidenav-header-l1-expanded-pad-left, 16px);
+  gap: var(--ds-sidenav-header-l1-expanded-gap, 92px);
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-sidenav-header__label {
+  font-size: var(--ds-font-body-m-16-normal-medium-size);
+  line-height: var(--ds-font-body-m-16-normal-medium-line);
+  letter-spacing: var(--ds-font-body-m-16-normal-medium-spacing);
+  font-weight: var(--ds-font-body-m-16-normal-medium-weight);
+  color: var(--ds-color-sidenav-header-l2-text-color, #333333);
+  white-space: nowrap;
+}
+.ds-sidenav-header__icon {
+  flex-shrink: 0;
+  width: var(--ds-size-5x);
+  height: var(--ds-size-5x);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ds-sidenav-header__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ds-sidenav-header__icon svg path {
+  fill: currentColor;
+}
+.ds-sidenav-header__logo-iiko {
+  height: var(--ds-size-6x);
+  display: flex;
+  flex-direction: row;
+}
+.ds-sidenav-header__vector {
+  height: 14.7px;
+  display: flex;
+  flex-direction: row;
+  background: var(--ds-color-sidenav-header-l1-expanded-logo, #ffffff);
+}
+.ds-sidenav-header__icon-size {
+  height: var(--ds-size-5x);
+  display: flex;
+  flex-direction: row;
+}
+.ds-sidenav-header__close {
+  height: var(--ds-size-5x);
+  display: flex;
+  flex-direction: row;
+  background: #ffffff;
+}
+.ds-sidenav-header--l1.ds-sidenav-header--expanded {
+  flex-direction: row;
+  background: var(--ds-color-sidenav-header-l1-background, #263136);
+}
+.ds-sidenav-header--l2.ds-sidenav-header--expanded {
+  height: 48px;
+  width: 260px;
+  flex-direction: row;
+  gap: var(--ds-sidenav-header-l2-gap, 8px);
+  padding: var(--ds-sidenav-header-pad-top, 12px) var(--ds-sidenav-header-l2-pad-right, 16px) var(--ds-sidenav-header-pad-bottom, 12px) var(--ds-sidenav-header-l2-pad-left, 16px);
+  background: var(--ds-color-sidenav-header-l2-background, #ffffff);
+  color: var(--ds-color-sidenav-header-l2-text-color, #333333);
+}
+.ds-sidenav-header--l1.ds-sidenav-header--collapsed {
+  width: 52px;
+  flex-direction: column;
+  padding: var(--ds-sidenav-header-pad-top, 12px) var(--ds-sidenav-header-l1-collapsed-pad-right, 14px) var(--ds-sidenav-header-pad-bottom, 12px) var(--ds-sidenav-header-l1-collapsed-pad-left, 14px);
+  background: var(--ds-color-sidenav-header-l1-background, #263136);
+}
+

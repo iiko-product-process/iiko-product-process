@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Стенд проверки прототипа (скопировать в %TEMP% и заменить PROTOTYPE)</title>
+<!--
+  СТЕНД ДЛЯ ПРОВЕРКИ ПРОТОТИПА БЕЗ ПРАВОК В НЁМ.
+
+  Зачем: прототипы-демо живут в репозитории и открываются по file://. Проверять их надо
+  нажатиями и замерами, но Chrome не даёт управлять страницей из другого файла без флага,
+  а просить владельца разрешить remote debugging — лишний шаг. Этот стенд живёт В %TEMP%
+  (в репозиторий его не класть) и еслирамится на прототип.
+
+  КАК ЗАПУСКАТЬ (bash/MSYS, свежий --user-data-dir на каждый прогон, иначе кэш):
+
+    CHROME="/c/Program Files/Google/Chrome/Application/chrome.exe"
+    # скриншот сцены (отдельным запуском от --dump-dom!)
+    "$CHROME" --headless=new --disable-gpu --hide-scrollbars --allow-file-access-from-files \
+      --window-size=1400,900 --virtual-time-budget=5000 \
+      --user-data-dir="$LOCALAPPDATA/Temp/chrome-h1" \
+      --screenshot="$LOCALAPPDATA/Temp/shots/n2.png" \
+      "file:///$(echo $LOCALAPPDATA | sed 's#\\\\#/#g')/Temp/kds-demo-harness.html?do=warm:cold"
+
+    # числа (--dump-dom в файл, потом Python-регуляркой по <pre id="out">)
+    "$CHROME" --headless=new --disable-gpu --allow-file-access-from-files \
+      --virtual-time-budget=8000 --window-size=1500,1200 \
+      --user-data-dir="$LOCALAPPDATA/Temp/chrome-h2" --dump-dom \
+      "file:///…/kds-demo-harness.html?dump=1&do=warm:cold,warm:hot" > out.html
+
+  ПАРАМЕТРЫ АДРЕСА
+    ?mode=<id>            клик по [data-mode="<id>"] (переключатель вида экрана)
+    ?do=<dish>:<shop>,…   клик по [data-shop="<shop>"] [data-press="<dish>"] — бамп от имени цеха
+    ?again=<shop>         клик по телу панели этого цеха (проверка «повторный нажим не засчитан»)
+    ?reset                клик по [data-reset]
+    ?dump=1               собрать JSON с состоянием и высотами в <pre id="out"> (для --dump-dom)
+    ?h=<px>               жёсткая высота iframe (по умолчанию — по высоте прототипа, см. питфол ниже)
+
+  ⛔ ПИТФОЛ: ВЫСОТА IFRAME ИДЕТ ЗА ПРОТОТИПОМ — ИНАЧЕ НИЖНИЕ БЛОКИ СНИМАЮТСЯ ПУСТЫМИ.
+  Обёртка с фиксированным `height` (1000, 2600 px) при выросшей странице (3576 px после добавления
+  третьего варианта) дала **пустой кадр вместо блока** и это легко принять за «вариант не отрисовался»:
+  я потерял на этом ход и полез проверять целую логику. Замеры идут с `?dump=1`; перед серией
+  скриншотов либо ставить `?h`, либо снимать сам прототип, а не обёртку.
+
+  ЧТО ПРОВЕРЯТЬ ЭТИМ СТЕНДОМ (минимальный набор для демо с нажатиями)
+    1. нажал один — у него «взято», у второго пусто (состояние не общее, а по роли);
+    2. нажал повторно — ничего не изменилось (счётчик не растёт);
+    3. нажали оба — статус у обоих стал конечным;
+    4. сброс возвращает в начало;
+    5. ВЫСОТЫ строк одинаковы во всех состояниях — иначе список «дёргается» (замер, а не глаза).
+-->
+<style>
+  html,body{margin:0;background:#f4f5f7;font-family:'Roboto','Segoe UI',Arial,sans-serif}
+  iframe{width:1400px;height:900px;border:0;display:block;background:#fff}
+  pre{position:absolute;left:-99999px;top:0}
+</style>
+</head>
+<body>
+<iframe id="f"></iframe>
+<pre id="out">pending</pre>
+<script>
+/* ── настройки под конкретный прототип ─────────────────────────────────── */
+var PROTOTYPE = 'file:///C:/Users/asukharev/GitHub/DS/iiko-ds-prototypes/KDS/multi-shop.html';
+/* селекторы для дампа: что мерить и что показывать */
+var PANEL   = '.panel';                 /* панель-экран одной роли/цеха (у прототипа [data-shop]) */
+var UNITS   = '[data-press-row],[data-press-card]';  /* единица списка: строка блюда / карточка блюда */
+var STATUS  = '.kds-status, .dish__btn';             /* кнопка со статусом (заголовок состояния) */
+/* ──────────────────────────────────────────────────────────────────────── */
+
+function param(n){
+  var m=new RegExp('[?&]'+n+'=([^&]*)').exec(location.search);
+  return m?decodeURIComponent(m[1]):'';
+}
+function has(n){ return new RegExp('[?&]'+n+'(=|&|$)').test(location.search); }
+function click(el, w){
+  var b=el.getBoundingClientRect();
+  el.dispatchEvent(new w.MouseEvent('click', {bubbles:true, cancelable:true,
+    clientX:b.left+b.width/2, clientY:b.top+b.height/2}));
+}
+
+/* снять состояние: по каждой панели — статус, состав единиц, их высота, счётчик */
+function dumpScene(d){
+  var log=[];
+  var panels=[].slice.call(d.querySelectorAll(PANEL));
+  panels.forEach(function(p){
+    var st=p.querySelector(STATUS);
+    var head=(p.dataset && p.dataset.shop ? p.dataset.shop : '?')+'['+(st?st.innerText.replace(/\n/g,' ').trim():'-')+']';
+    var units=[].slice.call(p.querySelectorAll(UNITS)).map(function(u){
+      var name=u.querySelector('.kds-row__name,.dish__name');
+      var cnt=u.querySelector('.ms-count');
+      var r=u.getBoundingClientRect();
+      return (name?name.innerText:'?')+'|'+(cnt?cnt.innerText.replace(/\n/g,'').trim():'-')
+        +'|h'+Math.round(r.height)+'|'+u.className;
+    });
+    log.push(head+' :: '+units.join(' ;; '));
+  });
+  return log.join('\n');
+}
+
+window.addEventListener('load', function(){
+  var f=document.getElementById('f');
+  f.src=PROTOTYPE;
+  f.addEventListener('load', function(){
+    setTimeout(function(){                 /* прототип рисует себя своим paint() */
+      var d=f.contentDocument, w=f.contentWindow, res=[];
+      try{
+        /* высота iframe = высота прототипа: иначе нижние блоки снимаются пустыми (см. питфол в шапке);
+           перебить вручную можно через ?h=3800 */
+        f.style.height=(param('h')||(d.documentElement.scrollHeight+40))+'px';
+        var mode=param('mode');
+        if(mode){ var m=d.querySelector('[data-mode="'+mode+'"]'); if(m) click(m,w); }
+
+        param('do').split(',').filter(Boolean).forEach(function(item){
+          var p=item.split(':'), dish=p[0], shop=p[1];
+          var el=d.querySelector('[data-shop="'+shop+'"] [data-press="'+dish+'"]');
+          if(el) click(el,w); else res.push('! нет кнопки: '+dish+' / '+shop);
+        });
+
+        if(param('again')){
+          var pn=d.querySelector(PANEL+'[data-shop="'+param('again')+'"]');
+          if(pn) click(pn,w); else res.push('! нет панели: '+param('again'));
+        }
+        if(has('reset')){ var r=d.querySelector('[data-reset]'); if(r) click(r,w); }
+
+        if(has('dump')){
+          res.push(dumpScene(d));
+          document.getElementById('out').textContent=res.join('\n');
+        }
+      }catch(e){
+        document.getElementById('out').textContent='ERROR '+e.message;
+      }
+      document.title='ready';             /* признаки готовности для внешнего ожидания */
+      document.body.setAttribute('data-ready','1');
+    }, 900);
+  });
+});
+</script>
+</body>
+</html>

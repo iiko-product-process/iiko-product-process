@@ -1,0 +1,89 @@
+/* ============================================================
+   iiko DS — Card view (Filled / Outlined / Shadow)
+   Источник: Figma, страница «🟡Card_DS», COMPONENT_SET «Card view»
+   Обновлено: Card header / Card content (SLOT) / Card footer
+   Размер: 501×248 · header 108 · content 88 · footer 52
+   Разметка — ровно по свежему дереву Figma.
+   ============================================================ */
+
+.ds-card {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  border-radius: var(--ds-radius-2x);                 /* 8px */
+  background: var(--ds-color-surface-default);        /* #FFFFFF */
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Type=Filled — без рамки и тени */
+.ds-card--filled { }
+
+/* Type=Outlined — рамка 1px #E0E0E0 */
+.ds-card--outlined {
+  border: 1px solid var(--ds-color-stroke-default);   /* #E0E0E0 */
+}
+
+/* Type=Shadow — эффект-стиль ДС «Shadows/01 dp Sl» (Card/Shadows) */
+.ds-card--shadow {
+  box-shadow: var(--ds-shadow-shadows-01-dp-sl);
+}
+
+/* Type=Custom — карточка только с контентом (SLOT, 500×88, pad 16) */
+.ds-card--custom {
+  padding: 16px;
+}
+
+/* ── Card header (16px сверху/по бокам, gap 8) ────────────────
+   РЕАЛЬНОЕ значение паддинга = 16px (токен Space/6x устарел=24, не берём). */
+
+.ds-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-2x);                            /* 8px */
+  padding: 16px 16px 4px;                            /* сверху/бока 16, низ 4 (текущее дерево) */
+}
+
+.ds-card__label-up,
+.ds-card__label-down {
+  color: var(--ds-color-text-secondary);              /* #616161 */
+  font-size: var(--ds-typography-body-font-size-m);   /* 16px (Body M) */
+  font-weight: var(--ds-typography-font-weight-regular); /* 400 */
+  line-height: var(--ds-typography-body-line-height-m); /* 24px */
+  letter-spacing: var(--ds-typography-letter-spacing-none);
+}
+
+.ds-card__title {
+  margin: 0;
+  color: var(--ds-color-text-primary);                /* #333333 */
+  font-size: var(--ds-typography-header-font-size-s); /* 20px */
+  font-weight: var(--ds-typography-font-weight-medium);
+  line-height: var(--ds-typography-header-line-height-s); /* 28px */
+  letter-spacing: var(--ds-typography-letter-spacing-none);
+}
+
+/* ── Card content (SLOT, паддинг 16/16/16) ─────────────────── */
+
+.ds-card__content {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;                                      /* 16/16/16 (было 8/24) */
+}
+
+/* ── Card footer — Divider + Action (Action pad 16 по бокам/снизу) ── */
+
+.ds-card__footer {
+  display: flex;
+  flex-direction: column;
+}
+.ds-card__divider {
+  height: 1px;
+  background: var(--ds-color-stroke-default);         /* #E0E0E0 */
+  border: none;
+}
+.ds-card__footer__action {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2x);                            /* 8px */
+  padding: 4px 16px 16px;                             /* сверху 4, бока/низ 16 */
+}
+.ds-card__footer--right .ds-card__footer__action { justify-content: flex-end; }

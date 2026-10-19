@@ -1,0 +1,193 @@
+/* selection: checkbox/radio */
+/* ============================================================
+   iiko DS — Checkbox (чекбокс) и Radio button (радиокнопка)
+   Источник: Figma, страницы «🔵Готово 🧾 → Checkbox / Radio button»
+   Варианты: Normal / Error / Disable · Selected / Deselected / Indeterminate
+   Иконки — Material Icons 20px, цвета из токенов
+   ============================================================ */
+
+.ds-checkbox,
+.ds-radio {
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-space-2x);              /* 8px */
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  cursor: pointer;
+  user-select: none;
+
+}
+
+/* скрываем нативный контрол, рисуем иконку */
+.ds-checkbox__input,
+.ds-radio__input {
+
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+
+}
+
+.ds-checkbox__box,
+.ds-radio__box {
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--ds-color-icon-primary);            /* #616161 — deselected */
+  transition: color 0.15s ease;
+
+}
+
+.ds-checkbox__label,
+.ds-radio__label {
+
+  font-size: var(--ds-typography-font-size-3-5x); /* 14px */
+  font-weight: var(--ds-typography-font-weight-regular);
+  letter-spacing: 0.25px;
+  line-height: 20px;
+  color: var(--ds-color-text-primary);            /* #333333 */
+
+}
+
+.ds-radio__label {
+ color: var(--ds-color-radio-button-label-text-color); 
+}
+
+/* ── Radio: выбран / не выбран ───────────────────────────── */
+
+.ds-radio__box {
+ color: var(--ds-color-radio-button-normal-deselected-icon-color); 
+}
+
+/* #616161 */
+.ds-radio__input:checked + .ds-radio__box {
+
+  color: var(--ds-color-radio-button-normal-selected-icon-color);             /* #448AFF */
+
+}
+
+.ds-radio--error .ds-radio__box,
+.ds-radio--error .ds-radio__input:checked + .ds-radio__box {
+
+  color: var(--ds-color-radio-button-error-icon-color);       /* #FF5252 */
+
+}
+
+.ds-checkbox--error .ds-checkbox__label,
+.ds-radio--error .ds-radio__label {
+
+  color: var(--ds-color-text-primary);  /* в Figma текст лейбла Error = #333333 (Text/Primary) */
+
+}
+
+/* ── Disabled ────────────────────────────────────────────── */
+
+.ds-checkbox--disabled,
+.ds-radio--disabled {
+
+  cursor: not-allowed;
+
+}
+
+.ds-radio--disabled .ds-radio__box,
+.ds-radio--disabled .ds-radio__input:checked + .ds-radio__box {
+
+  color: var(--ds-color-radio-button-disable-deselected-icon-color);          /* #9E9E9E */
+
+}
+
+.ds-radio--disabled .ds-radio__label {
+
+  color: var(--ds-color-radio-button-label-text-disable-color);               /* #9E9E9E */
+
+}
+
+/* ── Группа контролов (Checkbox group / Radio button group) ─ */
+
+.ds-checkbox-group,
+.ds-radio-group {
+
+  display: flex;
+
+}
+
+.ds-checkbox-group--vertical,
+.ds-radio-group--vertical {
+ flex-direction: column; gap: var(--ds-space-2x); 
+}
+
+/* 8px */
+.ds-checkbox-group--horizontal,
+.ds-radio-group--horizontal {
+ flex-direction: row; gap: var(--ds-space-8x); 
+}
+
+/* 32px */
+
+/* ── Подпись под контролом (Support/Error text) ──────────── */
+
+.ds-checkbox__support,
+.ds-radio__support {
+
+  display: block;
+  margin-top: var(--ds-space-1x);                 /* 4px */
+  margin-left: 28px;                              /* выравнивание по тексту (Pad left support 7x) */
+  font-size: var(--ds-typography-font-size-3x);   /* 12px (Text support size) */
+  line-height: 16px;
+
+}
+
+/* #616161 */
+.ds-radio__support {
+ color: var(--ds-color-radio-button-label-text-support-color); 
+}
+
+/* #616161 */
+.ds-checkbox--error ~ .ds-checkbox__support,
+.ds-radio--error .ds-radio__support {
+
+  color: var(--ds-color-text-negative);           /* #FF5252 */
+
+}
+
+/* ── Подложка состояния (State 28×28) — hover/press в Figma ──
+   Внутри .ds-radio__box: круг под иконкой 20px. Используется
+   в превью «Интерактивного компонента» и матрице вариантов. */
+
+.ds-radio__box {
+
+  position: relative;
+
+}
+
+.ds-radio__box svg {
+
+  position: relative;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+  display: block;
+
+}
+
+.ds-radio__state {
+
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 28px;
+  height: 28px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+
+}

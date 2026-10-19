@@ -1,0 +1,33 @@
+/* ============================================================
+   iiko DS Mobile — Tabs (табы)
+   ------------------------------------------------------------
+   Что меняется
+   ------------
+   1. Высота таба: 32 px -> 48 px (второй уровень 28 -> 48). Это и
+      платформенное значение, и тач-цель: MD3 primary/secondary tab 48 dp
+      (64 dp с иконкой в строку), Angular Material 48 px при density 0.
+   2. Полоса индикатора остаётся 2 px: у Angular Material 2, у MD3 secondary 2
+      (3 — только у primary).
+   3. При переполнении табы прокручиваются по горизонтали (MD3: число табов
+      не ограничено, они скроллятся; Angular: пагинация стрелками). На мобиле
+      выбираем прокрутку, стрелки прокрутки ДС остаются для десктопа.
+
+   Источники: рекомендации платформ.
+   Подключение: components-mobile/components/index.css
+   ============================================================ */
+
+[data-mode="mobile"] .ds-tab,
+[data-mode="mobile"] .ds-tabs--lvl2 .ds-tab {
+  height: 48px;
+}
+
+[data-mode="mobile"] .ds-tabs {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+[data-mode="mobile"] .ds-tabs::-webkit-scrollbar {
+  height: 0;
+}

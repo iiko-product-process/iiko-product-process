@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Button — демо стенд компонента</title>
+<!--
+  Демо стенд компонента Button (семейство). Папка: DS/components-web/components/Button_DS/.
+  Источник — канва «Button_DS» (16288-6685) Figma «Iiko Web DS (New)»:
+  1) Basic example — живые кнопки (hover/press/focus работают);
+  2) Button — набор «Button» (17022-63091): Size M/S/XS × Style Neutral/Accent/Positive/Warning/Negative/Disable
+     × Type Filled/Outlined/Text × State Default/Hover/Press (у Disable — Disable/Loading);
+  3) Button group — набор «Button group» (53619-15772): Orientation=Horizontally/Vertically × Margins=Off/On.
+  Состав вариантов (по узлам Figma): слоты Element left + Element right включены у всех вариантов —
+  иконка «add» (плюс) слева и справа, лейбл «Button» (Body S 14/20 Medium, у XS — Caption L 12/16);
+  иконки — точные svg-пути из Figma (20px — узлы Size=20, 16px — Size=16).
+  Размеры: M 36 (пад 8/12, gap 8), S 28 (пад 4/8, gap 4, иконка 20), XS 24 (пад 4/6, gap 4, иконка 16).
+  Замороженные состояния — стендовыми классами st-hover/st-press (в ДС :hover/:active; значения — токены).
+  Disable/Loading — реальные классы ДС (button disabled) + спиннер по макету (в css ДС состояния Loading нет — №40;
+  спиннер собран из svg Figma: кольцо #E0E0E0 + дуга #448AFF, 24/20/16 по размеру, вращение).
+  Пробелы выгрузки обойдены в ../../fixes.css п. 17: тень «Shadows/01 dp Sl» у Filled-вариантов (в css и токенах нет —
+  класс №69) и цвет иконок нейтральной серии (#616161 при тексте #333). Журнал DS/fixes.md №93.
+-->
+<link rel="stylesheet" href="../../font.css">
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../index.css">
+<link rel="stylesheet" href="../../fixes.css">
+<style>
+  /* каркас демо-стенда — как у других стендов */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .view { padding: 24px; }
+  .view .ds-tabs { margin-bottom: 24px; }
+  .panel { width: fit-content; max-width: 1920px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  .snap-cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0; }
+  .snap-note { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 28px 0 0; max-width: 760px; }
+
+  /* секции размеров и матрица набора (колонки: подпись типа + состояния) */
+  .snap-sect { margin: 0 0 40px; }
+  .snap-sect:last-child { margin-bottom: 0; }
+  .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
+  .snap-grid { display: grid; grid-template-columns: max-content max-content max-content max-content; column-gap: 24px; row-gap: 12px; align-items: center; justify-items: start; }
+  .snap-style { grid-column: 1 / -1; margin-top: 16px; font-size: 12px; line-height: 16px; font-weight: 500; color: var(--ds-color-text-primary, #333); }
+
+  /* живые кнопки (Basic example) */
+  .snap-live-row { display: flex; gap: 16px; align-items: center; }
+  .snap-live-hint { margin: 0 0 16px; }
+
+  /* Button group: 4 варианта (2×2) */
+  .snap-groups { display: grid; grid-template-columns: max-content max-content; column-gap: 64px; row-gap: 40px; align-items: start; justify-items: start; }
+  .snap-groups .snap-cap { margin: 0 0 12px; }
+  .snap-groups .ds-btn-group { width: fit-content; }   /* группа — по ширине кнопок, как в Figma (вертикальная иначе растянется от подписи) */
+
+  /* замороженные состояния (в ДС :hover/:active; значения — токены) */
+  .st-hover .ds-btn--accent.ds-btn--filled { background: var(--ds-color-button-accent-hover); }
+  .st-hover .ds-btn--accent.ds-btn--outlined,
+  .st-hover .ds-btn--accent.ds-btn--text { background: var(--ds-color-button-accent-lite-hover); }
+  .st-press .ds-btn--accent.ds-btn--filled { background: var(--ds-color-button-accent-press); }
+  .st-press .ds-btn--accent.ds-btn--outlined,
+  .st-press .ds-btn--accent.ds-btn--text { background: var(--ds-color-button-accent-lite-press); }
+
+  .st-hover .ds-btn--neutral.ds-btn--filled,
+  .st-hover .ds-btn--neutral.ds-btn--outlined,
+  .st-hover .ds-btn--neutral.ds-btn--text { background: var(--ds-color-button-neutral-hover); }
+  .st-press .ds-btn--neutral.ds-btn--filled,
+  .st-press .ds-btn--neutral.ds-btn--outlined,
+  .st-press .ds-btn--neutral.ds-btn--text { background: var(--ds-color-button-neutral-press); }
+
+  .st-hover .ds-btn--positive.ds-btn--filled { background: var(--ds-color-button-positive-hover); }
+  .st-hover .ds-btn--positive.ds-btn--outlined,
+  .st-hover .ds-btn--positive.ds-btn--text { background: var(--ds-color-button-positive-lite-hover); }
+  .st-press .ds-btn--positive.ds-btn--filled { background: var(--ds-color-button-positive-press); }
+  .st-press .ds-btn--positive.ds-btn--outlined,
+  .st-press .ds-btn--positive.ds-btn--text { background: var(--ds-color-button-positive-lite-press); }
+
+  .st-hover .ds-btn--warning.ds-btn--filled { background: var(--ds-color-button-warning-hover); }
+  .st-hover .ds-btn--warning.ds-btn--outlined,
+  .st-hover .ds-btn--warning.ds-btn--text { background: var(--ds-color-button-warning-lite-hover); }
+  .st-press .ds-btn--warning.ds-btn--filled { background: var(--ds-color-button-warning-press); }
+  .st-press .ds-btn--warning.ds-btn--outlined,
+  .st-press .ds-btn--warning.ds-btn--text { background: var(--ds-color-button-warning-lite-press); }
+
+  .st-hover .ds-btn--negative.ds-btn--filled { background: var(--ds-color-button-negative-hover); }
+  .st-hover .ds-btn--negative.ds-btn--outlined,
+  .st-hover .ds-btn--negative.ds-btn--text { background: var(--ds-color-button-negative-lite-hover); }
+  .st-press .ds-btn--negative.ds-btn--filled { background: var(--ds-color-button-negative-press); }
+  .st-press .ds-btn--negative.ds-btn--outlined,
+  .st-press .ds-btn--negative.ds-btn--text { background: var(--ds-color-button-negative-lite-press); }
+
+  /* Loading: спиннер по макету (svg-пути Figma), по центру кнопки; 24/20/16 по размеру */
+  .snap-spin-box { position: relative; display: inline-flex; }
+  .snap-spinner { position: absolute; inset: 0; margin: auto; animation: snap-spin .9s linear infinite; }
+  .snap-spin-box--m .snap-spinner { width: 24px; height: 24px; }
+  .snap-spin-box--s .snap-spinner { width: 20px; height: 20px; }
+  .snap-spin-box--xs .snap-spinner { width: 16px; height: 16px; }
+  @keyframes snap-spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Button — демо стенд</span>
+  <span>наборы Figma: Button (17022-63091) · Button group (53619-15772)</span>
+</div>
+<div class="view">
+  <div class="ds-tabs" role="tablist" aria-label="Button">
+    <button class="ds-tab ds-tab--active" role="tab" aria-selected="true" data-vtab="basic">Basic example</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="button">Button</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="group">Button group</button>
+  </div>
+
+  <!-- 1. Basic example: кнопки живые — наведение, нажатие, фокус -->
+  <div class="panel" data-vpanel="basic" role="tabpanel">
+    <p class="snap-cap snap-live-hint">Basic example: живые кнопки — наведите, нажмите, проверьте фокус с клавиатуры (Tab)</p>
+    <div class="snap-live-row">
+      <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+      <button type="button" class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+      <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+      <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+    </div>
+  </div>
+
+  <!-- 2. Button: набор 17022-63091 (M, S, XS) — колонки Default/Hover/Press, у Disable — Disable/Loading -->
+  <div class="panel" data-vpanel="button" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Size=M (36 px)</div>
+      <div class="snap-grid">
+        <span class="snap-cap"></span><span class="snap-cap">Default</span><span class="snap-cap">Hover</span><span class="snap-cap">Press</span>
+        <div class="snap-style">Neutral</div>
+        <span class="snap-cap">Filled</span>
+        <span class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="snap-cap">Outlined</span>
+        <span class="ds-btn ds-btn--m ds-btn--neutral ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--m ds-btn--neutral ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--m ds-btn--neutral ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="snap-cap">Text</span>
+        <span class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <div class="snap-style">Accent</div>
+        <span class="snap-cap">Filled</span>
+        <span class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="snap-cap">Outlined</span>
+        <span class="ds-btn ds-btn--m ds-btn--accent ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--m ds-btn--accent ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--m ds-btn--accent ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="snap-cap">Text</span>
+        <span class="ds-btn ds-btn--m ds-btn--accent ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--m ds-btn--accent ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--m ds-btn--accent ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <div class="snap-style">Positive</div>
+        <span class="snap-cap">Filled</span>
+        <span class="ds-btn ds-btn--m ds-btn--positive ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--m ds-btn--positive ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--m ds-btn--positive ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="snap-cap">Outlined</span>
+        <span class="ds-btn ds-btn--m ds-btn--positive ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--m ds-btn--positive ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--m ds-btn--positive ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="snap-cap">Text</span>
+        <span class="ds-btn ds-btn--m ds-btn--positive ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--m ds-btn--positive ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--m ds-btn--positive ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <div class="snap-style">Warning</div>
+        <span class="snap-cap">Filled</span>
+        <span class="ds-btn ds-btn--m ds-btn--warning ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--m ds-btn--warning ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--m ds-btn--warning ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="snap-cap">Outlined</span>
+        <span class="ds-btn ds-btn--m ds-btn--warning ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--m ds-btn--warning ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--m ds-btn--warning ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="snap-cap">Text</span>
+        <span class="ds-btn ds-btn--m ds-btn--warning ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--m ds-btn--warning ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--m ds-btn--warning ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <div class="snap-style">Negative</div>
+        <span class="snap-cap">Filled</span>
+        <span class="ds-btn ds-btn--m ds-btn--negative ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--m ds-btn--negative ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--m ds-btn--negative ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="snap-cap">Outlined</span>
+        <span class="ds-btn ds-btn--m ds-btn--negative ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--m ds-btn--negative ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--m ds-btn--negative ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="snap-cap">Text</span>
+        <span class="ds-btn ds-btn--m ds-btn--negative ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--m ds-btn--negative ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--m ds-btn--negative ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <div class="snap-style">Disable</div>
+        <span class="snap-cap"></span><span class="snap-cap">Disable</span><span class="snap-cap">Loading</span><span class="snap-cap"></span>
+        <span class="snap-cap">Filled</span>
+        <button type="button" class="ds-btn ds-btn--m ds-btn--filled" disabled><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+        <span class="snap-spin-box snap-spin-box--m"><button type="button" class="ds-btn ds-btn--m ds-btn--filled" disabled><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button><svg class="snap-spinner" aria-hidden="true"><use href="#ic-spinner"/></svg></span>
+        <span></span>
+        <span class="snap-cap">Outlined</span>
+        <button type="button" class="ds-btn ds-btn--m ds-btn--outlined" disabled><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+        <span class="snap-spin-box snap-spin-box--m"><button type="button" class="ds-btn ds-btn--m ds-btn--outlined" disabled><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button><svg class="snap-spinner" aria-hidden="true"><use href="#ic-spinner"/></svg></span>
+        <span></span>
+        <span class="snap-cap">Text</span>
+        <button type="button" class="ds-btn ds-btn--m ds-btn--text" disabled><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+        <span class="snap-spin-box snap-spin-box--m"><button type="button" class="ds-btn ds-btn--m ds-btn--text" disabled><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button><svg class="snap-spinner" aria-hidden="true"><use href="#ic-spinner"/></svg></span>
+        <span></span>
+      </div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Size=S (28 px)</div>
+      <div class="snap-grid">
+        <span class="snap-cap"></span><span class="snap-cap">Default</span><span class="snap-cap">Hover</span><span class="snap-cap">Press</span>
+        <div class="snap-style">Neutral</div>
+        <span class="snap-cap">Filled</span>
+        <span class="ds-btn ds-btn--s ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--s ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--s ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="snap-cap">Outlined</span>
+        <span class="ds-btn ds-btn--s ds-btn--neutral ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--s ds-btn--neutral ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--s ds-btn--neutral ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="snap-cap">Text</span>
+        <span class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <div class="snap-style">Accent</div>
+        <span class="snap-cap">Filled</span>
+        <span class="ds-btn ds-btn--s ds-btn--accent ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--s ds-btn--accent ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--s ds-btn--accent ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="snap-cap">Outlined</span>
+        <span class="ds-btn ds-btn--s ds-btn--accent ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--s ds-btn--accent ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--s ds-btn--accent ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="snap-cap">Text</span>
+        <span class="ds-btn ds-btn--s ds-btn--accent ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--s ds-btn--accent ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--s ds-btn--accent ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <div class="snap-style">Positive</div>
+        <span class="snap-cap">Filled</span>
+        <span class="ds-btn ds-btn--s ds-btn--positive ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--s ds-btn--positive ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--s ds-btn--positive ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="snap-cap">Outlined</span>
+        <span class="ds-btn ds-btn--s ds-btn--positive ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--s ds-btn--positive ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--s ds-btn--positive ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="snap-cap">Text</span>
+        <span class="ds-btn ds-btn--s ds-btn--positive ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--s ds-btn--positive ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--s ds-btn--positive ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <div class="snap-style">Warning</div>
+        <span class="snap-cap">Filled</span>
+        <span class="ds-btn ds-btn--s ds-btn--warning ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--s ds-btn--warning ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--s ds-btn--warning ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="snap-cap">Outlined</span>
+        <span class="ds-btn ds-btn--s ds-btn--warning ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--s ds-btn--warning ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--s ds-btn--warning ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="snap-cap">Text</span>
+        <span class="ds-btn ds-btn--s ds-btn--warning ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--s ds-btn--warning ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--s ds-btn--warning ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <div class="snap-style">Negative</div>
+        <span class="snap-cap">Filled</span>
+        <span class="ds-btn ds-btn--s ds-btn--negative ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--s ds-btn--negative ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--s ds-btn--negative ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="snap-cap">Outlined</span>
+        <span class="ds-btn ds-btn--s ds-btn--negative ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--s ds-btn--negative ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--s ds-btn--negative ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="snap-cap">Text</span>
+        <span class="ds-btn ds-btn--s ds-btn--negative ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--s ds-btn--negative ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--s ds-btn--negative ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></span></span>
+        <div class="snap-style">Disable</div>
+        <span class="snap-cap"></span><span class="snap-cap">Disable</span><span class="snap-cap">Loading</span><span class="snap-cap"></span>
+        <span class="snap-cap">Filled</span>
+        <button type="button" class="ds-btn ds-btn--s ds-btn--filled" disabled><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+        <span class="snap-spin-box snap-spin-box--s"><button type="button" class="ds-btn ds-btn--s ds-btn--filled" disabled><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button><svg class="snap-spinner" aria-hidden="true"><use href="#ic-spinner"/></svg></span>
+        <span></span>
+        <span class="snap-cap">Outlined</span>
+        <button type="button" class="ds-btn ds-btn--s ds-btn--outlined" disabled><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+        <span class="snap-spin-box snap-spin-box--s"><button type="button" class="ds-btn ds-btn--s ds-btn--outlined" disabled><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button><svg class="snap-spinner" aria-hidden="true"><use href="#ic-spinner"/></svg></span>
+        <span></span>
+        <span class="snap-cap">Text</span>
+        <button type="button" class="ds-btn ds-btn--s ds-btn--text" disabled><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+        <span class="snap-spin-box snap-spin-box--s"><button type="button" class="ds-btn ds-btn--s ds-btn--text" disabled><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button><svg class="snap-spinner" aria-hidden="true"><use href="#ic-spinner"/></svg></span>
+        <span></span>
+      </div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Size=XS (24 px)</div>
+      <div class="snap-grid">
+        <span class="snap-cap"></span><span class="snap-cap">Default</span><span class="snap-cap">Hover</span><span class="snap-cap">Press</span>
+        <div class="snap-style">Neutral</div>
+        <span class="snap-cap">Filled</span>
+        <span class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="snap-cap">Outlined</span>
+        <span class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="snap-cap">Text</span>
+        <span class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <div class="snap-style">Accent</div>
+        <span class="snap-cap">Filled</span>
+        <span class="ds-btn ds-btn--xs ds-btn--accent ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--xs ds-btn--accent ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--xs ds-btn--accent ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="snap-cap">Outlined</span>
+        <span class="ds-btn ds-btn--xs ds-btn--accent ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--xs ds-btn--accent ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--xs ds-btn--accent ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="snap-cap">Text</span>
+        <span class="ds-btn ds-btn--xs ds-btn--accent ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--xs ds-btn--accent ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--xs ds-btn--accent ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <div class="snap-style">Positive</div>
+        <span class="snap-cap">Filled</span>
+        <span class="ds-btn ds-btn--xs ds-btn--positive ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--xs ds-btn--positive ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--xs ds-btn--positive ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="snap-cap">Outlined</span>
+        <span class="ds-btn ds-btn--xs ds-btn--positive ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--xs ds-btn--positive ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--xs ds-btn--positive ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="snap-cap">Text</span>
+        <span class="ds-btn ds-btn--xs ds-btn--positive ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--xs ds-btn--positive ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--xs ds-btn--positive ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <div class="snap-style">Warning</div>
+        <span class="snap-cap">Filled</span>
+        <span class="ds-btn ds-btn--xs ds-btn--warning ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--xs ds-btn--warning ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--xs ds-btn--warning ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="snap-cap">Outlined</span>
+        <span class="ds-btn ds-btn--xs ds-btn--warning ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--xs ds-btn--warning ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--xs ds-btn--warning ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="snap-cap">Text</span>
+        <span class="ds-btn ds-btn--xs ds-btn--warning ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--xs ds-btn--warning ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--xs ds-btn--warning ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <div class="snap-style">Negative</div>
+        <span class="snap-cap">Filled</span>
+        <span class="ds-btn ds-btn--xs ds-btn--negative ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--xs ds-btn--negative ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--xs ds-btn--negative ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="snap-cap">Outlined</span>
+        <span class="ds-btn ds-btn--xs ds-btn--negative ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--xs ds-btn--negative ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--xs ds-btn--negative ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="snap-cap">Text</span>
+        <span class="ds-btn ds-btn--xs ds-btn--negative ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span>
+        <span class="st-hover"><span class="ds-btn ds-btn--xs ds-btn--negative ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <span class="st-press"><span class="ds-btn ds-btn--xs ds-btn--negative ds-btn--text"><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></span></span>
+        <div class="snap-style">Disable</div>
+        <span class="snap-cap"></span><span class="snap-cap">Disable</span><span class="snap-cap">Loading</span><span class="snap-cap"></span>
+        <span class="snap-cap">Filled</span>
+        <button type="button" class="ds-btn ds-btn--xs ds-btn--filled" disabled><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></button>
+        <span class="snap-spin-box snap-spin-box--xs"><button type="button" class="ds-btn ds-btn--xs ds-btn--filled" disabled><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></button><svg class="snap-spinner" aria-hidden="true"><use href="#ic-spinner"/></svg></span>
+        <span></span>
+        <span class="snap-cap">Outlined</span>
+        <button type="button" class="ds-btn ds-btn--xs ds-btn--outlined" disabled><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></button>
+        <span class="snap-spin-box snap-spin-box--xs"><button type="button" class="ds-btn ds-btn--xs ds-btn--outlined" disabled><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></button><svg class="snap-spinner" aria-hidden="true"><use href="#ic-spinner"/></svg></span>
+        <span></span>
+        <span class="snap-cap">Text</span>
+        <button type="button" class="ds-btn ds-btn--xs ds-btn--text" disabled><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></button>
+        <span class="snap-spin-box snap-spin-box--xs"><button type="button" class="ds-btn ds-btn--xs ds-btn--text" disabled><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-16"/></svg></span></button><svg class="snap-spinner" aria-hidden="true"><use href="#ic-spinner"/></svg></span>
+        <span></span>
+      </div>
+    </div>
+
+    <p class="snap-note">Пометки для ревью: тень «Shadows/01 dp Sl» есть в Figma у всех заливных (Filled) кнопок — в css и токенах её нет (№69) — обойдено в fixes.css п. 17; у Disable/Loading тени нет, как в макете. Иконки кнопок: нейтральная серия — #616161 при тексте #333 (в css цвета иконок нет) — fixes п. 17. Состояние Loading в ДС отсутствует (№40) — показано по макету: спиннер собран из svg Figma (кольцо #E0E0E0 + дуга #448AFF, 24/20/16 по размеру).</p>
+  </div>
+
+  <!-- 3. Button group: набор 53619-15772 — 4 варианта -->
+  <div class="panel" data-vpanel="group" role="tabpanel" hidden>
+    <div class="snap-groups">
+      <div>
+        <div class="snap-cap">Orientation=Horizontally, Margins=Off</div>
+        <div class="ds-btn-group ds-btn-group--horizontal">
+          <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+          <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+          <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+        </div>
+      </div>
+      <div>
+        <div class="snap-cap">Orientation=Horizontally, Margins=On</div>
+        <div class="ds-btn-group ds-btn-group--horizontal ds-btn-group--margins">
+          <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+          <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+          <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+        </div>
+      </div>
+      <div>
+        <div class="snap-cap">Orientation=Vertically, Margins=Off</div>
+        <div class="ds-btn-group ds-btn-group--vertical">
+          <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+          <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+          <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+        </div>
+      </div>
+      <div>
+        <div class="snap-cap">Orientation=Vertically, Margins=On</div>
+        <div class="ds-btn-group ds-btn-group--vertical ds-btn-group--margins">
+          <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+          <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+          <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- svg-иконки — точные пути из Figma: «add» 20px (Icon size Size=20, вариант кнопок), «add» 16px (Size=16),
+     спиннер Loading (mat-progress-circular: кольцо #E0E0E0 + дуга #448AFF) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-add-20" viewBox="0 0 20 20">
+    <path d="M9.16667 10.8333H4.16667V9.16667H9.16667V4.16667H10.8333V9.16667H15.8333V10.8333H10.8333V15.8333H9.16667V10.8333Z"/>
+  </symbol>
+  <symbol id="ic-add-16" viewBox="0 0 16 16">
+    <path d="M7.33333 8.66667H3.33333V7.33333H7.33333V3.33333H8.66667V7.33333H12.66667V8.66667H8.66667V12.66667H7.33333V8.66667Z"/>
+  </symbol>
+  <symbol id="ic-spinner" viewBox="0 0 24 24">
+    <path style="fill: var(--ds-color-stroke-default, #e0e0e0)" d="M24 12C24 18.6274 18.6274 24 12 24C5.37258 24 0 18.6274 0 12C0 5.37258 5.37258 0 12 0C18.6274 0 24 5.37258 24 12ZM2.4 12C2.4 17.3019 6.69807 21.6 12 21.6C17.3019 21.6 21.6 17.3019 21.6 12C21.6 6.69807 17.3019 2.4 12 2.4C6.69807 2.4 2.4 6.69807 2.4 12Z"/>
+    <path style="fill: var(--ds-color-brand-accent-default, #448aff)" d="M0 12C-2.07487e-07 14.3734 0.703787 16.6935 2.02236 18.6668C3.34094 20.6402 5.21508 22.1783 7.4078 23.0866C9.60051 23.9948 12.0133 24.2324 14.3411 23.7694C16.6689 23.3064 18.8071 22.1635 20.4853 20.4853C22.1635 18.8071 23.3064 16.6689 23.7694 14.3411C24.2324 12.0133 23.9948 9.60051 23.0866 7.4078C22.1783 5.21509 20.6402 3.34094 18.6668 2.02237C16.6935 0.703788 14.3734 1.79185e-07 12 0L12 2.4C13.8987 2.4 15.7548 2.96303 17.3335 4.01789C18.9122 5.07275 20.1426 6.57207 20.8692 8.32624C21.5958 10.0804 21.786 12.0107 21.4155 13.8729C21.0451 15.7351 20.1308 17.4456 18.7882 18.7882C17.4456 20.1308 15.7351 21.0451 13.8729 21.4155C12.0106 21.786 10.0804 21.5958 8.32624 20.8692C6.57207 20.1426 5.07275 18.9122 4.01789 17.3335C2.96303 15.7548 2.4 13.8987 2.4 12L0 12Z"/>
+  </symbol>
+</svg>
+
+<script>
+  /* табы — компонент ДС Tabs (как на стендах Select/Form field input/Datepicker) */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.ds-tab[data-vtab]'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('[data-vpanel]'));
+  tabs.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      tabs.forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle('ds-tab--active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach(function (p) { p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab'); });
+    });
+  });
+</script>
+</body>
+</html>

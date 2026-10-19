@@ -1,0 +1,190 @@
+/* ============================================================
+   iiko DS — Input (Form field + Input)
+   Источник: Figma, страница «     Form field+Input», COMPONENT_SET «Input»
+   Свойства: Size (M/S/XS) · Variant (Empty/Populated/No label up) · State (8)
+   M — лейбл сверху (48px), S — 36px, XS — 28px (S/XS без лейбла)
+   XS: Border radius = 0px, фон прозрачный (fill visible=false) — 1:1 из Figma
+   Все значения — только токены из tokens.css
+   ============================================================ */
+
+.ds-input {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-1x);            /* 4px — Input/Gap input support */
+  width: 100%;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* ── Рамка поля (Input Frame) ─────────────────────────── */
+
+.ds-input__frame {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2x);            /* 8px — Input/Gap input frame */
+  box-sizing: border-box;
+  border: 1px solid var(--ds-color-stroke-default);   /* #E0E0E0 */
+  border-radius: var(--ds-radius-3x);                 /* 12px — Input/Border radius */
+  background: var(--ds-color-shapes-default-variant); /* #F8F9FC — Input/Input filled background */
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.ds-input--m .ds-input__frame { height: 48px; padding: 12px; }               /* M: Pad 12/12 */
+.ds-input--s .ds-input__frame { height: 36px; padding: 6px 12px; }           /* S: Pad 6/12 */
+.ds-input--xs .ds-input__frame {
+  height: 28px;
+  padding: 4px 8px;                 /* XS: Pad 4/8 */
+  border-radius: var(--ds-radius-0);   /* XS: Border radius = 0px */
+  background: transparent;             /* XS: заливка выключена в Figma */
+}
+
+/* ── Иконки слева/справа (Element left / Element right) ── */
+
+.ds-input__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 20px;                   /* Input/[M|S|XS] size/Icon: узлы 20×20 */
+  color: var(--ds-color-icon-primary);  /* #616161 */
+}
+
+/* ── Содержимое: лейбл + поле ─────────────────────────── */
+
+.ds-input__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.ds-input__label {
+  font-size: var(--ds-typography-font-size-3x);    /* 12px — Input/[M|S|XS] size/Text label */
+  font-weight: var(--ds-typography-font-weight-regular);
+  letter-spacing: var(--ds-typography-letter-spacing-s);
+  line-height: 16px;
+  color: var(--ds-color-text-secondary);           /* #616161 — Input/Input label text color */
+  transition: color 0.15s ease;
+}
+
+.ds-input__field {
+  width: 100%;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0;
+  font-family: inherit;
+  font-size: var(--ds-typography-font-size-4x);    /* 16px — M/S: Text */
+  font-weight: var(--ds-typography-font-weight-regular);
+  letter-spacing: var(--ds-typography-letter-spacing-s);
+  line-height: 24px;
+  color: var(--ds-color-text-primary);             /* #333333 */
+}
+
+.ds-input--xs .ds-input__field {
+  font-size: var(--ds-typography-font-size-3-5x);  /* 14px — XS: Text */
+  line-height: 20px;
+}
+.ds-input--xs .ds-input__label,
+.ds-input--s  .ds-input__label { display: none; }  /* S/XS — No label up */
+
+.ds-input__field::placeholder {
+  color: var(--ds-color-text-placeholder);         /* #D6D6D6 */
+  opacity: 1;
+}
+
+/* ── Поддержка: Support text + Hint text (Support-блок) ── */
+
+.ds-input__support-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;   /* как в Figma: Support text слева, Hint text справа (фреймы 176/74) */
+}
+
+.ds-input__support,
+.ds-input__hint {
+  font-size: var(--ds-typography-font-size-3x);    /* 12px — Text support */
+  font-weight: var(--ds-typography-font-weight-regular);
+  letter-spacing: var(--ds-typography-letter-spacing-s);
+  line-height: 16px;
+  color: var(--ds-color-text-secondary);           /* #616161 */
+  transition: color 0.15s ease;
+}
+
+/* ── Состояния (Input/Filled/[State]/*) ────────────────── */
+
+/* Hover */
+.ds-input__frame:hover {
+  background: var(--ds-color-shapes-hover);        /* #F5F5F5 */
+  border-color: var(--ds-color-stroke-hover);      /* #9E9E9E */
+}
+
+/* Focus (рамка подсвечивается, когда фокус внутри) */
+.ds-input__frame:focus-within {
+  background: var(--ds-color-shapes-default-variant); /* #F8F9FC */
+  border-color: var(--ds-color-stroke-accent);        /* #448AFF */
+}
+.ds-input__frame:focus-within .ds-input__label { color: var(--ds-color-text-accent); }
+
+/* Error / Error+Hover */
+.ds-input--error .ds-input__frame {
+  border-color: var(--ds-color-stroke-negative);   /* #FF5252 */
+  background: var(--ds-color-shapes-default-variant);
+}
+.ds-input--error .ds-input__frame:hover {
+  background: var(--ds-color-shapes-hover);        /* Error+Hover: фон #F5F5F5 */
+}
+.ds-input--error .ds-input__label,
+.ds-input--error .ds-input__support {
+  color: var(--ds-color-text-negative);            /* #FF5252 */
+}
+
+/* Disabled */
+.ds-input--disabled .ds-input__frame,
+.ds-input--disabled .ds-input__frame:hover {
+  background: var(--ds-color-surface-disable);     /* #F5F5F5 */
+  border-color: var(--ds-color-stroke-disable);    /* #EBEBEB */
+}
+.ds-input--disabled .ds-input__label,
+.ds-input--disabled .ds-input__field,
+.ds-input--disabled .ds-input__support,
+.ds-input--disabled .ds-input__hint,
+.ds-input--disabled .ds-input__icon {
+  color: var(--ds-color-text-disable);             /* #9E9E9E */
+}
+.ds-input--disabled .ds-input__field { cursor: not-allowed; }
+/* из navigation.css: иконки/степпер инпута */
+/* ── Иконки в инпутах: SVG из файла иконок ДС ─────────────── */
+
+.ds-input__icon svg {
+ width: 20px; height: 20px; display: block; 
+}
+/* из navigation.css: иконки/степпер инпута */
+.ds-input__icon svg path {
+ fill: currentColor; 
+}
+/* из navigation.css: иконки/степпер инпута */
+/* контрол числа (стрелки вверх/вниз, как Control number button в ДС) */
+.ds-input__stepper {
+
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  color: var(--ds-color-icon-primary);                     /* #616161 */
+
+}
+/* из navigation.css: иконки/степпер инпута */
+.ds-input__stepper svg {
+ width: 20px; height: 12px; display: block; 
+}
+/* из navigation.css: иконки/степпер инпута */
+.ds-input__stepper svg path {
+ fill: currentColor; 
+}
+.ds-input__stepper button {
+
+  border: none; background: none; padding: 0; margin: 0;
+  display: flex; cursor: pointer; color: inherit;
+
+}

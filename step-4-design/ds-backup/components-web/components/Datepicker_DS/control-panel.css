@@ -1,0 +1,82 @@
+.ds-control-panel {
+  display: flex;
+  width: 280px;
+  padding: var(--ds-size-1x) 0 var(--ds-size-1x) 0;
+  gap: 74px;
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-control-panel__label {
+  font-size: var(--ds-font-body-s-14-normal-medium-size);
+  line-height: var(--ds-font-body-s-14-normal-medium-line);
+  letter-spacing: var(--ds-font-body-s-14-normal-medium-spacing);
+  font-weight: var(--ds-font-body-s-14-normal-medium-weight);
+  color: var(--ds-color-text-primary, #333333);
+  white-space: nowrap;
+}
+.ds-control-panel__icon {
+  flex-shrink: 0;
+  width: var(--ds-size-5x);
+  height: var(--ds-size-5x);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ds-control-panel__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ds-control-panel__icon svg path {
+  fill: currentColor;
+}
+.ds-control-panel__elements {
+  display: flex;
+  flex-direction: row;
+  gap: var(--ds-size-2x);
+  padding: var(--ds-size-2-5x) var(--ds-size-1x) var(--ds-size-2-5x) var(--ds-size-2x);
+  border-radius: var(--ds-radius-circular, 9999px);
+  background: var(--ds-color-brand-neutral-default, #ffffff);
+}
+.ds-control-panel__month {
+  display: flex;
+  flex-direction: row;
+  background: var(--ds-color-text-primary, #333333);
+  font-size: var(--ds-font-body-s-14-normal-medium-size);
+  line-height: var(--ds-font-body-s-14-normal-medium-line);
+  letter-spacing: var(--ds-font-body-s-14-normal-medium-spacing);
+  font-weight: var(--ds-font-body-s-14-normal-medium-weight);
+  color: var(--ds-color-text-primary, #333333);
+}
+.ds-control-panel__button-icon-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--ds-button-group-gap, 8px);
+}
+.ds-control-panel__button-icon {
+  display: flex;
+  flex-direction: row;
+  gap: var(--ds-button-icon-gap, 8px);
+  padding: var(--ds-button-icon-m-size-pad-top, 8px) var(--ds-button-icon-m-size-pad-right, 8px) var(--ds-button-icon-m-size-pad-bottom, 8px) var(--ds-button-icon-m-size-pad-left, 8px);
+  border-radius: var(--ds-button-icon-border-radius, 8px);
+}
+.ds-control-panel--control {
+  flex-direction: row;
+  align-items: center;
+  color: var(--ds-color-text-primary, #333333);
+}
+.ds-control-panel--week {
+  width: fit-content;
+  flex-direction: row;
+  padding: var(--ds-size-0-5x) 0 var(--ds-size-0-5x) 0;
+  color: var(--ds-color-text-primary, #333333);
+}
+.ds-control-panel--calendar {
+  width: fit-content;
+  flex-direction: column;
+  align-items: center;
+  background: #ffffff;
+  color: var(--ds-color-text-primary, #333333);
+}
+

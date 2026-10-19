@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Button Toggle — демо стенд компонента</title>
+<!--
+  Демо стенд компонента Button toggle (страница «Button toggle», 17039:71553). Папка: DS/components-web/components/Button-Toggle_DS/.
+  Источник — канва Figma «Iiko Web DS (New)»: набор «Button toggle» (17039:71554; 12 вариантов
+  Size M/S/XS × Type Filled/Outlined × Content Text/Icon; сегменты — инстансы «Button»/«Button icon»),
+  блок «Button toggle (Examples)» (53553:42223; 9 групп) и «Button toggle (UX Examples)» (61875:1992; сценарии).
+  Сегменты — компоненты Button (ds-btn) и Button icon (ds-btn-icon) из ДС; корень — .ds-button-toggle.
+  Особенности набора: у Type=Filled фон контейнера и сегментов белый, выбранный сегмент — АКЦЕНТНЫЙ КОНТЕНТ
+  (надпись/иконка #448AFF); у Type=Outlined — выбранный сегмент с акцентной ЗАЛИВКОЙ (белый контент).
+  Кадры «Два выбраны», «Все выбраны», «Один вариант заблокирован», «Hover на заблокированном», «Не выбрано»,
+  «Отрицательный ответ», «Средний приоритет», «Высокий приоритет» на канве ПУСТЫ (в работе) — на стенде отмечены
+  пустыми рамками. Наблюдения для ДС: логика filled-сегментов (белый фон + акцентный контент) и пустые кадры
+  UX-сценариев. Журнал DS/fixes.md №121.
+-->
+<link rel="stylesheet" href="../../font.css">
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../index.css">
+<link rel="stylesheet" href="../../fixes.css">
+<style>
+  /* каркас демо-стенда */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .view { padding: 24px; }
+  .view .ds-tabs { margin-bottom: 24px; }
+  .panel { width: fit-content; max-width: 1920px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  .snap-cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0; }
+  .snap-note { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 28px 0 0; max-width: 980px; }
+  .snap-sect { margin: 0 0 40px; }
+  .snap-sect:last-child { margin-bottom: 0; }
+  .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
+  .snap-h3 { font-size: 14px; line-height: 20px; font-weight: 500; color: var(--ds-color-text-primary, #333333); margin: 20px 0 8px; }
+  .snap-row { display: flex; gap: 48px; align-items: flex-start; flex-wrap: wrap; }
+  .snap-col { display: flex; flex-direction: column; gap: 10px; }
+  .snap-ex-caption { font-size: 14px; line-height: 28px; color: var(--ds-color-text-primary, #333333); margin: 0; }
+  /* матрица набора — как в эталонных стендах (заголовки столбцов + метки строк) */
+  .snap-grid { display: grid; column-gap: 24px; row-gap: 12px; align-items: center; justify-items: start; }
+  /* filled-тип: выбранный сегмент = акцентный контент на белом */
+  .ds-btn.snap-seg-sel .ds-btn__label { color: var(--ds-color-button-icon-accent-filled-default-background, #448aff); }
+  .ds-btn-icon.snap-seg-sel .ds-btn-icon__icon { color: var(--ds-color-button-icon-accent-filled-default-background, #448aff); }
+  /* пустой кадр канвы (в работе) */
+  .snap-empty { display: inline-flex; align-items: center; justify-content: center; width: 150px; height: 44px; border: 1px dashed var(--ds-color-stroke-default, #e0e0e0); border-radius: var(--ds-radius-2x, 8px); font-size: 12px; color: var(--ds-color-text-secondary, #616161); }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Button Toggle — демо стенд</span>
+  <span>набор Figma: Button toggle (17039-71554, 12) · примеры (53553-42223, 9 групп) · UX-примеры (61875-1992)</span>
+</div>
+<div class="view">
+  <div class="ds-tabs" role="tablist" aria-label="Button Toggle">
+    <button class="ds-tab ds-tab--active" role="tab" aria-selected="true" data-vtab="basic">Basic example</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="button-toggle">Button toggle</button>
+  </div>
+
+  <!-- 2. Button toggle (набор 17039:71554, 12 вариантов) -->
+  <div class="panel" data-vpanel="button-toggle" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Button toggle — 12 вариантов (Size × Type × Content); клик переключает выбор</div>
+
+      <div class="snap-h3" style="margin-top: 8px;">Content=Text</div>
+      <div class="snap-grid" style="grid-template-columns: max-content max-content max-content;">
+        <span class="snap-cap"></span><span class="snap-cap">Filled</span><span class="snap-cap">Outlined</span>
+        <span class="snap-cap">M</span>
+        <div class="ds-button-toggle ds-button-toggle--filled ds-button-toggle--text" data-bt="filled">
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text snap-seg-sel" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+        </div>
+        <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
+            <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+        </div>
+        <span class="snap-cap">S</span>
+        <div class="ds-button-toggle ds-button-toggle--s ds-button-toggle--filled ds-button-toggle--text" data-bt="filled">
+            <button class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text snap-seg-sel" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+        </div>
+        <div class="ds-button-toggle ds-button-toggle--s ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
+            <button class="ds-btn ds-btn--s ds-btn--accent ds-btn--filled" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+        </div>
+        <span class="snap-cap">XS</span>
+        <div class="ds-button-toggle ds-button-toggle--xs ds-button-toggle--filled ds-button-toggle--text" data-bt="filled">
+            <button class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--text snap-seg-sel" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+        </div>
+        <div class="ds-button-toggle ds-button-toggle--xs ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
+            <button class="ds-btn ds-btn--xs ds-btn--accent ds-btn--filled" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+        </div>
+      </div>
+
+      <div class="snap-h3">Content=Icon</div>
+      <div class="snap-grid" style="grid-template-columns: max-content max-content max-content;">
+        <span class="snap-cap"></span><span class="snap-cap">Filled</span><span class="snap-cap">Outlined</span>
+        <span class="snap-cap">M</span>
+        <div class="ds-button-toggle ds-button-toggle--filled ds-button-toggle--icon" data-bt="filled">
+            <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text snap-seg-sel" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+            <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+            <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+        </div>
+        <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--icon" data-bt="outlined">
+            <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--accent ds-btn-icon--filled" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+            <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+            <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+        </div>
+        <span class="snap-cap">S</span>
+        <div class="ds-button-toggle ds-button-toggle--s ds-button-toggle--filled ds-button-toggle--icon" data-bt="filled">
+            <button class="ds-btn-icon ds-btn-icon--s ds-btn-icon--neutral ds-btn-icon--text snap-seg-sel" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+            <button class="ds-btn-icon ds-btn-icon--s ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+            <button class="ds-btn-icon ds-btn-icon--s ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+        </div>
+        <div class="ds-button-toggle ds-button-toggle--s ds-button-toggle--outlined ds-button-toggle--icon" data-bt="outlined">
+            <button class="ds-btn-icon ds-btn-icon--s ds-btn-icon--accent ds-btn-icon--filled" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+            <button class="ds-btn-icon ds-btn-icon--s ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+            <button class="ds-btn-icon ds-btn-icon--s ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+        </div>
+        <span class="snap-cap">XS</span>
+        <div class="ds-button-toggle ds-button-toggle--xs ds-button-toggle--filled ds-button-toggle--icon" data-bt="filled">
+            <button class="ds-btn-icon ds-btn-icon--xs ds-btn-icon--neutral ds-btn-icon--text snap-seg-sel" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></button>
+            <button class="ds-btn-icon ds-btn-icon--xs ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></button>
+            <button class="ds-btn-icon ds-btn-icon--xs ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></button>
+        </div>
+        <div class="ds-button-toggle ds-button-toggle--xs ds-button-toggle--outlined ds-button-toggle--icon" data-bt="outlined">
+            <button class="ds-btn-icon ds-btn-icon--xs ds-btn-icon--accent ds-btn-icon--filled" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></button>
+            <button class="ds-btn-icon ds-btn-icon--xs ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></button>
+            <button class="ds-btn-icon ds-btn-icon--xs ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></button>
+        </div>
+      </div>
+    </div>
+
+    <p class="snap-note">Пометки для ревью: (а) логика набора зафиксирована с канвы: Type=Filled — фон контейнера и сегментов белый, выбранный сегмент показан АКЦЕНТНЫМ КОНТЕНТОМ (надпись/иконка); Type=Outlined — контейнер с рамкой, выбранный сегмент с акцентной заливкой; в css у `.ds-button-toggle--filled` базовый цвет надписи уже акцентный — уточнить, это ли имелось в виду (решить в ДС); (б) сегменты — реальные Button/Button icon (ds-btn / ds-btn-icon), клик переключает выбор (одиночный); (в) размеры сегментов M 36 / S 28 / XS 24 (у XS иконка 16); (г) у Filled-набора сегменты белые без рамок — фон = контейнер; д) состояния сегментов (hover/press) живые из Button. Журнал №121.</p>
+  </div>
+
+  <!-- 1. Basic example: «Button toggle (Examples)» (53553:42223) + UX-примеры (61875:1992) -->
+  <div class="panel" data-vpanel="basic" role="tabpanel">
+    <div class="snap-sect">
+      <p class="snap-cap" style="margin-bottom:16px;">Basic example: кликайте по сегментам — выбор переключается</p>
+      <div class="snap-row">
+        <div class="snap-col">
+          <p class="snap-ex-caption">Single selection</p>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
+            <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+          </div>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--icon" data-bt="outlined">
+            <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--accent ds-btn-icon--filled" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+            <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+            <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+          </div>
+        </div>
+        <div class="snap-col">
+          <p class="snap-ex-caption">Multiple selection</p>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined" data-bt-multi>
+            <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+          </div>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--icon" data-bt="outlined" data-bt-multi>
+            <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--accent ds-btn-icon--filled" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+            <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--accent ds-btn-icon--filled" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+            <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+          </div>
+        </div>
+        <div class="snap-col">
+          <p class="snap-ex-caption">One version</p>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
+            <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" data-seg><span class="ds-btn__label">Button</span></button>
+          </div>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--icon" data-bt="outlined">
+            <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--accent ds-btn-icon--filled" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+          </div>
+          <div class="ds-button-toggle ds-button-toggle--filled ds-button-toggle--text" data-bt="filled">
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text snap-seg-sel" data-seg><span class="ds-btn__label">Button</span></button>
+          </div>
+          <div class="ds-button-toggle ds-button-toggle--filled ds-button-toggle--icon" data-bt="filled">
+            <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text snap-seg-sel" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+          </div>
+        </div>
+
+        <div class="snap-col">
+          <p class="snap-ex-caption">Single selection &amp; disable</p>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
+            <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text ds-btn--disabled" disabled data-seg><span class="ds-btn__label">Button</span></button>
+          </div>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--icon" data-bt="outlined">
+            <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--accent ds-btn-icon--filled" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+            <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+            <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text ds-btn-icon--disabled" disabled data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+          </div>
+        </div>
+        <div class="snap-col">
+          <p class="snap-ex-caption">Сomplex: text &amp; icon</p>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
+            <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+          </div>
+          <div class="ds-button-toggle ds-button-toggle--filled ds-button-toggle--text" data-bt="filled">
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text snap-seg-sel" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+          </div>
+        </div>
+      </div>
+      <div class="snap-row" style="margin-top: 24px;">
+        <div class="snap-col">
+          <p class="snap-ex-caption">Color version accent/positive</p>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
+            <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+          </div>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
+            <button class="ds-btn ds-btn--m ds-btn--positive ds-btn--filled" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+          </div>
+        </div>
+        <div class="snap-col">
+          <p class="snap-ex-caption">Color version negative/warning</p>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
+            <button class="ds-btn ds-btn--m ds-btn--negative ds-btn--filled" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+          </div>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
+            <button class="ds-btn ds-btn--m ds-btn--warning ds-btn--filled" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+          </div>
+        </div>
+        <div class="snap-col">
+          <p class="snap-ex-caption">Color version combination</p>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
+            <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--positive ds-btn--filled" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+          </div>
+        </div>
+        <div class="snap-col">
+          <p class="snap-ex-caption">??? (кадр без названия; строка таблицы действий)</p>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
+            <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+          </div>
+          <span class="snap-cap">«Выберите даты, дни недели и (и… — текст кадра обрезан в замере)» + в кадре есть строка с полем Input (другой компонент) — смотри стенд Form-Field-Input</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">UX-примеры «Button toggle (UX Examples)» — сценарии (тексты дословно из канвы)</div>
+      <div class="snap-row">
+        <div class="snap-col" style="max-width: 520px;">
+          <p class="snap-ex-caption">Переключение режима отображения</p>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Список</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" data-seg><span class="ds-btn__label">Сетка</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Карта</span></button>
+          </div>
+          <span class="snap-cap">Пользователь наводит курсор на нужный вариант, кликает — выбор переключается на новый режим. Предыдущий выбранный вариант деактивируется.</span>
+        </div>
+        <div class="snap-col" style="max-width: 520px;">
+          <p class="snap-ex-caption">Выбор периода в аналитике</p>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">День</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Неделя</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" data-seg><span class="ds-btn__label">Месяц</span></button>
+          </div>
+          <span class="snap-cap">Кадры канвы: Default / Hover на «Неделя» / Нажатие на «Месяц» и выбор месяца. Hover-подсветка сегмента — #FAFAFA (из Button).</span>
+        </div>
+        <div class="snap-col" style="max-width: 520px;">
+          <p class="snap-ex-caption">Фильтрация по статусу</p>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
+            <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" data-seg><span class="ds-btn__label">Все</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Активные</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Завершённые</span></button>
+          </div>
+          <span class="snap-cap">Состояния канвы: «Все элементы» и «Один выбран». Фильтр переключает список.</span>
+        </div>
+      </div>
+      <div class="snap-row" style="margin-top: 24px;">
+        <div class="snap-col" style="max-width: 560px;">
+          <p class="snap-ex-caption">Множественный выбор параметров</p>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined" data-bt-multi>
+            <button class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" data-seg><span class="ds-btn__label">Срочные</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Важные</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Обычные</span></button>
+          </div>
+          <div class="snap-row" style="gap: 16px; align-items: center;">
+            <span class="snap-empty">Два выбраны — кадр пуст</span>
+            <span class="snap-empty">Все выбраны — кадр пуст</span>
+          </div>
+          <span class="snap-cap">Клик по выбранному варианту снимает выбор; можно отметить несколько. Кадры «Два выбраны» и «Все выбраны» на канве пока пусты (в работе).</span>
+        </div>
+        <div class="snap-col" style="max-width: 620px;">
+          <p class="snap-ex-caption">Заблокированные опции (disable)</p>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Карта</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text ds-btn--disabled" disabled data-seg><span class="ds-btn__label">Список</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Архив</span></button>
+          </div>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined" data-bt-static>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text ds-btn--disabled" disabled data-seg><span class="ds-btn__label">Карта</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text ds-btn--disabled" disabled data-seg><span class="ds-btn__label">Список</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text ds-btn--disabled" disabled data-seg><span class="ds-btn__label">Архив</span></button>
+          </div>
+          <div class="snap-row" style="gap: 16px; align-items: center;">
+            <span class="snap-empty">Один вариант заблокирован — кадр пуст</span>
+            <span class="snap-empty">Hover на заблокированном — кадр пуст</span>
+          </div>
+          <span class="snap-cap">Кадры «Один вариант заблокирован» и «Hover на заблокированном» на канве пусты; «Полностью заблокирован» — все три сегмента выключены (#9E9E9E, второй ряд).</span>
+        </div>
+      </div>
+      <div class="snap-row" style="margin-top: 24px;">
+        <div class="snap-col" style="max-width: 560px;">
+          <p class="snap-ex-caption">Цветовая семантика — Подтверждение действия</p>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
+            <button class="ds-btn ds-btn--m ds-btn--positive ds-btn--filled" data-seg><span class="ds-btn__label">Да</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Нет</span></button>
+          </div>
+          <div class="snap-row" style="gap: 16px; align-items: center;">
+            <span class="snap-empty">Не выбрано — кадр пуст</span>
+            <span class="snap-empty">Отрицательный ответ — кадр пуст</span>
+          </div>
+          <span class="snap-cap">«Положительный ответ» — выбор «Да» (Positive, зелёный #14B456). Кадры «Не выбрано» и «Отрицательный ответ» на канве пусты.</span>
+        </div>
+        <div class="snap-col" style="max-width: 560px;">
+          <p class="snap-ex-caption">Цветовая семантика — Уровень приоритета</p>
+          <div class="ds-button-toggle ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
+            <button class="ds-btn ds-btn--m ds-btn--positive ds-btn--filled" data-seg><span class="ds-btn__label">Низкий</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Средний</span></button>
+            <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Высокий</span></button>
+          </div>
+          <div class="snap-row" style="gap: 16px; align-items: center;">
+            <span class="snap-empty">Средний приоритет — кадр пуст</span>
+            <span class="snap-empty">Высокий приоритет — кадр пуст</span>
+          </div>
+          <span class="snap-cap">«Низкий» — выбран с Positive-заливкой (по канве). Заметка канвы: «Цвет выбранной кнопки передаёт смысл: • Positive (зелёный)…» (текст заметки в кадре сокращён).</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="snap-note">Пометки для ревью: (а) группы «Color version accent/positive», «negative/warning», «combination» в наборе примеров построены зеркалом single selection с цветными заливками по названию — состав сегментов этих кадров при рекогносцировке не раскрывался; (б) кейс «???» — кадр без названия (строка таблицы действий + тумблер + поле Input, поле — другого компонента); текст заголовка в замере обрезан; (в) пустые кадры — как на канве (в работе), отмечены пунктиром; (г) сценарии кликабельны (single/multi/disable по кадрам). Журнал №121.</p>
+  </div>
+</div>
+
+<!-- иконка add: путь из экспорта Figma (20×20), для XS — 16×16 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-add" viewBox="0 0 20 20"><path d="M9.16667 10.8333H4.16667V9.16666H9.16667V4.16666H10.8333V9.16666H15.8333V10.8333H10.8333V15.8333H9.16667V10.8333Z"/></symbol>
+  <symbol id="ic-add-16" viewBox="0 0 16 16"><path d="M7.33334 8.66667H3.33334V7.33334H7.33334V3.33334H8.66667V7.33334H12.6667V8.66667H8.66667V12.6667H7.33334V8.66667Z"/></symbol>
+</svg>
+
+<script>
+  /* табы стенда */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.ds-tab[data-vtab]'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('[data-vpanel]'));
+  tabs.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      tabs.forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle('ds-tab--active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach(function (p) { p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab'); });
+    });
+  });
+  /* переключение сегментов: filled — акцентный контент, outlined — акцентная заливка */
+  function applySel(seg, on, style) {
+    var isIcon = seg.classList.contains('ds-btn-icon');
+    if (style === 'outlined') {
+      if (isIcon) {
+        seg.classList.toggle('ds-btn-icon--accent', on);
+        seg.classList.toggle('ds-btn-icon--filled', on);
+        seg.classList.toggle('ds-btn-icon--neutral', !on);
+        seg.classList.toggle('ds-btn-icon--text', !on);
+      } else {
+        seg.classList.toggle('ds-btn--accent', on);
+        seg.classList.toggle('ds-btn--filled', on);
+        seg.classList.toggle('ds-btn--neutral', !on);
+        seg.classList.toggle('ds-btn--text', !on);
+      }
+    } else {
+      seg.classList.toggle('snap-seg-sel', on);
+    }
+  }
+  document.querySelectorAll('[data-bt]').forEach(function (root) {
+    var style = root.getAttribute('data-bt');
+    var multi = root.hasAttribute('data-bt-multi');
+    root.addEventListener('click', function (e) {
+      var seg = e.target.closest('[data-seg]');
+      if (!seg || seg.disabled || root.hasAttribute('data-bt-static')) return;
+      var wasSel = (style === 'outlined')
+        ? seg.classList.contains('ds-btn-icon--accent') || seg.classList.contains('ds-btn--accent')
+        : seg.classList.contains('snap-seg-sel');
+      if (!multi) {
+        root.querySelectorAll('[data-seg]').forEach(function (s) { if (s !== seg) applySel(s, false, style); });
+      }
+      applySel(seg, multi ? !wasSel : true, style);
+    });
+  });
+</script>
+</body>
+</html>

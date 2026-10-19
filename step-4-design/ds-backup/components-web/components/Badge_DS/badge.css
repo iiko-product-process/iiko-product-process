@@ -1,0 +1,54 @@
+/* ============================================================
+   iiko DS — Badge (счётчик / точка)
+   Источник: Figma, страница «🔵Готово 🧾 → Badge»
+   Варианты: Style Accent/Positive/Warning/Negative
+             Type Counter (19×18, паддинг 1px 6px, скругление 9999px) / Point (8×8, скругление 9999px)
+   Все значения — только токены из tokens.css
+   ============================================================ */
+
+.ds-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-size: var(--ds-typography-font-size-3x);      /* 12px */
+  font-weight: var(--ds-typography-font-weight-medium); /* 500 */
+  line-height: var(--ds-typography-caption-line-height-l); /* 16px */
+  color: var(--ds-color-text-inversive);             /* #FFFFFF */
+  vertical-align: middle;
+}
+
+/* ── Counter: пилюля 19×18 ──────────────────────────────── */
+
+.ds-badge--counter {
+  height: 18px;
+  min-width: 19px;
+  padding: var(--ds-size-0-25x) var(--ds-space-1-5x); /* 1px 6px */
+  border-radius: var(--ds-radius-circular);          /* 9999px */
+}
+
+/* ── Point: точка 8×8 ───────────────────────────────────── */
+
+.ds-badge--point {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--ds-radius-circular);          /* 9999px */
+}
+
+/* ── Стили ──────────────────────────────────────────────── */
+
+.ds-badge--accent   { background: var(--ds-color-badge-accent-background); }   /* #448AFF */
+.ds-badge--positive { background: var(--ds-color-badge-positive-background); } /* #14B456 */
+.ds-badge--warning  { background: var(--ds-color-badge-warning-background); }  /* #FFAB40 */
+.ds-badge--negative { background: var(--ds-color-badge-negative-background); } /* #FF5252 */
+
+/* ── Матрица вариантов Badge (страница badge.html) ────────────────
+   У Badge нет размеров и состояний (только Style × Type), поэтому:
+   подписи типов без сдвига под шапку размера, ряд — 2 колонки.
+   Скоуплено под .page-badge, чтобы не протекать на другие страницы
+   (у Button/Checkbox 3 состояния → ряд должен быть 3-колоночным). */
+
+.page-badge #matrix-root .matrix-types { padding-top: 16px; }
+.page-badge #matrix-root .matrix-row { grid-template-columns: repeat(2, 1fr); }

@@ -1,0 +1,67 @@
+.ds-tree {
+  height: 44px;
+  width: fit-content;
+  display: flex;
+  gap: var(--ds-size-2-5x);
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-tree__icon {
+  flex-shrink: 0;
+  width: var(--ds-size-6x);
+  height: var(--ds-size-6x);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ds-tree__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ds-tree__icon svg path {
+  fill: currentColor;
+}
+.ds-tree__item {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--ds-size-2-5x);
+  padding: 0 0 var(--ds-size-5x) 11px;
+}
+.ds-tree__separator-stroke {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  background: #d7d8d9;
+}
+.ds-tree--2.ds-tree--end.ds-tree--on {
+  flex-direction: row;
+}
+.ds-tree--2.ds-tree--end.ds-tree--off {
+  flex-direction: column;
+}
+.ds-tree--3.ds-tree--end.ds-tree--on {
+  flex-direction: row;
+}
+.ds-tree--3.ds-tree--end.ds-tree--off {
+  flex-direction: row;
+}
+.ds-tree--2.ds-tree--middle.ds-tree--on {
+  flex-direction: row;
+  align-items: center;
+}
+.ds-tree--2.ds-tree--middle.ds-tree--off {
+  flex-direction: row;
+  align-items: center;
+}
+.ds-tree--3.ds-tree--middle.ds-tree--on {
+  flex-direction: row;
+  align-items: center;
+}
+.ds-tree--3.ds-tree--middle.ds-tree--off {
+  flex-direction: row;
+  align-items: center;
+}
+

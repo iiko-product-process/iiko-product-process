@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dialog — демо стенд компонента</title>
+<!--
+  Демо стенд компонентов Dialog (страница «Dialog_DS», 52952:1284). Папка: DS/components-web/components/Dialog_DS/.
+  Источник — канва Figma «Iiko Web DS (New)»: наборы «Dialog view» (1: State=Default, 500×364 r12),
+  «Dialog header» (2: Type=Text — заголовок 20/28 + close 24 + описание 16/24 + Divider; Type=Picture — Picture 446×189),
+  «Dialog content» (1: слот 440-ширины блоки + Scroll 204×12), «Dialog footer» (1: Divider + Action 68 с Button),
+  компонент «Picture» (446×189, кроп-слот 173 пунктир) + блок «Примеры» (4785×1650; 16 инстансов + сцена с Backdrop).
+  Тексты сценариев: «Удалить карту?» (Отмена/Удалить), «Ошибка сохранения цен», «Последее обновление 21.08.2022, 11:05:49»
+  (чекбоксы «Обновлять…»), «Импорт», «Часть гостей не добавлена…», список позиций «Водка “Флагман” 40% +0.2 л.» и др.
+  ⚠ Паддинги шапки/контента — обвязка стенда (классы паддингов в диалогах не выгружены); Divider — компонент Divider_DS
+  (ds-divider); на канве есть служебная пометка «слетели хедеры, поправить». Журнал DS/fixes.md №129.
+-->
+<link rel="stylesheet" href="../../font.css">
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../index.css">
+<link rel="stylesheet" href="../../fixes.css">
+<style>
+  /* каркас демо-стенда */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .view { padding: 24px; }
+  .view .ds-tabs { margin-bottom: 24px; }
+  .panel { width: fit-content; max-width: 1920px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  .snap-cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0; }
+  .snap-note { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 28px 0 0; max-width: 980px; }
+  .snap-sect { margin: 0 0 40px; }
+  .snap-sect:last-child { margin-bottom: 0; }
+  .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
+  .snap-row { display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap; }
+  .snap-col { display: flex; flex-direction: column; gap: 10px; }
+  .snap-ex-caption { font-size: 14px; line-height: 28px; color: var(--ds-color-text-primary, #333333); margin: 0; }
+  /* обвязка диалогов: паддинги шапки/контента */
+  .snap-dlg { width: 500px; }
+  .snap-dlg .ds-dialog-view__header, .snap-dlg .ds-dialog-header { width: 100%; }
+  .snap-dlg .ds-dialog-view__content { width: 100%; }
+  .snap-dlg-head { display: flex; flex-direction: column; gap: 4px; padding: 24px 24px 12px; }
+  .snap-dlg-head--compact { padding: 16px 24px; }
+  .snap-dlg-titlerow { display: flex; align-items: flex-start; gap: 8px; }
+  .snap-dlg-title { flex: 1; font-size: 20px; line-height: 28px; font-weight: 500; color: #333333; }
+  .snap-dlg-desc { font-size: 16px; line-height: 24px; color: #616161; }
+  .snap-dlg-close { width: 24px; height: 24px; color: #616161; display: inline-flex; }
+  .snap-dlg-close svg { width: 100%; height: 100%; display: block; }
+  .snap-dlg-divider { height: 1px; background: var(--ds-color-stroke-default, #e0e0e0); }
+  .snap-dlg-content { display: flex; flex-direction: column; gap: 16px; padding: 16px 24px; width: 100%; box-sizing: border-box; }
+  .snap-dlg-block { display: flex; flex-direction: column; }
+  .snap-dlg-block__title { font-size: 16px; line-height: 24px; font-weight: 500; color: #333333; }
+  .snap-dlg-block__text { font-size: 14px; line-height: 20px; color: #616161; }
+  .snap-dlg-footer { display: flex; justify-content: flex-end; gap: 8px; padding: 16px 24px; width: 100%; box-sizing: border-box; }
+  .snap-dlg-scroll { width: 204px; margin: 0 auto; }
+  .snap-dlg-row { font-size: 14px; line-height: 20px; color: #333333; }
+  .snap-dlg-drop { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 120px; border: 1px dashed var(--ds-color-stroke-hover, #9e9e9e); border-radius: 12px; color: #616161; font-size: 14px; line-height: 20px; }
+  .snap-dlg-drop__hint { font-size: 12px; line-height: 16px; color: #616161; }
+  .snap-btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; border: 0; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer; }
+  .snap-btn--accent { background: var(--ds-color-button-accent-filled-default-background, #448aff); color: #ffffff; }
+  .snap-btn--text { background: none; color: var(--ds-color-button-accent-outlined-default-text-color, #448aff); }
+  /* сцена с Backdrop */
+  .snap-scene { position: relative; width: 720px; height: 420px; background: #f8f9fc; border-radius: 12px; overflow: hidden; }
+  .snap-scene__dim { position: absolute; inset: 0; background: #333333; opacity: .45; }
+  .snap-scene .snap-dlg { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Dialog — демо стенд</span>
+  <span>наборы Figma: Dialog view (1) · Dialog header (2) · Dialog content (1) · Dialog footer (1) · Picture · примеры (16 инстансов + сцена)</span>
+</div>
+<div class="view">
+  <div class="ds-tabs" role="tablist" aria-label="Dialog">
+    <button class="ds-tab ds-tab--active" role="tab" aria-selected="true" data-vtab="basic">Basic example</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="dialog-view">Dialog view</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="dialog-header">Dialog header</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="dialog-footer">Dialog footer</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="picture">Picture</button>
+  </div>
+
+  <!-- 2. Dialog view (набор 52952:1284; полный состав: header + content + footer; 500×364 r12) -->
+  <div class="panel" data-vpanel="dialog-view" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Dialog view (полный состав: header + content + footer; 500×364 r12)</div>
+      <div class="snap-row" style="margin-top: 12px;">
+        <div class="ds-dialog-view snap-dlg">
+          <div class="ds-dialog-view__header">
+            <div class="snap-dlg-head">
+              <div class="snap-dlg-titlerow"><span class="snap-dlg-title">Dialog title</span><span class="snap-dlg-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-24"/></svg></span></div>
+              <span class="snap-dlg-desc">Подзаголовок</span>
+            </div>
+            <div class="snap-dlg-divider"></div>
+          </div>
+          <div class="ds-dialog-view__content">
+            <div class="snap-dlg-content">
+              <div class="snap-dlg-block"><span class="snap-dlg-block__title">Content title</span><span class="snap-dlg-block__text">В блоке контента может быть всё что угодно</span></div>
+              <div class="snap-dlg-block"><span class="snap-dlg-block__title">Content title</span><span class="snap-dlg-block__text">В блоке контента может быть всё что угодно</span></div>
+              <div class="snap-dlg-block"><span class="snap-dlg-block__title">Content title</span><span class="snap-dlg-block__text">В блоке контента может быть всё что угодно</span></div>
+              <div class="ds-scroll snap-dlg-scroll"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+            </div>
+          </div>
+          <div class="ds-dialog-view__footer">
+            <div class="snap-dlg-divider"></div>
+            <div class="snap-dlg-footer"><button class="snap-btn snap-btn--accent">Подробнее</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 3. Dialog header (2 варианта: Type=Text / Type=Picture) -->
+  <div class="panel" data-vpanel="dialog-header" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-row" style="margin-top: 12px;">
+        <div class="snap-col"><span class="snap-cap">Dialog header Type=Text (заголовок + описание + Divider)</span>
+          <div class="ds-dialog-header" style="width:500px;">
+            <div class="snap-dlg-head">
+              <div class="snap-dlg-titlerow"><span class="snap-dlg-title">Dialog title</span><span class="snap-dlg-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-24"/></svg></span></div>
+              <span class="snap-dlg-desc">Подзаголовок</span>
+            </div>
+            <div class="snap-dlg-divider"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Dialog footer (Divider + Action 68 + Button) -->
+  <div class="panel" data-vpanel="dialog-footer" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-row">
+        <div class="snap-col"><span class="snap-cap">Dialog footer (Divider + Action 68 + Button)</span>
+          <div class="ds-dialog-footer" style="width:500px;">
+            <div class="snap-dlg-divider"></div>
+            <div class="snap-dlg-footer"><button class="snap-btn snap-btn--accent">Подробнее</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Picture (446×189; кроп-слот 173 пунктир) -->
+  <div class="panel" data-vpanel="picture" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-row">
+        <div class="snap-col"><span class="snap-cap">Picture (446×189; кроп-слот 173 пунктир)</span>
+          <div class="ds-picture">
+            <div class="ds-picture__crop" style="align-items:center;justify-content:center;"><span class="snap-cap">Picture</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: (а) состав по канве: шапка (Title 20/28 + close 24 + описание 16/24 + Divider 1px #E0E0E0), контент (блоки: Title 16/24 medium + текст 14/20), Scroll 204×12 (bg #FAFAFA, ползунок #D6D6D6); футер (Divider + Action 68: паддинг 16/24, кнопка M); (б) паддинги шапки/контента на канве — обвязка (в css классов паддингов нет): использованы 24 по бокам, шапка 24/12, компакт-шапка 16/24 (высота 60 — как в примерах); (в) Picture — кроп-слот с пунктирной рамкой #9E9E9E на фоне #F8F9FC; (г) служебная пометка канвы «слетели хедеры, поправить» — к дизайну компонента не относится. Журнал №129.</p>
+  </div>
+
+  <!-- 1. Basic example: «Примеры» (4785×1650; 16 инстансов + сцена с Backdrop) -->
+  <div class="panel" data-vpanel="basic" role="tabpanel">
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Примеры сценариев (тексты дословно из канвы)</div>
+      <div class="snap-row" style="margin-top: 12px;">
+        <div class="snap-col">
+          <p class="snap-ex-caption">Удалить карту?</p>
+          <div class="ds-dialog-view snap-dlg">
+            <div class="ds-dialog-view__header"><div class="ds-dialog-header"><div class="snap-dlg-head snap-dlg-head--compact"><div class="snap-dlg-titlerow"><span class="snap-dlg-title">Удалить карту?</span><span class="snap-dlg-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-24"/></svg></span></div></div></div></div>
+            <div class="ds-dialog-view__footer"><div class="snap-dlg-divider"></div><div class="snap-dlg-footer"><button class="snap-btn snap-btn--text">Отмена</button><button class="snap-btn snap-btn--accent">Удалить</button></div></div>
+          </div>
+          <p class="snap-ex-caption" style="margin-top: 10px;">Ошибка сохранения цен</p>
+          <div class="ds-dialog-view snap-dlg">
+            <div class="ds-dialog-view__header"><div class="ds-dialog-header"><div class="snap-dlg-head snap-dlg-head--compact"><div class="snap-dlg-titlerow"><span class="snap-dlg-title">Ошибка сохранения цен</span><span class="snap-dlg-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-24"/></svg></span></div></div><div class="snap-dlg-divider"></div></div></div>
+            <div class="ds-dialog-view__content"><div class="snap-dlg-content">
+              <span class="snap-dlg-row">В продуктовой категории выбрана удалённая…</span>
+              <span class="snap-dlg-row">Удалённые ингредиенты в тех. карте</span>
+              <span class="snap-dlg-row">Технологическая карта не заполнена</span>
+            </div></div>
+            <div class="ds-dialog-view__footer"><div class="snap-dlg-divider"></div><div class="snap-dlg-footer"><button class="snap-btn snap-btn--text">Отмена</button><button class="snap-btn snap-btn--accent">Сохранить</button></div></div>
+          </div>
+        </div>
+        <div class="snap-col">
+          <p class="snap-ex-caption">Обновление данных</p>
+          <div class="ds-dialog-view snap-dlg">
+            <div class="ds-dialog-view__header"><div class="ds-dialog-header"><div class="snap-dlg-head snap-dlg-head--compact"><div class="snap-dlg-titlerow"><span class="snap-dlg-title">Последее обновление 21.08.2022, 11:05:49</span><span class="snap-dlg-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-24"/></svg></span></div></div><div class="snap-dlg-divider"></div></div></div>
+            <div class="ds-dialog-view__content"><div class="snap-dlg-content">
+              <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox" checked><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Обновлять названия и описания блюд</span></label>
+              <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Обновлять цены</span></label>
+              <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Обновлять количество модификаторов</span></label>
+            </div></div>
+            <div class="ds-dialog-view__footer"><div class="snap-dlg-divider"></div><div class="snap-dlg-footer"><button class="snap-btn snap-btn--text">Отмена</button><button class="snap-btn snap-btn--accent">Обновить</button></div></div>
+          </div>
+          <p class="snap-ex-caption" style="margin-top: 10px;">Импорт</p>
+          <div class="ds-dialog-view snap-dlg">
+            <div class="ds-dialog-view__header"><div class="ds-dialog-header"><div class="snap-dlg-head snap-dlg-head--compact"><div class="snap-dlg-titlerow"><span class="snap-dlg-title">Импорт</span><span class="snap-dlg-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-24"/></svg></span></div></div><div class="snap-dlg-divider"></div></div></div>
+            <div class="ds-dialog-view__content"><div class="snap-dlg-content">
+              <div class="snap-dlg-drop"><span>Выберите файл или перетащите сюда</span><span class="snap-dlg-drop__hint">Форматы xlsx, xls, csv до 5 МБ</span></div>
+              <button class="snap-btn snap-btn--text" style="align-self:flex-start;">Скачать шаблон</button>
+            </div></div>
+            <div class="ds-dialog-view__footer"><div class="snap-dlg-divider"></div><div class="snap-dlg-footer"><button class="snap-btn snap-btn--accent">Импортировать</button></div></div>
+          </div>
+        </div>
+        <div class="snap-col">
+          <p class="snap-ex-caption">Часть гостей не добавлена</p>
+          <div class="ds-dialog-view snap-dlg">
+            <div class="ds-dialog-view__header"><div class="ds-dialog-header"><div class="snap-dlg-head snap-dlg-head--compact"><div class="snap-dlg-titlerow"><span class="snap-dlg-title" style="font-size:18px;">Часть гостей не добавлена. Скачайте файл, исправьте ошибки и загрузите</span><span class="snap-dlg-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-24"/></svg></span></div></div><div class="snap-dlg-divider"></div></div></div>
+            <div class="ds-dialog-view__footer"><div class="snap-dlg-divider"></div><div class="snap-dlg-footer"><button class="snap-btn snap-btn--text">Скачать файл</button><button class="snap-btn snap-btn--accent">Загрузить снова</button></div></div>
+          </div>
+          <p class="snap-ex-caption" style="margin-top: 10px;">Список позиций (пример с составным контентом)</p>
+          <div class="ds-dialog-view snap-dlg">
+            <div class="ds-dialog-view__header"><div class="ds-dialog-header"><div class="snap-dlg-head snap-dlg-head--compact"><div class="snap-dlg-titlerow"><span class="snap-dlg-title">Dialog title</span><span class="snap-dlg-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-24"/></svg></span></div></div><div class="snap-dlg-divider"></div></div></div>
+            <div class="ds-dialog-view__content"><div class="snap-dlg-content">
+              <span class="snap-dlg-row">Водка “Флагман” 40% +0.2 л.</span>
+              <span class="snap-dlg-row">Виски ”Jameson” +0.7 л.</span>
+              <span class="snap-dlg-row">Текила “Olmeca Blanco” +0.9 л.</span>
+            </div></div>
+            <div class="ds-dialog-view__footer"><div class="snap-dlg-divider"></div><div class="snap-dlg-footer"><button class="snap-btn snap-btn--text">Отмена</button><button class="snap-btn snap-btn--accent">Создать</button></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Сцена из канвы: диалог поверх рабочего стола с Backdrop («Статус изменили на Активную»)</div>
+      <div class="snap-scene" style="margin-top: 12px;">
+        <div class="snap-scene__dim"></div>
+        <div class="ds-dialog-view snap-dlg" style="width:500px;">
+          <div class="ds-dialog-view__header"><div class="ds-dialog-header"><div class="snap-dlg-head snap-dlg-head--compact"><div class="snap-dlg-titlerow"><span class="snap-dlg-title">Статус изменили на Активную</span><span class="snap-dlg-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-24"/></svg></span></div></div></div></div>
+          <div class="ds-dialog-view__content"><div class="snap-dlg-content"><span class="snap-dlg-block__text">Ранги и условия пересчитаны. Проверьте настройки бонусной программы.</span></div></div>
+          <div class="ds-dialog-view__footer"><div class="snap-dlg-divider"></div><div class="snap-dlg-footer"><button class="snap-btn snap-btn--accent">Понятно</button></div></div>
+        </div>
+      </div>
+      <span class="snap-cap" style="display:block;margin-top:8px;">В канве сцена собрана на полном экране (Sidenav + Content + Sidebar + Backdrop); на стенде — упрощённая подложка с затемнением.</span>
+    </div>
+
+    <p class="snap-note">Пометки для ревью: (а) тексты — с канвы («Удалить карту?», «Ошибка сохранения цен» со строками «В продуктовой категории выбрана удалённая…» (в кадре текст обрезан), «Удалённые ингредиенты в тех. карте», «Технологическая карта не заполнена»; «Последее обновление 21.08.2022, 11:05:49» с чекбоксами; «Импорт»; «Часть гостей не добавлена. Скачайте файл, исправьте ошибки и загрузите»; позиции «Водка “Флагман” 40% +0.2 л.» и др.); (б) в канве 16 инстансов разной высоты (128…718) — на стенде показаны репрезентативные; кадры «Добавить модификаторы» (таблица) и «Создание элемента номенклатуры» (форма) не воспроизводились — состав из чужих компонентов (Table/Input), смотри их стенды; (в) чекбоксы — компонент Checkbox_DS; (г) дропзона «Выберите файл или перетащите сюда» — обвязка (в канве — рамка/иконка). Журнал №129.</p>
+  </div>
+</div>
+
+<!-- иконка close 24 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-close-24" viewBox="0 0 24 24"><path d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z"/></symbol>
+</svg>
+
+<script>
+  /* табы стенда */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.ds-tab[data-vtab]'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('[data-vpanel]'));
+  tabs.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      tabs.forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle('ds-tab--active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach(function (p) { p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab'); });
+    });
+  });
+</script>
+</body>
+</html>

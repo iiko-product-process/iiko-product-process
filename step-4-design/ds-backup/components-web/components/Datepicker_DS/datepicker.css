@@ -1,0 +1,77 @@
+.ds-datepicker {
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--ds-size-2x) var(--ds-size-4x) var(--ds-size-2x) var(--ds-size-4x);
+  border-radius: var(--ds-size-3x);
+  border: 1px solid var(--ds-color-stroke-default, #e0e0e0);
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-datepicker__label {
+  font-size: var(--ds-font-caption-l-12-normal-regular-size);
+  line-height: var(--ds-font-caption-l-12-normal-regular-line);
+  letter-spacing: var(--ds-font-caption-l-12-normal-regular-spacing);
+  font-weight: var(--ds-font-caption-l-12-normal-regular-weight);
+  color: var(--ds-color-text-primary, #333333);
+  white-space: nowrap;
+}
+.ds-datepicker__icon {
+  flex-shrink: 0;
+  width: var(--ds-size-5x);
+  height: var(--ds-size-5x);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ds-datepicker__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ds-datepicker__icon svg path {
+  fill: currentColor;
+}
+.ds-datepicker__control-panel {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 74px;
+  padding: var(--ds-size-1x) 0 var(--ds-size-1x) 0;
+}
+.ds-datepicker__elements {
+  display: flex;
+  flex-direction: row;
+  gap: var(--ds-size-2x);
+  padding: var(--ds-size-2-5x) var(--ds-size-1x) var(--ds-size-2-5x) var(--ds-size-2x);
+  border-radius: var(--ds-radius-circular, 9999px);
+  background: var(--ds-color-brand-neutral-default, #ffffff);
+}
+.ds-datepicker__button-icon-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--ds-button-group-gap, 8px);
+}
+.ds-datepicker__divider {
+  height: var(--ds-size-0-25x);
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
+.ds-datepicker__week-6 {
+  height: 48px;
+  display: flex;
+  flex-direction: row;
+}
+.ds-datepicker--day {
+  color: var(--ds-color-text-primary, #333333);
+}
+.ds-datepicker--year {
+  color: var(--ds-color-text-primary, #333333);
+}
+.ds-datepicker--month {
+  color: var(--ds-color-text-primary, #333333);
+}
+

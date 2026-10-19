@@ -1,0 +1,871 @@
+<title>Реквизиты организации</title>
+<style>
+  :root{
+    --bg:#ffffff;
+    --sidebar-bg:#fafafa;
+    --sidebar-border:#e9e9e9;
+    --sidebar-active-bg:#eef4fe;
+    --text:#1c1c1c;
+    --text-secondary:#6e6e6e;
+    --text-faint:#a3a3a3;
+    --border:#cfcfcf;
+    --border-light:#e6e6e6;
+    --accent:#2f6fed;
+    --accent-soft:#eaf1fe;
+    --danger:#e5483c;
+    --danger-soft:#fceceb;
+    --disabled-bg:#f1f1f1;
+    --disabled-text:#9a9a9a;
+    --success:#2e7d4f;
+    --success-soft:#e8f5ec;
+    --invalid:#c0392b;
+    --invalid-soft:#fbeaea;
+    color-scheme: light;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Segoe UI", Roboto, -apple-system, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    font-size:14px;
+  }
+  .stage-label{
+    font-size:11px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:#fff;
+    background:#3a3a3a;
+    padding:9px 16px;
+    display:flex; align-items:center; justify-content:center; gap:18px; flex-wrap:wrap;
+  }
+  .scenario-switch{ display:flex; align-items:center; gap:8px; text-transform:none; letter-spacing:normal; font-size:12.5px; }
+  .scenario-switch button{
+    font:inherit; font-size:12px; font-weight:600; letter-spacing:.02em; text-transform:none;
+    border:1px solid #5c5c5c; background:#3a3a3a; color:#cfcfcf; border-radius:100px; padding:5px 14px; cursor:pointer;
+  }
+  .scenario-switch button.on{ background:#fff; color:#1c1c1c; border-color:#fff; }
+
+  .app{ display:flex; height:100vh; background:var(--bg); }
+
+  /* ---- sidebar ---- */
+  .sidebar{
+    width:250px;
+    flex:none;
+    background:var(--sidebar-bg);
+    border-right:1px solid var(--sidebar-border);
+    display:flex;
+    flex-direction:column;
+  }
+  .sidebar-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 16px;
+    font-weight:600;
+    border-bottom:1px solid var(--sidebar-border);
+  }
+  .sidebar-head button{
+    border:none; background:none; color:var(--text-faint); cursor:pointer; font-size:16px; line-height:1;
+  }
+  .nav{ padding:6px 0; overflow-y:auto; }
+  .nav-item{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:11px 16px;
+    color:var(--text);
+    font-size:13.5px;
+    cursor:default;
+  }
+  .nav-item .chev{ color:var(--text-faint); font-size:11px; }
+  .nav-item .count{
+    background:var(--danger); color:#fff; font-size:11px; font-weight:600;
+    border-radius:10px; padding:1px 7px; margin-right:6px;
+  }
+  .nav-group{ padding:2px 0 6px; }
+  .nav-sub{
+    padding:9px 16px 9px 30px;
+    font-size:13.5px;
+    color:var(--text-secondary);
+    cursor:default;
+    position:relative;
+  }
+  .nav-sub.active{
+    color:var(--accent);
+    background:var(--sidebar-active-bg);
+    font-weight:600;
+  }
+  .nav-sub.active::before{
+    content:"";
+    position:absolute; left:0; top:0; bottom:0; width:3px;
+    background:var(--accent);
+  }
+
+  /* ---- top bar ---- */
+  .main{ flex:1; min-width:0; display:flex; flex-direction:column; height:100vh; overflow:hidden; }
+  .topbar{
+    flex:none;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 24px;
+    border-bottom:1px solid var(--border-light);
+  }
+  .topbar-brand{ display:flex; align-items:center; gap:10px; font-weight:700; font-size:15px; }
+  .shop-icon{
+    width:26px; height:26px; border-radius:6px; background:var(--disabled-bg);
+    display:flex; align-items:center; justify-content:center; color:var(--text-secondary); font-size:14px;
+  }
+  .topbar-actions{ display:flex; align-items:center; gap:18px; color:var(--text-secondary); }
+  .topbar-actions .icon-btn{ cursor:pointer; display:flex; }
+  .avatar{
+    width:26px; height:26px; border-radius:50%; background:var(--disabled-bg);
+    display:flex; align-items:center; justify-content:center; color:var(--text-secondary);
+  }
+  .user-chip{ display:flex; align-items:center; gap:6px; cursor:default; font-size:13.5px; }
+
+  /* ---- content header ---- */
+  .content{ flex:1; display:flex; flex-direction:column; overflow:hidden; padding:22px 32px 0; max-width:1100px; width:100%; }
+  .content-header{
+    flex:none;
+    display:flex; align-items:center; gap:14px; margin-bottom:6px;
+  }
+  .panels-scroll{ flex:1; overflow-y:auto; padding-bottom:60px; }
+  .back-btn{
+    border:none; background:none; cursor:pointer; color:var(--text-secondary);
+    font-size:20px; line-height:1; padding:2px;
+  }
+  .content-header h1{
+    font-size:22px; font-weight:700; margin:0; flex:1; text-wrap:balance;
+  }
+  .icon-danger-btn{
+    width:36px; height:36px; border-radius:8px; border:none; cursor:pointer;
+    background:var(--danger); color:#fff; display:flex; align-items:center; justify-content:center;
+  }
+  .btn-save-header{
+    border:none; border-radius:6px; padding:9px 20px; font:inherit; font-weight:600; font-size:13.5px;
+    cursor:pointer; background:var(--disabled-bg); color:var(--disabled-text); transition:background .12s,color .12s;
+  }
+  .btn-save-header.dirty{ background:var(--accent); color:#fff; cursor:pointer; }
+  .btn-save-header:disabled{ cursor:not-allowed; }
+
+  /* ---- tabs ---- */
+  .tabs{ flex:none; display:flex; gap:28px; border-bottom:1px solid var(--border-light); margin-bottom:26px; }
+  .tab{
+    padding:13px 2px; font-size:12.5px; font-weight:700; letter-spacing:.03em;
+    color:var(--text-faint); border-bottom:2px solid transparent; cursor:pointer; background:none; border-top:none; border-left:none; border-right:none; font-family:inherit;
+  }
+  .tab.active{ color:var(--accent); border-bottom-color:var(--accent); }
+  .tab:disabled{ color:var(--text-faint); opacity:.55; cursor:not-allowed; }
+
+  /* ---- toggle ---- */
+  .toggle-wrap{ display:flex; align-items:center; gap:10px; margin-bottom:30px; }
+  .toggle{ position:relative; width:38px; height:21px; flex:none; }
+  .toggle input{ position:absolute; inset:0; opacity:0; margin:0; cursor:pointer; }
+  .toggle .track{ position:absolute; inset:0; background:var(--border); border-radius:12px; transition:background .15s; }
+  .toggle input:checked + .track{ background:var(--accent); }
+  .toggle .thumb{
+    position:absolute; top:2px; left:2px; width:17px; height:17px; border-radius:50%; background:#fff;
+    box-shadow:0 1px 2px rgba(0,0,0,.35); transition:transform .15s;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .toggle input:checked ~ .thumb{ transform:translateX(17px); }
+  .toggle .thumb svg{ width:10px; height:10px; opacity:0; }
+  .toggle input:checked ~ .thumb svg{ opacity:1; }
+  .toggle-label{ font-size:14px; }
+
+  /* ---- outlined fields ---- */
+  .row{ display:flex; gap:22px; margin-top:22px; flex-wrap:wrap; }
+  .row:first-of-type{ margin-top:0; }
+  .field{ flex:1 1 220px; min-width:200px; position:relative; }
+  .field.narrow{ flex:0 1 150px; min-width:120px; }
+  .field.full{ flex:1 1 100%; }
+
+  .control{ position:relative; }
+  .field input[type=text], .field textarea{
+    width:100%; font:inherit; font-size:14px; color:var(--text);
+    background:var(--bg); border:1px solid var(--border); border-radius:5px;
+    padding:15px 12px 11px;
+  }
+  .field textarea{ resize:vertical; min-height:44px; font-family:inherit; }
+  .field.mono input[type=text], .field.mono .mask-ghost{
+    font-variant-numeric:tabular-nums; letter-spacing:.02em;
+    font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  }
+  .field input::placeholder, .field textarea::placeholder{ color:var(--text-faint); }
+  .mask-ghost{
+    position:absolute; inset:0; padding:16px 13px 12px; font-size:14px;
+    color:var(--text-faint); white-space:pre; overflow:hidden; pointer-events:none;
+  }
+  .field.disabled .mask-ghost{ visibility:hidden; }
+  .field input:focus, .field textarea:focus{ outline:none; border-color:var(--accent); border-width:1.5px; padding:14.5px 11.5px 10.5px; }
+  .field .control > label{
+    position:absolute; top:-8px; left:9px; background:var(--bg);
+    padding:0 5px; font-size:11.5px; color:var(--text-secondary);
+    display:inline-flex; align-items:center; gap:4px; pointer-events:none; max-width:calc(100% - 18px);
+  }
+  .field .control > label > *{ pointer-events:auto; }
+  .field .control input:focus + label, .field .control textarea:focus + label{ color:var(--accent); }
+  .field .req{ color:var(--text-secondary); }
+  .field.disabled input, .field.disabled textarea{ background:var(--disabled-bg); color:var(--disabled-text); cursor:not-allowed; }
+  .field.disabled .control > label{ color:var(--text-faint); }
+
+  .field.valid input, .field.valid textarea{ border-color:var(--success); }
+  .field.invalid input, .field.invalid textarea{ border-color:var(--invalid); }
+
+  .hint{ font-size:11.5px; margin-top:5px; display:flex; align-items:center; gap:5px; color:var(--text-faint); min-height:14px; }
+  .hint .dot{ width:5px; height:5px; border-radius:50%; background:var(--text-faint); flex:none; }
+  .field.valid ~ .hint, .hint.valid{ color:var(--success); }
+  .field.valid ~ .hint .dot, .hint.valid .dot{ background:var(--success); }
+  .field.invalid ~ .hint, .hint.invalid{ color:var(--invalid); }
+  .field.invalid ~ .hint .dot, .hint.invalid .dot{ background:var(--invalid); }
+
+  .infobtn{
+    appearance:none; border:1px solid var(--text-faint); background:none; color:var(--text-faint);
+    font-style:italic; font-family:Georgia,serif; font-size:10px; width:14px; height:14px; line-height:14px;
+    text-align:center; border-radius:50%; cursor:pointer; padding:0;
+  }
+  .infobtn:hover{ color:var(--accent); border-color:var(--accent); }
+  .infopop{
+    display:none; font-size:12px; line-height:1.5; color:var(--text-secondary);
+    background:var(--accent-soft); border:1px solid #cddefb; border-radius:6px;
+    padding:9px 11px; margin-top:6px;
+  }
+  .infopop.open{ display:block; }
+
+  .section-card{
+    border:1px solid var(--border-light); border-radius:10px; padding:28px 28px 30px; background:var(--bg);
+  }
+
+  .radio-row{ display:flex; flex-wrap:wrap; gap:10px 26px; align-items:center; }
+  .radio-opt{ display:flex; align-items:center; gap:7px; font-size:13.5px; cursor:pointer; }
+  .radio-opt input{ width:16px; height:16px; accent-color:var(--accent); cursor:pointer; }
+
+  .check-row{ display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text-secondary); flex-basis:100%; margin-top:-4px; }
+  .check-row input{ width:15px; height:15px; accent-color:var(--accent); }
+
+  .subgroup-label{
+    flex-basis:100%; font-size:12.5px; font-weight:700; color:var(--text-secondary);
+    display:flex; align-items:center; gap:6px; margin-top:14px; padding-top:14px; border-top:1px dashed var(--border-light);
+  }
+
+  .placeholder-panel{ padding:60px 0; text-align:center; color:var(--text-faint); font-size:13.5px; }
+
+  .toast-wrap{ position:fixed; left:50%; bottom:26px; transform:translateX(-50%); display:flex; flex-direction:column; gap:8px; z-index:50; pointer-events:none; }
+  .toast{
+    background:#242424; color:#fff; font-size:13px; padding:10px 16px; border-radius:8px;
+    box-shadow:0 12px 30px rgba(0,0,0,.28); opacity:0; transform:translateY(6px); transition:opacity .18s, transform .18s;
+  }
+  .toast.show{ opacity:1; transform:translateY(0); }
+
+  @media (max-width:760px){
+    .sidebar{ display:none; }
+  }
+</style>
+
+<div class="stage-label">
+  <span>Кликабельный макет · веб · Производство → Заказчики</span>
+  <span class="scenario-switch">
+    Сценарий:
+    <button type="button" id="btn-scenario-edit" class="on" onclick="setScenario('edit')">Редактирование</button>
+    <button type="button" id="btn-scenario-create" onclick="setScenario('create')">Создание</button>
+  </span>
+</div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-head">Ежедневные операци… <button type="button" onclick="toast('Вне макета')">✕</button></div>
+    <nav class="nav">
+      <div class="nav-item">Прогноз <span class="chev">▾</span></div>
+      <div class="nav-item"><span><span class="count">199</span>Управление складом</span> <span class="chev">▾</span></div>
+      <div class="nav-item">Производство <span class="chev">▴</span></div>
+      <div class="nav-group">
+        <div class="nav-sub">Настройки производства</div>
+        <div class="nav-sub active">Заказчики</div>
+        <div class="nav-sub">Сводные заказы</div>
+        <div class="nav-sub">Заказы внешних заказчиков</div>
+        <div class="nav-sub">Отчет о расхождениях</div>
+      </div>
+      <div class="nav-item">Персонал <span class="chev">▾</span></div>
+      <div class="nav-item">Кассовые смены <span class="chev">▾</span></div>
+      <div class="nav-item">Отчеты 2.0 <span class="chev">▾</span></div>
+      <div class="nav-item">Отчеты <span class="chev">▾</span></div>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-brand"><span class="shop-icon">⌂</span> Муравьиная ферма</div>
+      <div class="topbar-actions">
+        <span class="icon-btn" onclick="toast('Вне макета')">🔔</span>
+        <span class="icon-btn" onclick="toast('Вне макета')">🔍</span>
+        <span class="user-chip"><span class="avatar">•</span> replic ▾</span>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="content-header">
+        <button class="back-btn" type="button" onclick="toast('Назад — вне макета')">←</button>
+        <h1 id="page-title">Миндаль</h1>
+        <button class="icon-danger-btn" id="btn-delete" type="button" title="Удалить" onclick="toast('Удаление — вне макета')">🗑</button>
+        <button class="btn-save-header" id="btn-save-basic" type="button" onclick="saveBasic()">Сохранить</button>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" type="button" id="tab-main" onclick="showTab('main')">ОСНОВНАЯ ИНФОРМАЦИЯ</button>
+        <button class="tab" type="button" id="tab-req" onclick="showTab('req')">РЕКВИЗИТЫ ОРГАНИЗАЦИИ</button>
+        <button class="tab" type="button" id="tab-lk" onclick="showTab('lk')">НАСТРОЙКИ ЛК ЗАКАЗЧИКА</button>
+      </div>
+
+      <div class="panels-scroll">
+      <div id="panel-main">
+
+        <div class="section-card">
+          <div class="toggle-wrap" id="toggle-wrap">
+            <span class="toggle">
+              <input type="checkbox" id="in-active" checked onchange="markDirtyBasic()">
+              <span class="track"></span>
+              <span class="thumb"><svg viewBox="0 0 16 16" fill="none" stroke="#2f6fed" stroke-width="2.4"><path d="M3 8l3.5 3.5L13 4.5"/></svg></span>
+            </span>
+            <span class="toggle-label">Активный</span>
+          </div>
+
+          <div class="row">
+            <div class="field" id="f-name">
+              <div class="control">
+                <input type="text" id="in-name" value="Миндаль" oninput="markDirtyBasic()">
+                <label for="in-name">Название<span class="req">*</span></label>
+              </div>
+              <div class="hint neutral" id="hint-name"></div>
+            </div>
+            <div class="field narrow disabled" id="f-code">
+              <div class="control">
+                <input type="text" id="in-code" value="23" disabled>
+                <label for="in-code">Код</label>
+              </div>
+              <div class="hint neutral"></div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field" id="f-firstname">
+              <div class="control">
+                <input type="text" id="in-firstname" value="Ирина" oninput="markDirtyBasic()">
+                <label for="in-firstname">Имя<span class="req">*</span></label>
+              </div>
+              <div class="hint neutral" id="hint-firstname"></div>
+            </div>
+            <div class="field" id="f-lastname">
+              <div class="control">
+                <input type="text" id="in-lastname" value="" placeholder="" oninput="markDirtyBasic()">
+                <label for="in-lastname">Фамилия</label>
+              </div>
+              <div class="hint neutral"></div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field" id="f-phone">
+              <div class="control">
+                <input type="text" id="in-phone" value="+79819830910" oninput="markDirtyBasic()">
+                <label for="in-phone">Телефон<span class="req">*</span></label>
+              </div>
+              <div class="hint neutral" id="hint-phone"></div>
+            </div>
+            <div class="field" id="f-email">
+              <div class="control">
+                <input type="text" id="in-email" value="lbm-ira@yandex.ru" oninput="markDirtyBasic()">
+                <label for="in-email">Email<span class="req">*</span></label>
+              </div>
+              <div class="hint neutral" id="hint-email"></div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field full">
+              <div class="control">
+                <input type="text" id="in-lk-addr" value="" placeholder="" oninput="markDirtyBasic()">
+                <label for="in-lk-addr">Адрес доставки для ЛК</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div id="panel-req" hidden>
+        <div class="section-card" id="block-req">
+          <div class="row">
+            <div class="field full" id="f-fullname">
+              <div class="control">
+                <input type="text" id="in-fullname" placeholder='Например, ООО «Миндаль»'>
+                <label for="in-fullname">Полное наименование</label>
+              </div>
+              <div class="hint neutral" id="hint-fullname"></div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field full">
+              <div class="radio-row">
+                <span style="font-size:13px;color:var(--text-secondary);font-weight:600;">Организационно-правовая форма:</span>
+                <label class="radio-opt"><input type="radio" name="party" value="legal" id="party-legal" checked onchange="onPartyChange()"> Юридическое лицо (ООО и др.)</label>
+                <label class="radio-opt"><input type="radio" name="party" value="ip" id="party-ip" onchange="onPartyChange()"> Индивидуальный предприниматель (ИП)</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field mono" id="f-inn">
+              <div class="control">
+                <input type="text" id="in-inn" inputmode="numeric" maxlength="10">
+                <span class="mask-ghost" id="mask-inn" aria-hidden="true">хххххххххх</span>
+                <label for="in-inn">ИНН</label>
+              </div>
+              <div class="hint neutral" id="hint-inn"></div>
+            </div>
+            <div class="field mono" id="f-kpp">
+              <div class="control">
+                <input type="text" id="in-kpp" inputmode="numeric" maxlength="9">
+                <span class="mask-ghost" id="mask-kpp" aria-hidden="true">ххххххххх</span>
+                <label for="in-kpp">КПП</label>
+              </div>
+              <div class="hint neutral" id="hint-kpp"></div>
+            </div>
+            <div class="field mono" id="f-ogrn">
+              <div class="control">
+                <input type="text" id="in-ogrn" inputmode="numeric" maxlength="13">
+                <span class="mask-ghost" id="mask-ogrn" aria-hidden="true">ххххххххххххх</span>
+                <label for="in-ogrn" id="label-ogrn">ОГРН</label>
+              </div>
+              <div class="hint neutral" id="hint-ogrn"></div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field full" id="f-legaladdr">
+              <div class="control">
+                <textarea id="in-legaladdr" placeholder="Индекс, регион, город, улица, дом, офис"></textarea>
+                <label for="in-legaladdr">Юридический адрес
+                  <button type="button" class="infobtn"
+                    onmouseenter="document.getElementById('info-legaladdr').classList.add('open')"
+                    onmouseleave="document.getElementById('info-legaladdr').classList.remove('open')"
+                    onclick="event.stopPropagation(); document.getElementById('info-legaladdr').classList.add('open')"
+                    aria-label="Что указывать в этом поле">i</button>
+                </label>
+              </div>
+              <div class="infopop" id="info-legaladdr">Адрес по учредительным документам и выписке из ЕГРЮЛ: индекс, регион, населённый пункт, улица, дом, офис/помещение (при наличии).</div>
+              <div class="hint neutral" id="hint-legaladdr"></div>
+            </div>
+          </div>
+
+          <div class="row">
+            <label class="check-row"><input type="checkbox" id="chk-same-addr" onchange="onSameAddr()"> Совпадает с юридическим адресом</label>
+            <div class="field full" id="f-actualaddr">
+              <div class="control">
+                <textarea id="in-actualaddr" placeholder="Заполняется, если отличается от юридического"></textarea>
+                <label for="in-actualaddr">Фактический адрес</label>
+              </div>
+              <div class="hint neutral" id="hint-actualaddr"></div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="subgroup-label">Банковские реквизиты</div>
+          </div>
+          <div class="row">
+            <div class="field full" id="f-bankname">
+              <div class="control">
+                <input type="text" id="in-bankname" placeholder="Наименование банка">
+                <label for="in-bankname">Банк</label>
+              </div>
+              <div class="hint neutral" id="hint-bankname"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field mono" id="f-bik">
+              <div class="control">
+                <input type="text" id="in-bik" inputmode="numeric" maxlength="9">
+                <span class="mask-ghost" id="mask-bik" aria-hidden="true">ххххххххх</span>
+                <label for="in-bik">БИК</label>
+              </div>
+              <div class="hint neutral" id="hint-bik"></div>
+            </div>
+            <div class="field mono" id="f-racc">
+              <div class="control">
+                <input type="text" id="in-racc" inputmode="numeric" maxlength="20">
+                <span class="mask-ghost" id="mask-racc" aria-hidden="true">хххххххххххххххххххх</span>
+                <label for="in-racc">Расчётный счёт</label>
+              </div>
+              <div class="hint neutral" id="hint-racc"></div>
+            </div>
+            <div class="field mono" id="f-korr">
+              <div class="control">
+                <input type="text" id="in-korr" inputmode="numeric" maxlength="20">
+                <span class="mask-ghost" id="mask-korr" aria-hidden="true">хххххххххххххххххххх</span>
+                <label for="in-korr">Корр. счёт</label>
+              </div>
+              <div class="hint neutral" id="hint-korr"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="panel-lk" hidden>
+        <div class="placeholder-panel">Вкладка «Настройки ЛК заказчика» — существующий функционал, вне рамок этого макета.</div>
+      </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+  function toast(msg){
+    const wrap = document.getElementById('toast-wrap');
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.textContent = msg;
+    wrap.appendChild(el);
+    requestAnimationFrame(()=> el.classList.add('show'));
+    setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=> el.remove(), 220); }, 2400);
+  }
+
+  function showTab(which){
+    document.getElementById('tab-main').classList.toggle('active', which==='main');
+    document.getElementById('tab-req').classList.toggle('active', which==='req');
+    document.getElementById('tab-lk').classList.toggle('active', which==='lk');
+    document.getElementById('panel-main').hidden = which!=='main';
+    document.getElementById('panel-req').hidden = which!=='req';
+    document.getElementById('panel-lk').hidden = which!=='lk';
+  }
+
+  document.addEventListener('click', (e)=>{
+    if(!e.target.closest('.infobtn')){
+      document.querySelectorAll('.infopop.open').forEach(p => p.classList.remove('open'));
+    }
+  });
+
+  function setState(fieldId, hintId, state, message){
+    const field = document.getElementById(fieldId);
+    const hint = document.getElementById(hintId);
+    field.classList.remove('valid','invalid');
+    hint.classList.remove('valid','invalid');
+    if(state === 'empty'){
+      hint.innerHTML = '';
+    } else if(state === 'valid'){
+      field.classList.add('valid'); hint.classList.add('valid');
+      hint.innerHTML = '<span class="dot"></span>' + message;
+    } else {
+      field.classList.add('invalid'); hint.classList.add('invalid');
+      hint.innerHTML = '<span class="dot"></span>' + message;
+    }
+  }
+
+  // ---- Блок «Основная информация»: два сценария — «Редактирование» / «Создание» ----
+  const btnSaveBasic = document.getElementById('btn-save-basic');
+  const in_name = document.getElementById('in-name');
+  const REQUIRED_IDS = ['in-name','in-firstname','in-phone','in-email'];
+  const SAMPLE = {
+    active:true, name:'Миндаль', code:'23', firstname:'Ирина', lastname:'', phone:'+79819830910', email:'lbm-ira@yandex.ru', addr:''
+  };
+  let scenario = 'edit';
+
+  function requiredFilled(){
+    return REQUIRED_IDS.every(id => document.getElementById(id).value.trim());
+  }
+
+  function requiredFieldMeta(id){
+    const suffix = id.replace('in-','');
+    return { fieldId: 'f-' + suffix, hintId: 'hint-' + suffix };
+  }
+
+  function clearRequiredHighlight(){
+    REQUIRED_IDS.forEach(id=>{
+      const { fieldId, hintId } = requiredFieldMeta(id);
+      const field = document.getElementById(fieldId);
+      const hint = document.getElementById(hintId);
+      if(field) field.classList.remove('invalid');
+      if(hint) hint.innerHTML = '';
+    });
+  }
+
+  function highlightMissingRequired(){
+    REQUIRED_IDS.forEach(id=>{
+      const { fieldId, hintId } = requiredFieldMeta(id);
+      if(!document.getElementById(id).value.trim()){
+        setState(fieldId, hintId, 'invalid', 'обязательное поле');
+      } else {
+        setState(fieldId, hintId, 'empty');
+      }
+    });
+  }
+
+  function markDirtyBasic(){
+    if(scenario === 'edit'){
+      btnSaveBasic.classList.add('dirty');
+    }
+    // снимаем подсветку с обязательного поля сразу, как только его заполнили
+    REQUIRED_IDS.forEach(id=>{
+      if(document.getElementById(id).value.trim()){
+        const { fieldId, hintId } = requiredFieldMeta(id);
+        const field = document.getElementById(fieldId);
+        const hint = document.getElementById(hintId);
+        if(field) field.classList.remove('invalid');
+        if(hint) hint.innerHTML = '';
+      }
+    });
+  }
+
+  function saveBasic(){
+    if(scenario === 'edit'){
+      if(!btnSaveBasic.classList.contains('dirty')) return;
+      if(reqBlockHasErrors()){
+        showTab('req');
+        toast('Исправьте отмеченные поля в реквизитах организации');
+        return;
+      }
+      btnSaveBasic.classList.remove('dirty');
+      toast('Заказчик успешно сохранен');
+    } else {
+      if(!requiredFilled()){
+        showTab('main');
+        highlightMissingRequired();
+        toast('Заполните обязательные поля');
+        return;
+      }
+      if(reqBlockHasErrors()){
+        showTab('req');
+        toast('Исправьте отмеченные поля в реквизитах организации');
+        return;
+      }
+      clearRequiredHighlight();
+      const newCode = String(Math.floor(Math.random()*89)+10);
+      toast('Заказчик успешно сохранен');
+      document.getElementById('in-code').value = newCode;
+      setScenario('edit', {keepValues:true, code:newCode});
+    }
+  }
+
+  function setScenario(mode, opts){
+    opts = opts || {};
+    scenario = mode;
+    document.getElementById('btn-scenario-edit').classList.toggle('on', mode==='edit');
+    document.getElementById('btn-scenario-create').classList.toggle('on', mode==='create');
+
+    document.getElementById('f-code').style.display = mode==='create' ? 'none' : '';
+    document.getElementById('btn-delete').style.display = mode==='create' ? 'none' : '';
+    document.getElementById('page-title').textContent = mode==='create' ? 'Новый заказчик' : (opts.keepValues ? in_name.value : SAMPLE.name);
+
+    const tabLk = document.getElementById('tab-lk');
+    tabLk.disabled = mode==='create';
+    if(mode==='create') showTab('main');
+
+    document.getElementById('toggle-wrap').style.display = mode==='create' ? 'none' : '';
+
+    clearRequiredHighlight();
+
+    if(!opts.keepValues){
+      const vals = mode==='create'
+        ? {active:true, name:'', code:'', firstname:'', lastname:'', phone:'', email:'', addr:''}
+        : SAMPLE;
+      document.getElementById('in-active').checked = vals.active;
+      in_name.value = vals.name;
+      document.getElementById('in-code').value = vals.code;
+      document.getElementById('in-firstname').value = vals.firstname;
+      document.getElementById('in-lastname').value = vals.lastname;
+      document.getElementById('in-phone').value = vals.phone;
+      document.getElementById('in-email').value = vals.email;
+      document.getElementById('in-lk-addr').value = vals.addr;
+    }
+
+    btnSaveBasic.textContent = 'Сохранить';
+    // в режиме создания кнопка активна сразу; в режиме редактирования — только после правки
+    btnSaveBasic.classList.toggle('dirty', mode==='create');
+  }
+
+  // ---- контрольные числа: НЕ используются в валидации этого макета ----
+  // Оставлены как справочные алгоритмы для бэкенда (см. спецификацию, раздел «Что не реализовано») —
+  // на фронте эти поля проверяются только на полноту ввода (см. revalidateMasked ниже).
+  function checkInn10(inn){
+    if(!/^\d{10}$/.test(inn)) return false;
+    const w = [2,4,10,3,5,9,4,6,8];
+    let sum = 0;
+    for(let i=0;i<9;i++) sum += w[i]*Number(inn[i]);
+    return ((sum % 11) % 10) === Number(inn[9]);
+  }
+  function checkInn12(inn){
+    if(!/^\d{12}$/.test(inn)) return false;
+    const w1 = [7,2,4,10,3,5,9,4,6,8];
+    let sum1 = 0;
+    for(let i=0;i<10;i++) sum1 += w1[i]*Number(inn[i]);
+    if(((sum1 % 11) % 10) !== Number(inn[10])) return false;
+    const w2 = [3,7,2,4,10,3,5,9,4,6,8];
+    let sum2 = 0;
+    for(let i=0;i<11;i++) sum2 += w2[i]*Number(inn[i]);
+    return ((sum2 % 11) % 10) === Number(inn[11]);
+  }
+  function checkKpp(kpp){
+    if(!/^\d{9}$/.test(kpp)) return {ok:false, reason:'должно быть 9 цифр'};
+    if(kpp.slice(0,4) === '0000') return {ok:false, reason:'код налогового органа не может быть 0000'};
+    if(kpp.slice(4,6) === '00') return {ok:false, reason:'код причины постановки не может быть 00'};
+    return {ok:true};
+  }
+  function checkOgrn13(ogrn){
+    if(!/^\d{13}$/.test(ogrn)) return false;
+    const n = Number(ogrn.slice(0,12));
+    return ((n % 11) % 10) === Number(ogrn[12]);
+  }
+  function checkOgrnip15(ogrnip){
+    if(!/^\d{15}$/.test(ogrnip)) return false;
+    const n = Number(ogrnip.slice(0,14));
+    return ((n % 13) % 10) === Number(ogrnip[14]);
+  }
+  function checksum23(str23){
+    let sum = 0;
+    for(let i=0;i<23;i++) sum += [7,1,3][i%3] * Number(str23[i]);
+    return sum % 10 === 0;
+  }
+  function checkAccount(bik, acc, kind){
+    if(!/^\d{20}$/.test(acc)) return {ok:false, reason:'должно быть 20 цифр'};
+    if(!/^\d{9}$/.test(bik)) return {ok:null, reason:'формат верный, для проверки нужен корректный БИК'};
+    const prefix = kind === 'racc' ? bik.slice(6,9) : ('0' + bik.slice(4,6));
+    const ok = checksum23(prefix + acc);
+    return {ok, reason: ok ? 'контрольная сумма совпадает с БИК' : 'не сходится контрольная сумма с указанным БИК'};
+  }
+
+  function digitsOnly(el, max){ el.value = el.value.replace(/\D/g,'').slice(0, max); }
+
+  // ---- маска остатка цифр поверх поля + единая проверка «набраны ли все цифры» ----
+  function updateGhost(ghost, typedLen, totalLen){
+    if(!ghost) return;
+    const remaining = Math.max(totalLen - typedLen, 0);
+    ghost.textContent = ' '.repeat(typedLen) + 'х'.repeat(remaining);
+  }
+  function digitsLeftMessage(typedLen, totalLen){
+    return `введено ${typedLen} из ${totalLen} цифр`;
+  }
+  function revalidateMasked(input, ghost, fieldId, hintId, len){
+    digitsOnly(input, len);
+    const v = input.value;
+    updateGhost(ghost, v.length, len);
+    if(!v){ setState(fieldId, hintId, 'empty'); }
+    else if(v.length < len){ setState(fieldId, hintId, 'invalid', digitsLeftMessage(v.length, len)); }
+    else { setState(fieldId, hintId, 'empty'); }
+  }
+
+  // ---- Вид контрагента: юрлицо (ИНН 10) / ИП (ИНН 12, КПП не бывает) ----
+  let partyType = 'legal';
+  const in_inn = document.getElementById('in-inn');
+  const mask_inn = document.getElementById('mask-inn');
+  const in_kpp = document.getElementById('in-kpp');
+  const mask_kpp = document.getElementById('mask-kpp');
+  const f_kpp = document.getElementById('f-kpp');
+  const in_ogrn = document.getElementById('in-ogrn');
+  const mask_ogrn = document.getElementById('mask-ogrn');
+  const label_ogrn = document.getElementById('label-ogrn');
+
+  function innLen(){ return partyType === 'ip' ? 12 : 10; }
+  function ogrnLen(){ return partyType === 'ip' ? 15 : 13; }
+
+  function revalidateOgrn(){
+    revalidateMasked(in_ogrn, mask_ogrn, 'f-ogrn', 'hint-ogrn', ogrnLen());
+    validateReqBlock();
+  }
+  in_ogrn.addEventListener('input', revalidateOgrn);
+
+  function revalidateInn(){
+    revalidateMasked(in_inn, mask_inn, 'f-inn', 'hint-inn', innLen());
+    validateReqBlock();
+  }
+  in_inn.addEventListener('input', revalidateInn);
+
+  function onPartyChange(){
+    partyType = document.querySelector('input[name="party"]:checked').value;
+    const len = innLen();
+    in_inn.setAttribute('maxlength', len);
+    in_inn.value = '';
+    updateGhost(mask_inn, 0, len);
+    setState('f-inn','hint-inn','empty');
+
+    const ogrnLenVal = ogrnLen();
+    in_ogrn.setAttribute('maxlength', ogrnLenVal);
+    in_ogrn.value = '';
+    updateGhost(mask_ogrn, 0, ogrnLenVal);
+    label_ogrn.textContent = partyType === 'ip' ? 'ОГРНИП' : 'ОГРН';
+    setState('f-ogrn','hint-ogrn','empty');
+
+    if(partyType === 'ip'){
+      in_kpp.value = '';
+      in_kpp.disabled = true;
+      f_kpp.classList.add('disabled');
+      setState('f-kpp','hint-kpp','empty');
+    } else {
+      in_kpp.disabled = false;
+      f_kpp.classList.remove('disabled');
+      updateGhost(mask_kpp, 0, 9);
+      setState('f-kpp','hint-kpp','empty');
+    }
+    validateReqBlock();
+  }
+
+  in_kpp.addEventListener('input', ()=>{
+    revalidateMasked(in_kpp, mask_kpp, 'f-kpp', 'hint-kpp', 9);
+    validateReqBlock();
+  });
+
+  function onSameAddr(){
+    const chk = document.getElementById('chk-same-addr');
+    const actual = document.getElementById('in-actualaddr');
+    const field = document.getElementById('f-actualaddr');
+    if(chk.checked){
+      actual.value = document.getElementById('in-legaladdr').value;
+      actual.disabled = true;
+      field.classList.add('disabled');
+      setState('f-actualaddr','hint-actualaddr','empty');
+    } else {
+      actual.disabled = false;
+      field.classList.remove('disabled');
+    }
+  }
+  document.getElementById('in-legaladdr').addEventListener('input', ()=>{
+    if(document.getElementById('chk-same-addr').checked){
+      document.getElementById('in-actualaddr').value = document.getElementById('in-legaladdr').value;
+    }
+  });
+
+  const in_bik = document.getElementById('in-bik');
+  const mask_bik = document.getElementById('mask-bik');
+  const mask_racc = document.getElementById('mask-racc');
+  const mask_korr = document.getElementById('mask-korr');
+
+  function onBikChange(){
+    revalidateMasked(in_bik, mask_bik, 'f-bik', 'hint-bik', 9);
+    validateReqBlock();
+  }
+  in_bik.addEventListener('input', onBikChange);
+
+  document.getElementById('in-racc').addEventListener('input', function(){
+    revalidateMasked(this, mask_racc, 'f-racc', 'hint-racc', 20);
+    validateReqBlock();
+  });
+  document.getElementById('in-korr').addEventListener('input', function(){
+    revalidateMasked(this, mask_korr, 'f-korr', 'hint-korr', 20);
+    validateReqBlock();
+  });
+
+  function validateReqBlock(){
+    // поля блока «Реквизиты организации» уже подсвечиваются по месту (setState);
+    // здесь только пересчитываем итоговое состояние для единой кнопки «Сохранить»
+  }
+
+  function reqBlockHasErrors(){
+    return document.querySelectorAll('#block-req .field.invalid').length > 0;
+  }
+
+  // любое изменение внутри «Реквизиты организации» тоже включает единую кнопку «Сохранить»
+  document.getElementById('block-req').addEventListener('input', ()=>{
+    if(scenario === 'edit') btnSaveBasic.classList.add('dirty');
+  });
+  document.getElementById('block-req').addEventListener('change', ()=>{
+    if(scenario === 'edit') btnSaveBasic.classList.add('dirty');
+  });
+</script>

@@ -1,0 +1,112 @@
+/* ============================================================
+   iiko DS — Expansion panel + Expansion content
+   Источник: Figma, страница «Expansion panel»
+   Variant=Default : border 1px #E0E0E0, fill #F8F9FC
+   Variant=Info    : border 1px #448AFF ПУНКТИР [2,2], fill #F5F9FF
+   Шапка панели: h44, pad 12/16, r12, gap 8, иконки 20px
+   Состояния: Default / Hover / Press / Disable
+   Collaps/Expand: Off / On (стрелка keyboard_arrow_down поворачивается)
+   ============================================================ */
+
+.ds-expansion {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  border-radius: var(--ds-radius-3x);                    /* 12px */
+  border: 1px solid var(--ds-color-stroke-default);      /* Default: #E0E0E0 — рамка вокруг шапки И контента */
+  background: var(--ds-color-surface-default);           /* #FFFFFF */
+  overflow: hidden;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Variant=Info — пунктирная акцентная рамка вокруг всей панели */
+.ds-expansion--info {
+  border: 1px dashed var(--ds-color-stroke-accent);      /* #448AFF, пунктир */
+  background: var(--ds-palette-accent-10);               /* #F5F9FF */
+}
+
+/* ── Шапка панели (44px, рамки нет — она у контейнера) ────── */
+
+.ds-expansion__header {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2x);                               /* 8px */
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: var(--ds-space-3x) var(--ds-space-4x);         /* 12px 16px */
+  background: transparent;
+  cursor: pointer;
+  transition: background-color .15s ease;
+}
+
+.ds-expansion__header:hover  { background: var(--ds-color-shapes-hover); }   /* #F5F5F5 */
+.ds-expansion__header:active { background: var(--ds-color-shapes-press); }   /* #E0E0E0 */
+
+.ds-expansion--disabled {
+  border-color: var(--ds-color-stroke-disable);          /* #EBEBEB */
+  background: var(--ds-color-surface-disable);           /* #F5F5F5 */
+}
+.ds-expansion--disabled .ds-expansion__header {
+  color: var(--ds-color-text-disable);
+  pointer-events: none;
+}
+
+/* ── Элементы шапки ───────────────────────────────────────── */
+
+.ds-expansion__icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ds-color-icon-primary);                   /* #616161 */
+}
+.ds-expansion--info .ds-expansion__icon { color: var(--ds-color-icon-accent); }  /* #448AFF */
+
+.ds-expansion__arrow {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ds-color-icon-primary);
+  transition: transform .15s ease;
+}
+.ds-expansion--open .ds-expansion__arrow { transform: rotate(180deg); }
+
+.ds-expansion__title {
+  flex: 1;
+  color: var(--ds-color-text-primary);                   /* #333333 */
+  font-size: var(--ds-typography-body-font-size-s);      /* 14px */
+  font-weight: var(--ds-typography-font-weight-medium);  /* 500 */
+  line-height: var(--ds-typography-body-line-height-s);  /* 20px */
+  letter-spacing: var(--ds-typography-letter-spacing-s);
+}
+
+/* группа иконок справа (Icon group из ДС) */
+.ds-expansion__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2x);
+  flex-shrink: 0;
+}
+
+/* ── Expansion content (Padding off/on = True → pad 16) ───── */
+
+.ds-expansion__content {
+  display: flex;
+  flex-direction: column;
+  padding: var(--ds-space-4x);                           /* 16px */
+  color: var(--ds-color-text-primary);
+  font-size: var(--ds-typography-body-font-size-s);      /* 14px */
+  line-height: var(--ds-typography-body-line-height-s);  /* 20px */
+  letter-spacing: var(--ds-typography-letter-spacing-s);
+}
+.ds-expansion__content--no-padding { padding: 0; }
+
+/* иконки из файла иконок ДС приходят с fill из ДС — красим токеном компонента */
+.ds-expansion__icon svg path,
+.ds-expansion__arrow svg path { fill: currentColor; }
+.ds-expansion:not(.ds-expansion--open) .ds-expansion__content { display: none; }

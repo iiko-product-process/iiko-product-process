@@ -1,0 +1,113 @@
+/* ============================================================
+   iiko DS — Tabs, Divider, Info panel (выверено по ДС и макету)
+   Автогенерация для этих компонентов давала артефакты
+   (рамка у .ds-tabs, белый фон у .ds-divider), поэтому правила
+   заданы точно: цвета/размеры — только токены из tokens.css
+   ============================================================ */
+
+/* ── Tabs (подчёркнутые: актив = акцент + 2px) ────────────── */
+
+.ds-tabs {
+
+  display: flex;
+  align-items: stretch;
+  gap: var(--ds-space-0);
+  border-bottom: 1px solid var(--ds-color-divider-solid-default-color); /* #E0E0E0 */
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+
+}
+
+/* ── Divider ──────────────────────────────────────────────── */
+
+/* ── Divider (Figma 58320:441 — 16 вариантов; 53556:7964 — Type=Solid) ──
+   Size=M → 1px, Size=L → 2px
+   Solid:  Default/Lite #E0E0E0 · Hover/Selected #448AFF · Disable #EBEBEB
+   Dashed: линия 1px dash 4/4, те же цвета по состояниям              */
+
+.ds-divider {
+
+  height: 1px;                                              /* Size=M */
+  border: none;
+  margin: 0;
+  background: var(--ds-color-divider-solid-default-color);  /* #E0E0E0 */
+
+}
+
+.ds-divider--m {
+ height: 1px; 
+}
+
+.ds-divider--l {
+ height: 2px; 
+}
+
+/* Size=L */
+.ds-divider--lite {
+ background: var(--ds-color-divider-solid-lite-color); 
+}
+
+.ds-divider:hover {
+ background: var(--ds-color-divider-solid-hover-color); 
+}
+
+/* #448AFF */
+.ds-divider--selected {
+ background: var(--ds-color-divider-solid-selected-color); 
+}
+
+/* #448AFF */
+.ds-divider--disable {
+ background: var(--ds-color-divider-solid-disable-color); 
+}
+
+/* #EBEBEB */
+.ds-divider--dashed {
+
+  height: 0;
+  background: none;
+  border-top: 1px dashed var(--ds-color-divider-dashed-default-color);
+
+}
+
+.ds-divider--dashed.ds-divider--l {
+ border-top-width: 2px; 
+}
+
+.ds-divider--dashed.ds-divider--selected {
+ border-top-color: var(--ds-color-divider-dashed-selected-color); 
+}
+
+.ds-divider--dashed.ds-divider--disable {
+ border-top-color: var(--ds-color-divider-dashed-disable-color); 
+}
+
+/* совместимость: раньше класс назывался .ds-divider-line */
+.ds-divider-line {
+
+  height: 1px;
+  border: none;
+  margin: 0;
+  background: var(--ds-color-divider-solid-default-color);  /* #E0E0E0 */
+
+}
+
+.ds-divider-line--lite {
+ background: var(--ds-color-divider-solid-lite-color); 
+}
+
+.ds-divider-line--selected {
+ background: var(--ds-color-divider-solid-selected-color); 
+}
+
+/* #448AFF */
+.ds-divider-line--disable {
+ background: var(--ds-color-divider-solid-disable-color); 
+}
+
+.ds-divider-line--dashed {
+
+  height: 0;
+  background: none;
+  border-top: 1px dashed var(--ds-color-divider-dashed-default-color);
+
+}

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Menu — демо стенд компонента</title>
+<!--
+  Демо стенд компонентов Menu (страница «Menu_DS», 54163:6699). Папка: DS/components-web/components/Menu_DS/.
+  Источник — канва Figma «Iiko Web DS (New)»: «Menu (Container)» (Type=Container: Search 40 + Title menu 36 + Divider +
+  слот пунктов + Divider + Button group 52), «Menu item» (7 состояний: Default/Hover/Press/Negative/Selected/Back selected/
+  Disable), «Element menu» (8: Image size/Icon size/Text default/Checkbox/Radio button/Indicator/Slide toggle/Counter),
+  «Arrow menu» (13 стрелок) + блок «Menu (Examples)» (6254×1339; сценарии: Basic menu «Профиль/Выбор языка/Уведомления/
+  Настройки/Выход», Nested menu, State menu, Icon menu, «Menu with text sections/counter», «Menu inputs» (Название, А-Я/Я-А,
+  Дата, Сначала новые/старые), «Selection check menu» (Статус: Черновик/Запланирована/…; Каналы: Только канал/…), «Menu all» и др.).
+  ⚠ В css у Menu item НЕТ классов Selected/Negative/Back selected (только :hover/:active/:disabled) — собраны обвязкой стенда;
+  высоты пунктов внутри контейнера на канве не сняты (слот 228×272) — на стенде строки 36 (обвязка). Журнал DS/fixes.md №131.
+-->
+<link rel="stylesheet" href="../../font.css">
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../index.css">
+<link rel="stylesheet" href="../../fixes.css">
+<style>
+  /* каркас демо-стенда */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .view { padding: 24px; }
+  .view .ds-tabs { margin-bottom: 24px; }
+  .panel { width: fit-content; max-width: 1920px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  .snap-cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0; }
+  .snap-note { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 28px 0 0; max-width: 980px; }
+  .snap-sect { margin: 0 0 40px; }
+  .snap-sect:last-child { margin-bottom: 0; }
+  .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
+  .snap-row { display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap; }
+  .snap-col { display: flex; flex-direction: column; gap: 10px; }
+  .snap-ex-caption { font-size: 14px; line-height: 28px; color: var(--ds-color-text-primary, #333333); margin: 0; }
+  /* пункт меню в контейнере (обвязка: 36 высота) */
+  .ds-menu-container { min-height: 0; }
+  .snap-mi { width: 100%; display: flex; align-items: center; gap: 8px; padding: 8px 16px; box-sizing: border-box; font-size: 14px; line-height: 20px; color: #333; background: #fff; cursor: pointer; }
+  .snap-mi:hover { background: var(--ds-color-menu-item-hover-background, #f5f5f5); }
+  .snap-mi--pressed { background: var(--ds-color-menu-item-press-background, #e0e0e0); }
+  .snap-mi--selected { background: var(--ds-palette-accent-10, #f5f9ff); color: var(--ds-color-icon-accent, #448aff); }
+  .snap-mi--negative { color: var(--ds-color-text-negative, #ff5252); }
+  .snap-mi--disable { color: var(--ds-color-text-disable, #9e9e9e); pointer-events: none; }
+  .snap-mi--back { background: var(--ds-palette-accent-10, #f5f9ff); }
+  .snap-mi__right { margin-left: auto; display: inline-flex; gap: 8px; color: inherit; }
+  .snap-mi__icon { width: 20px; height: 20px; display: inline-flex; color: var(--ds-color-icon-primary, #616161); }
+  .snap-mi__icon svg { width: 100%; height: 100%; display: block; }
+  .snap-mi--selected .snap-mi__icon { color: inherit; }
+  .snap-counter { display: inline-flex; align-items: center; justify-content: center; min-width: 19px; height: 18px; padding: 1px 6px; box-sizing: border-box; border-radius: 9999px; background: var(--ds-color-badge-accent-background, #448aff); color: #fff; font-size: 12px; line-height: 16px; }
+  .snap-ind { width: 8px; height: 8px; border-radius: 50%; background: var(--ds-color-badge-accent-background, #448aff); display: inline-block; }
+  .snap-sect .ds-menu-item { width: 100%; min-height: 36px; align-items: center; box-sizing: border-box; }
+  .snap-mi2 { width: 258px; min-height: 68px; }
+  .snap-btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; border: 0; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer; }
+  .snap-btn--accent { background: var(--ds-color-button-accent-filled-default-background, #448aff); color: #ffffff; }
+  .snap-btn--text { background: none; color: var(--ds-color-button-accent-outlined-default-text-color, #448aff); }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Menu — демо стенд</span>
+  <span>наборы Figma: Menu (Container) · Menu item (7 состояний) · Element menu (8) · Arrow menu (13) · примеры (6254×1339)</span>
+</div>
+<div class="view">
+  <div class="ds-tabs" role="tablist" aria-label="Menu">
+    <button class="ds-tab ds-tab--active" role="tab" aria-selected="true" data-vtab="basic">Basic example</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="menu-container">Menu (Container)</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="menu-item">Menu item</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="element-menu">Element menu</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="arrow-menu">Arrow menu</button>
+  </div>
+
+  <!-- 2. Menu (Container) — состав: Search + Title menu + Divider + пункты + Divider + Button group -->
+  <div class="panel" data-vpanel="menu-container" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Menu (Container) — состав: Search + Title menu + Divider + пункты + Divider + Button group</div>
+      <div class="snap-row" style="margin-top: 12px;">
+        <div class="ds-menu-container" style="width:240px;padding:8px 0;">
+          <div class="ds-menu-container__search"><div class="ds-search ds-search--s" style="width:208px;"><span class="ds-search__icon" style="color:#616161;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-search"/></svg></span><span class="ds-search__text" style="color:#d6d6d6;">Search text</span></div></div>
+          <div class="ds-menu-container__title"><span class="ds-menu-container__label" style="color:#333333;">Title menu</span></div>
+          <div style="height:1px;background:var(--ds-color-stroke-default,#e0e0e0);"></div>
+          <div class="snap-mi">Menu item text</div>
+          <div class="snap-mi">Menu item text</div>
+          <div class="snap-mi">Menu item text</div>
+          <div class="snap-mi">Menu item text</div>
+          <div style="height:1px;background:var(--ds-color-stroke-default,#e0e0e0);"></div>
+          <div class="ds-menu-container__button-group"><button class="snap-btn snap-btn--text" style="padding:4px 8px;">Button</button><button class="snap-btn snap-btn--accent" style="padding:4px 8px;">Button</button></div>
+        </div>
+        <div class="snap-col" style="max-width: 300px;">
+          <span class="snap-cap">Пункт «Menu item» в контейнере — строки 36 (обвязка); на канве слот 228×272 без детализации высот. Search — ds-search--s (36), Title 36, Button group 52. Тексты — заглушки канвы.</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 3. Menu item — 7 состояний -->
+  <div class="panel" data-vpanel="menu-item" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Menu item — 7 состояний</div>
+      <div class="snap-row" style="margin-top: 8px;">
+        <div class="snap-col"><span class="snap-cap">Default</span><div class="ds-menu-item snap-mi2"><span class="ds-menu-item__label">Menu item text</span></div></div>
+        <div class="snap-col"><span class="snap-cap">Hover</span><div class="ds-menu-item snap-mi2" style="background:var(--ds-color-menu-item-hover-background,#f5f5f5);"><span class="ds-menu-item__label">Menu item text</span></div></div>
+        <div class="snap-col"><span class="snap-cap">Press</span><div class="ds-menu-item snap-mi2" style="background:var(--ds-color-menu-item-press-background,#e0e0e0);"><span class="ds-menu-item__label">Menu item text</span></div></div>
+        <div class="snap-col"><span class="snap-cap">Negative</span><div class="ds-menu-item snap-mi2"><span class="ds-menu-item__label" style="color:var(--ds-color-text-negative,#ff5252);">Menu item text</span></div></div>
+        <div class="snap-col"><span class="snap-cap">Selected</span><div class="ds-menu-item snap-mi2" style="background:var(--ds-palette-accent-10,#f5f9ff);"><span class="ds-menu-item__label" style="color:var(--ds-color-icon-accent,#448aff);">Menu item text</span></div></div>
+        <div class="snap-col"><span class="snap-cap">Back selected</span><div class="ds-menu-item snap-mi2" style="background:var(--ds-palette-accent-10,#f5f9ff);"><span class="ds-menu-item__icon" style="color:#448aff;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-arr-left"/></svg></span><span class="ds-menu-item__label">Menu item text</span></div></div>
+        <div class="snap-col"><span class="snap-cap">Disable</span><div class="ds-menu-item snap-mi2 ds-menu-item--disabled"><span class="ds-menu-item__label" style="color:#9e9e9e;">Menu item text</span></div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 4. Element menu — 8 вариантов контента -->
+  <div class="panel" data-vpanel="element-menu" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Element menu — 8 вариантов контента (в строке меню)</div>
+      <div class="snap-row" style="margin-top: 8px; align-items: center;">
+        <div class="snap-col"><span class="snap-cap">Image size</span><span style="width:24px;height:24px;border-radius:50%;background:#e0e0e0;display:inline-block;"></span></div>
+        <div class="snap-col"><span class="snap-cap">Icon size</span><span class="snap-mi__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+        <div class="snap-col"><span class="snap-cap">Text default</span><span style="font-size:14px;line-height:20px;">Text default</span></div>
+        <div class="snap-col"><span class="snap-cap">Checkbox</span><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox" checked><span class="ds-checkbox__box"></span></label></div>
+        <div class="snap-col"><span class="snap-cap">Radio button</span><label class="ds-radio"><input class="ds-radio__input" type="radio" checked><span class="ds-radio__box"></span></label></div>
+        <div class="snap-col"><span class="snap-cap">Indicator</span><span class="snap-ind"></span></div>
+        <div class="snap-col"><span class="snap-cap">Slide toggle</span><label class="ds-slide-toggle"><span class="ds-slide-toggle__row"><input class="ds-slide-toggle__input" type="checkbox" checked><span class="ds-slide-toggle__track"></span></span></label></div>
+        <div class="snap-col"><span class="snap-cap">Counter</span><span class="snap-counter">5</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 5. Arrow menu — стрелки -->
+  <div class="panel" data-vpanel="arrow-menu" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Arrow menu — стрелки (в наборе 13; показаны доступные глифы)</div>
+      <div class="snap-row" style="margin-top: 8px; align-items:center;">
+        <span class="snap-mi__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span>
+        <span class="snap-mi__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span>
+        <span class="snap-mi__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-right"/></svg></span>
+        <span class="snap-mi__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-arr-left"/></svg></span>
+        <span class="snap-mi__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-arr-right"/></svg></span>
+        <span class="snap-mi__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-up"/></svg></span>
+        <span class="snap-mi__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span>
+        <span class="snap-mi__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-left"/></svg></span>
+        <span class="snap-cap">…и ещё: arrow_downward_alt, arrow_forward, unfold_less, unfold_more, arrow_upward (состав из 13 — по канве; часть глифов не экспортировалась).</span>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: (а) в css Menu item состояния Selected/Negative/Back selected отсутствуют (только hover/press/disable) — на стенде собраны обвязкой по смыслу (подложка accent-10/текст accent, negative #FF5252) — сверить с Figma и решить в ДС; (б) высоты пунктов внутри контейнера на канве не детализированы (слот) — строки 36 обвязкой; (в) Element menu — элементы из своих компонентов (Checkbox/Radio/Slide toggle из ДС); Image size показан круглым плейсхолдером (аватар/картинка — ассет); (г) Counter — по Badge (accent); (д) Search в контейнере — ds-search--s; (е) «Menu item» из набора — 258×68 (по css), компактные меню в примерах — строки меньшей высоты. Журнал №131.</p>
+  </div>
+
+  <!-- 1. Basic example: сценарии канвы (тексты дословно) -->
+  <div class="panel" data-vpanel="basic" role="tabpanel">
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Сценарии канвы (тексты дословно; меню собраны строками обвязки)</div>
+      <div class="snap-row" style="margin-top: 12px;">
+        <div class="snap-col"><p class="snap-ex-caption">Basic menu</p>
+          <div class="ds-menu-container" style="width:240px;padding:8px 0;">
+            <div class="snap-mi">Профиль</div>
+            <div class="snap-mi">Выбор языка</div>
+            <div class="snap-mi">Уведомления</div>
+            <div class="snap-mi">Настройки</div>
+            <div class="snap-mi snap-mi--negative">Выход</div>
+          </div>
+        </div>
+        <div class="snap-col"><p class="snap-ex-caption">Nested menu</p>
+          <div class="ds-menu-container" style="width:240px;padding:8px 0;">
+            <div class="snap-mi">Menu item text</div>
+            <div class="snap-mi">Menu item text</div>
+            <div class="snap-mi">Menu item text <span class="snap-mi__right"><span class="snap-mi__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-right"/></svg></span></span></div>
+            <div class="snap-mi">Menu item text</div>
+            <div class="snap-mi">Menu item text <span class="snap-mi__right"><span class="snap-mi__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-right"/></svg></span></span></div>
+          </div>
+        </div>
+        <div class="snap-col"><p class="snap-ex-caption">Menu with text sections &amp; counter</p>
+          <div class="ds-menu-container" style="width:240px;padding:8px 0;">
+            <div class="ds-menu-container__title"><span class="ds-menu-container__label" style="color:#333;">Title menu</span></div>
+            <div class="snap-mi">Menu item text <span class="snap-mi__right"><span class="snap-counter">7</span></span></div>
+            <div class="snap-mi">Menu item text <span class="snap-mi__right"><span class="snap-counter">17</span></span></div>
+            <div class="ds-menu-container__title"><span class="ds-menu-container__label" style="color:#333;">Title menu</span></div>
+            <div class="snap-mi">Menu item text</div>
+            <div class="snap-mi">Menu item text</div>
+          </div>
+        </div>
+        <div class="snap-col"><p class="snap-ex-caption">Menu inputs (сортировка)</p>
+          <div class="ds-menu-container" style="width:240px;padding:8px 0;">
+            <div class="snap-mi snap-mi--selected">Название</div>
+            <div class="snap-mi">А-Я</div>
+            <div class="snap-mi">Я-А</div>
+            <div class="snap-mi snap-mi--selected">Дата</div>
+            <div class="snap-mi">Сначала новые</div>
+            <div class="snap-mi">Сначала старые</div>
+          </div>
+        </div>
+        <div class="snap-col"><p class="snap-ex-caption">Selection check menu (Статус / Каналы)</p>
+          <div class="ds-menu-container" style="width:240px;padding:8px 0;">
+            <div class="ds-menu-container__title"><span class="ds-menu-container__label" style="color:#333;">Статус</span></div>
+            <div class="snap-mi"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Черновик</span></label></div>
+            <div class="snap-mi"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox" checked><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Запланирована</span></label></div>
+            <div class="snap-mi"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Отправлена</span></label></div>
+            <div class="ds-menu-container__title"><span class="ds-menu-container__label" style="color:#333;">Каналы</span></div>
+            <div class="snap-mi"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox" checked><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Только канал</span></label></div>
+            <div class="snap-mi"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Telegram</span></label></div>
+          </div>
+        </div>
+        <div class="snap-col"><p class="snap-ex-caption">Selection radio menu</p>
+          <div class="ds-menu-container" style="width:240px;padding:8px 0;">
+            <div class="snap-mi"><label class="ds-radio"><input class="ds-radio__input" type="radio" name="menur" checked><span class="ds-radio__box"></span><span class="ds-radio__label">Menu item text</span></label></div>
+            <div class="snap-mi"><label class="ds-radio"><input class="ds-radio__input" type="radio" name="menur"><span class="ds-radio__box"></span><span class="ds-radio__label">Menu item text</span></label></div>
+            <div class="snap-mi"><label class="ds-radio"><input class="ds-radio__input" type="radio" name="menur"><span class="ds-radio__box"></span><span class="ds-radio__label">Menu item text</span></label></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: (а) тексты — с канвы (Basic menu: «Профиль/Выбор языка/Уведомления/Настройки/Выход»; «Название / А-Я / Я-А / Дата / Сначала новые / Сначала старые»; Статус/Каналы — «Черновик/Запланирована/Отправлена/Отправляется/Ошибка/Отменена» и «Только канал/Только каскад/Приложение/Telegram/MAX/СМС» — на стенде показаны частично); (б) в канве ещё сценарии: State menu, Icon menu, «Menu with toogle selection», «Menu with scroll & divider», «Menu with single selection», «Selection check all menu» («Menu all»), «Menu hierarchy», «Menu complex», «Menu moving items» — воспроизведены репрезентативно, кадры с наложением (divider/scroll) смотрим при следующем проходе; (в) «Menu item text» в кадрах — заглушки канвы. Журнал №131.</p>
+  </div>
+</div>
+
+<!-- иконки -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-info" viewBox="0 0 24 24"><path d="M11 17H13V11H11V17ZM12 9C12.2833 9 12.5208 8.90417 12.7125 8.7125C12.9042 8.52083 13 8.28333 13 8C13 7.71667 12.9042 7.47917 12.7125 7.2875C12.5208 7.09583 12.2833 7 12 7C11.7167 7 11.4792 7.09583 11.2875 7.2875C11.0958 7.47917 11 7.71667 11 8C11 8.28333 11.0958 8.52083 11.2875 8.7125C11.4792 8.90417 11.7167 9 12 9ZM12 22C10.6167 22 9.31667 21.7375 8.1 21.2125C6.88333 20.6875 5.825 19.975 4.925 19.075C4.025 18.175 3.3125 17.1167 2.7875 15.9C2.2625 14.6833 2 13.3833 2 12C2 10.6167 2.2625 9.31667 2.7875 8.1C3.3125 6.88333 4.025 5.825 4.925 4.925C5.825 4.025 6.88333 3.3125 8.1 2.7875C9.31667 2.2625 10.6167 2 12 2C13.3833 2 14.6833 2.2625 15.9 2.7875C17.1167 3.3125 18.175 4.025 19.075 4.925C19.975 5.825 20.6875 6.88333 21.2125 8.1C21.7375 9.31667 22 10.6167 22 12C22 13.3833 21.7375 14.6833 21.2125 15.9C20.6875 17.1167 19.975 18.175 19.075 19.075C18.175 19.975 17.1167 20.6875 15.9 21.2125C14.6833 21.7375 13.3833 22 12 22ZM12 20C14.2333 20 16.125 19.225 17.675 17.675C19.225 16.125 20 14.2333 20 12C20 9.76667 19.225 7.875 17.675 6.325C16.125 4.775 14.2333 4 12 4C9.76667 4 7.875 4.775 6.325 6.325C4.775 7.875 4 9.76667 4 12C4 14.2333 4.775 16.125 6.325 17.675C7.875 19.225 9.76667 20 12 20Z"/></symbol>
+  <symbol id="ic-search" viewBox="0 0 24 24"><path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z"/></symbol>
+  <symbol id="ic-drop-down" viewBox="0 0 24 24"><path d="M7 10L12 15L17 10H7Z"/></symbol>
+  <symbol id="ic-drop-up" viewBox="0 0 24 24"><path d="M7 14L12 9L17 14H7Z"/></symbol>
+  <symbol id="ic-kb-down" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17L16.59 8.59L18 10L12 16L6 10L7.41 8.59Z"/></symbol>
+  <symbol id="ic-kb-up" viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83L16.59 15.41L18 14L12 8L6 14L7.41 15.41Z"/></symbol>
+  <symbol id="ic-kb-left" viewBox="0 0 24 24"><path d="M15.41 16.59L10.83 12L15.41 7.41L14 6L8 12L14 18L15.41 16.59Z"/></symbol>
+  <symbol id="ic-kb-right" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12L8.59 7.41L10 6L16 12L10 18L8.59 16.59Z"/></symbol>
+  <symbol id="ic-arr-left" viewBox="0 0 24 24"><path d="M20 11H7.83L13.42 5.41L12 4L4 12L12 20L13.42 18.59L7.83 13H20V11Z"/></symbol>
+  <symbol id="ic-arr-right" viewBox="0 0 24 24"><path d="M4 13H16.17L10.58 18.59L12 20L20 12L12 4L10.58 5.41L16.17 11H4V13Z"/></symbol>
+</svg>
+
+<script>
+  /* табы стенда */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.ds-tab[data-vtab]'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('[data-vpanel]'));
+  tabs.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      tabs.forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle('ds-tab--active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach(function (p) { p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab'); });
+    });
+  });
+</script>
+</body>
+</html>

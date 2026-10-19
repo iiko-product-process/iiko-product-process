@@ -1,0 +1,41 @@
+/* ============================================================
+   iiko DS Mobile — Slide toggle: строка 48 px
+   ------------------------------------------------------------
+   Трек и ручка приходят из modes.css (52×32 и 24 — совпадающие значения
+   MD3 и Angular Material). Здесь только нажимаемая строка:
+   20 px на десктопе → 48 px на мобиле.
+
+   Откуда 48
+   ---------
+     · MD3 switch: touch-target 48 dp при треке 52×32;
+     · Angular Material: mat-slide-toggle — тот же трек, тач-таргет 48;
+     · iOS HIG: чисел не даёт (switch только как строка списка).
+
+   Подключение: components-mobile/components/index.css
+   ============================================================ */
+
+[data-mode="mobile"] .ds-slide-toggle,
+[data-mode="mobile"] .ds-slide-toggle__row {
+  min-height: 48px;
+}
+/* ── Размеры на мобиле: заданы явно ────────────────────────────────
+   Десктопный CSS держит размеры числами (`height: 36px`), поэтому режим
+   не может их сдвинуть. Библиотеку не трогаем — задаём мобильные значения
+   здесь. Числа те же, что на странице: см. «Что меняется на мобиле». */
+
+[data-mode="mobile"] .ds-slide-toggle__track {
+  width: 52px;
+  height: 32px;
+  border-radius: var(--ds-radius-4x);                   /* 16 — полная пилюля */
+}
+
+[data-mode="mobile"] .ds-slide-toggle__track::after {
+  top: 4px;
+  left: 4px;
+  width: 24px;
+  height: 24px;
+}
+
+[data-mode="mobile"] .ds-slide-toggle__input:checked + .ds-slide-toggle__track::after {
+  transform: translateX(20px);
+}

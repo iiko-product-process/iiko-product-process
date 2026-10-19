@@ -1,0 +1,194 @@
+/* ds-review.css — верхняя панель ревью («надстройка») для страниц-стендов прототипов.
+   Служебный слой показа: для владельцев и участников; НЕ часть ДС-компонентов и НЕ часть
+   юзерского прототипа. Подключается сам скриптом ds-review.js (лежит рядом с этим файлом).
+   Все значения — токены ДС (fallback = текущий вид). Файл общий для всех стендов: править только здесь. */
+
+.dsr-bar {
+  position: relative; z-index: 210;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px;
+  min-height: 44px; padding: 6px 16px; box-sizing: border-box;
+  background: #fff; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0);
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-size: var(--ds-typography-font-size-3-5x, 14px); line-height: 20px;
+  color: var(--ds-color-text-primary, #333333);
+  white-space: nowrap;
+}
+.dsr-bar[hidden] { display: none; }
+/* Страница-канва обвязки ревью: серый фон под кадром (в ?ui=0 класс не ставится) */
+body.dsr-page { background: var(--ds-color-surface-hover, #f5f5f5); }
+/* Фон самого кадра-«листа»: раньше его давала белая страница (.panel/.frame прозрачные) —
+   теперь задаём явно, чтобы на серой канве кадр оставался белым */
+body.dsr-page .panel { background: var(--ds-color-surface-default, #ffffff); }
+
+.dsr-bar [hidden] { display: none !important; }   /* hidden поверх display у секций */
+
+/* Иконки панели — только аутлайн (правило ДС); кегль 20 — как у кнопок-иконок S/M в ДС */
+.dsr-bar .material-icons, .dsr-restore .material-icons { font-family: 'Material Icons Outlined'; }
+.dsr-bar .ds-btn-icon__icon .material-icons { font-size: 20px; line-height: 20px; }
+/* зазор между кнопками-иконками в баре — 16 (перебивает 8 из группы ДС) */
+.dsr-bar .ds-btn-icon-group { gap: 16px; }
+/* Неактивная стрелка (крайние экраны) — вид «Disabled» по ДС. косяк ДС: правила Disable у
+   Button icon идут раньше комбо-стилей «стиль × тип», при равной специфичности цвет
+   перекрывается — disabled-стрелка выглядит активной; фикс в обвязке (токен ДС) */
+.dsr-bar .ds-btn-icon:disabled { color: var(--ds-color-button-icon-disable-icon-color, #9e9e9e); }
+
+.dsr-bar__title {
+  flex: 0 0 auto; max-width: min(560px, 40vw);
+  overflow: hidden; text-overflow: ellipsis;
+  font-weight: var(--ds-typography-font-weight-medium, 500);
+  color: var(--ds-color-text-secondary, #616161);
+}
+.dsr-sec { display: inline-flex; align-items: center; gap: 8px; flex: 0 0 auto; }   /* блок бара: лейбл → шаги → селект — по 8 */
+/* «шаги»: ‹ 1/3 › — группа; внутри (стрелки ↔ счётчик) — 4; до селекта — 8 (gap блока, селект снаружи) */
+.dsr-steps { display: inline-flex; align-items: center; gap: 4px; flex: 0 0 auto; }
+.dsr-grow { flex: 1 1 auto; min-width: 8px; }
+.dsr-lbl { color: var(--ds-color-text-secondary, #616161); }
+/* счётчик экранов «1/3» — между стрелками ‹ ›; отступы задаёт .dsr-steps (4) */
+.dsr-count { color: var(--ds-color-text-primary, #333333); font-variant-numeric: tabular-nums; }
+
+/* Селекты панели (шаги, размер) — компонент ДС Select (S); список раскрывается под полем.
+   косяк ДС: жёсткие ширины — поле 250 (select-form), список 240 (container), пункт 258 (item);
+   обвязка задаёт ширину через контейнер, а список и пункты тянет по полю:
+   шаги — 420 (имя целиком), размер — 96 (1440/768/375). */
+.dsr-sel { position: relative; display: inline-flex; flex: 0 0 auto; }
+.dsr-sel .ds-select-form { width: 100%; }
+/* селекты панели: размер XS (28), а поведение и оформление — как у обычного S
+   (заливка, рамка по кругу, состояния), радиус — 12 */
+.dsr-sel .ds-input--xs .ds-input__frame {
+  border-radius: var(--ds-radius-3x, 12px);
+  background: var(--ds-color-shapes-default-variant, #f8f9fc);
+  border: 1px solid var(--ds-color-stroke-default, #e0e0e0);
+  box-shadow: none;
+}
+/* шрифт поля — 14 (значение XS; у S был бы 16) */
+.dsr-sel .ds-input--xs .ds-input__field { font-size: 14px; line-height: 20px; }
+/* состояния — как у S: ховер и фокус (поле — div, фокус живёт на обёртке .ds-select-form);
+   свои правила нужны, т.к. надстройка выше по специфичности, чем состояния ДС */
+.dsr-sel .ds-input--xs .ds-input__frame:hover {
+  background: var(--ds-color-shapes-hover, #f5f5f5);
+  border-color: var(--ds-color-stroke-hover, #9e9e9e);
+}
+.dsr-sel .ds-select-form:focus .ds-input--xs .ds-input__frame,
+.dsr-sel .ds-select-form:focus-within .ds-input--xs .ds-input__frame {
+  background: var(--ds-color-shapes-default-variant, #f8f9fc);
+  border-color: var(--ds-color-stroke-accent, #448aff);
+}
+.dsr-sel--steps { width: 520px; }   /* имя шага целиком, с запасом */
+.dsr-sel--sizes { width: auto; }    /* ширина по контенту: только число 1440/1024/375 */
+.dsr-sel .ds-input__field { overflow: hidden; text-overflow: ellipsis; }
+/* список — не уже поля; шире — если пунктам нужно (галочка, длинный текст) — правило одно на оба селекта */
+.dsr-sel__list { position: absolute; left: 0; top: calc(100% + 4px); z-index: 5; width: auto; min-width: 100%; border-radius: var(--ds-radius-3x, 12px); }
+.dsr-sel .ds-select-item { cursor: pointer; width: 100%; }   /* пункты одной ширины — галочка не скачет */
+.dsr-sel .ds-select-item__element-right { margin-left: auto; }   /* галочка выбранного — всегда у правого края */
+.dsr-sel .ds-select-item__content { min-width: 0; }
+.dsr-sel--sizes .ds-select-item__content { flex: 1 1 auto; }   /* текст пункта «Размера» — на всю ширину */
+.dsr-sel .ds-select-item__label, .dsr-sel .ds-select-item__label-down { display: block; overflow: hidden; text-overflow: ellipsis; }
+
+/* Кнопки, стрелки и шестерёнка панели — компоненты ДС (Button / Button icon);
+   своих стилей кнопкам не задаём. «Пути» — ссылка, но вид кнопки: без браузерного подчёркивания. */
+.dsr-bar a.ds-btn { text-decoration: none; }
+/* между «Подсказки ДС» и «Схемы» — 8 (общий зазор бара 24 минус 16) */
+.dsr-bar .dsr-hints-btn { margin-right: -16px; }
+
+/* Слои подсказок и пузыри — fixed: не режутся прокруткой панели и самой страницы */
+.dsr-layer { position: fixed; inset: 0; z-index: 205; pointer-events: none; }
+.dsr-badge {
+  position: absolute; min-width: 20px; height: 20px; padding: 0 5px; box-sizing: border-box;
+  border: 0; border-radius: 9999px;
+  background: var(--ds-color-brand-accent-default, #448aff); color: var(--ds-color-text-inversive, #ffffff);
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-size: 12px; line-height: 20px;
+  font-weight: var(--ds-typography-font-weight-medium, 500);
+  text-align: center; cursor: pointer; pointer-events: auto; box-shadow: 0 0 0 2px #fff;
+}
+.dsr-badge:hover { box-shadow: 0 0 0 2px #fff, var(--ds-shadow-shadows-08-dp-s); }
+.dsr-target { outline: 2px dashed var(--ds-color-brand-accent-default, #448aff); outline-offset: -2px; }
+
+.dsr-bubble { position: fixed; z-index: 215; }
+/* Пузырь — композит ДС: контейнер + контент (как на стендах «Метро»); ширина/перенос — для читаемости.
+   косяк ДС: у ds-hint-content__label white-space: nowrap — многострочный текст не переносится. */
+.dsr-bubble .ds-hint-container { width: auto; }
+.dsr-bubble .ds-hint-content { width: 340px; }
+.dsr-bubble .ds-hint-content__label { white-space: normal; }
+
+/* Поповер настроек — контейнер меню ДС (ds-menu-container) с туглами ДС; позиция — fixed.
+   косяк ДС: у контейнера жёстко min-height 418 и ширина 240 — здесь размеры под контент поповера. */
+.dsr-pop { position: fixed; z-index: 215; }
+.dsr-pop.ds-menu-container { width: 300px; min-height: 0; }
+.dsr-pop__row { display: flex; align-items: center; padding: 8px var(--ds-size-4x, 16px); }
+.dsr-pop__row .ds-slide-toggle { width: 100%; }
+.dsr-pop__note { padding: 4px var(--ds-size-4x, 16px) 8px; color: var(--ds-color-text-secondary, #616161); font-size: 12px; line-height: 16px; white-space: normal; }
+
+/* Кнопка возврата панели — когда панель скрыта: прилипает к правому краю кадра
+   (позицию left/top считает placeRestore в ds-review.js — «рядом с панелью», не угол экрана) */
+.dsr-restore {
+  position: absolute; z-index: 220; width: 36px; height: 36px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--ds-radius-2x, 8px); border: 1px solid var(--ds-color-stroke-default, #e0e0e0);
+  background: #fff; color: var(--ds-color-text-secondary, #616161);
+  cursor: pointer; box-shadow: var(--ds-shadow-shadows-08-dp-s);
+}
+.dsr-restore:hover { color: var(--ds-color-text-accent, #448aff); }
+.dsr-restore .material-icons { font-size: 20px; }
+.dsr-restore[hidden] { display: none; }
+
+/* ── Подложка Chrome (макет «Гайды»: вкладки 43 + тулбар 43 = 86) ────────── */
+.dsr-chrome { display: block; overflow: hidden; box-sizing: border-box; }
+.dsr-chrome[hidden] { display: none; }
+.dsr-chrome img { display: block; }
+
+.dsr-chrome__top { display: flex; align-items: flex-end; height: 43px; background: #dfe1e6; overflow: hidden; }
+.dsr-chrome__tabs { display: flex; align-items: flex-start; background: linear-gradient(to top, #ffffff 57%, #dfe1e6 76%); }
+.dsr-chrome__bookend { position: relative; flex: none; width: 40px; height: 34px; background: #dfe1e6; border-bottom-right-radius: 11px; }
+.dsr-chrome__roundbtn { position: absolute; left: 5px; top: 0; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: #fff; border-radius: 8px; }
+.dsr-chrome__roundbtn img { width: 18px; height: 18px; }
+.dsr-chrome__tab { position: relative; flex: none; display: flex; align-items: center; gap: 8px; width: 233px; height: 34px; padding: 9px 11px 9px 12px; background: #fff; border-radius: 8px 8px 0 0; box-sizing: border-box; }
+.dsr-chrome__favicon { flex: none; width: 18px; height: 18px; }
+.dsr-chrome__tabname { font: 400 12px/16px 'Inter', 'Roboto', Arial, sans-serif; color: #1f1f1f; white-space: nowrap; }
+.dsr-chrome__tabclose { position: absolute; right: 6px; top: 9px; width: 18px; height: 18px; }
+.dsr-chrome__newtab { flex: none; display: flex; align-items: center; justify-content: center; width: 40px; height: 34px; background: #dfe1e6; border-radius: 8px 8px 0 8px; }
+.dsr-chrome__newtab img { width: 18px; height: 18px; }
+.dsr-chrome__win { margin-left: auto; display: flex; align-items: flex-start; flex: none; }
+.dsr-chrome__winbtn { display: flex; align-items: center; justify-content: center; width: 45px; height: 34px; }
+.dsr-chrome__winbtn--close { width: 48px; }
+.dsr-chrome__min { width: 10px; height: 1px; background: #84888c; }
+.dsr-chrome__max { box-sizing: border-box; width: 10px; height: 10px; border: 1px solid #84888c; }
+.dsr-chrome__winbtn img { width: 18px; height: 18px; }
+
+.dsr-chrome__bar { display: flex; align-items: center; gap: 12px; height: 43px; padding: 6px 12px; box-sizing: border-box; background: #fff; border-bottom: 1px solid #dbdcdd; border-top-left-radius: 11px; }
+.dsr-chrome__nav { display: flex; align-items: center; gap: 8px; flex: none; }
+.dsr-chrome__nav img { width: 18px; height: 18px; }
+.dsr-chrome__url { position: relative; display: flex; align-items: center; gap: 9px; flex: 1 1 auto; min-width: 0; height: 32px; padding: 4px 4px 4px 15px; box-sizing: border-box; background: #eceff7; border-radius: 64px; }
+.dsr-chrome__lock { flex: none; width: 16px; height: 16px; }
+.dsr-chrome__urltext { font: 400 12px/16px 'Inter', 'Roboto', Arial, sans-serif; color: #202020; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dsr-chrome__star { position: absolute; right: 8px; top: 50%; margin-top: -9px; width: 18px; height: 18px; }
+.dsr-chrome__right { display: flex; align-items: center; gap: 8px; flex: none; }
+.dsr-chrome__right img { width: 18px; height: 18px; }
+.dsr-chrome__div { width: 10px; height: 18px; background: linear-gradient(#5e5e5e, #5e5e5e) center / 1px 18px no-repeat; }
+
+/* Варианты подложки: 1440 — десктопный хром; телефон и планшет — мобильный набор (макет) */
+.dsr-chrome__mobile { display: none; }
+.dsr-chrome[data-w="375"] .dsr-chrome__mobile, .dsr-chrome[data-w="1024"] .dsr-chrome__mobile { display: block; }
+.dsr-chrome[data-w="375"] .dsr-chrome__desktop, .dsr-chrome[data-w="1024"] .dsr-chrome__desktop { display: none; }
+
+/* Статусбар экрана — 44: «8:00» + иконки сети/батареи (макет, белый) */
+.dsr-status { position: relative; height: 44px; background: #fff; }
+.dsr-status__time { position: absolute; left: 18px; top: 16px; width: 50px; text-align: center; font: 700 15px/18px 'Montserrat', 'Roboto', Arial, sans-serif; color: #070707; letter-spacing: 0; }
+.dsr-status__stats { position: absolute; right: 18px; top: 19px; display: block; width: 67px; height: 12px; }
+.dsr-chrome[data-w="375"] .dsr-status { border-top-left-radius: 24px; border-top-right-radius: 24px; }
+.dsr-chrome[data-w="1024"] .dsr-status { border-top-left-radius: 14px; border-top-right-radius: 14px; }
+
+/* Мобильный хром — 66: домой · адресное поле · счётчик вкладок · меню (макет, белый) */
+.dsr-mbar { position: relative; height: 66px; background: #fff; }
+.dsr-mbar__home { position: absolute; left: 12px; top: 21px; display: block; width: 24px; height: 24px; }
+.dsr-mbar__url { position: absolute; left: 44px; right: 84px; top: 16px; height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 11px; box-sizing: border-box; background: #f7f9ff; border-radius: 17px; }
+.dsr-mbar__lock { flex: none; box-sizing: border-box; width: 16px; height: 16px; padding: 3px 4px; }
+.dsr-mbar__text { font: 500 10px/13px 'Roboto', Arial, sans-serif; color: #333333; white-space: nowrap; }
+.dsr-mbar__tabs { position: absolute; right: 52px; top: 25px; display: flex; align-items: center; justify-content: center; box-sizing: border-box; width: 16px; height: 16px; border: 1.5px solid #333333; border-radius: 5px; font: 700 10px/1 'Roboto', Arial, sans-serif; color: #333333; }
+.dsr-mbar__more { position: absolute; right: 12px; top: 21px; display: block; width: 24px; height: 24px; }
+
+/* Навбар экрана — 20: пилюля по центру (макет, белый) */
+.dsr-nav { position: relative; height: 20px; background: #fff; }
+.dsr-nav[hidden] { display: none; }
+.dsr-nav__home { position: absolute; left: 50%; top: 50%; margin: -2px 0 0 -36px; width: 72px; height: 4px; border-radius: 4px; background: rgba(51, 51, 51, .6); }
+.dsr-nav[data-w="375"] { border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; }
+.dsr-nav[data-w="1024"] { border-bottom-left-radius: 14px; border-bottom-right-radius: 14px; }

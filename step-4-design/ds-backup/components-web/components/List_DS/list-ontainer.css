@@ -1,0 +1,74 @@
+.ds-list-container {
+  min-height: 257px;
+  width: 258px;
+  display: flex;
+  flex-direction: column;
+  padding: var(--ds-list-pad-top, 8px) 0 var(--ds-list-pad-bottom, 8px) 0;
+  border-radius: var(--ds-list-border-radius);
+  background: var(--ds-color-list-background, #ffffff);
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-list-container__label {
+  font-size: var(--ds-font-body-s-14-normal-medium-size);
+  line-height: var(--ds-font-body-s-14-normal-medium-line);
+  letter-spacing: var(--ds-font-body-s-14-normal-medium-spacing);
+  font-weight: var(--ds-font-body-s-14-normal-medium-weight);
+  color: var(--ds-color-list-item-text-color, #333333);
+  white-space: nowrap;
+}
+.ds-list-container__icon {
+  flex-shrink: 0;
+  width: var(--ds-size-3x);
+  height: var(--ds-size-3x);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ds-list-container__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ds-list-container__icon svg path {
+  fill: currentColor;
+}
+.ds-list-container__item {
+  display: flex;
+  flex-direction: row;
+  gap: var(--ds-list-item-gap, 8px);
+  padding: var(--ds-list-item-pad-top, 8px) var(--ds-list-item-pad-right, 16px) var(--ds-list-item-pad-bottom, 8px) var(--ds-list-item-pad-left, 16px);
+  background: var(--ds-color-list-item-default-background, #ffffff);
+}
+.ds-list-container__element-left {
+  display: flex;
+  flex-direction: row;
+  background: #ffffff;
+}
+.ds-list-container__content {
+  display: flex;
+  flex-direction: column;
+}
+.ds-list-container__element-right {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--ds-size-2-5x);
+  background: #ffffff;
+}
+.ds-list-container__divider {
+  height: var(--ds-size-0-25x);
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
+.ds-list-container__scroll {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: var(--ds-scroll-pad-top, 2px) var(--ds-scroll-pad-right, 2px) var(--ds-scroll-pad-bottom, 2px) var(--ds-scroll-pad-left, 2px);
+}
+.ds-list-container--container {
+  color: var(--ds-color-list-item-text-label-color, #616161);
+}
+

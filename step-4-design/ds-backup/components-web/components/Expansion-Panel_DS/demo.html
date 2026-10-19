@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expansion panel — демо стенд компонента</title>
+<!--
+  Демо стенд компонентов Expansion panel (страница «Expansion panel_DS», 52937:1328). Папка: DS/components-web/components/Expansion-Panel_DS/.
+  Источник — канва Figma «Iiko Web DS (New)»: «Expansion panel» (12 вариантов: Variant Default/Info × Collaps/Expand Off/On ×
+  State Default/Hover/Press/Disable), «Expansion content» (2: Padding off/on), «Expansion group panel» (2: Collaps/Expand) +
+  «Expansion (Examples)» (2059×2652): «На что влияет выбор складов» (+ кнопка «Подробнее», слот «Это Slot. В блоке контента
+  может быть всё что угодно»), «Дерево акций» (Название акции / До 22.12.2024 / счётчики / «Добавить группу» / «Инфо» / «Даты» /
+  «Стоп»…), «Общие параметры» («Период действия»: «с 01.05.2025 по 01.06.2025», «с 00:00 по 23:59», «Пн, Вт, Ср, Чт, Сб, Вс»…).
+  Состав шапки: h44, паддинг 12/16, r12, гэп 8; стрелка keyboard_arrow_down поворачивается при Expand; Variant=Info — пунктирная
+  акцентная рамка + фон #F5F9FF. ⚠ В Figma у Variant=Default шапка #F8F9FC, в css фон #FFFFFF — решить в ДС. Панели живые
+  (клик по шапке раскрывает). Журнал DS/fixes.md №133.
+-->
+<link rel="stylesheet" href="../../font.css">
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../index.css">
+<link rel="stylesheet" href="../../fixes.css">
+<style>
+  /* каркас демо-стенда */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .view { padding: 24px; }
+  .view .ds-tabs { margin-bottom: 24px; }
+  .panel { width: fit-content; max-width: 1920px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  .snap-cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0; }
+  .snap-note { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 28px 0 0; max-width: 980px; }
+  .snap-sect { margin: 0 0 40px; }
+  .snap-sect:last-child { margin-bottom: 0; }
+  .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
+  .snap-row { display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap; }
+  .snap-col { display: flex; flex-direction: column; gap: 10px; }
+  .snap-ex-caption { font-size: 14px; line-height: 28px; color: var(--ds-color-text-primary, #333333); margin: 0; }
+  .snap-exp { width: 597px; }
+  .snap-exp--narrow { width: 500px; }
+  .ds-expansion__header:hover { background: var(--ds-color-shapes-hover, #f5f5f5); }
+  .ds-expansion--open .ds-expansion__content { display: flex; }
+  .ds-expansion__icon svg, .ds-expansion__arrow svg { width: 100%; height: 100%; display: block; }
+  .snap-exp-actions { display: inline-flex; gap: 8px; color: var(--ds-color-icon-primary, #616161); }
+  .snap-exp-btn { display: inline-flex; align-items: center; padding: 4px 8px; border: 0; border-radius: 8px; background: none; color: var(--ds-color-button-accent-outlined-default-text-color, #448aff); font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer; }
+  .snap-exp-row { display: flex; align-items: center; gap: 8px; font-size: 14px; line-height: 20px; }
+  .snap-exp-counter { display: inline-flex; align-items: center; justify-content: center; min-width: 19px; height: 18px; padding: 1px 6px; box-sizing: border-box; border-radius: 9999px; background: var(--ds-color-badge-accent-background, #448aff); color: #fff; font-size: 12px; line-height: 16px; }
+  .snap-exp-date { color: #616161; font-size: 12px; line-height: 16px; }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Expansion panel — демо стенд</span>
+  <span>наборы Figma: Expansion panel (52937-1328, 12) · Expansion content (2) · Expansion group panel (2) · примеры</span>
+</div>
+<div class="view">
+  <div class="ds-tabs" role="tablist" aria-label="Expansion panel">
+    <button class="ds-tab ds-tab--active" role="tab" aria-selected="true" data-vtab="basic">Basic example</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="expansion-panel">Expansion panel</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="expansion-content">Expansion content</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="expansion-group">Expansion group panel</button>
+  </div>
+
+  <!-- 2. Expansion panel (набор 52937:1328, 12 вариантов; Variant=Default и Variant=Info) -->
+  <div class="panel" data-vpanel="expansion-panel" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Expansion panel — Variant=Default: Collaps Off / On × состояния (клик по шапке раскрывает)</div>
+      <div class="snap-row" style="margin-top: 12px;">
+        <div class="snap-col"><span class="snap-cap">Collaps=Off · Default</span>
+          <div class="ds-expansion snap-exp" data-exp>
+            <div class="ds-expansion__header">
+              <span class="ds-expansion__arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span>
+              <span class="ds-expansion__title">Title text</span>
+              <span class="ds-expansion__actions"><span class="ds-expansion__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span>
+            </div>
+            <div class="ds-expansion__content">Это Slot. В блоке контента может быть всё что угодно</div>
+          </div>
+        </div>
+        <div class="snap-col"><span class="snap-cap">Collaps=On · Default (раскрыта)</span>
+          <div class="ds-expansion ds-expansion--open snap-exp" data-exp>
+            <div class="ds-expansion__header">
+              <span class="ds-expansion__arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span>
+              <span class="ds-expansion__title">Title text</span>
+              <span class="ds-expansion__actions"><span class="ds-expansion__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span>
+            </div>
+            <div class="ds-expansion__content">Это Slot. В блоке контента может быть всё что угодно</div>
+          </div>
+        </div>
+        <div class="snap-col"><span class="snap-cap">State=Hover (заморожен)</span>
+          <div class="ds-expansion snap-exp">
+            <div class="ds-expansion__header" style="background:#f5f5f5;">
+              <span class="ds-expansion__arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span>
+              <span class="ds-expansion__title">Title text</span>
+              <span class="ds-expansion__actions"><span class="ds-expansion__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span>
+            </div>
+          </div>
+        </div>
+        <div class="snap-col"><span class="snap-cap">State=Press (заморожен)</span>
+          <div class="ds-expansion snap-exp">
+            <div class="ds-expansion__header" style="background:var(--ds-color-shapes-press,#e0e0e0);">
+              <span class="ds-expansion__arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span>
+              <span class="ds-expansion__title">Title text</span>
+            </div>
+          </div>
+        </div>
+        <div class="snap-col"><span class="snap-cap">State=Disable (#F5F5F5, тексты #9E9E9E)</span>
+          <div class="ds-expansion ds-expansion--disabled snap-exp">
+            <div class="ds-expansion__header">
+              <span class="ds-expansion__arrow" style="color:#9e9e9e;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span>
+              <span class="ds-expansion__title" style="color:#9e9e9e;">Title text</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Variant=Info (пунктирная акцентная рамка, фон #F5F9FF) — Off / On (живые)</div>
+      <div class="snap-row" style="margin-top: 12px;">
+        <div class="snap-col"><span class="snap-cap">Info · Off / On (живые)</span>
+          <div class="ds-expansion ds-expansion--info snap-exp" data-exp>
+            <div class="ds-expansion__header">
+              <span class="ds-expansion__arrow" style="color:#448aff;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span>
+              <span class="ds-expansion__title">Title text</span>
+              <span class="ds-expansion__actions"><span class="ds-expansion__icon" style="color:#448aff;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span>
+            </div>
+            <div class="ds-expansion__content">Это Slot. В блоке контента может быть всё что угодно</div>
+          </div>
+          <div class="ds-expansion ds-expansion--info ds-expansion--open snap-exp" data-exp>
+            <div class="ds-expansion__header">
+              <span class="ds-expansion__arrow" style="color:#448aff;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span>
+              <span class="ds-expansion__title">Title text</span>
+            </div>
+            <div class="ds-expansion__content">Это Slot. В блоке контента может быть всё что угодно</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Expansion content — Padding=on (16) / Padding=off (0) -->
+  <div class="panel" data-vpanel="expansion-content" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-row">
+        <div class="snap-col"><span class="snap-cap">Expansion content — Padding=on (16) / Padding=off (0)</span>
+          <div class="ds-expansion-content" style="width:597px;background:#f8f9fc;border:1px dashed #e0e0e0;">
+            <span class="ds-expansion-content__label">Это Slot. В блоке контента может быть всё что угодно (padding on)</span>
+          </div>
+          <div class="ds-expansion-content ds-expansion-content--false" style="width:597px;padding:0;background:#f8f9fc;border:1px dashed #e0e0e0;">
+            <span class="ds-expansion-content__label">Тот же контент с padding off</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Expansion group panel — Collaps -->
+  <div class="panel" data-vpanel="expansion-group" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-row">
+        <div class="snap-col"><span class="snap-cap">Expansion group panel — Collaps (часть открыта)</span>
+          <div style="display:flex;flex-direction:column;gap:8px;width:597px;">
+            <div class="ds-expansion ds-expansion--open" data-exp>
+              <div class="ds-expansion__header"><span class="ds-expansion__arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span><span class="ds-expansion__title">Title text</span></div>
+              <div class="ds-expansion__content">Это Slot. В блоке контента может быть всё что угодно</div>
+            </div>
+            <div class="ds-expansion" data-exp>
+              <div class="ds-expansion__header"><span class="ds-expansion__arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span><span class="ds-expansion__title">Title text</span></div>
+            </div>
+            <div class="ds-expansion" data-exp>
+              <div class="ds-expansion__header"><span class="ds-expansion__arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span><span class="ds-expansion__title">Title text</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: (а) шапка по канве: h44, паддинг 12/16, r12, гэп 8; слева — группа [стрелка keyboard_arrow_down + info], справа — info; тексты-заглушки «Title text»; (б) в Figma у Variant=Default фон шапки #F8F9FC, в css — #FFFFFF (на стенде css; решить в ДС); (в) Variant=Info — пунктир accent + #F5F9FF (в css есть); (г) Collapse/Expand — состояние, стрелка поворачивается на 180° (css-анимация, клик живой); (д) Disable — рамка #EBEBEB, фон #F5F5F5, тексты #9E9E9E. Журнал №133.</p>
+  </div>
+
+  <!-- 1. Basic example: «Expansion (Examples)» — тексты дословно; панели живые -->
+  <div class="panel" data-vpanel="basic" role="tabpanel">
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Примеры канвы (тексты дословно; панели живые)</div>
+      <div class="snap-row" style="margin-top: 12px;">
+        <div class="snap-col"><p class="snap-ex-caption">«На что влияет выбор складов» (+ «Подробнее»)</p>
+          <div class="ds-expansion ds-expansion--open snap-exp--narrow snap-exp" data-exp style="width:500px;">
+            <div class="ds-expansion__header">
+              <span class="ds-expansion__arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span>
+              <span class="ds-expansion__title">На что влияет выбор складов</span>
+            </div>
+            <div class="ds-expansion__content">Это Slot. В блоке контента может быть всё что угодно
+              <span style="margin-top:8px;"><button class="snap-exp-btn">Подробнее</button></span>
+            </div>
+          </div>
+        </div>
+        <div class="snap-col"><p class="snap-ex-caption">«Дерево акций» (пример с вложенными строками и счётчиками)</p>
+          <div class="ds-expansion ds-expansion--open snap-exp--narrow snap-exp" data-exp style="width:500px;">
+            <div class="ds-expansion__header">
+              <span class="ds-expansion__arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span>
+              <span class="ds-expansion__title">Дерево акций</span>
+              <span class="ds-expansion__actions"><button class="snap-exp-btn">Добавить группу</button></span>
+            </div>
+            <div class="ds-expansion__content" style="gap:10px;">
+              <span class="snap-exp-row">Название акции <span class="snap-exp-date">До 22.12.2024</span> <span class="snap-exp-counter" style="margin-left:auto;">10</span></span>
+              <span class="snap-exp-row">Название акции <span class="snap-exp-date">До 22.12.2024</span> <span class="snap-exp-counter" style="margin-left:auto;">10</span></span>
+              <span class="snap-exp-row">Акция на десерты <span class="snap-exp-counter" style="background:#14b456;">6</span> <span class="snap-exp-date">Наиболее выгодная</span> <span class="snap-exp-counter" style="background:#ff5252;">Стоп</span> <span class="snap-exp-counter" style="margin-left:auto;">1</span></span>
+            </div>
+          </div>
+        </div>
+        <div class="snap-col"><p class="snap-ex-caption">«Общие параметры» (периоды и дни)</p>
+          <div class="ds-expansion ds-expansion--open snap-exp--narrow snap-exp" data-exp style="width:500px;">
+            <div class="ds-expansion__header">
+              <span class="ds-expansion__arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span>
+              <span class="ds-expansion__title">Общие параметры</span>
+            </div>
+            <div class="ds-expansion__content" style="gap:10px;">
+              <span class="snap-exp-row">Период действия</span>
+              <span class="snap-exp-row">с 01.05.2025 по 01.06.2025</span>
+              <span class="snap-exp-row">с 00:00 по 23:59</span>
+              <span class="snap-exp-row">Пн, Вт, Ср, Чт, Сб, Вс</span>
+              <span class="snap-exp-row">Название акции</span>
+              <span class="snap-exp-row">Блюдо в подарок</span>
+              <span class="snap-exp-row">Название акции для клиента</span>
+              <span class="snap-exp-row">Описание</span>
+              <span class="snap-exp-row">Получи блюдо в подарок за заказ из ресторана в день рож…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: (а) тексты — с канвы (заголовки и строки; часть строк в канве обрезана); (б) «Инфо»/«Даты»/«Стоп»/«Наиболее выгодная» — бейджи/метки внутри дерева акций (на стенде показаны цветными счётчиками — по смыслу, сверить со кадром); (в) полный кадр «Дерево акций» включает вложенные панели и таблицу — на стенде репрезентативно; (г) все панели живые (клик раскрывает/сворачивает). Журнал №133.</p>
+  </div>
+</div>
+
+<!-- иконки -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-kb-down" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17L16.59 8.59L18 10L12 16L6 10L7.41 8.59Z"/></symbol>
+  <symbol id="ic-info" viewBox="0 0 24 24"><path d="M11 17H13V11H11V17ZM12 9C12.2833 9 12.5208 8.90417 12.7125 8.7125C12.9042 8.52083 13 8.28333 13 8C13 7.71667 12.9042 7.47917 12.7125 7.2875C12.5208 7.09583 12.2833 7 12 7C11.7167 7 11.4792 7.09583 11.2875 7.2875C11.0958 7.47917 11 7.71667 11 8C11 8.28333 11.0958 8.52083 11.2875 8.7125C11.4792 8.90417 11.7167 9 12 9ZM12 22C10.6167 22 9.31667 21.7375 8.1 21.2125C6.88333 20.6875 5.825 19.975 4.925 19.075C4.025 18.175 3.3125 17.1167 2.7875 15.9C2.2625 14.6833 2 13.3833 2 12C2 10.6167 2.2625 9.31667 2.7875 8.1C3.3125 6.88333 4.025 5.825 4.925 4.925C5.825 4.025 6.88333 3.3125 8.1 2.7875C9.31667 2.2625 10.6167 2 12 2C13.3833 2 14.6833 2.2625 15.9 2.7875C17.1167 3.3125 18.175 4.025 19.075 4.925C19.975 5.825 20.6875 6.88333 21.2125 8.1C21.7375 9.31667 22 10.6167 22 12C22 13.3833 21.7375 14.6833 21.2125 15.9C20.6875 17.1167 19.975 18.175 19.075 19.075C18.175 19.975 17.1167 20.6875 15.9 21.2125C14.6833 21.7375 13.3833 22 12 22ZM12 20C14.2333 20 16.125 19.225 17.675 17.675C19.225 16.125 20 14.2333 20 12C20 9.76667 19.225 7.875 17.675 6.325C16.125 4.775 14.2333 4 12 4C9.76667 4 7.875 4.775 6.325 6.325C4.775 7.875 4 9.76667 4 12C4 14.2333 4.775 16.125 6.325 17.675C7.875 19.225 9.76667 20 12 20Z"/></symbol>
+</svg>
+
+<script>
+  /* табы стенда */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.ds-tab[data-vtab]'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('[data-vpanel]'));
+  tabs.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      tabs.forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle('ds-tab--active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach(function (p) { p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab'); });
+    });
+  });
+  /* живые панели: клик по шапке раскрывает/сворачивает */
+  document.querySelectorAll('[data-exp]').forEach(function (root) {
+    var h = root.querySelector('.ds-expansion__header');
+    if (h) h.addEventListener('click', function () { root.classList.toggle('ds-expansion--open'); });
+  });
+</script>
+</body>
+</html>

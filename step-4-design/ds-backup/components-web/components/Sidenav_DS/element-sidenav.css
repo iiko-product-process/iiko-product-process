@@ -1,0 +1,50 @@
+.ds-element-sidenav {
+  height: var(--ds-size-5x);
+  width: var(--ds-size-5x);
+  display: flex;
+  border-radius: var(--ds-size-1x);
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-element-sidenav__label {
+  font-size: var(--ds-font-caption-m-10-normal-medium-size);
+  line-height: var(--ds-font-caption-m-10-normal-medium-line);
+  letter-spacing: var(--ds-font-caption-m-10-normal-medium-spacing);
+  font-weight: var(--ds-font-caption-m-10-normal-medium-weight);
+  text-transform: capitalize;
+  color: var(--ds-color-text-accent, #448aff);
+  white-space: nowrap;
+}
+.ds-element-sidenav__icon {
+  flex-shrink: 0;
+  width: var(--ds-size-4x);
+  height: var(--ds-size-4x);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ds-element-sidenav__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ds-element-sidenav__icon svg path {
+  fill: currentColor;
+}
+.ds-element-sidenav__keyboard-arrow-left {
+  height: var(--ds-size-4x);
+  display: flex;
+  flex-direction: row;
+}
+.ds-element-sidenav--collaps-icon {
+  flex-direction: row;
+  background: var(--ds-color-sidenav-element-collaps-icon-background, #36474e);
+}
+.ds-element-sidenav--avatar {
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ds-size-2-5x);
+  padding: 3px var(--ds-size-0-5x) 3px var(--ds-size-0-5x);
+  color: var(--ds-color-text-accent, #448aff);
+}
+

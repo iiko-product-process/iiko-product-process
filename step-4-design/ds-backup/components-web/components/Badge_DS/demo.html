@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Badge — демо стенд компонента</title>
+<!--
+  Демо стенд компонента Badge (страница «Badge_DS», 54474:1072). Папка: DS/components-web/components/Badge_DS/.
+  Источник — канва «Badge_DS» Figma «Iiko Web DS (New)»: набор «Badge» (54428:187, 8 вариантов:
+  Style Accent/Positive/Warning/Negative × Type Counter/Point) и блок «Badge examples» (58335:20773).
+  Состав: Counter — пилюля 19×18 (пад 1/6, радиус 9999), текст 12/16 Medium белый; Point — точка 8×8.
+  Примеры канвы: бейдж ставится на элемент с перекрытием (кадры примеров: кнопка 97 + бейдж 20 в кадре
+  107×46 — то есть вынос 10 вправо/вверх; Button icon 36 + бейдж 19; Icon size 24 + точка; Text UI + бейдж
+  рядом), в т.ч. на компоненты Button и Button icon.
+  Пробел: текстового варианта бейджа в css нет (журнал №65: в макете «Pro» — текстовая пилюля; в ДС решить) —
+  на стенде не воспроизводим. Журнал DS/fixes.md №114.
+-->
+<link rel="stylesheet" href="../../font.css">
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../index.css">
+<link rel="stylesheet" href="../../fixes.css">
+<style>
+  /* каркас демо-стенда — как у других стендов */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .view { padding: 24px; }
+  .panel { width: fit-content; max-width: 1920px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  .snap-cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0; }
+  .snap-note { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 28px 0 0; max-width: 980px; }
+  .snap-sect { margin: 0 0 40px; }
+  .snap-sect:last-child { margin-bottom: 0; }
+  .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
+  .snap-cells { display: grid; grid-template-columns: repeat(4, max-content); gap: 28px 40px; align-items: start; }
+  .snap-cell { display: flex; flex-direction: column; gap: 10px; }
+  .snap-pad { padding: 16px; background: var(--ds-color-brand-neutral-super-light, #f5f5f5); width: fit-content; }
+
+  /* примеры: бейдж поверх элемента — вынос 10 вправо/вверх (координаты кадра примера: 107−97 / 46−36) */
+  .snap-anchor { position: relative; display: inline-flex; }
+  .snap-badge { position: absolute; top: -10px; right: -10px; }
+  /* иконки: svg-глифы по кадру контейнера */
+  .ds-icon-size svg { width: 100%; height: 100%; display: block; fill: currentColor; }
+  .ds-btn-icon__icon svg { width: 20px; height: 20px; display: block; fill: currentColor; }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Badge — демо стенд</span>
+  <span>набор Figma: Badge (54428-187, 8) · примеры: «Badge examples» (58335-20773)</span>
+</div>
+<div class="view">
+  <div class="panel">
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Badge — 8 вариантов (Style × Type; Counter — пилюля 19×18, Point — точка 8×8)</div>
+      <div class="snap-cells">
+        <div class="snap-cell"><div class="snap-cap">Style=Accent · Counter</div><div class="snap-pad"><span class="ds-badge ds-badge--counter ds-badge--accent">1</span></div></div>
+        <div class="snap-cell"><div class="snap-cap">Style=Accent · Point</div><div class="snap-pad"><span class="ds-badge ds-badge--point ds-badge--accent"></span></div></div>
+        <div class="snap-cell"><div class="snap-cap">Style=Positive · Counter</div><div class="snap-pad"><span class="ds-badge ds-badge--counter ds-badge--positive">1</span></div></div>
+        <div class="snap-cell"><div class="snap-cap">Style=Positive · Point</div><div class="snap-pad"><span class="ds-badge ds-badge--point ds-badge--positive"></span></div></div>
+        <div class="snap-cell"><div class="snap-cap">Style=Warning · Counter</div><div class="snap-pad"><span class="ds-badge ds-badge--counter ds-badge--warning">1</span></div></div>
+        <div class="snap-cell"><div class="snap-cap">Style=Warning · Point</div><div class="snap-pad"><span class="ds-badge ds-badge--point ds-badge--warning"></span></div></div>
+        <div class="snap-cell"><div class="snap-cap">Style=Negative · Counter</div><div class="snap-pad"><span class="ds-badge ds-badge--counter ds-badge--negative">1</span></div></div>
+        <div class="snap-cell"><div class="snap-cap">Style=Negative · Point</div><div class="snap-pad"><span class="ds-badge ds-badge--point ds-badge--negative"></span></div></div>
+      </div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Примеры (состав и вынос — по кадрам «Badge examples»): бейдж на кнопке, кнопке-иконке, иконке</div>
+      <div class="snap-cells">
+        <div class="snap-cell">
+          <div class="snap-cap">Button M + Counter</div>
+          <div class="snap-pad" style="padding:24px">
+            <span class="snap-anchor"><button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--outlined"><span class="ds-btn__label">Button</span></button><span class="ds-badge ds-badge--counter ds-badge--accent snap-badge">1</span></span>
+          </div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Button M + Point</div>
+          <div class="snap-pad" style="padding:24px">
+            <span class="snap-anchor"><button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--outlined"><span class="ds-btn__label">Button</span></button><span class="ds-badge ds-badge--point ds-badge--negative snap-badge"></span></span>
+          </div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Button icon M + Counter</div>
+          <div class="snap-pad" style="padding:24px">
+            <span class="snap-anchor"><button type="button" class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--filled"><span class="ds-btn-icon__icon"><svg><use href="#ic-info"/></svg></span></button><span class="ds-badge ds-badge--counter ds-badge--accent snap-badge">1</span></span>
+          </div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Button icon M + Point</div>
+          <div class="snap-pad" style="padding:24px">
+            <span class="snap-anchor"><button type="button" class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--filled"><span class="ds-btn-icon__icon"><svg><use href="#ic-info"/></svg></span></button><span class="ds-badge ds-badge--point ds-badge--warning snap-badge"></span></span>
+          </div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Icon size 20 + Point</div>
+          <div class="snap-pad" style="padding:24px">
+            <span class="snap-anchor"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span><span class="ds-badge ds-badge--point ds-badge--accent snap-badge"></span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="snap-note">Пометки для ревью: (а) счётчик и точка — по узлам набора: Counter 19×18 (пад 1/6, радиус circular, текст 12/16 Medium), Point 8×8; (б) в примерах канвы бейдж перекрывает элемент: у кнопки M (97) кадр 107×46 — вынос 10 вправо/вверх; это же смещение применено на стенде (класс стенда snap-badge); позиционирование — обвязка страницы (в css у Badge только сам бейдж, без обвязки); (в) текстового варианта («Pro») в css нет — журнал №65, в ДС решить; здесь не воспроизводим; (г) число — реальное количество из данных (в примерах «1»); при больших значениях — сокращение «99+»; (д) бейдж — не Status и не Chips: для метки состояния объекта — Status, для снятия выбора — Chips. Журнал №114.</p>
+  </div>
+</div>
+
+<!-- svg-иконки — точный путь из Figma (ⓘ 20; как на стендах Text UI/Table) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-info" viewBox="0 0 20 20">
+    <path d="M9.16667 14.1667H10.8333V9.16667H9.16667V14.1667ZM10 7.5C10.2361 7.5 10.434 7.42014 10.5937 7.26042C10.7535 7.10069 10.8333 6.90278 10.8333 6.66667C10.8333 6.43056 10.7535 6.23264 10.5937 6.07292C10.434 5.91319 10.2361 5.83333 10 5.83333C9.76389 5.83333 9.56597 5.91319 9.40625 6.07292C9.24653 6.23264 9.16667 6.43056 9.16667 6.66667C9.16667 6.90278 9.24653 7.10069 9.40625 7.26042C9.56597 7.42014 9.76389 7.5 10 7.5ZM10 18.3333C8.84722 18.3333 7.76389 18.1146 6.75 17.6771C5.73611 17.2396 4.85417 16.6458 4.10417 15.8958C3.35417 15.1458 2.76042 14.2639 2.32292 13.25C1.88542 12.2361 1.66667 11.1528 1.66667 10C1.66667 8.84722 1.88542 7.76389 2.32292 6.75C2.76042 5.73611 3.35417 4.85417 4.10417 4.10417C4.85417 3.35417 5.73611 2.76042 6.75 2.32292C7.76389 1.88542 8.84722 1.66667 10 1.66667C11.1528 1.66667 12.2361 1.88542 13.25 2.32292C14.2639 2.76042 15.1458 3.35417 15.8958 4.10417C16.6458 4.85417 17.2396 5.73611 17.6771 6.75C18.1146 7.76389 18.3333 8.84722 18.3333 10C18.3333 11.1528 18.1146 12.2361 17.6771 13.25C17.2396 14.2639 16.6458 15.1458 15.8958 15.8958C15.1458 16.6458 14.2639 17.2396 13.25 17.6771C12.2361 18.1146 11.1528 18.3333 10 18.3333ZM10 16.6667C11.8611 16.6667 13.4375 16.0208 14.7292 14.7292C16.0208 13.4375 16.6667 11.8611 16.6667 10C16.6667 8.13889 16.0208 6.5625 14.7292 5.27083C13.4375 3.97917 11.8611 3.33333 10 3.33333C8.13889 3.33333 6.5625 3.97917 5.27083 5.27083C3.97917 6.5625 3.33333 8.13889 3.33333 10C3.33333 11.8611 3.97917 13.4375 5.27083 14.7292C6.5625 16.0208 8.13889 16.6667 10 16.6667Z"/>
+  </symbol>
+</svg>
+</body>
+</html>

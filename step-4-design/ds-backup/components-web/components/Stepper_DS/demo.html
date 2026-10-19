@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stepper — демо стенд компонента</title>
+<!--
+  Демо стенд компонентов Stepper (страница «Stepper_DS», 54624:2882). Папка: DS/components-web/components/Stepper_DS/.
+  Источник — канва Figma «Iiko Web DS (New)»: «Step» (12: Background On/Off × Default/Hover/Press/Selected/Error/Disable;
+  подложка #FAFAFA r8, Selected #F5F9FF + рамка #448AFF, Error #FFF8F8, Disable текст #9E9E9E; состав [иконка/номер 24][текст 14]),
+  «Stepper line» (4: Step On/Off × Background On/Off; Step=On — стрелки keyboard_arrow_right 24 между шагами, Step=Off — разделитель
+  8×1 #616161; в линии шаги показаны с подложками #FAFAFA / #F5F9FF / #F0F5FF / #F5F9FF+рамка / #FFF8F8 / #FAFAFA-серый),
+  «Stepper button» (12: Type Filled/Outlined × Position First/Middle/Last × Content Text/Icon; счётчик «1 из 6» 14/500 + кнопки
+  ds-btn M / Button icon 36 с обводкой), «Element step» (12: Icon size/Counter × 6 состояний; Counter — Badge 24 accent «7»)
+  + «Stepper (Examples)» (9981×7188; онбординг: «Концепция», «Название и адрес», «Меню», «Тип кухни»…, кнопка «Далее»).
+  ⚠ Цвета подложек «пройденных» шагов (#F5F9FF/#F0F5FF) и Error-фона (#FFF8F8) в css не заданы — обвязка стенда. Журнал DS/fixes.md №134.
+-->
+<link rel="stylesheet" href="../../font.css">
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../index.css">
+<link rel="stylesheet" href="../../fixes.css">
+<style>
+  /* каркас демо-стенда */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .view { padding: 24px; }
+  .view .ds-tabs { margin-bottom: 24px; }
+  .panel { width: fit-content; max-width: 1920px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  .snap-cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0; }
+  .snap-note { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 28px 0 0; max-width: 980px; }
+  .snap-sect { margin: 0 0 40px; }
+  .snap-sect:last-child { margin-bottom: 0; }
+  .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
+  .snap-grid { display: grid; gap: 14px 40px; align-items: start; }
+  .snap-row { display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap; }
+  .snap-col { display: flex; flex-direction: column; gap: 10px; }
+  .snap-ex-caption { font-size: 14px; line-height: 28px; color: var(--ds-color-text-primary, #333333); margin: 0; }
+  .ds-step__icon svg, .ds-step__num svg { width: 100%; height: 100%; display: block; }
+  .snap-st-hover { background: #f5f9ff !important; }
+  .snap-st-press { background: #f0f5ff !important; }
+  .snap-st-error { background: #fff8f8 !important; }
+  .snap-st-done { background: #f5f9ff !important; color: var(--ds-color-stepper-selected-text-color, #448aff); }
+  .snap-arrow { width: 24px; height: 24px; display: inline-flex; color: #616161; }
+  .snap-arrow svg { width: 100%; height: 100%; display: block; }
+  .snap-stepper-btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer; border: 0; }
+  .snap-stepper-btn--filled { background: var(--ds-color-button-accent-filled-default-background, #448aff); color: #fff; }
+  .snap-stepper-btn--outlined { background: #fff; color: var(--ds-color-button-accent-outlined-default-text-color, #448aff); border: 1px solid #448aff; }
+  .snap-stepper-counter { font-size: 14px; line-height: 20px; font-weight: 500; color: #333; }
+  .snap-ic-btn { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; background: #fff; border: 1px solid #448aff; color: #448aff; padding: 0; cursor: pointer; }
+  .snap-ic-btn svg { width: 20px; height: 20px; display: block; }
+  .snap-badge24 { width: 24px; height: 24px; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; line-height: 20px; font-weight: 400; }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Stepper — демо стенд</span>
+  <span>наборы Figma: Step (54624-2882, 12) · Stepper line (4) · Stepper button (12) · Element step (12) · примеры</span>
+</div>
+<div class="view">
+  <div class="ds-tabs" role="tablist" aria-label="Stepper">
+    <button class="ds-tab ds-tab--active" role="tab" aria-selected="true" data-vtab="basic">Basic example</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="step">Step</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="stepper-line">Stepper line</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="stepper-button">Stepper button</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="element-step">Element step</button>
+  </div>
+
+  <!-- 2. Step (набор 54624:2882, 12 вариантов) -->
+  <div class="panel" data-vpanel="step" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Step — Background On/Off × состояния (подложка #FAFAFA r8; Selected #F5F9FF + рамка; Error #FFF8F8; Disable #9E9E9E)</div>
+      <div class="snap-grid" style="grid-template-columns: repeat(6, max-content);">
+        <div class="snap-col"><span class="snap-cap">On · Default</span>
+          <button class="ds-step ds-step--bg"><span class="ds-step__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>Step 1</button>
+        </div>
+        <div class="snap-col"><span class="snap-cap">On · Hover (заморожен)</span>
+          <button class="ds-step ds-step--bg snap-st-hover"><span class="ds-step__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>Step 1</button>
+        </div>
+        <div class="snap-col"><span class="snap-cap">On · Press (заморожен, #F0F5FF)</span>
+          <button class="ds-step ds-step--bg snap-st-press"><span class="ds-step__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>Step 1</button>
+        </div>
+        <div class="snap-col"><span class="snap-cap">On · Selected (#F5F9FF + рамка #448AFF)</span>
+          <button class="ds-step ds-step--bg ds-step--selected"><span class="ds-step__icon" style="color:#448aff;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>Step 1</button>
+        </div>
+        <div class="snap-col"><span class="snap-cap">On · Error (#FFF8F8, #FF5252)</span>
+          <button class="ds-step ds-step--bg ds-step--error snap-st-error"><span class="ds-step__icon" style="color:#ff5252;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>Step 1</button>
+        </div>
+        <div class="snap-col"><span class="snap-cap">On · Disable (#9E9E9E)</span>
+          <button class="ds-step ds-step--bg ds-step--disabled"><span class="ds-step__icon" style="color:#9e9e9e;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>Step 1</button>
+        </div>
+        <div class="snap-col"><span class="snap-cap">Off · Default</span>
+          <button class="ds-step"><span class="ds-step__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>Step 1</button>
+        </div>
+        <div class="snap-col"><span class="snap-cap">Off · Hover (акцентный текст)</span>
+          <button class="ds-step" style="color:#448aff;"><span class="ds-step__icon" style="color:#448aff;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>Step 1</button>
+        </div>
+        <div class="snap-col"><span class="snap-cap">Off · Selected</span>
+          <button class="ds-step ds-step--selected"><span class="ds-step__icon" style="color:#448aff;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>Step 1</button>
+        </div>
+        <div class="snap-col"><span class="snap-cap">Off · Error</span>
+          <button class="ds-step ds-step--error"><span class="ds-step__icon" style="color:#ff5252;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>Step 1</button>
+        </div>
+        <div class="snap-col"><span class="snap-cap">Off · Disable</span>
+          <button class="ds-step ds-step--disabled"><span class="ds-step__icon" style="color:#9e9e9e;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>Step 1</button>
+        </div>
+        <div class="snap-col"><span class="snap-cap">Номер шага (Selected — круг accent)</span>
+          <button class="ds-step ds-step--selected"><span class="ds-step__num">1</span>Step 1</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 3. Stepper line (4 варианта) -->
+  <div class="panel" data-vpanel="stepper-line" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Stepper line — 4 варианта (Step On: стрелки между шагами; Step Off: разделитель 8×1 #616161; в линии — фоны пройденных)</div>
+      <div class="snap-col" style="margin-top: 12px; gap: 16px;">
+        <div><span class="snap-cap">Step=On · Background=On (стрелки)</span>
+          <div class="ds-stepper" style="margin-top:6px;">
+            <button class="ds-step ds-step--bg snap-st-hover" style="background:#f5f9ff;">Концепция</button>
+            <span class="snap-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-right"/></svg></span>
+            <button class="ds-step ds-step--bg snap-st-press" style="background:#f0f5ff;">Название и адрес</button>
+            <span class="snap-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-right"/></svg></span>
+            <button class="ds-step ds-step--bg ds-step--selected" style="color:#448aff;">Меню</button>
+            <span class="snap-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-right"/></svg></span>
+            <button class="ds-step ds-step--bg" style="color:#ff5252;background:#fff8f8;">Тип кухни</button>
+            <span class="snap-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-right"/></svg></span>
+            <button class="ds-step ds-step--bg ds-step--disabled">Формат кухни</button>
+          </div>
+        </div>
+        <div><span class="snap-cap">Step=Off · Background=On (разделители 8×1 #616161)</span>
+          <div class="ds-stepper" style="margin-top:6px;">
+            <button class="ds-step ds-step--bg">Концепция</button>
+            <span class="ds-stepper__divider"></span>
+            <button class="ds-step ds-step--bg">Название и адрес</button>
+            <span class="ds-stepper__divider"></span>
+            <button class="ds-step ds-step--bg ds-step--selected" style="color:#448aff;">Меню</button>
+          </div>
+        </div>
+        <div><span class="snap-cap">Step=Off · Background=Off (без подложек)</span>
+          <div class="ds-stepper" style="margin-top:6px;">
+            <button class="ds-step">Концепция</button>
+            <span class="ds-stepper__divider"></span>
+            <button class="ds-step ds-step--selected">Название и адрес</button>
+            <span class="ds-stepper__divider"></span>
+            <button class="ds-step ds-step--disabled">Меню</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 4. Stepper button (12 вариантов) -->
+  <div class="panel" data-vpanel="stepper-button" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Stepper button (Type × Position × Content: [счётчик «N из M»] + кнопки; Text — ds-btn M, Icon — 36 с обводкой accent)</div>
+      <div class="snap-row" style="margin-top: 8px;">
+        <div class="snap-col"><span class="snap-cap">Filled · First · Text</span>
+          <span class="ds-stepper-button"><span class="snap-stepper-counter">1 из 6</span><button class="snap-stepper-btn snap-stepper-btn--filled">Далее <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-right"/></svg></button></span>
+        </div>
+        <div class="snap-col"><span class="snap-cap">Outlined · First · Text</span>
+          <span class="ds-stepper-button"><span class="snap-stepper-counter">1 из 6</span><button class="snap-stepper-btn snap-stepper-btn--outlined">Далее <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-right"/></svg></button></span>
+        </div>
+        <div class="snap-col"><span class="snap-cap">Filled · Middle · Text ([Назад][Далее])</span>
+          <span class="ds-stepper-button"><span class="snap-stepper-counter">2 из 6</span><span class="ds-stepper-button__group"><button class="snap-stepper-btn snap-stepper-btn--filled">Назад</button><button class="snap-stepper-btn snap-stepper-btn--filled">Далее</button></span></span>
+        </div>
+        <div class="snap-col"><span class="snap-cap">Outlined · Last · Text (только «Назад»)</span>
+          <span class="ds-stepper-button"><span class="snap-stepper-counter">6 из 6</span><button class="snap-stepper-btn snap-stepper-btn--outlined">Назад</button></span>
+        </div>
+        <div class="snap-col"><span class="snap-cap">Outlined · Middle · Icon (2 кнопки 36)</span>
+          <span class="ds-stepper-button"><span class="snap-stepper-counter">2 из 6</span><span class="ds-stepper-button__group"><button class="snap-ic-btn"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-left"/></svg></button><button class="snap-ic-btn"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-right"/></svg></button></span></span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 5. Element step (12 вариантов) -->
+  <div class="panel" data-vpanel="element-step" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Element step — Icon size / Counter × состояния (24; selected — #448AFF / Badge accent)</div>
+      <div class="snap-row" style="margin-top: 8px; align-items:center;">
+        <span class="ds-element-step ds-element-step--icon-size"><span class="ds-element-step__icon" style="color:#616161;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span>
+        <span class="ds-element-step ds-element-step--icon-size"><span class="ds-element-step__icon" style="color:#448aff;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span>
+        <span class="ds-element-step ds-element-step--icon-size"><span class="ds-element-step__icon" style="color:#ff5252;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span>
+        <span class="ds-element-step ds-element-step--icon-size"><span class="ds-element-step__icon" style="color:#9e9e9e;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span>
+        <span class="snap-badge24" style="background:#448aff;color:#fff;">7</span>
+        <span class="snap-badge24" style="background:#ebebeb;color:#9e9e9e;">7</span>
+        <span class="snap-badge24" style="background:#fff;color:#333;border:1px solid #e0e0e0;">7</span>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: (а) Step: подложка #FAFAFA r8 (Background=On), min-height 32 (On) / 24 (Off), гэп 8, [иконка/номер 24][текст 14/20]; Selected — #F5F9FF + рамка #448AFF, текст/иконка accent; Error — фон #FFF8F8 и текст #FF5252; Disable — #9E9E9E; (б) в css Error-фон и фоны «пройденных» шагов (#F5F9FF/#F0F5FF) не заданы — обвязка стенда (решить в ДС); (в) Hover/Press заморожены; (г) Stepper line: Step=On — стрелки keyboard_arrow_right 24 (тексты «Step 1» в наборе), Step=Off — `ds-stepper__divider` 8×1 #616161; (д) Stepper button: счётчик «1 из 6» 14/500, Type Filled — заливка accent, Outlined — обводка accent (Text — ds-btn M, Icon — кнопки 36); (е) Element step Counter — Badge 24 (accent при selected). Журнал №134.</p>
+  </div>
+
+  <!-- 1. Basic example: примеры канвы (онбординг; тексты дословно) -->
+  <div class="panel" data-vpanel="basic" role="tabpanel">
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Примеры (онбординг из канвы; тексты дословно)</div>
+      <div class="snap-row" style="margin-top: 12px;">
+        <div class="snap-col" style="max-width: 900px;">
+          <p class="snap-ex-caption">Последовательный степпер с иконками</p>
+          <div class="ds-stepper">
+            <button class="ds-step ds-step--bg snap-st-hover" style="background:#f5f9ff;"><span class="ds-step__icon" style="color:#448aff;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>Концепция</button>
+            <span class="snap-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-right"/></svg></span>
+            <button class="ds-step ds-step--bg ds-step--selected"><span class="ds-step__icon" style="color:#448aff;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>Название и адрес</button>
+            <span class="snap-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-right"/></svg></span>
+            <button class="ds-step ds-step--bg ds-step--disabled"><span class="ds-step__icon" style="color:#9e9e9e;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>Меню</button>
+          </div>
+          <span class="snap-cap">Шаги канвы: «Концепция», «Название и адрес», «Меню» (далее «Тип кухни», «Формат кухни»…).</span>
+        </div>
+        <div class="snap-col">
+          <p class="snap-ex-caption">Навигация шага («1 из 6» + «Далее»)</p>
+          <span class="ds-stepper-button"><span class="snap-stepper-counter">1 из 6</span><button class="snap-stepper-btn snap-stepper-btn--filled">Далее <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-right"/></svg></button></span>
+          <p class="snap-ex-caption" style="margin-top: 10px;">Сценарии канвы</p>
+          <span class="snap-cap">«Создайте идеальное меню с помощью AI», «Определите специфику меню и формат обслуживания», «Выберите до 3 параметров» (типы кухонь: Русская, Европейская, Итальянская, Японская, Китайская, Американская, Кавказская, Паназиатская, Французская, Мексиканская, Средиземноморская, Другое) — полноэкранные кадры онбординга.</span>
+        </div>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: (а) примеры канвы — большой онбординг (9981×7188) со степпером и формами шагов; на стенде показаны линия шагов и навигация; (б) «Далее» в канве — accent filled с иконкой keyboard_arrow_right; (в) мобильные наборы (Stepper_mob, Element step_mob и др.) — вне веба. Журнал №134.</p>
+  </div>
+</div>
+
+<!-- иконки -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-info" viewBox="0 0 24 24"><path d="M11 17H13V11H11V17ZM12 9C12.2833 9 12.5208 8.90417 12.7125 8.7125C12.9042 8.52083 13 8.28333 13 8C13 7.71667 12.9042 7.47917 12.7125 7.2875C12.5208 7.09583 12.2833 7 12 7C11.7167 7 11.4792 7.09583 11.2875 7.2875C11.0958 7.47917 11 7.71667 11 8C11 8.28333 11.0958 8.52083 11.2875 8.7125C11.4792 8.90417 11.7167 9 12 9ZM12 22C10.6167 22 9.31667 21.7375 8.1 21.2125C6.88333 20.6875 5.825 19.975 4.925 19.075C4.025 18.175 3.3125 17.1167 2.7875 15.9C2.2625 14.6833 2 13.3833 2 12C2 10.6167 2.2625 9.31667 2.7875 8.1C3.3125 6.88333 4.025 5.825 4.925 4.925C5.825 4.025 6.88333 3.3125 8.1 2.7875C9.31667 2.2625 10.6167 2 12 2C13.3833 2 14.6833 2.2625 15.9 2.7875C17.1167 3.3125 18.175 4.025 19.075 4.925C19.975 5.825 20.6875 6.88333 21.2125 8.1C21.7375 9.31667 22 10.6167 22 12C22 13.3833 21.7375 14.6833 21.2125 15.9C20.6875 17.1167 19.975 18.175 19.075 19.075C18.175 19.975 17.1167 20.6875 15.9 21.2125C14.6833 21.7375 13.3833 22 12 22ZM12 20C14.2333 20 16.125 19.225 17.675 17.675C19.225 16.125 20 14.2333 20 12C20 9.76667 19.225 7.875 17.675 6.325C16.125 4.775 14.2333 4 12 4C9.76667 4 7.875 4.775 6.325 6.325C4.775 7.875 4 9.76667 4 12C4 14.2333 4.775 16.125 6.325 17.675C7.875 19.225 9.76667 20 12 20Z"/></symbol>
+  <symbol id="ic-kb-right" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12L8.59 7.41L10 6L16 12L10 18L8.59 16.59Z"/></symbol>
+  <symbol id="ic-kb-left" viewBox="0 0 24 24"><path d="M15.41 16.59L10.83 12L15.41 7.41L14 6L8 12L14 18L15.41 16.59Z"/></symbol>
+</svg>
+
+<script>
+  /* табы стенда */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.ds-tab[data-vtab]'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('[data-vpanel]'));
+  tabs.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      tabs.forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle('ds-tab--active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach(function (p) { p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab'); });
+    });
+  });
+</script>
+</body>
+</html>

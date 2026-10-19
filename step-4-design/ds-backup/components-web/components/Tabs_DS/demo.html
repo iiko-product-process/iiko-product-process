@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tabs — демо стенд компонента</title>
+<!--
+  Демо стенд компонента Tabs (страница «Tabs_DS», 54404:157). Папка: DS/components-web/components/Tabs_DS/.
+  Источник — канва «Tabs_DS» Figma «Iiko Web DS (New)»: наборы «Tab element» (54404:200, 16 вариантов:
+  Lvl 1/2 × State Default/Hover/Press/Disable × Active On/Off), «Tabs» (54854:3052, 4: Lvl 1/2 × Content Text/Icon),
+  «Scroll tabs» (59032:1821, 4: Orientation Right/Left × State Default/Hover); блок примеров «Tabs examples»
+  (59018:7424): «Два уровня», «Ошибка внутри таба», «Таб недоступен», «Статус таба», «Счётчик», «Иконки»,
+  «Прокрутка табов», «3 точки с невместившимися вкладками».
+  Состав по узлам: таб = Label (Body M 16/500 у Lvl=1 — 24, у Lvl=2 — Body S 14/400) + слоты: Element left
+  (иконка, Icon size 20), Counter (текст 12/16 Medium); активный — акцентный текст + нижняя линия 2px (Accent).
+  В «Счётчике» счётчик — текстом (не Badge): «Активные 11», «Просроченные 4», «Завершенные 2».
+  Пример «Иконки»: иконки settings/storefront/wysiwyg/package (svg-пути из Figma, активная — акцентная).
+  Скролл-стрелки — arrow_back/arrow_forward (имена DS: arrow_left/right → arrow_back/forward).
+  Пробелы: у Scroll tabs состояния Hover из набора в css нет — не показываем (решить в ДС); примеры
+  «Статус таба» (в табе компонент Status) и «Ошибка внутри таба» — вне набора Tab element, не воспроизводим.
+  css выверен вручную (tabs.css, scroll-tabs.css) — состояния :hover/:active живые, на витрине заморожены st-*.
+  Журнал DS/fixes.md №110.
+-->
+<link rel="stylesheet" href="../../font.css">
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../index.css">
+<link rel="stylesheet" href="../../fixes.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined">
+<style>
+  /* каркас демо-стенда — как у других стендов */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .material-icons { font-family: 'Material Icons Outlined'; }   /* иконки — только аутлайн (правило) */
+  .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .view { padding: 24px; }
+  .view .ds-tabs { margin-bottom: 24px; }
+  .panel { width: fit-content; max-width: 1920px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  .snap-cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0; }
+  .snap-note { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 28px 0 0; max-width: 980px; }
+  .snap-sect { margin: 0 0 40px; }
+  .snap-sect:last-child { margin-bottom: 0; }
+  .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
+  .snap-pad { padding: 16px; background: var(--ds-color-brand-neutral-super-light, #f5f5f5); width: fit-content; }
+
+  /* витрины */
+  .snap-cells { display: grid; grid-template-columns: repeat(4, max-content); gap: 28px 32px; align-items: start; }
+  .snap-cell { display: flex; flex-direction: column; gap: 10px; }
+  .snap-row { display: flex; align-items: flex-start; gap: 32px; }
+
+  /* замороженные состояния таба (в ДС :hover/:active; значения — токены) */
+  .st-hover .ds-tab { background: var(--ds-color-tab-inactive-hover-background, #f5f5f5); }
+  .st-press .ds-tab { background: var(--ds-color-tab-inactive-press-background, #e0e0e0); }
+  .st-hover .ds-tab--active { background: var(--ds-color-tab-active-hover-background, #f5f5f5); }
+  .st-press .ds-tab--active { background: var(--ds-color-tab-active-press-background, #e0e0e0); }
+
+  /* иконки табов: svg-глифы по кадру 20 контейнера */
+  .ds-tab__icon svg { width: 100%; height: 100%; display: block; }
+  .ds-tab__icon svg { fill: currentColor; }
+  /* скролл-стрелки: глиф по кадру 20 */
+  .ds-scroll-tabs__icon svg { width: 100%; height: 100%; display: block; }
+  .ds-scroll-tabs__icon svg { fill: currentColor; }
+
+  /* живые строки табов в примерах (клик переключает активную) */
+  .snap-live .ds-tab { cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Tabs — демо стенд</span>
+  <span>наборы Figma: страница «Tabs_DS» (54404-157) — Tab element (54404-200), Tabs (54854-3052), Scroll tabs (59032-1821)</span>
+</div>
+<div class="view">
+  <div class="ds-tabs" role="tablist" aria-label="Tabs">
+    <button class="ds-tab ds-tab--active" role="tab" aria-selected="true" data-vtab="sets">Наборы</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="examples">Примеры</button>
+  </div>
+
+  <!-- 1. Наборы: Tabs (4), Tab element (16), Scroll tabs (Default) -->
+  <div class="panel" data-vpanel="sets" role="tabpanel">
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Tabs — 4 варианта (Lvl × Content); кликабельны (живая активная вкладка)</div>
+      <div class="snap-cells">
+        <div class="snap-cell">
+          <div class="snap-cap">Lvl=1, Content=Text</div>
+          <div class="ds-tabs snap-live">
+            <button type="button" class="ds-tab ds-tab--active">Общие</button>
+            <button type="button" class="ds-tab">Товары</button>
+            <button type="button" class="ds-tab">История</button>
+          </div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Lvl=2, Content=Text</div>
+          <div class="ds-tabs ds-tabs--lvl2 snap-live">
+            <button type="button" class="ds-tab ds-tab--active">Общие</button>
+            <button type="button" class="ds-tab">Товары</button>
+            <button type="button" class="ds-tab">История</button>
+          </div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Lvl=1, Content=Icon</div>
+          <div class="ds-tabs snap-live">
+            <button type="button" class="ds-tab ds-tab--active"><span class="ds-tab__icon"><svg><use href="#ic-settings"/></svg></span>Общие настройки</button>
+            <button type="button" class="ds-tab"><span class="ds-tab__icon"><svg><use href="#ic-storefront"/></svg></span>Рестораны и склады</button>
+          </div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Lvl=2, Content=Icon</div>
+          <div class="ds-tabs ds-tabs--lvl2 snap-live">
+            <button type="button" class="ds-tab ds-tab--active"><span class="ds-tab__icon"><svg><use href="#ic-wysiwyg"/></svg></span>Расписание</button>
+            <button type="button" class="ds-tab"><span class="ds-tab__icon"><svg><use href="#ic-package"/></svg></span>Товары</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Tab element — Active=On (Lvl=1 / Lvl=2 × Default / Hover / Press / Disable; состояния заморожены, в ДС :hover/:active)</div>
+      <div class="snap-cells">
+        <div class="snap-cell"><div class="snap-cap">Lvl=1 · Default</div><span class="snap-pad" style="padding:0"><button type="button" class="ds-tab ds-tab--active" style="margin:0">Вкладка</button></span></div>
+        <div class="snap-cell"><div class="snap-cap">Lvl=1 · Hover</div><span class="snap-pad st-hover" style="padding:0"><button type="button" class="ds-tab ds-tab--active" style="margin:0">Вкладка</button></span></div>
+        <div class="snap-cell"><div class="snap-cap">Lvl=1 · Press</div><span class="snap-pad st-press" style="padding:0"><button type="button" class="ds-tab ds-tab--active" style="margin:0">Вкладка</button></span></div>
+        <div class="snap-cell"><div class="snap-cap">Lvl=1 · Disable</div><span class="snap-pad" style="padding:0"><button type="button" class="ds-tab ds-tab--active ds-tab--disabled" style="margin:0">Вкладка</button></span></div>
+        <div class="snap-cell"><div class="snap-cap">Lvl=2 · Default</div><span class="snap-pad" style="padding:0"><button type="button" class="ds-tab ds-tab--active" style="margin:0;height:28px;padding:4px 12px;font-size:14px;font-weight:400;line-height:20px">Вкладка</button></span></div>
+        <div class="snap-cell"><div class="snap-cap">Lvl=2 · Hover</div><span class="snap-pad st-hover" style="padding:0"><button type="button" class="ds-tab ds-tab--active" style="margin:0;height:28px;padding:4px 12px;font-size:14px;font-weight:400;line-height:20px">Вкладка</button></span></div>
+        <div class="snap-cell"><div class="snap-cap">Lvl=2 · Press</div><span class="snap-pad st-press" style="padding:0"><button type="button" class="ds-tab ds-tab--active" style="margin:0;height:28px;padding:4px 12px;font-size:14px;font-weight:400;line-height:20px">Вкладка</button></span></div>
+        <div class="snap-cell"><div class="snap-cap">Lvl=2 · Disable</div><span class="snap-pad" style="padding:0"><button type="button" class="ds-tab ds-tab--active ds-tab--disabled" style="margin:0;height:28px;padding:4px 12px;font-size:14px;font-weight:400;line-height:20px">Вкладка</button></span></div>
+      </div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Tab element — Active=Off (Lvl=1 / Lvl=2 × Default / Hover / Press / Disable)</div>
+      <div class="snap-cells">
+        <div class="snap-cell"><div class="snap-cap">Lvl=1 · Default</div><span class="snap-pad" style="padding:0"><button type="button" class="ds-tab" style="margin:0">Вкладка</button></span></div>
+        <div class="snap-cell"><div class="snap-cap">Lvl=1 · Hover</div><span class="snap-pad st-hover" style="padding:0"><button type="button" class="ds-tab" style="margin:0">Вкладка</button></span></div>
+        <div class="snap-cell"><div class="snap-cap">Lvl=1 · Press</div><span class="snap-pad st-press" style="padding:0"><button type="button" class="ds-tab" style="margin:0">Вкладка</button></span></div>
+        <div class="snap-cell"><div class="snap-cap">Lvl=1 · Disable</div><span class="snap-pad" style="padding:0"><button type="button" class="ds-tab ds-tab--disabled" style="margin:0">Вкладка</button></span></div>
+        <div class="snap-cell"><div class="snap-cap">Lvl=2 · Default</div><span class="snap-pad" style="padding:0"><button type="button" class="ds-tab" style="margin:0;height:28px;padding:4px 12px;font-size:14px;font-weight:400;line-height:20px">Вкладка</button></span></div>
+        <div class="snap-cell"><div class="snap-cap">Lvl=2 · Hover</div><span class="snap-pad st-hover" style="padding:0"><button type="button" class="ds-tab" style="margin:0;height:28px;padding:4px 12px;font-size:14px;font-weight:400;line-height:20px">Вкладка</button></span></div>
+        <div class="snap-cell"><div class="snap-cap">Lvl=2 · Press</div><span class="snap-pad st-press" style="padding:0"><button type="button" class="ds-tab" style="margin:0;height:28px;padding:4px 12px;font-size:14px;font-weight:400;line-height:20px">Вкладка</button></span></div>
+        <div class="snap-cell"><div class="snap-cap">Lvl=2 · Disable</div><span class="snap-pad" style="padding:0"><button type="button" class="ds-tab ds-tab--disabled" style="margin:0;height:28px;padding:4px 12px;font-size:14px;font-weight:400;line-height:20px">Вкладка</button></span></div>
+      </div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Scroll tabs — Orientation=Right / Left, State=Default (стрелки arrow_forward / arrow_back; кнопка — белый кадр 28 с тенью)</div>
+      <div class="snap-row">
+        <div class="snap-cell">
+          <div class="snap-cap">Orientation=Right, State=Default</div>
+          <div class="ds-scroll-tabs"><span class="ds-scroll-tabs__button-icon"><span class="ds-scroll-tabs__icon"><span class="material-icons">arrow_forward</span></span></span></div>
+        </div>
+        <div class="snap-cell">
+          <div class="snap-cap">Orientation=Left, State=Default</div>
+          <div class="ds-scroll-tabs ds-scroll-tabs--left"><span class="ds-scroll-tabs__button-icon"><span class="ds-scroll-tabs__icon"><span class="material-icons">arrow_back</span></span></span></div>
+        </div>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: (а) в css состояния :hover/:active таба живые (Tab/Inactive|Active/Hover|Press — токены), на витрине показаны «замороженными» классами стенда st-hover/st-press; (б) у Lvl=2 в css правило живёт на контейнере .ds-tabs--lvl2 (в наборе Lvl — свойство каждого таба: в разметке задавайте контейнером, а не инлайн-правками — на витрине выше инлайн только потому, что одиночный таб без контейнера); (в) State=Hover у Scroll tabs есть в наборе, в css состояния нет — не показываем (решить в ДС); (г) счётчик — текстом, не Badge (см. «Примеры»); (д) не воспроизводим: «Статус таба» (в табе стоит компонент Status — вне набора), «Ошибка внутри таба» и «3 точки» (паттерны обвязки из примеров канвы). Журнал №110.</p>
+  </div>
+
+  <!-- 2. Примеры из канвы (59018-7424) -->
+  <div class="panel" data-vpanel="examples" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Счётчик («Активные 11», «Просроченные 4», «Завершенные 2» — тексты из примера канвы)</div>
+      <div class="ds-tabs snap-live">
+        <button type="button" class="ds-tab ds-tab--active">Активные<span class="ds-tab__counter">11</span></button>
+        <button type="button" class="ds-tab">Просроченные<span class="ds-tab__counter">4</span></button>
+        <button type="button" class="ds-tab">Завершенные<span class="ds-tab__counter">2</span></button>
+      </div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Иконки (иконки settings / storefront / wysiwyg / package — svg-пути из Figma)</div>
+      <div class="ds-tabs snap-live">
+        <button type="button" class="ds-tab ds-tab--active"><span class="ds-tab__icon"><svg><use href="#ic-settings"/></svg></span>Общие настройки</button>
+        <button type="button" class="ds-tab"><span class="ds-tab__icon"><svg><use href="#ic-storefront"/></svg></span>Рестораны и склады</button>
+        <button type="button" class="ds-tab"><span class="ds-tab__icon"><svg><use href="#ic-wysiwyg"/></svg></span>Расписание</button>
+        <button type="button" class="ds-tab"><span class="ds-tab__icon"><svg><use href="#ic-package"/></svg></span>Товары</button>
+      </div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Таб недоступен («Объединение заказов» активен, «Настройки ЛК» — Disable)</div>
+      <div class="ds-tabs snap-live">
+        <button type="button" class="ds-tab ds-tab--active">Объединение заказов</button>
+        <button type="button" class="ds-tab ds-tab--disabled">Настройки ЛК</button>
+      </div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Два уровня (Lvl=1 + Lvl=2)</div>
+      <div class="ds-tabs snap-live">
+        <button type="button" class="ds-tab ds-tab--active">Заказы</button>
+        <button type="button" class="ds-tab">Склады</button>
+        <button type="button" class="ds-tab">Отчёты</button>
+      </div>
+      <div class="ds-tabs ds-tabs--lvl2 snap-live" style="margin-top:8px">
+        <button type="button" class="ds-tab ds-tab--active">Общие</button>
+        <button type="button" class="ds-tab">Доступ</button>
+        <button type="button" class="ds-tab">История</button>
+      </div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Прокрутка (стрелки Scroll tabs по краям строки табов; раскладка — обвязка страницы)</div>
+      <div class="snap-row" style="align-items:center;gap:16px">
+        <div class="ds-scroll-tabs ds-scroll-tabs--left"><span class="ds-scroll-tabs__button-icon"><span class="ds-scroll-tabs__icon"><span class="material-icons">arrow_back</span></span></span></div>
+        <div class="ds-tabs snap-live">
+          <button type="button" class="ds-tab ds-tab--active">Склад</button>
+          <button type="button" class="ds-tab">Рыба и мясо</button>
+          <button type="button" class="ds-tab">Бар зона</button>
+        </div>
+        <div class="ds-scroll-tabs"><span class="ds-scroll-tabs__button-icon"><span class="ds-scroll-tabs__icon"><span class="material-icons">arrow_forward</span></span></span></div>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: (а) тексты и состав примеров — из блока «Tabs examples» канвы; (б) счётчик — это текст в табе (<code>ds-tab__counter</code>, 12/16 Medium; активный — акцентом), не компонент Badge; (в) в примере «Прокрутка табов» Figma-мок шире — здесь показан состав: стрелки Scroll tabs + строка табов, раскладка — обвязка; (г) состояния стрелок (Hover) в css нет — см. вкладку «Наборы»; (д) примеры «Статус таба» / «Ошибка внутри таба» / «3 точки» не воспроизводим (Status в табе — вне набора Tab element; ошибка и «3 точки» — паттерны обвязки). Журнал №110.</p>
+  </div>
+</div>
+
+<!-- svg-иконки — точные пути из Figma (пример «Иконки» канвы; в Figma залиты цветом состояния — здесь currentColor) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-settings" viewBox="0 0 20 20">
+    <path d="M7.70833 18.3333L7.375 15.6667C7.19444 15.5972 7.02431 15.5139 6.86458 15.4167C6.70486 15.3194 6.54861 15.2153 6.39583 15.1042L3.91667 16.1458L1.625 12.1875L3.77083 10.5625C3.75694 10.4653 3.75 10.3715 3.75 10.2812V9.71874C3.75 9.62846 3.75694 9.53471 3.77083 9.43749L1.625 7.81249L3.91667 3.85416L6.39583 4.89582C6.54861 4.78471 6.70833 4.68055 6.875 4.58332C7.04167 4.4861 7.20833 4.40277 7.375 4.33332L7.70833 1.66666H12.2917L12.625 4.33332C12.8056 4.40277 12.9757 4.4861 13.1354 4.58332C13.2951 4.68055 13.4514 4.78471 13.6042 4.89582L16.0833 3.85416L18.375 7.81249L16.2292 9.43749C16.2431 9.53471 16.25 9.62846 16.25 9.71874V10.2812C16.25 10.3715 16.2361 10.4653 16.2083 10.5625L18.3542 12.1875L16.0625 16.1458L13.6042 15.1042C13.4514 15.2153 13.2917 15.3194 13.125 15.4167C12.9583 15.5139 12.7917 15.5972 12.625 15.6667L12.2917 18.3333H7.70833ZM9.16667 16.6667H10.8125L11.1042 14.4583C11.5347 14.3472 11.934 14.184 12.3021 13.9687C12.6701 13.7535 13.0069 13.493 13.3125 13.1875L15.375 14.0417L16.1875 12.625L14.3958 11.2708C14.4653 11.0764 14.5139 10.8715 14.5417 10.6562C14.5694 10.441 14.5833 10.2222 14.5833 9.99999C14.5833 9.77777 14.5694 9.55902 14.5417 9.34374C14.5139 9.12846 14.4653 8.9236 14.3958 8.72916L16.1875 7.37499L15.375 5.95832L13.3125 6.83332C13.0069 6.51388 12.6701 6.24652 12.3021 6.03124C11.934 5.81596 11.5347 5.65277 11.1042 5.54166L10.8333 3.33332H9.1875L8.89583 5.54166C8.46528 5.65277 8.06597 5.81596 7.69792 6.03124C7.32986 6.24652 6.99306 6.50693 6.6875 6.81249L4.625 5.95832L3.8125 7.37499L5.60417 8.70832C5.53472 8.91666 5.48611 9.12499 5.45833 9.33332C5.43056 9.54166 5.41667 9.76388 5.41667 9.99999C5.41667 10.2222 5.43056 10.4375 5.45833 10.6458C5.48611 10.8542 5.53472 11.0625 5.60417 11.2708L3.8125 12.625L4.625 14.0417L6.6875 13.1667C6.99306 13.4861 7.32986 13.7535 7.69792 13.9687C8.06597 14.184 8.46528 14.3472 8.89583 14.4583L9.16667 16.6667ZM10.0417 12.9167C10.8472 12.9167 11.5347 12.6319 12.1042 12.0625C12.6736 11.493 12.9583 10.8055 12.9583 9.99999C12.9583 9.19443 12.6736 8.50693 12.1042 7.93749C11.5347 7.36804 10.8472 7.08332 10.0417 7.08332C9.22222 7.08332 8.53125 7.36804 7.96875 7.93749C7.40625 8.50693 7.125 9.19443 7.125 9.99999C7.125 10.8055 7.40625 11.493 7.96875 12.0625C8.53125 12.6319 9.22222 12.9167 10.0417 12.9167Z"/>
+  </symbol>
+  <symbol id="ic-storefront" viewBox="0 0 20 20">
+    <path d="M17.5209 9.20833V15.8333C17.5209 16.2917 17.3577 16.684 17.0313 17.0104C16.7049 17.3368 16.3126 17.5 15.8542 17.5H4.18755C3.72922 17.5 3.33686 17.3368 3.01047 17.0104C2.68408 16.684 2.52089 16.2917 2.52089 15.8333V9.20833C2.20144 8.91667 1.95491 8.54167 1.7813 8.08333C1.60769 7.625 1.60422 7.125 1.77089 6.58333L2.64589 3.75C2.757 3.38889 2.95491 3.09028 3.23964 2.85417C3.52436 2.61806 3.85422 2.5 4.22922 2.5H15.8126C16.1876 2.5 16.5139 2.61458 16.7917 2.84375C17.0695 3.07292 17.2709 3.375 17.3959 3.75L18.2709 6.58333C18.4376 7.125 18.4341 7.61805 18.2605 8.0625C18.0869 8.50694 17.8403 8.88889 17.5209 9.20833ZM11.8542 8.33333C12.2292 8.33333 12.5139 8.20486 12.7084 7.94792C12.9028 7.69097 12.9792 7.40278 12.9376 7.08333L12.4792 4.16667H10.8542V7.25C10.8542 7.54167 10.9514 7.79514 11.1459 8.01042C11.3403 8.22569 11.5764 8.33333 11.8542 8.33333ZM8.10422 8.33333C8.42366 8.33333 8.68408 8.22569 8.88547 8.01042C9.08686 7.79514 9.18755 7.54167 9.18755 7.25V4.16667H7.56255L7.10422 7.08333C7.04866 7.41667 7.12158 7.70833 7.32297 7.95833C7.52436 8.20833 7.78478 8.33333 8.10422 8.33333ZM4.39589 8.33333C4.64589 8.33333 4.86464 8.24305 5.05214 8.0625C5.23964 7.88194 5.35422 7.65278 5.39589 7.375L5.85422 4.16667H4.22922L3.39589 6.95833C3.31255 7.23611 3.35769 7.53472 3.5313 7.85417C3.70491 8.17361 3.99311 8.33333 4.39589 8.33333ZM15.6459 8.33333C16.0487 8.33333 16.3403 8.17361 16.5209 7.85417C16.7014 7.53472 16.7431 7.23611 16.6459 6.95833L15.7709 4.16667H14.1876L14.6459 7.375C14.6876 7.65278 14.8021 7.88194 14.9896 8.0625C15.1771 8.24305 15.3959 8.33333 15.6459 8.33333ZM4.18755 15.8333H15.8542V9.95833C15.7848 9.98611 15.7396 10 15.7188 10H15.6459C15.2709 10 14.941 9.9375 14.6563 9.8125C14.3716 9.6875 14.0903 9.48611 13.8126 9.20833C13.5626 9.45833 13.2778 9.65278 12.9584 9.79167C12.6389 9.93055 12.2987 10 11.9376 10C11.5626 10 11.2119 9.93055 10.8855 9.79167C10.5591 9.65278 10.2709 9.45833 10.0209 9.20833C9.78477 9.45833 9.51047 9.65278 9.19797 9.79167C8.88547 9.93055 8.54866 10 8.18755 10C7.78478 10 7.42019 9.93055 7.0938 9.79167C6.76741 9.65278 6.47922 9.45833 6.22922 9.20833C5.93755 9.5 5.64936 9.70486 5.36464 9.82292C5.07991 9.94097 4.757 10 4.39589 10H4.30214C4.26741 10 4.22922 9.98611 4.18755 9.95833V15.8333Z"/>
+  </symbol>
+  <symbol id="ic-wysiwyg" viewBox="0 0 20 20">
+    <path d="M4.16667 17.5C3.70833 17.5 3.31597 17.3368 2.98958 17.0104C2.66319 16.684 2.5 16.2917 2.5 15.8333V4.16667C2.5 3.70833 2.66319 3.31597 2.98958 2.98958C3.31597 2.66319 3.70833 2.5 4.16667 2.5H15.8333C16.2917 2.5 16.684 2.66319 17.0104 2.98958C17.3368 3.31597 17.5 3.70833 17.5 4.16667V15.8333C17.5 16.2917 17.3368 16.684 17.0104 17.0104C16.684 17.3368 16.2917 17.5 15.8333 17.5H4.16667ZM4.16667 15.8333H15.8333V5.83333H4.16667V15.8333ZM5.83333 10V8.33333H14.1667V10H5.83333ZM5.83333 13.3333V11.6667H10.8333V13.3333H5.83333Z"/>
+  </symbol>
+  <symbol id="ic-package" viewBox="0 0 20 20">
+    <path d="M9.16667 16.1875V10.4792L4.16667 7.58332V13.2917L9.16667 16.1875ZM10.8333 16.1875L15.8333 13.2917V7.58332L10.8333 10.4792V16.1875ZM9.16667 18.1042L3.33333 14.75C3.06944 14.5972 2.86458 14.3958 2.71875 14.1458C2.57292 13.8958 2.5 13.618 2.5 13.3125V6.68749C2.5 6.38193 2.57292 6.10416 2.71875 5.85416C2.86458 5.60416 3.06944 5.40277 3.33333 5.24999L9.16667 1.89582C9.43056 1.74305 9.70833 1.66666 10 1.66666C10.2917 1.66666 10.5694 1.74305 10.8333 1.89582L16.6667 5.24999C16.9306 5.40277 17.1354 5.60416 17.2812 5.85416C17.4271 6.10416 17.5 6.38193 17.5 6.68749V13.3125C17.5 13.618 17.4271 13.8958 17.2812 14.1458C17.1354 14.3958 16.9306 14.5972 16.6667 14.75L10.8333 18.1042C10.5694 18.2569 10.2917 18.3333 10 18.3333C9.70833 18.3333 9.43056 18.2569 9.16667 18.1042ZM13.3333 7.10416L14.9375 6.18749L10 3.33332L8.375 4.27082L13.3333 7.10416ZM10 9.04166L11.625 8.10416L6.6875 5.24999L5.0625 6.18749L10 9.04166Z"/>
+  </symbol>
+</svg>
+
+<script>
+  /* табы стенда (верхние) */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.ds-tab[data-vtab]'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('[data-vpanel]'));
+  tabs.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      tabs.forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle('ds-tab--active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach(function (p) { p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab'); });
+    });
+  });
+  /* живые строки табов в примерах: клик переключает активную */
+  Array.prototype.slice.call(document.querySelectorAll('.snap-live .ds-tab')).forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      if (tab.classList.contains('ds-tab--disabled')) return;
+      Array.prototype.slice.call(tab.parentElement.querySelectorAll('.ds-tab')).forEach(function (t) {
+        t.classList.toggle('ds-tab--active', t === tab);
+      });
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+.ds-expansion-group-panel {
+  width: 597px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-expansion-panel-collaps-gap-group, 8px);
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-expansion-group-panel__label {
+  font-size: var(--ds-font-body-s-14-normal-medium-size);
+  line-height: var(--ds-font-body-s-14-normal-medium-line);
+  letter-spacing: var(--ds-font-body-s-14-normal-medium-spacing);
+  font-weight: var(--ds-font-body-s-14-normal-medium-weight);
+  color: var(--ds-color-expansion-panel-collaps-text-color, #333333);
+  white-space: nowrap;
+}
+.ds-expansion-group-panel--collaps {
+  color: var(--ds-color-expansion-panel-collaps-text-color, #333333);
+}
+.ds-expansion-group-panel--expand {
+  color: var(--ds-color-expansion-panel-collaps-text-color, #333333);
+}
+

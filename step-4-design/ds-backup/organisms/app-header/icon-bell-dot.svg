@@ -1,0 +1,15 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Icons">
+<g id="notifications_none" clip-path="url(#clip0_0_118)">
+<g id="Vector">
+</g>
+<path id="Vector_2" d="M10 18.3333C10.9167 18.3333 11.6667 17.5833 11.6667 16.6667H8.33333C8.33333 17.5833 9.08333 18.3333 10 18.3333ZM15 13.3333V9.16667C15 6.60833 13.6417 4.46667 11.25 3.9V3.33333C11.25 2.64167 10.6917 2.08333 10 2.08333C9.30833 2.08333 8.75 2.64167 8.75 3.33333V3.9C6.36667 4.46667 5 6.6 5 9.16667V13.3333L3.33333 15V15.8333H16.6667V15L15 13.3333ZM13.3333 14.1667H6.66667V9.16667C6.66667 7.1 7.925 5.41667 10 5.41667C12.075 5.41667 13.3333 7.1 13.3333 9.16667V14.1667Z" fill="#757575"/>
+</g>
+<circle id="Ellipse 376" cx="15" cy="5" r="3" fill="#FF0000"/>
+</g>
+<defs>
+<clipPath id="clip0_0_118">
+<rect width="20" height="20" fill="white"/>
+</clipPath>
+</defs>
+</svg>

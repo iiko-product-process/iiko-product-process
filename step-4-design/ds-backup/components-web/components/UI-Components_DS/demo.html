@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Text UI — демо стенд компонента</title>
+<!--
+  Демо стенд компонента Text UI. Папка: DS/components-web/components/UI-Components_DS/.
+  Источник — набор «Text UI» (57938:18290) Figma «Iiko Web DS (New)»: 7 вариантов
+  State=Default / Hover / Press / Selected / Negative / Disable / Link (порядок — по артборду набора),
+  каждый 226×52.
+  Состав варианта (по узлам): Element left = Checkbox (20), Content = Label up (16) + List item text (20) +
+  Label down (16), Element right = иконка ⓘ (20). Слоты собраны классами компонента (text-ui.css):
+  ds-text-ui__element-left / __checkbox / __icon-size / __icon, __content, __label-up / __list-item /
+  __label-down, __element-right.
+  Состояния: в css у компонента классов состояний нет (есть только --disabled) — на стенде состояния
+  «заморожены» стендовыми классами st-* со значениями из токенов (блок Text UI в tokens.css); см. сноску.
+  Описание компонента (Figma): «Текст интерфейса — подпись, значение или ссылка в ячейках, списках и
+  карточках»; лежит на странице UI components, раздел «не готовы или под вопросом» — перед использованием
+  уточните актуальность у владельца ДС. Семантика состояний: Link — текст-ссылка; Hover/Press — наведение
+  и нажатие; Selected — текст выделен (например, найденное совпадение при поиске); Negative — текст
+  об ошибке или удалении; Disable — недоступный текст.
+  Артефакты выгрузки: у label-up/list-item/label-down и слотов element-left/right в css висят фоновые
+  «плашки» — сняты в ручном слое (../../fixes.css, п. 13, журнал №88).
+  226 — ширина варианта на артборде набора (слот контента 170 + иконки 20 + гэпы 8); в контексте
+  компонент — width: fit-content. Журнал №102.
+-->
+<link rel="stylesheet" href="../../font.css">
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../index.css">
+<link rel="stylesheet" href="../../fixes.css">
+<style>
+  /* каркас демо-стенда — как у других стендов */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .view { padding: 24px; }
+  .panel { width: fit-content; max-width: 1920px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  .snap-cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0; }
+  .snap-note { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 28px 0 0; max-width: 980px; }
+  .snap-cells { display: grid; grid-template-columns: repeat(3, max-content); gap: 32px 24px; align-items: start; }
+  .snap-cell { display: flex; flex-direction: column; gap: 10px; }
+
+  /* витрина: ширина варианта на артборде набора — 226 (слот контента — 170) */
+  .snap-w226 { width: 226px; }
+  .snap-w226 .ds-text-ui__content { width: 170px; }
+
+  /* иконки слотов — контейнер Icon size (ds-icon-size--5x, как инстанс «Icon size» в Figma);
+     переключение Selected — селекторами приоритетнее правила контейнера (.ds-icon-size svg) */
+  .ds-icon-size svg.snap-cb-on { display: none; }
+
+  /* состояния набора: в css классов нет (кроме --disabled) — «замороженно» классами стенда, значения из токенов.
+     По полному контексту компонента: Hover/Press визуально = Default (фоны не залиты); Link — синий только
+     «List item text»; Negative — красные текст и иконки, лейблы остаются серыми; Selected — иконки акцентные. */
+  .st-selected .ds-icon-size svg.snap-cb-off { display: none; }
+  .st-selected .ds-icon-size svg.snap-cb-on { display: block; }
+  .st-selected .ds-icon-size { color: var(--ds-color-text-ui-selected-icon-color, #448aff); }
+  .st-link .ds-text-ui__list-item { color: var(--ds-color-text-ui-link-text-color, #448aff); }
+  .st-negative .ds-text-ui__list-item { color: var(--ds-color-text-ui-negative-text-color, #ff5252); }
+  .st-negative .ds-icon-size { color: var(--ds-color-text-ui-negative-icon-color, #ff5252); }
+  .st-disabled .ds-text-ui__label-up, .st-disabled .ds-text-ui__label-down { color: var(--ds-color-text-ui-disable-label-text-color, #9e9e9e); }
+  .st-disabled .ds-text-ui__list-item { color: var(--ds-color-text-ui-disable-text-color, #9e9e9e); }
+  .st-disabled .ds-icon-size { color: var(--ds-color-text-ui-disable-icon-color, #9e9e9e); }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Text UI — демо стенд</span>
+  <span>набор Figma: Text UI (57938-18290) · 7 состояний (артбордные 226×52)</span>
+</div>
+<div class="view">
+  <!-- Набор «Text UI» (57938-18290): 7 вариантов — порядок и состав как на артборде набора -->
+  <div class="panel">
+    <div class="snap-cells">
+      <div class="snap-cell">
+        <div class="snap-cap">State=Default</div>
+        <div class="ds-text-ui snap-w226">
+          <span class="ds-text-ui__element-left"><span class="ds-text-ui__checkbox"><span class="ds-icon-size ds-icon-size--5x"><svg class="snap-cb-off"><use href="#ic-check-off"/></svg><svg class="snap-cb-on"><use href="#ic-check-on"/></svg></span></span></span>
+          <span class="ds-text-ui__content"><span class="ds-text-ui__label-up">Label up</span><span class="ds-text-ui__list-item">List item text</span><span class="ds-text-ui__label-down">Label down</span></span>
+          <span class="ds-text-ui__element-right"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+        </div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-cap">State=Hover</div>
+        <div class="ds-text-ui snap-w226">
+          <span class="ds-text-ui__element-left"><span class="ds-text-ui__checkbox"><span class="ds-icon-size ds-icon-size--5x"><svg class="snap-cb-off"><use href="#ic-check-off"/></svg><svg class="snap-cb-on"><use href="#ic-check-on"/></svg></span></span></span>
+          <span class="ds-text-ui__content"><span class="ds-text-ui__label-up">Label up</span><span class="ds-text-ui__list-item">List item text</span><span class="ds-text-ui__label-down">Label down</span></span>
+          <span class="ds-text-ui__element-right"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+        </div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-cap">State=Press</div>
+        <div class="ds-text-ui snap-w226">
+          <span class="ds-text-ui__element-left"><span class="ds-text-ui__checkbox"><span class="ds-icon-size ds-icon-size--5x"><svg class="snap-cb-off"><use href="#ic-check-off"/></svg><svg class="snap-cb-on"><use href="#ic-check-on"/></svg></span></span></span>
+          <span class="ds-text-ui__content"><span class="ds-text-ui__label-up">Label up</span><span class="ds-text-ui__list-item">List item text</span><span class="ds-text-ui__label-down">Label down</span></span>
+          <span class="ds-text-ui__element-right"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+        </div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-cap">State=Selected</div>
+        <div class="ds-text-ui snap-w226 st-selected">
+          <span class="ds-text-ui__element-left"><span class="ds-text-ui__checkbox"><span class="ds-icon-size ds-icon-size--5x"><svg class="snap-cb-off"><use href="#ic-check-off"/></svg><svg class="snap-cb-on"><use href="#ic-check-on"/></svg></span></span></span>
+          <span class="ds-text-ui__content"><span class="ds-text-ui__label-up">Label up</span><span class="ds-text-ui__list-item">List item text</span><span class="ds-text-ui__label-down">Label down</span></span>
+          <span class="ds-text-ui__element-right"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+        </div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-cap">State=Negative</div>
+        <div class="ds-text-ui snap-w226 st-negative">
+          <span class="ds-text-ui__element-left"><span class="ds-text-ui__checkbox"><span class="ds-icon-size ds-icon-size--5x"><svg class="snap-cb-off"><use href="#ic-check-off"/></svg><svg class="snap-cb-on"><use href="#ic-check-on"/></svg></span></span></span>
+          <span class="ds-text-ui__content"><span class="ds-text-ui__label-up">Label up</span><span class="ds-text-ui__list-item">List item text</span><span class="ds-text-ui__label-down">Label down</span></span>
+          <span class="ds-text-ui__element-right"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+        </div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-cap">State=Disable</div>
+        <div class="ds-text-ui snap-w226 st-disabled">
+          <span class="ds-text-ui__element-left"><span class="ds-text-ui__checkbox"><span class="ds-icon-size ds-icon-size--5x"><svg class="snap-cb-off"><use href="#ic-check-off"/></svg><svg class="snap-cb-on"><use href="#ic-check-on"/></svg></span></span></span>
+          <span class="ds-text-ui__content"><span class="ds-text-ui__label-up">Label up</span><span class="ds-text-ui__list-item">List item text</span><span class="ds-text-ui__label-down">Label down</span></span>
+          <span class="ds-text-ui__element-right"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+        </div>
+      </div>
+      <div class="snap-cell">
+        <div class="snap-cap">State=Link</div>
+        <div class="ds-text-ui snap-w226 st-link">
+          <span class="ds-text-ui__element-left"><span class="ds-text-ui__checkbox"><span class="ds-icon-size ds-icon-size--5x"><svg class="snap-cb-off"><use href="#ic-check-off"/></svg><svg class="snap-cb-on"><use href="#ic-check-on"/></svg></span></span></span>
+          <span class="ds-text-ui__content"><span class="ds-text-ui__label-up">Label up</span><span class="ds-text-ui__list-item">List item text</span><span class="ds-text-ui__label-down">Label down</span></span>
+          <span class="ds-text-ui__element-right"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+        </div>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: (а) состояния показаны «замороженно» классами стенда st-* на токенах (классов состояний в css нет — только --disabled): Hover и Press визуально совпадают с Default (фон есть только в токенах — Text UI/Hover|Press/Background, в вариантах не залит); Link — синий только «List item text», иконки остаются серыми; Negative — красные центральный текст и иконки, лейблы остаются серыми (#616161); Selected — иконки акцентные (чекбокс заливной с галочкой), текст без изменений; Disable — все тексты и иконки серые (#9e9e9e); (б) артефакты выгрузки — фоновые «плашки» у label-up / list-item / label-down и белый фон слотов element-left/right — сняты в ручном слое (fixes.css п. 13, журнал №88); (в) по Figma корень — items-start (все слоты и контент по верхнему краю), цвет иконок слотов — #616161 (Icon/primary); в css слоты растягивались, правая иконка центрировалась, цвет не задан — обойдено в fixes.css (п. 13, №103); (г) состав слота: слева Checkbox → Icon size 20 (ds-icon-size--5x) → иконка check_box_outline_blank (в Selected — заливная), справа Icon size 20 (info); тексты — Label up 16 / List item text 20 / Label down 16; (д) высота варианта 52 = контент 16+20+16; ширина 226 — артбордная (контент 170 + иконки 20 + гэпы 8), в контексте компонент — width: fit-content; (е) официальное описание Figma: «Текст интерфейса — подпись, значение или ссылка в ячейках, списках и карточках», раздел «не готовы или под вопросом» — уточнять у владельца ДС; семантика: Link — текст-ссылка; Hover/Press — наведение/нажатие; Selected — выделенный текст (найдено при поиске); Negative — ошибка/удаление; Disable — недоступно. Журналы №102/103.</p>
+  </div>
+</div>
+
+<!-- svg-иконки — точные пути из Figma (как на стенде List): чекбоксы (скруглённая версия: Deselected — контур,
+     Selected — заливной с белой галочкой через fill-rule) и info -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-check-off" viewBox="0 0 20 20">
+    <path d="M4.16667 17.5C3.70833 17.5 3.31597 17.3368 2.98958 17.0104C2.66319 16.684 2.5 16.2917 2.5 15.8333V4.16667C2.5 3.70833 2.66319 3.31597 2.98958 2.98958C3.31597 2.66319 3.70833 2.5 4.16667 2.5H15.8333C16.2917 2.5 16.684 2.66319 17.0104 2.98958C17.3368 3.31597 17.5 3.70833 17.5 4.16667V15.8333C17.5 16.2917 17.3368 16.684 17.0104 17.0104C16.684 17.3368 16.2917 17.5 15.8333 17.5H4.16667ZM4.16667 15.8333H15.8333V4.16667H4.16667V15.8333Z"/>
+  </symbol>
+  <symbol id="ic-check-on" viewBox="0 0 20 20">
+    <path fill-rule="evenodd" d="M8.83333 13.5L14.7083 7.625L13.5417 6.45833L8.83333 11.1667L6.45833 8.79167L5.29167 9.95833L8.83333 13.5ZM4.16667 17.5C3.70833 17.5 3.31597 17.3368 2.98958 17.0104C2.66319 16.684 2.5 16.2917 2.5 15.8333V4.16667C2.5 3.70833 2.66319 3.31597 2.98958 2.98958C3.31597 2.66319 3.70833 2.5 4.16667 2.5H15.8333C16.2917 2.5 16.684 2.66319 17.0104 2.98958C17.3368 3.31597 17.5 3.70833 17.5 4.16667V15.8333C17.5 16.2917 17.3368 16.684 17.0104 17.0104C16.684 17.3368 16.2917 17.5 15.8333 17.5H4.16667Z"/>
+  </symbol>
+  <symbol id="ic-info" viewBox="0 0 20 20">
+    <path d="M9.16667 14.1667H10.8333V9.16667H9.16667V14.1667ZM10 7.5C10.2361 7.5 10.434 7.42014 10.5937 7.26042C10.7535 7.10069 10.8333 6.90278 10.8333 6.66667C10.8333 6.43056 10.7535 6.23264 10.5937 6.07292C10.434 5.91319 10.2361 5.83333 10 5.83333C9.76389 5.83333 9.56597 5.91319 9.40625 6.07292C9.24653 6.23264 9.16667 6.43056 9.16667 6.66667C9.16667 6.90278 9.24653 7.10069 9.40625 7.26042C9.56597 7.42014 9.76389 7.5 10 7.5ZM10 18.3333C8.84722 18.3333 7.76389 18.1146 6.75 17.6771C5.73611 17.2396 4.85417 16.6458 4.10417 15.8958C3.35417 15.1458 2.76042 14.2639 2.32292 13.25C1.88542 12.2361 1.66667 11.1528 1.66667 10C1.66667 8.84722 1.88542 7.76389 2.32292 6.75C2.76042 5.73611 3.35417 4.85417 4.10417 4.10417C4.85417 3.35417 5.73611 2.76042 6.75 2.32292C7.76389 1.88542 8.84722 1.66667 10 1.66667C11.1528 1.66667 12.2361 1.88542 13.25 2.32292C14.2639 2.76042 15.1458 3.35417 15.8958 4.10417C16.6458 4.85417 17.2396 5.73611 17.6771 6.75C18.1146 7.76389 18.3333 8.84722 18.3333 10C18.3333 11.1528 18.1146 12.2361 17.6771 13.25C17.2396 14.2639 16.6458 15.1458 15.8958 15.8958C15.1458 16.6458 14.2639 17.2396 13.25 17.6771C12.2361 18.1146 11.1528 18.3333 10 18.3333ZM10 16.6667C11.8611 16.6667 13.4375 16.0208 14.7292 14.7292C16.0208 13.4375 16.6667 11.8611 16.6667 10C16.6667 8.13889 16.0208 6.5625 14.7292 5.27083C13.4375 3.97917 11.8611 3.33333 10 3.33333C8.13889 3.33333 6.5625 3.97917 5.27083 5.27083C3.97917 6.5625 3.33333 8.13889 3.33333 10C3.33333 11.8611 3.97917 13.4375 5.27083 14.7292C6.5625 16.0208 8.13889 16.6667 10 16.6667Z"/>
+  </symbol>
+</svg>
+</body>
+</html>

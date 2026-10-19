@@ -1,0 +1,33 @@
+.ds-element-left {
+  min-height: var(--ds-size-5x);
+  width: fit-content;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--ds-size-2-5x);
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-element-left__icon {
+  flex-shrink: 0;
+  width: var(--ds-size-5x);
+  height: var(--ds-size-5x);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ds-element-left__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ds-element-left__icon svg path {
+  fill: currentColor;
+}
+.ds-element-left__info {
+  height: var(--ds-size-5x);
+  display: flex;
+  flex-direction: row;
+  background: #ffffff;
+}
+

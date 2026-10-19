@@ -1,0 +1,39 @@
+.ds-chips-group {
+  width: fit-content;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--ds-chips-gap-group, 8px);
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-chips-group__label {
+  font-size: var(--ds-font-body-s-14-normal-regular-size);
+  line-height: var(--ds-font-body-s-14-normal-regular-line);
+  letter-spacing: var(--ds-font-body-s-14-normal-regular-spacing);
+  font-weight: var(--ds-font-body-s-14-normal-regular-weight);
+  color: var(--ds-color-chips-text-color, #333333);
+  white-space: nowrap;
+}
+.ds-chips-group__icon {
+  flex-shrink: 0;
+  width: var(--ds-size-5x);
+  height: var(--ds-size-5x);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ds-color-chips-icon-color);
+}
+.ds-chips-group__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ds-chips-group__icon svg path {
+  fill: currentColor;
+}
+.ds-chips-group--s .ds-chips-group__icon {
+  width: var(--ds-size-4x);
+  height: var(--ds-size-4x);
+}
+

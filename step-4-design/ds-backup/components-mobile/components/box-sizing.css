@@ -1,0 +1,72 @@
+/* box-sizing у мобильных высот
+   ----------------------------------------------------------------
+   В CSS библиотеки его нет ни у одного класса с объявленной высотой, поэтому
+   паддинги и рамка прибавляются сверху: кадр поля 48 px рисуется как 74,
+   строка списка 68 — как 84. В своих прототипах ДС лечит это на странице
+   (.js-select .ds-select-form__input-frame{box-sizing:border-box;height:48px}).
+
+   Здесь то же самое для всего, чему высота задаётся в мобильном слое: иначе
+   мои же числа (кнопка 44, поле 56, строка 72) на экране были бы больше
+   записанных. Библиотеку не правим.
+
+   Правки, которые это закрывает в мобильном слое: Button 44, Button icon 40,
+   поля M 56, Slide toggle 52×32, строки списка/меню/селекта 72/72/48,
+   чекбокс и радио 48, вкладки 48, ячейка таблицы 52, узел дерева 48,
+   пункт сайденава 56, снекбар 48, диалог (блок кнопок).
+   ================================================================ */
+
+[data-mode="mobile"] .ds-arrow::after,
+[data-mode="mobile"] .ds-autocomplete-form__input-frame,
+[data-mode="mobile"] .ds-btn--m,
+[data-mode="mobile"] .ds-btn--s,
+[data-mode="mobile"] .ds-btn--xs,
+[data-mode="mobile"] .ds-btn-icon--m,
+[data-mode="mobile"] .ds-btn-icon--s,
+[data-mode="mobile"] .ds-btn-icon--xs,
+[data-mode="mobile"] .ds-btn-icon::after,
+[data-mode="mobile"] .ds-btn::after,
+[data-mode="mobile"] .ds-checkbox,
+[data-mode="mobile"] .ds-chips::after,
+[data-mode="mobile"] .ds-dialog-footer__action,
+[data-mode="mobile"] .ds-dialog-view__action,
+[data-mode="mobile"] .ds-elements-2,
+[data-mode="mobile"] .ds-expansion--open .ds-expansion__header,
+[data-mode="mobile"] .ds-expansion__header,
+[data-mode="mobile"] .ds-form-field-cell,
+[data-mode="mobile"] .ds-input--m .ds-input__frame,
+[data-mode="mobile"] .ds-input-cell,
+[data-mode="mobile"] .ds-input-datepicker__frame,
+[data-mode="mobile"] .ds-input-number__frame,
+[data-mode="mobile"] .ds-input-timepicker__frame,
+[data-mode="mobile"] .ds-list-container__item,
+[data-mode="mobile"] .ds-list-item,
+[data-mode="mobile"] .ds-menu-item,
+[data-mode="mobile"] .ds-radio,
+[data-mode="mobile"] .ds-search--xs::after,
+[data-mode="mobile"] .ds-select-cell,
+[data-mode="mobile"] .ds-select-container__title,
+[data-mode="mobile"] .ds-select-form__input-frame,
+[data-mode="mobile"] .ds-select-item,
+[data-mode="mobile"] .ds-sidenav-item--l1,
+[data-mode="mobile"] .ds-sidenav-item--l2,
+[data-mode="mobile"] .ds-sidenav-item--l3,
+[data-mode="mobile"] .ds-slide-toggle,
+[data-mode="mobile"] .ds-slide-toggle__row,
+[data-mode="mobile"] .ds-slide-toggle__track,
+[data-mode="mobile"] .ds-slide-toggle__track::after,
+[data-mode="mobile"] .ds-snackbar,
+[data-mode="mobile"] .ds-snackbar--complex.ds-snackbar--dark,
+[data-mode="mobile"] .ds-snackbar--complex.ds-snackbar--light,
+[data-mode="mobile"] .ds-snackbar--single.ds-snackbar--light,
+[data-mode="mobile"] .ds-state::after,
+[data-mode="mobile"] .ds-tab,
+[data-mode="mobile"] .ds-table-chips-input,
+[data-mode="mobile"] .ds-table-content-cell,
+[data-mode="mobile"] .ds-table-content-row,
+[data-mode="mobile"] .ds-table-header-cell,
+[data-mode="mobile"] .ds-table-header-row,
+[data-mode="mobile"] .ds-tabs--lvl2 .ds-tab,
+[data-mode="mobile"] .ds-tree,
+[data-mode="mobile"] .ds-tree-item {
+  box-sizing: border-box;
+}

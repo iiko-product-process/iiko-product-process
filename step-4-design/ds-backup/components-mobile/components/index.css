@@ -1,0 +1,63 @@
+/* ============================================================
+   components-mobile — агрегатор мобильного слоя
+   ============================================================
+
+   Что здесь лежит
+   ---------------
+   Только то, что относится к мобильной платформе:
+     · структурные мобильные компоненты — файлы `*_mob` в
+       components/<Имя>_DS/ (другая раскладка/состав, а не другие размеры);
+     · агрегатор — этот файл, чтобы мобильный слой подключался одной строкой.
+
+   Чего здесь НЕТ и почему
+   -----------------------
+   Общей базы токенов и общих компонентов. База одна — components-web/tokens.css,
+   компоненты, которые на мобиле отличаются ТОЛЬКО размерами, — те же самые
+   файлы в components-web/components/. Мобильные размеры для них задаёт
+   modes.css (ось режима `data-mode="mobile"`). Копии этих файлов не нужны:
+   с копиями режим перестанет каскадиться во вложенные компоненты, а любое
+   обновление ДС придётся править в двух местах.
+
+   Подключение мобильного слоя (порядок обязателен)
+   ------------------------------------------------
+     <link rel="stylesheet" href="../components-web/font.css">
+     <link rel="stylesheet" href="../components-web/tokens.css">
+     <link rel="stylesheet" href="../components-mobile/modes.css">      ← ось размера
+     <link rel="stylesheet" href="../components-mobile/components/index.css">  ← этот файл
+     <link rel="stylesheet" href="../components-web/components/index.css">
+     плюс на корне: <html data-mode="mobile">
+
+   Пока мобильных компонентов нет — файл пустой, но он есть, чтобы структура
+   совпадала с components-web и мобильный слой подключался одной строкой.
+   ============================================================ */
+
+/* @import "Button_DS/button-group-mob.css";  — пример для будущих *_mob-компонентов */
+@import "box-sizing.css";
+@import "Stepper_DS/stepper-vertical.css";
+@import "Button_DS/button-touch.css";
+@import "Checkbox_DS/checkbox-touch.css";
+@import "Slide-Toggle_DS/slide-toggle-touch.css";
+@import "Textarea_DS/textarea-mobile.css";
+@import "List_DS/list-mobile.css";
+@import "Expansion-Panel_DS/expansion-mobile.css";
+@import "Icon-Size_DS/icon-size-touch.css";
+@import "Scroll_DS/scroll-mobile.css";
+@import "Chips_DS/chips-mobile.css";
+@import "Chips-Input_DS/chips-input-mobile.css";
+@import "Banners_DS/banner-mobile.css";
+@import "Snackbar_DS/snackbar-mobile.css";
+@import "Tabs_DS/tabs-mobile.css";
+@import "Select_DS/select-mobile.css";
+@import "Autocomplete_DS/autocomplete-mobile.css";
+@import "Datepicker_DS/datepicker-mobile.css";
+@import "Timepicker_DS/timepicker-mobile.css";
+@import "Menu_DS/menu-mobile.css";
+@import "Hint-Tooltip_DS/hint-mobile.css";
+@import "Dialog_DS/dialog-mobile.css";
+@import "Search_DS/search-mobile.css";
+@import "Sidenav_DS/sidenav-mobile.css";
+@import "Table_DS/table-mobile.css";
+@import "Tree_DS/tree-mobile.css";
+@import "UI-Components_DS/text-ui-mobile.css";
+@import "Form-Field-Input_DS/form-field-mobile.css";
+@import "Input-Number_DS/input-number-mobile.css";

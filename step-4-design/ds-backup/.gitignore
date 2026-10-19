@@ -1,0 +1,30 @@
+# ── VS Code: локальный MCP-конфиг (содержит токен Figma) ──
+# Реальный файл с токеном не коммитим. Для команды есть .vscode/mcp.example.json
+.vscode/mcp.json
+
+# ── Переменные окружения / секреты ──
+.env
+.env.*
+*.local
+
+# ── components-web и components-mobile — обычные папки внутри этого репозитория
+#    (не отдельные репозитории), игнорировать нечего ──
+
+# ── Мусор Python и кэши ──
+__pycache__/
+*.pyc
+
+# ── Рабочий мусор: пробы, снимки, бэкапы ──
+_crops/
+_probe.*
+*.log
+*.tmp
+*.bak
+*.orig
+*.rej
+*.swp
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+

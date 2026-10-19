@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Status — демо стенд компонента</title>
+<!--
+  Демо стенд компонента Status (страница «Status_DS», 52928:6587). Папка: DS/components-web/components/Status_DS/.
+  Источник — канва «Status_DS» Figma «Iiko Web DS (New)»: набор «Status» (52928:6588; 18 вариантов:
+  Style Neutral/Accent/Positive/Warning/Negative/Contrast-1…4 × Type Filled/Text) и блок «Status (UX Examples)»
+  (58218:5097) с пятью сценариями (таблица заказов, карточки блюд, карточка заказа + список сотрудников,
+  статусы с иконками, контрастные стили на тёмной карточке). Свойства сета: BOOLEAN Element left / Element right
+  (по умолчанию ВКЛ — в вариантах набора стоят оба слота с иконкой), Style (9), Type (2).
+  Состав по узлам: Filled 116×24 (пад 4/6, r8; иконка 16 + текст «Status text» 64 + иконка 16, гэпы 4),
+  Text 104×16 (пад 0); иконка слота — глиф «info» 13×13, цвет Icon/Primary #616161 во ВСЕХ стилях (как в наборе);
+  цвет подписи = цвет стиля (корень статуса). Плашки служебных слоёв выгрузки сняты в fixes.css п. 26.
+  Примеры: статусы в тексте (без иконок) — Type=Text; в карточках/шапках — Type=Filled; иконки только в сценарии
+  «Статусы с иконками» (в канве у всех примеров глиф — «info», как есть). Мобильный сет «Status_mob» и сравнение
+  с MD3/iOS на стенде не воспроизводим (не веб). Журнал DS/fixes.md №116.
+-->
+<link rel="stylesheet" href="../../font.css">
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../index.css">
+<link rel="stylesheet" href="../../fixes.css">
+<style>
+  /* каркас демо-стенда — как у других стендов */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .view { padding: 24px; }
+  .view .ds-tabs { margin-bottom: 24px; }
+  .panel { width: fit-content; max-width: 1920px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  .snap-cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0; }
+  .snap-note { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 28px 0 0; max-width: 980px; }
+  .snap-sect { margin: 0 0 40px; }
+  .snap-sect:last-child { margin-bottom: 0; }
+  .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
+  .snap-row { display: flex; gap: 48px; align-items: flex-start; }
+  .snap-col { display: flex; flex-direction: column; gap: 10px; }
+  .snap-cells { display: flex; flex-direction: column; gap: 16px; }
+
+  /* иконка слота — svg-спрайт (fill НА самом svg — иначе <use> не красится) */
+  .ds-status__icon svg { width: 100%; height: 100%; display: block; fill: currentColor; }
+
+  /* ── примеры (сценарии канвы) ─────────────────────────────── */
+  .snap-h2 { font-size: 24px; line-height: 32px; font-weight: 500; color: var(--ds-color-text-primary, #333333); margin: 0 0 8px; }
+  .snap-sub { font-size: 14px; line-height: 20px; color: var(--ds-color-text-secondary, #616161); margin: 0 0 16px; max-width: 900px; }
+  .snap-sub--after { margin: 12px 0 0; }
+
+  /* таблица заказов (664) */
+  .snap-table { width: 664px; }
+  .snap-table__head { width: 600px; height: 30px; display: flex; }
+  .snap-table__th { font-size: 12px; line-height: 14px; font-weight: 500; color: var(--ds-color-text-secondary, #616161); padding: 8px 0 0 8px; box-sizing: border-box; white-space: nowrap; }
+  .snap-table__div { height: 1px; background: var(--ds-color-stroke-default, #e0e0e0); }
+  .snap-table__row { width: 600px; height: 32px; display: flex; }
+  .snap-table__td { font-size: 14px; line-height: 16px; color: var(--ds-color-text-primary, #333333); padding: 8px 0 0 8px; box-sizing: border-box; white-space: nowrap; overflow: hidden; }
+  .snap-table__td--1 { width: 160px; }
+  .snap-table__td--2 { width: 140px; }
+  .snap-table__td--3 { width: 140px; }
+  .snap-table__td--4 { width: 160px; }
+  .snap-table__td--status { padding-top: 8px; }
+  .snap-table__td--status .ds-status { display: inline-flex; }
+
+  /* карточки блюд (180, шаг 220) */
+  .snap-dishes { display: flex; gap: 40px; }
+  .snap-dish { width: 180px; }
+  .snap-dish__title { font-size: 14px; line-height: 20px; color: var(--ds-color-text-secondary, #616161); margin: 0 0 8px; }
+  .snap-dish__box { width: 180px; height: 82px; background: #fff; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); border-radius: 12px; box-sizing: border-box; padding: 16px 16px 0; }
+  .snap-dish__row1 { display: flex; gap: 8px; align-items: center; font-size: 14px; line-height: 16px; }
+  .snap-dish__price { font-weight: 500; color: var(--ds-color-text-primary, #333333); }
+  .snap-dish__muted { color: var(--ds-color-text-secondary, #616161); }
+  .snap-dish__box .ds-status { margin-top: 8px; }
+
+  /* карточка заказа (360) */
+  .snap-oc { width: 360px; background: #fff; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); border-radius: 12px; box-sizing: border-box; }
+  .snap-oc__head { height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; }
+  .snap-oc__title { font-size: 16px; line-height: 20px; font-weight: 500; color: var(--ds-color-text-primary, #333333); }
+  .snap-oc__div { height: 1px; background: var(--ds-color-stroke-default, #e0e0e0); }
+  .snap-oc__body { padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .snap-oc__row { display: flex; gap: 8px; font-size: 14px; line-height: 16px; }
+  .snap-oc__label { color: var(--ds-color-text-secondary, #616161); }
+  .snap-oc__value { color: var(--ds-color-text-primary, #333333); }
+
+  /* список сотрудников (320) */
+  .snap-staff { width: 320px; background: #fff; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); border-radius: 12px; box-sizing: border-box; }
+  .snap-staff__cap { font-size: 14px; line-height: 20px; color: var(--ds-color-text-secondary, #616161); margin: 0 0 8px; }
+  .snap-staff__row { height: 52px; display: flex; align-items: center; padding: 0 16px; box-sizing: border-box; }
+  .snap-staff__name { display: flex; flex-direction: column; gap: 2px; }
+  .snap-staff__name b { font-size: 14px; line-height: 16px; font-weight: 500; color: var(--ds-color-text-primary, #333333); }
+  .snap-staff__name span { font-size: 12px; line-height: 14px; color: var(--ds-color-text-secondary, #616161); }
+  .snap-staff__spacer { flex: 1; }
+  .snap-staff__div { height: 1px; background: var(--ds-color-stroke-default, #e0e0e0); }
+
+  /* статусы с иконками */
+  .snap-groups { display: flex; gap: 40px; align-items: flex-start; }
+  .snap-group__cap { font-size: 14px; line-height: 20px; color: var(--ds-color-text-secondary, #616161); margin: 0 0 8px; }
+  .snap-status-row { display: flex; gap: 8px; }
+
+  /* контрастные стили: тёмная карточка (400) */
+  .snap-dark { width: 400px; background: #212121; border-radius: 12px; padding: 20px; box-sizing: border-box; }
+  .snap-dark__title { font-size: 16px; line-height: 20px; font-weight: 500; color: #ffffff; margin: 0 0 12px; }
+  .snap-dark__row { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; }
+  .snap-dark__row:last-child { margin-bottom: 0; }
+  .snap-dark__label { font-size: 14px; line-height: 16px; color: #b4b4b4; }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Status — демо стенд</span>
+  <span>набор Figma: Status (52928-6588, 18) · примеры: «Status (UX Examples)» (58218-5097)</span>
+</div>
+<div class="view">
+  <div class="ds-tabs" role="tablist" aria-label="Status">
+    <button class="ds-tab ds-tab--active" role="tab" aria-selected="true" data-vtab="basic">Basic example</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="status">Status</button>
+  </div>
+
+  <!-- 2. Status: Style × Type -->
+  <div class="panel" data-vpanel="status" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Type=Filled (116×24; слоты Element left/right включены — как в вариантах набора)</div>
+      <div class="snap-cells">
+        <div class="snap-col"><div class="snap-cap">Style=Neutral</div><div class="ds-status ds-status--neutral ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
+        <div class="snap-col"><div class="snap-cap">Style=Accent</div><div class="ds-status ds-status--accent ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
+        <div class="snap-col"><div class="snap-cap">Style=Positive</div><div class="ds-status ds-status--positive ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
+        <div class="snap-col"><div class="snap-cap">Style=Warning</div><div class="ds-status ds-status--warning ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
+        <div class="snap-col"><div class="snap-cap">Style=Negative</div><div class="ds-status ds-status--negative ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
+        <div class="snap-col"><div class="snap-cap">Style=Contrast-1</div><div class="ds-status ds-status--contrast-1 ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
+        <div class="snap-col"><div class="snap-cap">Style=Contrast-2</div><div class="ds-status ds-status--contrast-2 ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
+        <div class="snap-col"><div class="snap-cap">Style=Contrast-3</div><div class="ds-status ds-status--contrast-3 ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
+        <div class="snap-col"><div class="snap-cap">Style=Contrast-4</div><div class="ds-status ds-status--contrast-4 ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
+      </div>
+    </div>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Type=Text (104×16; слоты Element left/right включены — как в вариантах набора)</div>
+      <div class="snap-cells">
+        <div class="snap-col"><div class="snap-cap">Style=Neutral</div><div class="ds-status ds-status--neutral ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
+        <div class="snap-col"><div class="snap-cap">Style=Accent</div><div class="ds-status ds-status--accent ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
+        <div class="snap-col"><div class="snap-cap">Style=Positive</div><div class="ds-status ds-status--positive ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
+        <div class="snap-col"><div class="snap-cap">Style=Warning</div><div class="ds-status ds-status--warning ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
+        <div class="snap-col"><div class="snap-cap">Style=Negative</div><div class="ds-status ds-status--negative ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
+        <div class="snap-col"><div class="snap-cap">Style=Contrast-1</div><div class="ds-status ds-status--contrast-1 ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
+        <div class="snap-col"><div class="snap-cap">Style=Contrast-2</div><div class="ds-status ds-status--contrast-2 ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
+        <div class="snap-col"><div class="snap-cap">Style=Contrast-3</div><div class="ds-status ds-status--contrast-3 ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
+        <div class="snap-col"><div class="snap-cap">Style=Contrast-4</div><div class="ds-status ds-status--contrast-4 ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: (а) в вариантах набора включены ОБА слота (Element left/right — BOOLEAN, по умолчанию on) — на стенде показано как в наборе; в примерах слоты выключены, кроме сценария «Статусы с иконками» (ниже); (б) иконка слота во всех стилях — глиф «info» 13×13 цветом Icon/Primary #616161 (как в узлах) — спрайт, fill задан на самом svg; (в) цвет подписи = цвет стиля (корень статуса), плашки служебных слоёв выгрузки (.ds-status__info белым, .ds-status__content фоном в цвет текста) сняты в fixes п. 26 — там же про жёсткий нейтральный цвет подписи; (г) Filled — пад 4/6, r8, рамки нет; Text — пад 0; (д) мобильный сет «Status_mob» и сравнение с MD3/iOS — вне веба, не воспроизводим. Журнал №116.</p>
+  </div>
+
+  <!-- 1. Basic example: сценарии «Status (UX Examples)» -->
+  <div class="panel" data-vpanel="basic" role="tabpanel">
+    <div class="snap-sect">
+      <div class="snap-h2">Статусы в таблице заказов</div>
+      <div class="snap-sub">Текстовые статусы (Type=Text) в таблице накладных на поставку. Цвет текста передаёт текущий этап обработки — от создания до завершения.</div>
+      <div class="snap-table">
+        <div class="snap-table__head">
+          <div class="snap-table__th snap-table__td--1">Номер заказа</div>
+          <div class="snap-table__th snap-table__td--2">Статус</div>
+          <div class="snap-table__th snap-table__td--3">Заказчик</div>
+          <div class="snap-table__th snap-table__td--4">Поставщик</div>
+        </div>
+        <div class="snap-table__div"></div>
+        <div class="snap-table__row"><div class="snap-table__td snap-table__td--1">212-002-2025</div><div class="snap-table__td snap-table__td--status snap-table__td--2"><span class="ds-status ds-status--accent ds-status--text"><span class="ds-status__label">Открыт</span></span></div><div class="snap-table__td snap-table__td--3">Муравьиная Ф...</div><div class="snap-table__td snap-table__td--4">Супермаркет ...</div></div>
+        <div class="snap-table__div"></div>
+        <div class="snap-table__row"><div class="snap-table__td snap-table__td--1">212-002-2025</div><div class="snap-table__td snap-table__td--status snap-table__td--2"><span class="ds-status ds-status--warning ds-status--text"><span class="ds-status__label">Черновик</span></span></div><div class="snap-table__td snap-table__td--3">Муравьиная Ф...</div><div class="snap-table__td snap-table__td--4">Супермаркет ...</div></div>
+        <div class="snap-table__div"></div>
+        <div class="snap-table__row"><div class="snap-table__td snap-table__td--1">20210-003-3013</div><div class="snap-table__td snap-table__td--status snap-table__td--2"><span class="ds-status ds-status--accent ds-status--text"><span class="ds-status__label">Отправлен</span></span></div><div class="snap-table__td snap-table__td--3">Муравьиная Ф...</div><div class="snap-table__td snap-table__td--4">Супермаркет ...</div></div>
+        <div class="snap-table__div"></div>
+        <div class="snap-table__row"><div class="snap-table__td snap-table__td--1">212-002-2025</div><div class="snap-table__td snap-table__td--status snap-table__td--2"><span class="ds-status ds-status--accent ds-status--text"><span class="ds-status__label">В производстве</span></span></div><div class="snap-table__td snap-table__td--3">Муравьиная Ф...</div><div class="snap-table__td snap-table__td--4">Супермаркет ...</div></div>
+        <div class="snap-table__div"></div>
+        <div class="snap-table__row"><div class="snap-table__td snap-table__td--1">212-002-2025</div><div class="snap-table__td snap-table__td--status snap-table__td--2"><span class="ds-status ds-status--negative ds-status--text"><span class="ds-status__label">Ошибка</span></span></div><div class="snap-table__td snap-table__td--3">Муравьиная Ф...</div><div class="snap-table__td snap-table__td--4">Супермаркет ...</div></div>
+        <div class="snap-table__div"></div>
+        <div class="snap-table__row"><div class="snap-table__td snap-table__td--1">212-002-2025</div><div class="snap-table__td snap-table__td--status snap-table__td--2"><span class="ds-status ds-status--neutral ds-status--text"><span class="ds-status__label">Завершён</span></span></div><div class="snap-table__td snap-table__td--3">Муравьиная Ф...</div><div class="snap-table__td snap-table__td--4">Супермаркет ...</div></div>
+        <div class="snap-table__div"></div>
+        <div class="snap-table__row"><div class="snap-table__td snap-table__td--1">212-002-2025</div><div class="snap-table__td snap-table__td--status snap-table__td--2"><span class="ds-status ds-status--neutral ds-status--text"><span class="ds-status__label">Отменён</span></span></div><div class="snap-table__td snap-table__td--3">Муравьиная Ф...</div><div class="snap-table__td snap-table__td--4">Супермаркет ...</div></div>
+        <div class="snap-table__div"></div>
+      </div>
+      <div class="snap-sub snap-sub--after" style="max-width: 340px;">Цвет текста соответствует этапу: Accent — активные, Warning — промежуточные, Negative — ошибки, Neutral — финальные.</div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-h2">Статусы в карточках блюд</div>
+      <div class="snap-sub">Filled-статусы показывают доступность позиций меню. Используются в карточках товаров, каталогах и витринах.</div>
+      <div class="snap-dishes">
+        <div class="snap-dish">
+          <div class="snap-dish__title">Том Ям с креветками</div>
+          <div class="snap-dish__box">
+            <div class="snap-dish__row1"><span class="snap-dish__price">890 ₽</span><span class="snap-dish__muted">·</span><span class="snap-dish__muted">350 мл</span></div>
+            <span class="ds-status ds-status--positive ds-status--filled"><span class="ds-status__label">В наличии</span></span>
+          </div>
+        </div>
+        <div class="snap-dish">
+          <div class="snap-dish__title">Стейк Рибай</div>
+          <div class="snap-dish__box">
+            <div class="snap-dish__row1"><span class="snap-dish__price">2 450 ₽</span><span class="snap-dish__muted">·</span><span class="snap-dish__muted">300 г</span></div>
+            <span class="ds-status ds-status--warning ds-status--filled"><span class="ds-status__label">Заканчивается</span></span>
+          </div>
+        </div>
+        <div class="snap-dish">
+          <div class="snap-dish__title">Тирамису</div>
+          <div class="snap-dish__box">
+            <div class="snap-dish__row1"><span class="snap-dish__price">490 ₽</span><span class="snap-dish__muted">·</span><span class="snap-dish__muted">180 г</span></div>
+            <span class="ds-status ds-status--negative ds-status--filled"><span class="ds-status__label">Стоп-лист</span></span>
+          </div>
+        </div>
+        <div class="snap-dish">
+          <div class="snap-dish__title">Фо Бо</div>
+          <div class="snap-dish__box">
+            <div class="snap-dish__row1"><span class="snap-dish__price">650 ₽</span><span class="snap-dish__muted">·</span><span class="snap-dish__muted">400 мл</span></div>
+            <span class="ds-status ds-status--accent ds-status--filled"><span class="ds-status__label">Новинка</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="snap-sub snap-sub--after" style="max-width: 340px;">Positive — в наличии, Warning — заканчивается, Negative — стоп-лист, Accent — новинка.</div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-h2">Статус в карточке заказа</div>
+      <div class="snap-sub">Filled-статус в шапке информационного блока показывает текущее состояние документа. Используется в детальных карточках и формах.</div>
+      <div class="snap-row" style="gap: 60px;">
+        <div class="snap-oc">
+          <div class="snap-oc__head">
+            <span class="snap-oc__title">Заказ №212-002-2025</span>
+            <span class="ds-status ds-status--accent ds-status--filled"><span class="ds-status__label">В производстве</span></span>
+          </div>
+          <div class="snap-oc__div"></div>
+          <div class="snap-oc__body">
+            <div class="snap-oc__row"><span class="snap-oc__label">Дата создания</span><span class="snap-oc__value">25.02.2025</span></div>
+            <div class="snap-oc__row"><span class="snap-oc__label">Заказчик</span><span class="snap-oc__value">Муравьиная Ферма</span></div>
+            <div class="snap-oc__row"><span class="snap-oc__label">Поставщик</span><span class="snap-oc__value">Супермаркет «Продукты»</span></div>
+            <div class="snap-oc__row"><span class="snap-oc__label">Сумма</span><span class="snap-oc__value">45 320 ₽</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="snap-staff__cap">Список сотрудников</div>
+          <div class="snap-staff">
+            <div class="snap-staff__row"><span class="snap-staff__name"><b>Иванов А.С.</b><span>Повар</span></span><span class="snap-staff__spacer"></span><span class="ds-status ds-status--positive ds-status--text"><span class="ds-status__label">На смене</span></span></div>
+            <div class="snap-staff__div"></div>
+            <div class="snap-staff__row"><span class="snap-staff__name"><b>Петрова М.В.</b><span>Официант</span></span><span class="snap-staff__spacer"></span><span class="ds-status ds-status--warning ds-status--text"><span class="ds-status__label">Перерыв</span></span></div>
+            <div class="snap-staff__div"></div>
+            <div class="snap-staff__row"><span class="snap-staff__name"><b>Сидоров К.Д.</b><span>Бармен</span></span><span class="snap-staff__spacer"></span><span class="ds-status ds-status--neutral ds-status--text"><span class="ds-status__label">Отсутствует</span></span></div>
+            <div class="snap-staff__div"></div>
+            <div class="snap-staff__row"><span class="snap-staff__name"><b>Козлова Е.А.</b><span>Администратор</span></span><span class="snap-staff__spacer"></span><span class="ds-status ds-status--positive ds-status--text"><span class="ds-status__label">На смене</span></span></div>
+            <div class="snap-staff__div"></div>
+            <div class="snap-staff__row"><span class="snap-staff__name"><b>Морозов И.П.</b><span>Курьер</span></span><span class="snap-staff__spacer"></span><span class="ds-status ds-status--negative ds-status--text"><span class="ds-status__label">Уволен</span></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="snap-sub snap-sub--after" style="max-width: 340px;">В карточке заказа статус читается как часть шапки. В списке сотрудников — текстовые статусы выровнены по правому краю строки.</div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-h2">Статусы с иконками</div>
+      <div class="snap-sub">Element left и Element right добавляют иконки для усиления семантики. Используются в карте зала, статусах оплаты и активности.</div>
+      <div class="snap-groups">
+        <div>
+          <div class="snap-group__cap">Карта зала — иконка слева</div>
+          <div class="snap-status-row">
+            <span class="ds-status ds-status--positive ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Свободен</span></span>
+            <span class="ds-status ds-status--negative ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Занят</span></span>
+            <span class="ds-status ds-status--accent ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Забронирован</span></span>
+            <span class="ds-status ds-status--warning ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Обслуживается</span></span>
+          </div>
+        </div>
+        <div>
+          <div class="snap-group__cap">Оплата — иконка справа</div>
+          <div class="snap-status-row">
+            <span class="ds-status ds-status--positive ds-status--filled"><span class="ds-status__label">Оплачен</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span>
+            <span class="ds-status ds-status--negative ds-status--filled"><span class="ds-status__label">Не оплачен</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span>
+            <span class="ds-status ds-status--warning ds-status--filled"><span class="ds-status__label">Частично</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span>
+          </div>
+        </div>
+        <div>
+          <div class="snap-group__cap">Активность — две иконки</div>
+          <div class="snap-status-row">
+            <span class="ds-status ds-status--positive ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Активен</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span>
+            <span class="ds-status ds-status--negative ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Заблокирован</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span>
+            <span class="ds-status ds-status--neutral ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Архив</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span>
+          </div>
+        </div>
+      </div>
+      <div class="snap-sub snap-sub--after" style="max-width: 340px;">У всех иконок в примерах канвы — глиф «info» (как есть).</div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-h2">Контрастные стили</div>
+      <div class="snap-sub">Варианты Contrast-1…4 предназначены для тёмных фонов и специальных карточек, где основные цветовые стили не читаются.</div>
+      <div class="snap-dark">
+        <div class="snap-dark__title">Заказ №20210-003-3013</div>
+        <div class="snap-dark__row"><span class="snap-dark__label">Filled:</span>
+          <span class="ds-status ds-status--contrast-1 ds-status--filled"><span class="ds-status__label">Contrast-1</span></span>
+          <span class="ds-status ds-status--contrast-2 ds-status--filled"><span class="ds-status__label">Contrast-2</span></span>
+          <span class="ds-status ds-status--contrast-3 ds-status--filled"><span class="ds-status__label">Contrast-3</span></span>
+          <span class="ds-status ds-status--contrast-4 ds-status--filled"><span class="ds-status__label">Contrast-4</span></span>
+        </div>
+        <div class="snap-dark__row"><span class="snap-dark__label">Text:</span>
+          <span class="ds-status ds-status--contrast-1 ds-status--text"><span class="ds-status__label">Contrast-1</span></span>
+          <span class="ds-status ds-status--contrast-2 ds-status--text"><span class="ds-status__label">Contrast-2</span></span>
+          <span class="ds-status ds-status--contrast-3 ds-status--text"><span class="ds-status__label">Contrast-3</span></span>
+          <span class="ds-status ds-status--contrast-4 ds-status--text"><span class="ds-status__label">Contrast-4</span></span>
+        </div>
+      </div>
+      <div class="snap-sub snap-sub--after" style="max-width: 340px;">Contrast-стили используются только на тёмных фонах. На светлых фонах используйте основные стили: Neutral, Accent, Positive, Warning, Negative.</div>
+    </div>
+
+    <p class="snap-note">Пометки для ревью: (а) пять сценариев повторяют блок «Status (UX Examples)» (58218:5097) — тексты и стили дословно по канве (подпись этапов: Accent — активные, Warning — промежуточные, Negative — ошибки, Neutral — финальные); (б) статусы в тексте (таблица, список сотрудников) — Type=Text без иконок; в карточках блюд и шапке заказа — Type=Filled без иконок; иконки — только в сценарии «Статусы с иконками» (глиф «info» как в канве, элементы управления: у «Карты зала» — Element left, у «Оплаты» — Element right, у «Активности» — оба); (в) отступы/размеры композиций — по координатам узлов (таблица 664 с контентом 600, строки 32/разделители 664×1 #E0E0E0; карточка заказа 360×171 шапка 52 + 4 строки 16/8; список 320×266 строки 52; тёмная карточка 400×123 фон #212121); (г) в шапке заказа и строках списка между текстом и статусом в узлах стоят пустые фреймы-распорки (не линии); (д) примеры — иллюстрации сценариев (сборка стенда), а не отдельный компонент. Журнал №116.</p>
+  </div>
+</div>
+
+<!-- svg-иконка — точный путь из Figma (глиф «info» 13×13, узел 54024:12938; fill через currentColor) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-info" viewBox="0 0 14 14">
+    <path d="M6 10H7.33333V6H6V10ZM6.66667 4.66667C6.85556 4.66667 7.01389 4.60278 7.14167 4.475C7.26944 4.34722 7.33333 4.18889 7.33333 4C7.33333 3.81111 7.26944 3.65278 7.14167 3.525C7.01389 3.39722 6.85556 3.33333 6.66667 3.33333C6.47778 3.33333 6.31944 3.39722 6.19167 3.525C6.06389 3.65278 6 3.81111 6 4C6 4.18889 6.06389 4.34722 6.19167 4.475C6.31944 4.60278 6.47778 4.66667 6.66667 4.66667ZM6.66667 13.3333C5.74444 13.3333 4.87778 13.1583 4.06667 12.8083C3.25556 12.4583 2.55 11.9833 1.95 11.3833C1.35 10.7833 0.875 10.0778 0.525 9.26667C0.175 8.45555 0 7.58889 0 6.66667C0 5.74444 0.175 4.87778 0.525 4.06667C0.875 3.25556 1.35 2.55 1.95 1.95C2.55 1.35 3.25556 0.875 4.06667 0.525C4.87778 0.175 5.74444 0 6.66667 0C7.58889 0 8.45555 0.175 9.26667 0.525C10.0778 0.875 10.7833 1.35 11.3833 1.95C11.9833 2.55 12.4583 3.25556 12.8083 4.06667C13.1583 4.87778 13.3333 5.74444 13.3333 6.66667C13.3333 7.58889 13.1583 8.45555 12.8083 9.26667C12.4583 10.0778 11.9833 10.7833 11.3833 11.3833C10.7833 11.9833 10.0778 12.4583 9.26667 12.8083C8.45555 13.1583 7.58889 13.3333 6.66667 13.3333ZM6.66667 12C8.15555 12 9.41667 11.4833 10.45 10.45C11.4833 9.41667 12 8.15555 12 6.66667C12 5.17778 11.4833 3.91667 10.45 2.88333C9.41667 1.85 8.15555 1.33333 6.66667 1.33333C5.17778 1.33333 3.91667 1.85 2.88333 2.88333C1.85 3.91667 1.33333 5.17778 1.33333 6.66667C1.33333 8.15555 1.85 9.41667 2.88333 10.45C3.91667 11.4833 5.17778 12 6.66667 12Z"/>
+  </symbol>
+</svg>
+
+<script>
+  /* табы стенда (верхние) */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.ds-tab[data-vtab]'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('[data-vpanel]'));
+  tabs.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      tabs.forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle('ds-tab--active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach(function (p) { p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab'); });
+    });
+  });
+</script>
+</body>
+</html>

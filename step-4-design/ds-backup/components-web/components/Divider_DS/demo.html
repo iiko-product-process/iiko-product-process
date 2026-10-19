@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Divider — демо стенд компонента</title>
+<!--
+  Демо стенд компонента Divider. Папка: DS/components-web/components/Divider_DS/.
+  Источник — страница «Divider_DS» (53556:7963) Figma «Iiko Web DS (New)»: набор «Divider» (53556:7964) с
+  ЕДИНСТВЕННЫМ вариантом Type=Solid — линия 260×1 #E0E0E0 (внутри FRAME «Divider»); на странице есть ещё блок
+  «Divider (Examples)» (58263:8030) — он пока ПУСТОЙ, примеров в макете нет, поэтому на стенде — только
+  витрина набора: вариант ровно как в макете, ничего не выдумываем («всё как в фигме»).
+  Состояния: у компонента состояние одно — вариантов hover/selected/disable, размеров M/L и dashed в наборе
+  нет; в сгенерированном css они остались эхом старого набора «Divider» (58320:441, страница UI components_DS,
+  16 вариантов), оттуда же синий :hover #448AFF — снят в ручном слое (../../fixes.css п. 20, журнал №96).
+  260 — ширина варианта на артборде набора; в контексте линия растягивается по контейнеру (ширина в css
+  не задана). Контейнерный класс дивайдера в css белый (№38) — не используется; тёмный контекст (подвал
+  Sidenav, #36474e) — на стенде Sidenav (fixes п. 13, №59/88). Журнал DS/fixes.md №97.
+-->
+<link rel="stylesheet" href="../../font.css">
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="../index.css">
+<link rel="stylesheet" href="../../fixes.css">
+<style>
+  /* каркас демо-стенда — как у других стендов */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .view { padding: 24px; }
+  .view .ds-tabs { margin-bottom: 24px; }
+  .panel { width: fit-content; max-width: 1920px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  .snap-cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0; }
+  .snap-note { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 28px 0 0; max-width: 800px; }
+
+  /* сетка витрины */
+  .snap-cells { display: grid; grid-template-columns: repeat(2, max-content); gap: 32px 24px; align-items: start; }
+  .snap-cell { display: flex; flex-direction: column; gap: 10px; }
+
+  /* витрина: ширина варианта на артборде набора — 260 (узел 53556:8164, 260×1) */
+  .snap-w260 { width: 260px; }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Divider — демо стенд</span>
+  <span>набор Figma: Divider (53556-7964), страница Divider_DS · вариант Type=Solid</span>
+</div>
+<div class="view">
+  <!-- Витрина набора «Divider» (53556-7964): единственный вариант Type=Solid — как в макете -->
+  <div class="panel">
+    <div class="snap-cells">
+      <div class="snap-cell">
+        <div class="snap-cap">Type=Solid</div>
+        <div class="ds-divider ds-divider--m snap-w260"></div>
+      </div>
+    </div>
+    <p class="snap-note">В наборе ОДИН вариант — Type=Solid (линия 260×1, #E0E0E0): ни размеров M/L, ни состояний (hover/selected/disable), ни dashed в наборе нет; в сгенерированном css они остались эхом старого набора «Divider» (58320:441, страница UI components_DS, 16 вариантов) — не источник; синий :hover снят в ручном слое (fixes.css п. 20, №96). 260 — ширина варианта на артборде; в контексте линия растягивается по контейнеру. Блок «Divider (Examples)» в Фимге пока пустой — примеры не показываем. Журнал №97.</p>
+  </div>
+</div>
+</body>
+</html>

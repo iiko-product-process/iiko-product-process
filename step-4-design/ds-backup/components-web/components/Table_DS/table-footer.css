@@ -1,0 +1,37 @@
+.ds-table-footer {
+  height: 65px;
+  width: 980px;
+  display: flex;
+  flex-direction: column;
+  background: var(--ds-color-table-footer-background, #ffffff);
+  box-shadow: var(--ds-shadow-shadows-01-dp-sl);
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+.ds-table-footer__label {
+  font-size: var(--ds-font-body-s-14-normal-regular-size);
+  line-height: var(--ds-font-body-s-14-normal-regular-line);
+  letter-spacing: var(--ds-font-body-s-14-normal-regular-spacing);
+  font-weight: var(--ds-font-body-s-14-normal-regular-weight);
+  color: var(--ds-color-expansion-panel-content-text-color, #333333);
+  white-space: nowrap;
+}
+.ds-table-footer__divider {
+  height: var(--ds-size-0-25x);
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
+.ds-table-footer__content {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--ds-size-2-5x);
+  padding: var(--ds-table-footer-pad-top, 12px) var(--ds-table-footer-pad-right, 32px) var(--ds-table-footer-pad-bottom, 12px) var(--ds-table-footer-pad-left, 32px);
+  background: #ffffff;
+}
+.ds-table-footer--default {
+  color: var(--ds-color-expansion-panel-content-text-color, #333333);
+}
+

@@ -1,0 +1,119 @@
+/* ============================================================
+   iiko DS — Tabs, Divider, Info panel (выверено по ДС и макету)
+   Автогенерация для этих компонентов давала артефакты
+   (рамка у .ds-tabs, белый фон у .ds-divider), поэтому правила
+   заданы точно: цвета/размеры — только токены из tokens.css
+   ============================================================ */
+
+/* ── Tabs (подчёркнутые: актив = акцент + 2px) ────────────── */
+
+.ds-tabs {
+
+  display: flex;
+  align-items: stretch;
+  gap: var(--ds-space-0);
+  border-bottom: 1px solid var(--ds-color-divider-solid-default-color); /* #E0E0E0 */
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+
+}
+
+.ds-tab {
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-space-2x);                                /* 8px */
+  box-sizing: border-box;
+  height: 32px;                                           /* ДС Lvl=1: 32px */
+  padding: var(--ds-space-1x) var(--ds-space-6x);          /* ДС Lvl=1: 4px 24px */
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  background: var(--ds-color-tab-innactive-default-background);
+  color: var(--ds-color-tab-innactive-text-color);        /* #333333 */
+  font-family: inherit;
+  font-size: var(--ds-typography-body-font-size-m);       /* ДС Lvl=1: 16px */
+  font-weight: var(--ds-typography-font-weight-medium);   /* ДС Lvl=1: 500 */
+  letter-spacing: var(--ds-typography-letter-spacing-s);
+  line-height: var(--ds-typography-body-line-height-m);   /* ДС Lvl=1: 24px */
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+
+}
+
+.ds-tab:hover {
+ background: var(--ds-color-tab-innactive-hover-background); 
+}
+
+/* #F5F5F5 */
+.ds-tab:active {
+ background: var(--ds-color-tab-innactive-press-background); 
+}
+
+/* #E0E0E0 */
+
+.ds-tab__icon {
+
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ds-color-tab-innactive-icon-color);        /* #616161 */
+
+}
+
+.ds-tab--active {
+
+  color: var(--ds-color-tab-active-text-color);           /* #448AFF */
+  border-bottom-color: var(--ds-color-tab-active-divider);/* #448AFF */
+
+}
+
+.ds-tab--active .ds-tab__icon {
+ color: var(--ds-color-tab-active-icon-color); 
+}
+
+.ds-tab--active:hover {
+ background: var(--ds-color-tab-active-hover-background); 
+}
+
+.ds-tab--active:active {
+ background: var(--ds-color-tab-active-press-background); 
+}
+
+.ds-tab--disabled,
+.ds-tab:disabled {
+
+  color: var(--ds-color-tab-disable-text-color);          /* #9E9E9E */
+  pointer-events: none;
+
+}
+
+.ds-tab--disabled .ds-tab__icon {
+ color: var(--ds-color-tab-disable-icon-color); 
+}
+
+/* Уровень 2 — ДС: h28, padding 4/12, шрифт 14px/400, lh 20 (отличается от Lvl=1!) */
+.ds-tabs--lvl2 .ds-tab {
+
+  height: 28px;
+  padding: var(--ds-space-1x) var(--ds-space-3x);
+  font-size: var(--ds-typography-body-font-size-s);       /* 14px */
+  font-weight: var(--ds-typography-font-weight-regular);  /* 400 */
+  line-height: var(--ds-typography-body-line-height-s);   /* 20px */
+
+}
+
+/* Счётчик в табе (Badge внутри) */
+.ds-tab__counter {
+
+  color: var(--ds-color-tab-innactive-counter-text-color);
+  font-size: var(--ds-typography-font-size-3x);
+
+}
+
+.ds-tab--active .ds-tab__counter {
+ color: var(--ds-color-tab-active-counter-text-color); 
+}
