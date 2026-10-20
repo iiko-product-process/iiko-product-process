@@ -4,7 +4,7 @@
 [iiko-product-process](https://github.com/iiko-product-process/iiko-product-process). Каждая строка — один скилл.
 Добавить скилл = PR в этот репозиторий + строка в этом реестре (правка `INDEX.md` обязательна).
 
-Всего скиллов: **21**
+Всего скиллов: **22**
 
 | Скилл | Шаг | Путь | Описание |
 |---|---|---|---|
@@ -29,3 +29,4 @@
 | task-workspace | Сквозной | `skills/task-workspace/SKILL.md` | Use when нужна папка задачи («tasks/»): старт задачи, артефакты, история работ. |
 | share-to-common | Сквозной | `skills/share-to-common/SKILL.md` | Use when просит поделиться наработкой со всеми («в общую папку», «чтобы видели все»): собрать предложение и отправить PR. |
 | mirror-skill-to-repo | Сквозной | `skills/mirror-skill-to-repo/SKILL.md` | Use when появился новый скилл или навык: предложить скопировать его в папку репозитория. |
+| git-onboarding | Сквозной | `skills/git-onboarding/SKILL.md` | Use when сотрудник подключается к репозиторию процесса: форк, клон, правила для Гермеса, MCP, первые задачи. |
