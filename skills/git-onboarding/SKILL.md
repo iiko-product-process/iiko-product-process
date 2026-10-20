@@ -1,7 +1,7 @@
 ---
 name: git-onboarding
 description: "Use when сотрудник подключается к репозиторию процесса: форк, клон, правила для Гермеса, MCP, первые задачи."
-version: 1.0.0
+version: 1.0.1
 created: 2026-10-19
 tags: [онбординг, github, репозиторий, mcp, процесс, iiko]
 triggers:
@@ -30,12 +30,23 @@ triggers:
 |---|---|---|
 | `git` | `git --version` | поставить git |
 | `python3` | `python3 --version` | поставить Python 3.8+ |
-| Аккаунт GitHub | `curl -s -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/user` | зарегистрировать на рабочую почту |
+| Аккаунт GitHub | `curl -s -H "Authorization: token $TOKEN" https://api.github.com/user` | зарегистрировать на рабочую почту |
 | Токен GitHub (classic PAT) | заголовок `x-oauth-scopes` содержит `repo` | Settings → Developer settings → Tokens (classic), скоупы `repo`, `read:org` |
 | Приглашение в организацию | `https://github.com/iiko-product-process` открывается | попросить админа пригласить, принять письмо |
 
 Токен хранится **только** в переменной окружения или файле вне репозитория. В git он не попадает
 никогда: ни в `.env`, ни в remote URL, который потом уедет в коммит.
+
+**Имя переменной с токеном может отличаться.** В рабочем контейнере это `GITHUB_TOKEN` (лежит в
+`/opt/data/.env`), на других машинах встречается `GITHUB`. Не угадывать — определить один раз:
+
+```bash
+source /opt/data/.env 2>/dev/null || true
+TOKEN="${GITHUB_TOKEN:-${GITHUB:-}}"
+[ -n "$TOKEN" ] && echo "токен найден (${#TOKEN} символов)" || echo "токена нет — запросить у админа"
+```
+
+Дальше в командах используется `$TOKEN` — так скилл не зависит от того, как назвали переменную.
 
 ---
 
@@ -54,7 +65,7 @@ triggers:
 
 ```bash
 curl -s -o /dev/null -w '%{http_code}\n' \
-  -H "Authorization: token $GITHUB_TOKEN" \
+  -H "Authorization: token $TOKEN" \
   https://api.github.com/repos/iiko-product-process/iiko-product-process   # ожидаем 200
 ```
 
@@ -71,7 +82,7 @@ curl -s -o /dev/null -w '%{http_code}\n' \
 3. Проверить, что форк появился:
 
 ```bash
-curl -s -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/user/repos?per_page=100 \
+curl -s -H "Authorization: token $TOKEN" https://api.github.com/user/repos?per_page=100 \
   | grep -o '"full_name": "[^"]*iiko-product-process"' | head
 ```
 
@@ -84,6 +95,11 @@ git remote add upstream https://github.com/iiko-product-process/iiko-product-pro
 git remote -v          # origin — мой форк, upstream — канон
 git fetch upstream
 ```
+
+**Имена remote.** В этой инструкции и в `CONTRIBUTING.md` принято: `origin` — ваш форк,
+`upstream` — канон. В служебных клонах админа те же два адреса могут называться `fork` и `canon` —
+это другая подпись, а не другая схема. Ориентир один: `git remote -v` в вашем клоне, дальше
+используйте те имена, которые уже есть (в примерах ниже — `origin`/`upstream`).
 
 ---
 
