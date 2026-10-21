@@ -11,7 +11,7 @@
 # Не делает: PR, push в общий репозиторий, перезапись существующих скиллов.
 # Молчит, если новых скиллов нет (пустой вывод = нет уведомления от cron).
 #
-# usage: weekly-fork-sync.sh [--repo PATH] [--branch personal] [--dry-run] [--reset-state]
+# usage: weekly-fork-sync.sh [--repo PATH] [--branch personal] [--home PATH] [--dry-run] [--reset-state]
 set -uo pipefail
 
 REPO="${HOME}/iiko-product-process"
@@ -26,11 +26,13 @@ while [ $# -gt 0 ]; do
     --branch) BRANCH="${2:?}"; shift ;;
     --dry-run) DRY=1 ;;
     --reset-state) RESET=1 ;;
+    --home) HOME_DIR="${2:?}"; shift ;;
     *) echo "неизвестный аргумент: $1" >&2; exit 2 ;;
   esac
   shift
 done
 
+if [ ! -d "$HOME_DIR/skills" ] && [ -d "$HOME/skills" ]; then HOME_DIR="$HOME"; fi
 LOG_DIR="$HOME_DIR/logs"; mkdir -p "$LOG_DIR"
 LOG="$LOG_DIR/weekly-fork-sync.log"
 STATE="$HOME_DIR/.weekly-fork-sync-last"

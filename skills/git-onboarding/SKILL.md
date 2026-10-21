@@ -363,7 +363,7 @@ bash "$HERMES_HOME/skills/productivity/git-onboarding/scripts/weekly-fork-sync.s
 |---|---|
 | Расписание | `0 10 * * 3,5` — среда и пятница, 10:00 по местному времени |
 | Скрипт | `<HERMES_HOME>/skills/productivity/git-onboarding/scripts/weekly-fork-sync.sh` |
-| Аргументы | `--repo <клон> --branch personal` |
+| Аргументы | `--repo <клон> --branch personal` (при нестандартном каталоге Hermes — `--home <путь>`) |
 | Режим | `no_agent` — скрипт сам формирует текст, модель не нужна |
 | Доставка | Telegram (топик сотрудника), если подключён. В TUI-сессии доставка не приходит — тогда смотреть `~/.hermes/logs/weekly-fork-sync.log` |
 | Поведение | пустой вывод = тишина; ненулевой код = проблема с git/доступом к форку |
