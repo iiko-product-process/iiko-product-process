@@ -105,6 +105,19 @@
     ]
   };
 
+  /* Расширение состава страницей (прототип):
+     window.APP_SIDENAV_SECTION — раздел L1 (формат как у items выше); если раздел с таким id
+     уже есть — он заменяется (напр. добавить L2 существующему «Администрированию»),
+     иначе добавляется в конец. window.APP_SIDENAV_OPEN — id раздела, который открыть при старте. */
+  if (window.APP_SIDENAV_SECTION) {
+    var _sec = window.APP_SIDENAV_SECTION, _found = false;
+    for (var _i = 0; _i < MENU.items.length; _i++) {
+      if (MENU.items[_i].id === _sec.id) { MENU.items[_i] = _sec; _found = true; break; }
+    }
+    if (!_found) MENU.items.push(_sec);
+  }
+  if (window.APP_SIDENAV_OPEN) MENU.open = window.APP_SIDENAV_OPEN;
+
   var AB = 'app-sidenav/';   /* путь до ассетов меню — уточняется по адресу самого скрипта */
   var state = { collapsed: true, openId: null, drawerOpen: false };
   var panel = null, root = null, l2view = null, hintEl = null, scrim = null, tipEl = null;
@@ -164,7 +177,7 @@
   function l2HTML(sec) {
     var h = '<div class="ds-sidenav-header ds-sidenav-header--l2 ds-sidenav-header--expanded app-snav__l2head">' +
               '<span class="ds-sidenav-header__label app-snav__l2title">' + sec.l2.title + '</span>' +
-              '<span class="app-snav__l2info" role="button" tabindex="0" aria-label="Подсказка по разделу"><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><span class="material-icons">info</span></span></span>' +
+              (sec.l2.info && sec.l2.info.length ? '<span class="app-snav__l2info" role="button" tabindex="0" aria-label="Подсказка по разделу"><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><span class="material-icons">info</span></span></span>' : '') +
               '<span class="app-snav__l2close" role="button" tabindex="0" aria-label="Закрыть меню раздела"><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><span class="material-icons">close</span></span></span>' +
             '</div>';
     h += '<div class="app-snav__l2body"><div class="app-snav__l2items">';
@@ -177,16 +190,16 @@
         h += '<div class="app-snav__l3' + (it.expanded === false ? ' app-snav__l3--collapsed' : '') + '">';
         (it.children || []).forEach(function (ch) {
           h += '<div class="ds-sidenav-item ds-sidenav-item--l3 app-snav__l3item' + (ch.selected ? ' app-snav__l3item--selected' : '') + '"' +
-                 ' role="button" tabindex="0">' +
+                 ' role="button" tabindex="0"' + (ch.href ? ' data-href="' + ch.href + '"' : '') + '>' +
                  '<span class="ds-sidenav-item__label app-snav__l3label">' + ch.label + '</span>' +
                  '<span class="app-snav__l3indicator" aria-hidden="true"></span>' +
                '</div>';
         });
         h += '</div>';
       } else {
-        h += '<div class="ds-sidenav-item ds-sidenav-item--l2 app-snav__l2item" role="button" tabindex="0">' +
+        h += '<div class="ds-sidenav-item ds-sidenav-item--l2 app-snav__l2item" role="button" tabindex="0"' + (it.href ? ' data-href="' + it.href + '"' : '') + '>' +
                '<span class="ds-sidenav-item__label app-snav__l2label">' + it.label + '</span>' +
-               (it.arrow ? '<span class="material-icons app-snav__l2arrow" aria-hidden="true">keyboard_arrow_right</span>' : '') +
+               (it.arrow ? '<span class="material-icons app-snav__l2arrow" aria-hidden="true">' + (it.arrow === 'down' ? 'keyboard_arrow_down' : 'keyboard_arrow_right') + '</span>' : '') +
              '</div>';
         if (it.divider) h += '<span class="ds-divider"></span>';
       }
@@ -312,6 +325,8 @@
     var inf = e.target.closest ? e.target.closest('.app-snav__l2info') : null;
     if (inf) { tipShow(inf); return; }                 /* ⓘ — тултип (клик — для тач-устройств) */
     if (tipEl && tipEl.classList.contains('is-on')) tipHide();   /* клик мимо иконки — тултип закрыт */
+    var nav = e.target.closest ? e.target.closest('[data-href]') : null;
+    if (nav) { location.href = nav.getAttribute('data-href'); return; }   /* пункт L2/L3 со ссылкой страницы */
     var x = e.target.closest ? e.target.closest('.app-snav__close') : null;
     if (x) { closeDrawer(); return; }                  /* ✕ в шапке меню-шторки */
     var g = e.target.closest ? e.target.closest('.app-snav__l2group') : null;
@@ -473,6 +488,7 @@
       if (inf) tipHide();
     });
 
+    if (MENU.open) state.openId = MENU.open;   /* раздел, открытый при старте (страница прототипа) */
     update();
 
     function applyWidth() { update(); }

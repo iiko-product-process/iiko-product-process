@@ -6,15 +6,17 @@
 <title>Checkbox — демо стенд компонента</title>
 <!--
   Демо стенд компонента Checkbox (страница «Checkbox_DS», 53806:5693). Папка: DS/components-web/components/Checkbox_DS/.
-  Источник — канва «Checkbox_DS» Figma «Iiko Web DS (New)»: набор «Checkbox» (53806:5694; 21 вариант:
-  Variant Normal/Error/Disable × Type Deselected/Selected/Indeterminate × State Default/Hover/Press;
-  у Disable — только Default), «Checkbox label» (53810:880; 9 вариантов Variant × Type; в варианте включены ОБА
-  слота left/right, поддержка «Support/Error text»), «Checkbox group» (53810:889; Orientation Vertical/Horizontal/
-  Group) и блок примеров «Checkbox (Examples)» (58195:5346) с реальными сценариями.
+  Источник — Figma «Iiko Web DS (New)»: «Checkbox» (53806:5694; 21 вариант:
+  Normal/Error/Disable × Deselected/Selected/Indeterminate × Default/Hover/Press; у Disable — только Default),
+  «Checkbox label» (53810:880; 9 вариантов; в варианте оба слота left/right, поддержка «Support/Error text»)
+  и «Checkbox group» (53810:889; 3 варианта: Vertical/Horizontal/Group).
+  Блок примеров «Checkbox (Examples)» (58195:5346) на стенде НЕ воспроизводим — компонент динамический,
+  в «Basic example» — только живой чекбокс (§4).
   Реализация в css: настоящий input + .ds-checkbox__box; иконки чекбокса — SVG data-URI из checkbox-icons.css
-  (генератор gen_selection_icons.py; подложка State 28×28 из набора в css не реализована — состояния Hover/Press
-  на стенде показаны без подложки, см. пометки). Обойдено: fixes п. 28 (цвета иконок в label; фон текста у radio-лейбла).
-  Журнал DS/fixes.md №119.
+  (иконки — Google Material: Selected/Indeterminate заливные — check_box_fill / indeterminate_check_box_fill, как в Figma;
+  15.10.2026). Подложка состояний Hover/Press (State 28×28) — fixes.css п. 38 (токены Checkbox/*); на витрине ряды
+  Hover/Press заморожены классами st-hover/st-press. Обойдено: fixes п. 28 (цвета иконок в label; фон текста у radio-лейбла).
+  Журнал DS/fixes.md №119, №160, №187.
 -->
 <link rel="stylesheet" href="../../font.css">
 <link rel="stylesheet" href="../../tokens.css">
@@ -39,22 +41,33 @@
   .snap-sect:last-child { margin-bottom: 0; }
   .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
   .snap-grid { display: grid; gap: 12px 40px; align-items: start; }
-  .snap-grid--3 { grid-template-columns: repeat(3, max-content); }
-  /* матрица набора — как в эталонных стендах (голые заголовки столбцов + метки строк) */
+  /* матрица компонента — как в эталонных стендах (голые заголовки столбцов + метки строк) */
   .snap-grid--matrix { column-gap: 32px; row-gap: 12px; align-items: center; justify-items: start; }
   .snap-cell { display: flex; flex-direction: column; gap: 4px; }
   .snap-h3 { font-size: 14px; line-height: 20px; font-weight: 500; color: var(--ds-color-text-primary, #333333); margin: 20px 0 8px; }
-  .snap-ex-caption { font-size: 14px; line-height: 28px; color: var(--ds-color-text-primary, #333333); margin: 0; }
   .snap-col { display: flex; flex-direction: column; gap: 10px; }
   .snap-row { display: flex; gap: 48px; align-items: flex-start; flex-wrap: wrap; }
   .snap-item-gap { display: flex; flex-direction: column; gap: 8px; }
   .snap-groupbox { display: flex; flex-direction: column; }
+  /* Витрина: заморозка Hover/Press — подложка State 28×28 (fixes.css п. 38, токены компонента) */
+  .panel .st-hover .ds-checkbox__box::after { background-color: var(--ds-color-checkbox-normal-deselected-hover-background, #ebebeb); }
+  .panel .st-hover .ds-checkbox__input:checked ~ .ds-checkbox__box::after { background-color: var(--ds-color-checkbox-normal-selected-hover-background, #e8f0ff); }
+  .panel .st-hover .ds-checkbox__input:indeterminate ~ .ds-checkbox__box::after { background-color: var(--ds-color-checkbox-normal-inderterminate-hover-background, #e8f0ff); }
+  .panel .st-hover.ds-checkbox--error .ds-checkbox__box::after,
+  .panel .st-hover.ds-checkbox--error .ds-checkbox__input:checked ~ .ds-checkbox__box::after,
+  .panel .st-hover.ds-checkbox--error .ds-checkbox__input:indeterminate ~ .ds-checkbox__box::after { background-color: var(--ds-color-checkbox-error-deselected-hover-background, #ffe5e5); }
+  .panel .st-press .ds-checkbox__box::after { background-color: var(--ds-color-checkbox-normal-deselected-press-background, #e0e0e0); }
+  .panel .st-press .ds-checkbox__input:checked ~ .ds-checkbox__box::after { background-color: var(--ds-color-checkbox-normal-selected-press-background, #ccdfff); }
+  .panel .st-press .ds-checkbox__input:indeterminate ~ .ds-checkbox__box::after { background-color: var(--ds-color-checkbox-normal-inderterminate-press-background, #ccdfff); }
+  .panel .st-press.ds-checkbox--error .ds-checkbox__box::after,
+  .panel .st-press.ds-checkbox--error .ds-checkbox__input:checked ~ .ds-checkbox__box::after,
+  .panel .st-press.ds-checkbox--error .ds-checkbox__input:indeterminate ~ .ds-checkbox__box::after { background-color: var(--ds-color-checkbox-error-deselected-press-background, #ffcccc); }
 </style>
 </head>
 <body>
 <div class="demo-bar">
   <span class="demo-bar__title">Checkbox — демо стенд</span>
-  <span>наборы Figma: Checkbox (53806-5694, 21) · Checkbox label (53810-880, 9) · Checkbox group (53810-889, 3) · примеры (58195-5346)</span>
+  <span>Figma: Checkbox (53806-5694, 21) · Checkbox label (53810-880, 9) · Checkbox group (53810-889, 3) · примеры (58195-5346)</span>
 </div>
 <div class="view">
   <div class="ds-tabs" role="tablist" aria-label="Checkbox">
@@ -64,12 +77,12 @@
     <button class="ds-tab" role="tab" aria-selected="false" data-vtab="checkbox-group">Checkbox group</button>
   </div>
 
-  <!-- 2. Checkbox (набор 53806:5694, 21 вариант): Variant × Type × State -->
+  <!-- 2. Checkbox (компонент 53806:5694, 21 вариант) -->
   <div class="panel" data-vpanel="checkbox" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Checkbox — 21 вариант (Variant × Type × State); клик переключает</div>
+      <div class="snap-cap snap-sect__title">Checkbox — 21 вариант</div>
 
-      <div class="snap-h3" style="margin-top: 8px;">Variant=Normal</div>
+      <div class="snap-h3" style="margin-top: 8px;">Normal</div>
       <div class="snap-grid snap-grid--matrix" style="grid-template-columns: max-content max-content max-content max-content;">
         <span class="snap-cap"></span><span class="snap-cap">Deselected</span><span class="snap-cap">Selected</span><span class="snap-cap">Indeterminate</span>
         <span class="snap-cap">Default</span>
@@ -77,16 +90,16 @@
         <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox" checked><span class="ds-checkbox__box"></span></label>
         <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox" data-ind><span class="ds-checkbox__box"></span></label>
         <span class="snap-cap">Hover</span>
-        <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label>
-        <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox" checked><span class="ds-checkbox__box"></span></label>
-        <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox" data-ind><span class="ds-checkbox__box"></span></label>
+        <label class="ds-checkbox st-hover"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label>
+        <label class="ds-checkbox st-hover"><input class="ds-checkbox__input" type="checkbox" checked><span class="ds-checkbox__box"></span></label>
+        <label class="ds-checkbox st-hover"><input class="ds-checkbox__input" type="checkbox" data-ind><span class="ds-checkbox__box"></span></label>
         <span class="snap-cap">Press</span>
-        <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label>
-        <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox" checked><span class="ds-checkbox__box"></span></label>
-        <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox" data-ind><span class="ds-checkbox__box"></span></label>
+        <label class="ds-checkbox st-press"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label>
+        <label class="ds-checkbox st-press"><input class="ds-checkbox__input" type="checkbox" checked><span class="ds-checkbox__box"></span></label>
+        <label class="ds-checkbox st-press"><input class="ds-checkbox__input" type="checkbox" data-ind><span class="ds-checkbox__box"></span></label>
       </div>
 
-      <div class="snap-h3">Variant=Error</div>
+      <div class="snap-h3">Error</div>
       <div class="snap-grid snap-grid--matrix" style="grid-template-columns: max-content max-content max-content max-content;">
         <span class="snap-cap"></span><span class="snap-cap">Deselected</span><span class="snap-cap">Selected</span><span class="snap-cap">Indeterminate</span>
         <span class="snap-cap">Default</span>
@@ -94,16 +107,16 @@
         <label class="ds-checkbox ds-checkbox--error"><input class="ds-checkbox__input" type="checkbox" checked><span class="ds-checkbox__box"></span></label>
         <label class="ds-checkbox ds-checkbox--error"><input class="ds-checkbox__input" type="checkbox" data-ind><span class="ds-checkbox__box"></span></label>
         <span class="snap-cap">Hover</span>
-        <label class="ds-checkbox ds-checkbox--error"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label>
-        <label class="ds-checkbox ds-checkbox--error"><input class="ds-checkbox__input" type="checkbox" checked><span class="ds-checkbox__box"></span></label>
-        <label class="ds-checkbox ds-checkbox--error"><input class="ds-checkbox__input" type="checkbox" data-ind><span class="ds-checkbox__box"></span></label>
+        <label class="ds-checkbox ds-checkbox--error st-hover"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label>
+        <label class="ds-checkbox ds-checkbox--error st-hover"><input class="ds-checkbox__input" type="checkbox" checked><span class="ds-checkbox__box"></span></label>
+        <label class="ds-checkbox ds-checkbox--error st-hover"><input class="ds-checkbox__input" type="checkbox" data-ind><span class="ds-checkbox__box"></span></label>
         <span class="snap-cap">Press</span>
-        <label class="ds-checkbox ds-checkbox--error"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label>
-        <label class="ds-checkbox ds-checkbox--error"><input class="ds-checkbox__input" type="checkbox" checked><span class="ds-checkbox__box"></span></label>
-        <label class="ds-checkbox ds-checkbox--error"><input class="ds-checkbox__input" type="checkbox" data-ind><span class="ds-checkbox__box"></span></label>
+        <label class="ds-checkbox ds-checkbox--error st-press"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label>
+        <label class="ds-checkbox ds-checkbox--error st-press"><input class="ds-checkbox__input" type="checkbox" checked><span class="ds-checkbox__box"></span></label>
+        <label class="ds-checkbox ds-checkbox--error st-press"><input class="ds-checkbox__input" type="checkbox" data-ind><span class="ds-checkbox__box"></span></label>
       </div>
 
-      <div class="snap-h3">Variant=Disable</div>
+      <div class="snap-h3">Disable</div>
       <div class="snap-grid snap-grid--matrix" style="grid-template-columns: max-content max-content max-content max-content;">
         <span class="snap-cap"></span><span class="snap-cap">Deselected</span><span class="snap-cap">Selected</span><span class="snap-cap">Indeterminate</span>
         <span class="snap-cap">Default</span>
@@ -112,13 +125,13 @@
         <label class="ds-checkbox ds-checkbox--disabled"><input class="ds-checkbox__input" type="checkbox" data-ind disabled><span class="ds-checkbox__box"></span></label>
       </div>
     </div>
-
+    <p class="snap-note">Пометки для ревью: (а) 21 вариант: Normal/Error × Default/Hover/Press × Deselected/Selected/Indeterminate + Disable (Default); у State=Hover/Press — подложка State 28×28 (круг), реализована в fixes.css п. 38 (токены компонента); на витрине ряды Hover/Press заморожены (st-hover/st-press); (б) иконки чекбокса — SVG data-URI из checkbox-icons.css (Google Material): Selected/Indeterminate — заливные версии Figma (check_box_fill / indeterminate_check_box_fill — заливной квадрат с вырезанными галкой/минусом); (в) Disable — #9E9E9E через токены; клетки живые — клик переключает. Журнал №119, №160, №187.</p>
   </div>
 
-  <!-- 3. Checkbox label (набор 53810:880, 9): Variant × Type -->
+  <!-- 3. Checkbox label (компонент 53810:880, 9 вариантов) -->
   <div class="panel" data-vpanel="checkbox-label" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Checkbox label — Variant × Type</div>
+      <div class="snap-cap snap-sect__title">Checkbox label — 9 вариантов</div>
       <div class="snap-grid snap-grid--matrix" style="grid-template-columns: max-content max-content max-content max-content;">
         <span class="snap-cap"></span><span class="snap-cap">Deselected</span><span class="snap-cap">Selected</span><span class="snap-cap">Indeterminate</span>
         <span class="snap-cap">Normal</span>
@@ -135,13 +148,13 @@
         <div class="ds-checkbox-label ds-checkbox-label--disable ds-checkbox-label--inderterminate"><div class="ds-checkbox-label__form"><span class="ds-checkbox-label__left"><span class="ds-checkbox-label__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-cb-ind"/></svg></span></span><span class="ds-checkbox-label__label">Checkbox label</span><span class="ds-checkbox-label__right"><span class="ds-checkbox-label__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-cb-ind"/></svg></span></span></div><div class="ds-checkbox-label__support"><span class="ds-checkbox-label__support-text">Support/Error text</span></div></div>
       </div>
     </div>
-
+    <p class="snap-note">Пометки для ревью: (а) 9 вариантов: Normal/Error/Disable × Deselected/Selected/Indeterminate; в варианте включены оба слота left/right (по свойствам компонента) + подпись поддержки «Support/Error text»; иконки — в собственных слотах `__icon` (24), Selected/Indeterminate — заливные версии Figma; (б) слоты left/right включаются/выключаются свойствами, как в Figma. Журнал №119, №160, №187.</p>
   </div>
 
-  <!-- 4. Checkbox group (набор 53810:889, 3): Orientation -->
+  <!-- 4. Checkbox group (компонент 53810:889, 3 варианта) -->
   <div class="panel" data-vpanel="checkbox-group" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Checkbox group — Orientation</div>
+      <div class="snap-cap snap-sect__title">Checkbox group — 3 варианта</div>
       <div class="snap-row">
         <div class="snap-col">
           <span class="snap-cap">Vertical</span>
@@ -168,7 +181,7 @@
           <div class="snap-groupbox">
             <span class="ds-checkbox__support" style="margin: 0 0 4px;">Support/Error text</span>
             <div class="snap-item-gap">
-              <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Checkbox label — длинная подпись пункта группы</span></label>
+              <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Checkbox label</span></label>
               <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Checkbox label</span></label>
               <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Checkbox label</span></label>
               <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Checkbox label</span></label>
@@ -179,115 +192,30 @@
       </div>
     </div>
 
-    <p class="snap-note">Пометки для ревью: (а) в наборе у State=Hover/Press под иконкой лежит подложка State 28×28 (форма — как у чекбокса), в css подложек нет (у radio есть класс `.ds-radio__state`, у checkbox — нет) — на стенде состояния показаны без подложки (равны Default) — решить в ДС; (б) иконки чекбокса в css — SVG data-URI (checkbox-icons.css, генератор gen_selection_icons.py): Selected рисуется как рамка+галка одного цвета; сверить с Figma-иконкой «check_box_fill» (в наборе она отдельным компонентом) — при расхождении поправить генератор; (в) у Disable иконки/подпись #9E9E9E — в css за токенами; (г) в группе первым пунктом в наборе идёт длинная подпись («Group»), строки 20 + гэп 8; у «Checkbox label» в css нет сброса фона у `__support-text` (плашка?) — проверено: фон не задан, ок; (д) слоты left/right в вариантах — по свойствам, включаются/выключаются, как в Figma. Журнал №119.</p>
+    <p class="snap-note">Пометки для ревью: (а) 3 варианта: Vertical и Horizontal (зазор 8 между пунктами, подпись поддержки «Support/Error text» сверху и снизу) + Group (строки 20 + гэп 8); подписи пунктов — текст компонента «Checkbox label»; (б) у «Checkbox label» в css нет сброса фона у `__support-text` (плашка?) — проверено: фон не задан, ок; (в) группы живые — можно кликать. Журнал №119, №160, №187.</p>
   </div>
 
   <!-- 1. Basic example: «Checkbox (Examples)» (58195:5346) -->
   <div class="panel" data-vpanel="basic" role="tabpanel">
     <div class="snap-sect">
-      <div class="snap-row">
-        <div class="snap-col">
-          <p class="snap-ex-caption">Basic checkbox left</p>
+      <div class="snap-cap snap-sect__title">Basic example — живой чекбокс</div>
+      <div class="snap-col" style="margin-top: 12px; gap: 20px; align-items: flex-start;">
+        <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Checkbox label</span></label>
+        <div class="ds-checkbox-wrap">
           <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Checkbox label</span></label>
-          <p class="snap-ex-caption" style="margin-top: 18px;">Checkbox support text</p>
-          <div class="ds-checkbox-wrap">
-            <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Checkbox label</span></label>
-            <span class="ds-checkbox__support">Support text</span>
-          </div>
-          <p class="snap-ex-caption" style="margin-top: 18px;">Checkbox error text</p>
-          <div class="ds-checkbox-wrap">
-            <label class="ds-checkbox ds-checkbox--error"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Checkbox label</span></label>
-            <span class="ds-checkbox__support">Error text</span>
-          </div>
-        </div>
-        <div class="snap-col">
-          <p class="snap-ex-caption">Basic checkbox right</p>
-          <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__label">Checkbox label</span><span class="ds-checkbox__box"></span></label>
-          <p class="snap-ex-caption" style="margin-top: 18px;">Checkbox support text (right)</p>
-          <div class="ds-checkbox-wrap">
-            <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__label">Checkbox label</span><span class="ds-checkbox__box"></span></label>
-            <span class="ds-checkbox__support" style="margin-left: 0; align-self: flex-end;">Support text</span>
-          </div>
-          <p class="snap-ex-caption" style="margin-top: 18px;">Checkbox error text (right)</p>
-          <div class="ds-checkbox-wrap">
-            <label class="ds-checkbox ds-checkbox--error"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__label">Checkbox label</span><span class="ds-checkbox__box"></span></label>
-            <span class="ds-checkbox__support" style="margin-left: 0; align-self: flex-end;">Error text</span>
-          </div>
-        </div>
-        <div class="snap-col">
-          <p class="snap-ex-caption">Checkbox group support text</p>
-          <div class="snap-groupbox">
-            <span class="ds-checkbox__support" style="margin: 0 0 4px;">Support text</span>
-            <div class="snap-item-gap">
-              <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Checkbox label</span></label>
-              <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Checkbox label</span></label>
-              <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Checkbox label</span></label>
-            </div>
-          </div>
-          <p class="snap-ex-caption" style="margin-top: 18px;">Checkbox group error text</p>
-          <div class="snap-groupbox">
-            <div class="snap-item-gap">
-              <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Checkbox label</span></label>
-              <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Checkbox label</span></label>
-              <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Checkbox label</span></label>
-            </div>
-            <span class="ds-checkbox__support" style="margin: 4px 0 0;">Error text</span>
-          </div>
+          <span class="ds-checkbox__support">Support/Error text</span>
         </div>
       </div>
     </div>
-
-    <div class="snap-sect">
-      <div class="snap-row">
-        <div class="snap-col">
-          <p class="snap-ex-caption">State checkbox</p>
-          <div class="snap-item-gap">
-            <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Checkbox label</span></label>
-            <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox" checked><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Checkbox label</span></label>
-            <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox" data-ind><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Checkbox label</span></label>
-            <label class="ds-checkbox ds-checkbox--disabled"><input class="ds-checkbox__input" type="checkbox" disabled><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Checkbox label</span></label>
-          </div>
-        </div>
-        <div class="snap-col" style="max-width: 274px;">
-          <p class="snap-ex-caption">Сheckbox in 2 lines</p>
-          <label class="ds-checkbox" style="align-items: flex-start;"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label" style="white-space: normal; max-width: 234px;">Checkbox label и дальше показать как будет в две строки</span></label>
-          <label class="ds-checkbox" style="align-items: flex-start;"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__label" style="white-space: normal; max-width: 234px;">Checkbox label и дальше показать как будет в две строки</span><span class="ds-checkbox__box"></span></label>
-        </div>
-      </div>
-    </div>
-
-    <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Группы с реальными текстами (577; из канвы)</div>
-      <div class="snap-row">
-        <div class="snap-col" style="width: 577px;">
-          <span class="ds-checkbox__support" style="margin: 0 0 4px;">Подсказка: обычно отмечают «Склад поставки», если товар может прийти на разные склады.  Выберите один вариант (обязательно)</span>
-          <div class="snap-item-gap">
-            <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Фасовки у товаров</span></label>
-            <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Добавлять товары, которых не было в заказе</span></label>
-            <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Склад поставки</span></label>
-          </div>
-        </div>
-        <div class="snap-col" style="width: 577px;">
-          <span class="ds-checkbox__support" style="margin: 0 0 4px;">Подсказка: обычно отмечают «Склад поставки», если товар может прийти на разные склады.  Выберите один вариант (обязательно)</span>
-          <div class="snap-item-gap">
-            <label class="ds-checkbox ds-checkbox--error"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Фасовки у товаров</span></label>
-            <label class="ds-checkbox ds-checkbox--error"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Добавлять товары, которых не было в заказе</span></label>
-            <label class="ds-checkbox ds-checkbox--error"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Склад поставки</span></label>
-          </div>
-          <span class="ds-checkbox__support" style="margin: 4px 0 0; color: var(--ds-color-text-negative, #ff5252);">Ошибка: выберите хотя бы один пункт в группе «Товары и склад»</span>
-        </div>
-      </div>
-    </div>
-
-    <p class="snap-note">Пометки для ревью: (а) сценарии повторяют кадры блока «Checkbox (Examples)» (58195:5346) — подписи и тексты дословно из канвы; крайние группы с реальными текстами («Фасовки у товаров» …) — как в кадре 577; во второй группе помечен Error-вариант с красным support-ом; (б) «Checkbox in 2 lines» — подпись переносится на две строки (в кадре 2 строки, 262×40), выравнивание по верхнему краю; (в) у right-вариантов подпись слева, чекбокс справа (слоты меняются местами — по разметке, как в кадре); (г) заливка/плашки отсутствуют — слои в css чистые; (д) состояния и группы живые — можно кликать. Журнал №119.</p>
+    <p class="snap-note">Пометки для ревью: (а) живой чекбокс: клик переключает Deselected ↔ Selected; второй вариант — с подписью поддержки (обёртка ds-checkbox-wrap: контрол 20 + 4 + подпись 16); (б) индетерминат (data-ind) — в витрине «Checkbox»; (в) кадры примеров «Checkbox (Examples)» (58195:5346) на стенде НЕ воспроизводим — компонент динамический, в Basic только живой компонент (§4); (г) мобильные компоненты — вне веба. Журнал №119, №160, №187.</p>
   </div>
 </div>
 
 <!-- svg-иконки чекбокса — пути из checkbox-icons.css (data-URI декодированы, сетка 24) -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="ic-cb-off" viewBox="0 0 24 24"><path d="M5 21C4.45 21 3.97917 20.8042 3.5875 20.4125C3.19583 20.0208 3 19.55 3 19V5C3 4.45 3.19583 3.97917 3.5875 3.5875C3.97917 3.19583 4.45 3 5 3H19C19.55 3 20.0208 3.19583 20.4125 3.5875C20.8042 3.97917 21 4.45 21 5V19C21 19.55 20.8042 20.0208 20.4125 20.4125C20.0208 20.8042 19.55 21 19 21H5ZM5 19H19V5H5V19Z"/></symbol>
-  <symbol id="ic-cb-on" viewBox="0 0 24 24"><path d="M10.6 16.2L17.65 9.15L16.25 7.75L10.6 13.4L7.75 10.55L6.35 11.95L10.6 16.2ZM5 21C4.45 21 3.97917 20.8042 3.5875 20.4125C3.19583 20.0208 3 19.55 3 19V5C3 4.45 3.19583 3.97917 3.5875 3.5875C3.97917 3.19583 4.45 3 5 3H19C19.55 3 20.0208 3.19583 20.4125 3.5875C20.8042 3.97917 21 4.45 21 5V19C21 19.55 20.8042 20.0208 20.4125 20.4125C20.0208 20.8042 19.55 21 19 21H5ZM5 19H19V5H5V19Z"/></symbol>
-  <symbol id="ic-cb-ind" viewBox="0 0 24 24"><path d="M7 13H17V11H7V13ZM5 21C4.45 21 3.97917 20.8042 3.5875 20.4125C3.19583 20.0208 3 19.55 3 19V5C3 4.45 3.19583 3.97917 3.5875 3.5875C3.97917 3.19583 4.45 3 5 3H19C19.55 3 20.0208 3.19583 20.4125 3.5875C20.8042 3.97917 21 4.45 21 5V19C21 19.55 20.8042 20.0208 20.4125 20.4125C20.0208 20.8042 19.55 21 19 21H5ZM5 19H19V5H5V19Z"/></symbol>
+  <symbol id="ic-cb-on" viewBox="0 0 24 24"><path d="M10.6 16.2L17.65 9.15L16.25 7.75L10.6 13.4L7.75 10.55L6.35 11.95L10.6 16.2ZM5 21C4.45 21 3.97917 20.8042 3.5875 20.4125C3.19583 20.0208 3 19.55 3 19V5C3 4.45 3.19583 3.97917 3.5875 3.5875C3.97917 3.19583 4.45 3 5 3H19C19.55 3 20.0208 3.19583 20.4125 3.5875C20.8042 3.97917 21 4.45 21 5V19C21 19.55 20.8042 20.0208 20.4125 20.4125C20.0208 20.8042 19.55 21 19 21H5Z"/></symbol>
+  <symbol id="ic-cb-ind" viewBox="0 0 24 24"><path d="M7 13H17V11H7V13ZM5 21C4.45 21 3.97917 20.8042 3.5875 20.4125C3.19583 20.0208 3 19.55 3 19V5C3 4.45 3.19583 3.97917 3.5875 3.5875C3.97917 3.19583 4.45 3 5 3H19C19.55 3 20.0208 3.19583 20.4125 3.5875C20.8042 3.97917 21 4.45 21 5V19C21 19.55 20.8042 20.0208 20.4125 20.4125C20.0208 20.8042 19.55 21 19 21H5Z"/></symbol>
 </svg>
 
 <script>

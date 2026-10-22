@@ -10,8 +10,9 @@
   «Hint content» (2: Group content — [info][две строки][close]; Single content — строка + clear), «Hint header» (5 стилей:
   Neutral/Primary/Secondary/Warning/Error), «Hint footer» (кнопки) + «Hint (Examples)» (529×502; «Basic single hint»).
   Фон контейнера — #424242 (тёмный), текст белый, радиус 8, тень 08dp; шапка: паддинг 8/12/4, гэп 8; контент: 8/12;
-  футер: 16/12/12, гэп 12. ⚠ В css у `.ds-hint-footer__цвет-и-палитра` фон = цвет текста (второй артефакт-класс с русским
-  именем после radio-лейбла) — снято в fixes п. 30; цвета стилей Hint header в css не разнесены (все белые) — решить в ДС.
+  Футер: 16/12/12, гэп 12. ⚠ В css у `.ds-hint-footer__цвет-и-палитра` и `.ds-hint-header__title` фон = цвет текста
+  (белые плашки поверх белого текста) — снято в fixes п. 30; цвета 5 стилей Hint header разнесены там же
+  по ассетам Figma (только левая иконка — класс `__icon--style`).
   Стрелка-указатель (`__arrow`, высота 4) на стенде не рисуется (в канве — отдельный слой). Журнал DS/fixes.md №132.
 -->
 <link rel="stylesheet" href="../../font.css">
@@ -37,20 +38,19 @@
   .snap-ex-caption { font-size: 14px; line-height: 28px; color: var(--ds-color-text-primary, #333333); margin: 0; }
   .snap-hint { width: 250px; }
   .snap-hint .ds-hint-container__header, .snap-hint .ds-hint-container__content, .snap-hint .ds-hint-container__footer, .snap-hint .ds-hint-content { width: 100%; box-sizing: border-box; }
-  .snap-hint-close { width: 20px; height: 20px; display: inline-flex; color: #ffffff; flex-shrink: 0; }
-  .snap-hint-close svg { width: 100%; height: 100%; display: block; }
-  .snap-hint-block { display: flex; flex-direction: column; gap: 4px; flex: 1; }
-  .snap-hint-line { font-size: 14px; line-height: 20px; color: #ffffff; }
-  .snap-hint-icon { width: 20px; height: 20px; display: inline-flex; color: #ffffff; flex-shrink: 0; }
-  .snap-hint-icon svg { width: 100%; height: 100%; display: block; }
-  .snap-hint-btn { display: inline-flex; align-items: center; padding: 4px 8px; border: 0; border-radius: 8px; background: var(--ds-color-button-accent-filled-default-background, #448aff); color: #fff; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer; }
-  .snap-hint-btn--text { background: none; color: #ffffff; opacity: .85; }
+  /* стрелка-указатель: форма 8×4 из Figma (#424242), по ориентации контейнера */
+  .snap-hint-arrow { display: block; flex-shrink: 0; fill: var(--ds-color-hint-background-color, #424242); }
+  .snap-hint-arrow--up, .snap-hint-arrow--down { width: 8px; height: 4px; }
+  .snap-hint-arrow--right, .snap-hint-arrow--left { width: 4px; height: 8px; }
+  /* тело подсказки: фон и скругление — на теле, а не на корне, иначе носок-стрелка (тот же цвет) сливается с фоном корня */
+  .snap-hint-inner { display: flex; flex-direction: column; width: 100%; min-width: 0; background: var(--ds-color-hint-background-color, #424242); border-radius: var(--ds-hint-border-radius, 8px); overflow: hidden; }
+  .snap-hint-foot-label { flex: 1; font-size: 14px; line-height: 20px; font-weight: 500; color: #ffffff; }
 </style>
 </head>
 <body>
 <div class="demo-bar">
   <span class="demo-bar__title">Hint (Tooltip) — демо стенд</span>
-  <span>наборы Figma: Hint container (54109-20965, 10) · Hint content (2) · Hint header (5 стилей) · Hint footer · примеры</span>
+  <span>Figma: Hint container (54109-20965, 10) · Hint content (2) · Hint header (5 стилей) · Hint footer · примеры</span>
 </div>
 <div class="view">
   <div class="ds-tabs" role="tablist" aria-label="Hint">
@@ -61,127 +61,164 @@
     <button class="ds-tab" role="tab" aria-selected="false" data-vtab="hint-footer">Hint footer</button>
   </div>
 
-  <!-- 2. Hint container (набор «Hint container», 10): Size=Complex, Orientation Default/Up/Down/Right/Left -->
+  <!-- 2. Hint container (10): Size Complex/Single × Orientation Default/Up/Down/Right/Left — как в Figma -->
   <div class="panel" data-vpanel="hint-container" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Hint container, Size=Complex — состав: header (заголовок + close) + content (info + две строки + close) + footer (кнопки)</div>
-      <div class="snap-row" style="margin-top: 12px;">
-        <div class="snap-col"><span class="snap-cap">Orientation=Default (полный состав)</span>
-          <div class="ds-hint-container ds-hint-container--default snap-hint">
-            <div class="ds-hint-container__header"><span class="ds-hint-container__label">Подсказка</span><span class="snap-hint-close" style="margin-left:auto;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></div>
-            <div class="ds-hint-container__content">
-              <span class="snap-hint-icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
-              <span class="snap-hint-block"><span class="ds-hint-content__label">Hint content</span><span class="ds-hint-content__label">Hint content</span></span>
-              <span class="snap-hint-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span>
-            </div>
-            <div class="ds-hint-container__footer"><button class="snap-hint-btn">Button</button><button class="snap-hint-btn--text snap-hint-btn">Button</button></div>
+      <div class="snap-cap snap-sect__title">Hint container — 10 вариантов (как в Figma): Complex — верхний ряд, Single — нижний; ориентации Default / Up / Down / Right / Left</div>
+      <div class="snap-row" style="margin-top: 12px; gap: 40px;">
+        <div class="snap-col"><div class="ds-hint-container ds-hint-container--default snap-hint"><div class="snap-hint-inner">
+          <div class="ds-hint-container__header"><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span><span class="ds-hint-container__label" style="flex:1;">Hint title</span><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
+          <div class="ds-hint-container__content"><span class="ds-hint-content__label" style="flex:1;">Hint content</span></div>
+          <div class="ds-hint-container__footer"><span class="snap-hint-foot-label">1 из 4</span><span class="ds-btn-group ds-btn-group--horizontal"><span class="ds-btn-icon ds-btn-icon--s ds-btn-icon--accent ds-btn-icon--filled"><span class="ds-btn-icon__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add-20"/></svg></span></span></span><button type="button" class="ds-btn ds-btn--s ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Далее</span></button></span></div>
+        </div></div><span class="snap-cap">Complex · Default</span></div>
+        <div class="snap-col"><div class="ds-hint-container ds-hint-container--up snap-hint">
+          <svg class="snap-hint-arrow snap-hint-arrow--up" viewBox="0 0 8 4"><use href="#ic-arrow-up"/></svg>
+          <div class="snap-hint-inner">
+          <div class="ds-hint-container__header"><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span><span class="ds-hint-container__label" style="flex:1;">Hint title</span><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
+          <div class="ds-hint-container__content"><span class="ds-hint-content__label" style="flex:1;">Hint content</span></div>
+          <div class="ds-hint-container__footer"><span class="snap-hint-foot-label">1 из 4</span><span class="ds-btn-group ds-btn-group--horizontal"><span class="ds-btn-icon ds-btn-icon--s ds-btn-icon--accent ds-btn-icon--filled"><span class="ds-btn-icon__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add-20"/></svg></span></span></span><button type="button" class="ds-btn ds-btn--s ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Далее</span></button></span></div>
           </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Orientation=Up (шапка сверху, стрелка вверх — слой в канве)</span>
-          <div class="ds-hint-container ds-hint-container--up snap-hint">
-            <div class="ds-hint-container__header"><span class="ds-hint-container__label">Подсказка</span><span class="snap-hint-close" style="margin-left:auto;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></div>
-            <div class="ds-hint-container__content"><span class="ds-hint-content__label" style="flex:1;">Hint content</span><span class="snap-hint-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></div>
-            <div class="ds-hint-container__footer"><button class="snap-hint-btn">Button</button></div>
+        </div><span class="snap-cap">Complex · Up (хвостик сверху — подсказка под элементом)</span></div>
+        <div class="snap-col"><div class="ds-hint-container ds-hint-container--down snap-hint">
+          <div class="snap-hint-inner">
+          <div class="ds-hint-container__header"><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span><span class="ds-hint-container__label" style="flex:1;">Hint title</span><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
+          <div class="ds-hint-container__content"><span class="ds-hint-content__label" style="flex:1;">Hint content</span></div>
+          <div class="ds-hint-container__footer"><span class="snap-hint-foot-label">1 из 4</span><span class="ds-btn-group ds-btn-group--horizontal"><span class="ds-btn-icon ds-btn-icon--s ds-btn-icon--accent ds-btn-icon--filled"><span class="ds-btn-icon__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add-20"/></svg></span></span></span><button type="button" class="ds-btn ds-btn--s ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Далее</span></button></span></div>
           </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Orientation=Down</span>
-          <div class="ds-hint-container ds-hint-container--down snap-hint">
-            <div class="ds-hint-container__header"><span class="ds-hint-container__label">Подсказка</span><span class="snap-hint-close" style="margin-left:auto;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></div>
-            <div class="ds-hint-container__content"><span class="ds-hint-content__label" style="flex:1;">Hint content</span><span class="snap-hint-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></div>
-            <div class="ds-hint-container__footer"><button class="snap-hint-btn">Button</button></div>
+          <svg class="snap-hint-arrow snap-hint-arrow--down" viewBox="0 0 8 4"><use href="#ic-arrow-down"/></svg>
+        </div><span class="snap-cap">Complex · Down (хвостик снизу — подсказка над элементом)</span></div>
+        <div class="snap-col"><div class="ds-hint-container ds-hint-container--right snap-hint">
+          <div class="snap-hint-inner">
+            <div class="ds-hint-container__header"><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span><span class="ds-hint-container__label" style="flex:1;">Hint title</span><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
+            <div class="ds-hint-container__content"><span class="ds-hint-content__label" style="flex:1;">Hint content</span></div>
+            <div class="ds-hint-container__footer"><span class="snap-hint-foot-label">1 из 4</span><span class="ds-btn-group ds-btn-group--horizontal"><span class="ds-btn-icon ds-btn-icon--s ds-btn-icon--accent ds-btn-icon--filled"><span class="ds-btn-icon__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add-20"/></svg></span></span></span><button type="button" class="ds-btn ds-btn--s ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Далее</span></button></span></div>
           </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Orientation=Right (горизонтальная компоновка)</span>
-          <div class="ds-hint-container ds-hint-container--right snap-hint">
-            <div class="ds-hint-container__content" style="flex:1;"><span class="snap-hint-icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span><span class="ds-hint-content__label">Hint content</span></div>
-            <div class="ds-hint-container__footer" style="padding:8px 12px;"><button class="snap-hint-btn">Button</button></div>
+          <svg class="snap-hint-arrow snap-hint-arrow--right" viewBox="0 0 4 8"><use href="#ic-arrow-right"/></svg>
+        </div><span class="snap-cap">Complex · Right (хвостик справа — подсказка слева от элемента)</span></div>
+        <div class="snap-col"><div class="ds-hint-container ds-hint-container--left snap-hint">
+          <svg class="snap-hint-arrow snap-hint-arrow--left" viewBox="0 0 4 8"><use href="#ic-arrow-left"/></svg>
+          <div class="snap-hint-inner">
+            <div class="ds-hint-container__header"><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span><span class="ds-hint-container__label" style="flex:1;">Hint title</span><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
+            <div class="ds-hint-container__content"><span class="ds-hint-content__label" style="flex:1;">Hint content</span></div>
+            <div class="ds-hint-container__footer"><span class="snap-hint-foot-label">1 из 4</span><span class="ds-btn-group ds-btn-group--horizontal"><span class="ds-btn-icon ds-btn-icon--s ds-btn-icon--accent ds-btn-icon--filled"><span class="ds-btn-icon__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add-20"/></svg></span></span></span><button type="button" class="ds-btn ds-btn--s ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Далее</span></button></span></div>
           </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Orientation=Left (горизонтальная компоновка)</span>
-          <div class="ds-hint-container ds-hint-container--left snap-hint">
-            <div class="ds-hint-container__content" style="flex:1;"><span class="ds-hint-content__label">Hint content</span><span class="snap-hint-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></div>
+        </div><span class="snap-cap">Complex · Left (хвостик слева — подсказка справа от элемента)</span></div>
+      </div>
+      <div class="snap-row" style="margin-top: 32px; gap: 40px;">
+        <div class="snap-col"><div class="ds-hint-container ds-hint-container--default snap-hint">
+          <div class="snap-hint-inner">
+          <div class="ds-hint-container__content"><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span><span class="ds-hint-content__label" style="flex:1;">Hint content</span><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
           </div>
-        </div>
+        </div><span class="snap-cap">Single · Default</span></div>
+        <div class="snap-col"><div class="ds-hint-container ds-hint-container--up snap-hint">
+          <svg class="snap-hint-arrow snap-hint-arrow--up" viewBox="0 0 8 4"><use href="#ic-arrow-up"/></svg>
+          <div class="snap-hint-inner">
+          <div class="ds-hint-container__content"><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span><span class="ds-hint-content__label" style="flex:1;">Hint content</span><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
+          </div>
+        </div><span class="snap-cap">Single · Up</span></div>
+        <div class="snap-col"><div class="ds-hint-container ds-hint-container--down snap-hint">
+          <div class="snap-hint-inner">
+          <div class="ds-hint-container__content"><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span><span class="ds-hint-content__label" style="flex:1;">Hint content</span><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
+          </div>
+          <svg class="snap-hint-arrow snap-hint-arrow--down" viewBox="0 0 8 4"><use href="#ic-arrow-down"/></svg>
+        </div><span class="snap-cap">Single · Down</span></div>
+        <div class="snap-col"><div class="ds-hint-container ds-hint-container--right snap-hint">
+          <div class="snap-hint-inner">
+          <div class="ds-hint-container__content"><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span><span class="ds-hint-content__label" style="flex:1;">Hint content</span><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
+          </div>
+          <svg class="snap-hint-arrow snap-hint-arrow--right" viewBox="0 0 4 8"><use href="#ic-arrow-right"/></svg>
+        </div><span class="snap-cap">Single · Right</span></div>
+        <div class="snap-col"><div class="ds-hint-container ds-hint-container--left snap-hint">
+          <svg class="snap-hint-arrow snap-hint-arrow--left" viewBox="0 0 4 8"><use href="#ic-arrow-left"/></svg>
+          <div class="snap-hint-inner">
+          <div class="ds-hint-container__content"><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span><span class="ds-hint-content__label" style="flex:1;">Hint content</span><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
+          </div>
+        </div><span class="snap-cap">Single · Left</span></div>
       </div>
     </div>
-
+    <p class="snap-note">Пометки для ревью: (а) 10 вариантов как в Figma: Size Complex / Single × Orientation Default/Up/Down/Right/Left; Complex = header + content + footer (250×120, со стрелкой 124), Single = одна строка (250×36, со стрелкой 40); (б) стрелка — форма 8×4 из Figma (#424242), в Default её нет; (в) Complex content — без иконок слева/справа (как в Figma), иконки — в header и в Single; (г) иконки — инстансы «Icon size» Size=20 → на стенде обёрнуты в ds-icon-size--5x; (д) футер: текст «1 из 4» (14/20 medium) + Button group ДС (Button icon S Accent Filled + Button S Accent Filled «Далее»); (е) в css цвет стилей Hint header одинаковый белый (пер-стилевые цвета не разнесены) — решить в ДС; (ж) в css стрелка — полоса без формы; форма задана обвязкой стенда (8×4 из Figma); фон #424242 и скругление r8 живут на теле (`snap-hint-inner`), а не на корне — иначе носок-стрелка того же цвета сливается с фоном. Журнал №132, №258.</p>
   </div>
 
-  <!-- 3. Hint content (2 варианта: Group content / Single content) -->
+  <!-- 3. Hint content (2 варианта, как в Figma: Group content / Single content) -->
   <div class="panel" data-vpanel="hint-content" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Hint content (2 варианта): Group content / Single content</div>
+      <div class="snap-cap snap-sect__title">Hint content (2 варианта): Group content — ⓘ + две строки + ✕ / Single content — ⓘ + строка + ✕</div>
       <div class="snap-row" style="margin-top: 8px;">
-        <div class="snap-col"><span class="snap-cap">Content=Group content ([info][2 строки][close])</span>
+        <div class="snap-col">
           <div class="ds-hint-content ds-hint-content--group-content snap-hint">
-            <span class="snap-hint-icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
-            <span class="snap-hint-block"><span class="ds-hint-content__label">Hint content</span><span class="ds-hint-content__label">Hint content</span></span>
-            <span class="snap-hint-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span>
+            <span class="ds-hint-content__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span>
+            <span class="ds-hint-content__block"><span class="ds-hint-content__label">Hint content</span><span class="ds-hint-content__label">Hint content</span></span>
+            <span class="ds-hint-content__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span>
           </div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Content=Single content (строка + clear; как в примере 250×36)</span>
-          <div class="ds-hint-content ds-hint-content--single-content snap-hint" style="width:250px;">
+        <div class="snap-col">
+          <div class="ds-hint-content ds-hint-content--single-content snap-hint">
+            <span class="ds-hint-content__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span>
             <span class="ds-hint-content__label" style="flex:1;">Hint content</span>
-            <span class="snap-hint-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span>
+            <span class="ds-hint-content__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span>
           </div>
         </div>
       </div>
     </div>
+    <p class="snap-note">Пометки для ревью: (а) по Figma Group content — [ⓘ][две строки текста 12/16][✕] (250×52, паддинги 8/12, gap 8, между строками 4); Single content — [ⓘ][Hint content][✕] (250×36); (б) иконки — Icon size 20 → ds-hint-content__icon + ds-icon-size--5x; (в) фоны и цвета — токены Hint/* из css (без плашек). Журнал №132, №258, №261.</p>
   </div>
 
-  <!-- 4. Hint header (5 стилей) -->
+  <!-- 4. Hint header (5 стилей, как в Figma: ⓘ цвет стиля + Hint title + ✕) -->
   <div class="panel" data-vpanel="hint-header" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Hint header (5 стилей)</div>
+      <div class="snap-cap snap-sect__title">Hint header — 5 стилей (Neutral / Primary / Secondary / Warning / Error): ⓘ окрашена по стилю, текст и ✕ белые</div>
       <div class="snap-row">
-        <div class="snap-col"><span class="snap-cap">Hint header — 5 стилей (Neutral/Primary/Secondary/Warning/Error); в css цвет не разнесён</span>
+        <div class="snap-col">
           <div class="snap-hint" style="display:flex;flex-direction:column;gap:6px;">
-            <div class="ds-hint-header ds-hint-header--neutral" style="border-radius:8px 8px 0 0;"><span class="ds-hint-header__title">Neutral</span></div>
-            <div class="ds-hint-header ds-hint-header--primary"><span class="ds-hint-header__title">Primary</span></div>
-            <div class="ds-hint-header ds-hint-header--secondary"><span class="ds-hint-header__title">Secondary</span></div>
-            <div class="ds-hint-header ds-hint-header--warning"><span class="ds-hint-header__title">Warning</span></div>
-            <div class="ds-hint-header ds-hint-header--error" style="border-radius:0 0 8px 8px;"><span class="ds-hint-header__title">Error</span></div>
+            <div class="ds-hint-header ds-hint-header--neutral"><span class="ds-hint-header__icon ds-hint-header__icon--style"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span><span class="ds-hint-header__label" style="flex:1;">Hint title</span><span class="ds-hint-header__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
+            <div class="ds-hint-header ds-hint-header--primary"><span class="ds-hint-header__icon ds-hint-header__icon--style"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span><span class="ds-hint-header__label" style="flex:1;">Hint title</span><span class="ds-hint-header__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
+            <div class="ds-hint-header ds-hint-header--secondary"><span class="ds-hint-header__icon ds-hint-header__icon--style"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span><span class="ds-hint-header__label" style="flex:1;">Hint title</span><span class="ds-hint-header__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
+            <div class="ds-hint-header ds-hint-header--warning"><span class="ds-hint-header__icon ds-hint-header__icon--style"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span><span class="ds-hint-header__label" style="flex:1;">Hint title</span><span class="ds-hint-header__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
+            <div class="ds-hint-header ds-hint-header--error"><span class="ds-hint-header__icon ds-hint-header__icon--style"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span><span class="ds-hint-header__label" style="flex:1;">Hint title</span><span class="ds-hint-header__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
           </div>
         </div>
       </div>
     </div>
-
+    <p class="snap-note">Пометки для ревью: (а) состав по Figma: ⓘ (Icon size 20) + Hint title (Body S 14/20 medium, белый) + ✕ (Icon size 20); паддинги 8/12/4 gap 8; (б) цвет ⓘ по стилям — из SVG-ассетов Figma: Neutral — white, Primary — #448AFF, Secondary — #14B456, Warning — #EA7806, Error — #FF5252; ✕ и текст — белые во всех стилях; (в) в css у `.ds-hint-header__title` фон = цвет текста (белая плашка) и цвет стилей не разнесён — снято/разнесено в fixes п. 30 (класс `__icon--style` — только левая иконка). Журнал №132, №258, №261.</p>
   </div>
 
-  <!-- 5. Hint footer (кнопки на тёмном фоне) -->
+  <!-- 5. Hint footer (Content=Default, как в Figma: «1 из 4» + Button group) -->
   <div class="panel" data-vpanel="hint-footer" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Hint footer (кнопки на тёмном фоне; артефакт-класс текста — fixes п. 30)</div>
-      <div class="ds-hint-footer snap-hint" style="border-radius:0 0 8px 8px;">
-        <span class="ds-hint-footer__label" style="flex:1;">Hint footer text</span>
-        <span class="ds-hint-footer__button-group"><button class="snap-hint-btn">Button</button><button class="snap-hint-btn--text snap-hint-btn">Button</button></span>
+      <div class="snap-cap snap-sect__title">Hint footer — Content=Default: текст «1 из 4» + Button group (Button icon S Accent Filled + Button S Accent Filled «Далее»)</div>
+      <div class="ds-hint-footer snap-hint">
+        <span class="ds-hint-footer__label" style="flex:1;">1 из 4</span>
+        <span class="ds-btn-group ds-btn-group--horizontal"><span class="ds-btn-icon ds-btn-icon--s ds-btn-icon--accent ds-btn-icon--filled"><span class="ds-btn-icon__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add-20"/></svg></span></span></span><button type="button" class="ds-btn ds-btn--s ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Далее</span></button></span>
       </div>
     </div>
-    <p class="snap-note">Пометки для ревью: (а) фон контейнера #424242, текст белый; шапка — паддинг 8/12/4 гэп 8 (заголовок 14/20 medium); контент — 8/12: [info 20][блок текста 12/16][close 20]; футер — 16/12/12 гэп 12: [текст][кнопки]; (б) стрелка-указатель (`ds-hint-container__arrow`, высота 4) в css — полоса без формы; в канве у контейнера стрелка отдельным слоем (не воспроизводим); (в) цвет стилей Hint header в css одинаковый белый (пер-стилевые цвета не разнесены) — решить в ДС; (г) у `.ds-hint-footer__цвет-и-палитра` (второй артефакт-класс с русским именем) протекал фон = цвет текста — снято в fixes п. 30; (д) в канве страницы — сравнение с MD3 Rich Tooltip и iOS Popover (мобильная тема, вне веба). Журнал №132.</p>
+    <p class="snap-note">Пометки для ревью: (а) фон контейнера #424242, текст белый; шапка — паддинг 8/12/4 гэп 8 (заголовок 14/20 medium); контент — 8/12: [info 20][блок текста 12/16][close 20]; футер — 16/12/12 гэп 12: [текст «1 из 4» 14/20 medium][Button group]; (б) кнопки футера — из ДС: Button icon S Accent Filled «+» и Button S Accent Filled «Далее» (gap 8); (в) у `.ds-hint-footer__цвет-и-палитра` (артефакт-класс с русским именем) протекал фон = цвет текста — снято в fixes п. 30; (г) в канве страницы — сравнение с MD3 Rich Tooltip и iOS Popover (мобильная тема, вне веба). Журнал №132, №258, №261.</p>
   </div>
 
-  <!-- 1. Basic example: примеры канвы (Basic single hint + сборка) -->
+  <!-- 1. Basic example: примеры канвы (Basic single hint + сборка Complex) -->
   <div class="panel" data-vpanel="basic" role="tabpanel">
     <div class="snap-sect">
       <div class="snap-cap snap-sect__title">Примеры канвы</div>
       <div class="snap-row" style="margin-top: 12px;">
         <div class="snap-col"><p class="snap-ex-caption">Basic single hint</p>
-          <div class="ds-hint-content ds-hint-content--single-content snap-hint" style="border-radius:8px;box-shadow:var(--ds-shadow-shadows-08-dp-s);">
-            <span class="ds-hint-content__label" style="flex:1;">Hint content</span>
-            <span class="snap-hint-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span>
+          <div class="ds-hint-container ds-hint-container--default snap-hint">
+            <div class="snap-hint-inner">
+            <div class="ds-hint-container__content"><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span><span class="ds-hint-content__label" style="flex:1;">Hint content</span><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
+            </div>
           </div>
-          <span class="snap-cap">Hint 250×36: текст + крестик (Clear 20). На канве — единственный пример блока.</span>
+          <span class="snap-cap">Hint 250×36: ⓘ + текст + ✕ (как в канве).</span>
         </div>
         <div class="snap-col"><p class="snap-ex-caption">Hint с заголовком и кнопками (сборка по наборам)</p>
-          <div class="ds-hint-container ds-hint-container--default snap-hint" style="border-radius:8px;overflow:hidden;">
-            <div class="ds-hint-container__header"><span class="ds-hint-container__label">Заголовок подсказки</span><span class="snap-hint-close" style="margin-left:auto;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></div>
-            <div class="ds-hint-container__content"><span class="ds-hint-content__label" style="flex:1;">Поясняющий текст подсказки в одну или две строки</span></div>
-            <div class="ds-hint-container__footer"><button class="snap-hint-btn">Понятно</button><button class="snap-hint-btn--text snap-hint-btn">Не показывать</button></div>
+          <div class="ds-hint-container ds-hint-container--default snap-hint">
+            <div class="snap-hint-inner">
+            <div class="ds-hint-container__header"><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span><span class="ds-hint-container__label" style="flex:1;">Hint title</span><span class="ds-hint-container__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
+            <div class="ds-hint-container__content"><span class="ds-hint-content__label" style="flex:1;">Hint content</span></div>
+            <div class="ds-hint-container__footer"><span class="snap-hint-foot-label">1 из 4</span><span class="ds-btn-group ds-btn-group--horizontal"><span class="ds-btn-icon ds-btn-icon--s ds-btn-icon--accent ds-btn-icon--filled"><span class="ds-btn-icon__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add-20"/></svg></span></span></span><button type="button" class="ds-btn ds-btn--s ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Далее</span></button></span></div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <p class="snap-note">Пометки для ревью: (а) блок примеров на канве мал (529×502; один кадр «Basic single hint») — второй пример собран из наборов (заголовок + текст + кнопки); (б) тексты-заглушки «Hint content» — как в канве. Журнал №132.</p>
+    <p class="snap-note">Пометки для ревью: (а) примеры как в канве «Hint (Examples)»: «Basic single hint» (250×36) и сборка Complex по наборам (header 32 + content 32 + footer 56 = 120); иконки ⓘ/✕ — Icon size 20 → на стенде ds-icon-size--5x; кнопки — Button icon S Accent Filled + Button S Accent Filled из ДС; (б) тексты-заглушки как в канве: «Hint title», «Hint content», «1 из 4», «Далее»; (в) в канве оба примера без стрелки (Orientation=Default). Журнал №132, №258.</p>
   </div>
 </div>
 
@@ -189,6 +226,11 @@
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="ic-info" viewBox="0 0 24 24"><path d="M11 17H13V11H11V17ZM12 9C12.2833 9 12.5208 8.90417 12.7125 8.7125C12.9042 8.52083 13 8.28333 13 8C13 7.71667 12.9042 7.47917 12.7125 7.2875C12.5208 7.09583 12.2833 7 12 7C11.7167 7 11.4792 7.09583 11.2875 7.2875C11.0958 7.47917 11 7.71667 11 8C11 8.28333 11.0958 8.52083 11.2875 8.7125C11.4792 8.90417 11.7167 9 12 9ZM12 22C10.6167 22 9.31667 21.7375 8.1 21.2125C6.88333 20.6875 5.825 19.975 4.925 19.075C4.025 18.175 3.3125 17.1167 2.7875 15.9C2.2625 14.6833 2 13.3833 2 12C2 10.6167 2.2625 9.31667 2.7875 8.1C3.3125 6.88333 4.025 5.825 4.925 4.925C5.825 4.025 6.88333 3.3125 8.1 2.7875C9.31667 2.2625 10.6167 2 12 2C13.3833 2 14.6833 2.2625 15.9 2.7875C17.1167 3.3125 18.175 4.025 19.075 4.925C19.975 5.825 20.6875 6.88333 21.2125 8.1C21.7375 9.31667 22 10.6167 22 12C22 13.3833 21.7375 14.6833 21.2125 15.9C20.6875 17.1167 19.975 18.175 19.075 19.075C18.175 19.975 17.1167 20.6875 15.9 21.2125C14.6833 21.7375 13.3833 22 12 22ZM12 20C14.2333 20 16.125 19.225 17.675 17.675C19.225 16.125 20 14.2333 20 12C20 9.76667 19.225 7.875 17.675 6.325C16.125 4.775 14.2333 4 12 4C9.76667 4 7.875 4.775 6.325 6.325C4.775 7.875 4 9.76667 4 12C4 14.2333 4.775 16.125 6.325 17.675C7.875 19.225 9.76667 20 12 20Z"/></symbol>
   <symbol id="ic-close-20" viewBox="0 0 20 20"><path d="M5.33333 15.8333L4.16667 14.6667L8.83333 10L4.16667 5.33333L5.33333 4.16667L10 8.83333L14.6667 4.16667L15.8333 5.33333L11.1667 10L15.8333 14.6667L14.6667 15.8333L10 11.1667L5.33333 15.8333Z"/></symbol>
+  <symbol id="ic-add-20" viewBox="0 0 20 20"><path d="M9.16667 10.8333H4.16667V9.16667H9.16667V4.16667H10.8333V9.16667H15.8333V10.8333H10.8333V15.8333H9.16667V10.8333Z"/></symbol>
+  <symbol id="ic-arrow-up" viewBox="0 0 8 4"><path d="M4.04074 0L8 4H0L4.04074 0Z"/></symbol>
+  <symbol id="ic-arrow-down" viewBox="0 0 8 4"><path d="M4.04074 4L0 0H8L4.04074 4Z"/></symbol>
+  <symbol id="ic-arrow-right" viewBox="0 0 4 8"><path d="M0 0L4 4.04074L0 8V0Z"/></symbol>
+  <symbol id="ic-arrow-left" viewBox="0 0 4 8"><path d="M4 0L0 4.04074L4 8V0Z"/></symbol>
 </svg>
 
 <script>

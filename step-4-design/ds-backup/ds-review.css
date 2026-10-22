@@ -45,6 +45,8 @@ body.dsr-page .panel { background: var(--ds-color-surface-default, #ffffff); }
 .dsr-lbl { color: var(--ds-color-text-secondary, #616161); }
 /* счётчик экранов «1/3» — между стрелками ‹ ›; отступы задаёт .dsr-steps (4) */
 .dsr-count { color: var(--ds-color-text-primary, #333333); font-variant-numeric: tabular-nums; }
+/* листать некуда (один экран) — цифры в дизейбле, как стрелки в этом состоянии */
+.dsr-count--disabled { color: var(--ds-color-text-disable, #9e9e9e); }
 
 /* Селекты панели (шаги, размер) — компонент ДС Select (S); список раскрывается под полем.
    косяк ДС: жёсткие ширины — поле 250 (select-form), список 240 (container), пункт 258 (item);
@@ -83,6 +85,8 @@ body.dsr-page .panel { background: var(--ds-color-surface-default, #ffffff); }
 .dsr-sel .ds-select-item__content { min-width: 0; }
 .dsr-sel--sizes .ds-select-item__content { flex: 1 1 auto; }   /* текст пункта «Размера» — на всю ширину */
 .dsr-sel .ds-select-item__label, .dsr-sel .ds-select-item__label-down { display: block; overflow: hidden; text-overflow: ellipsis; }
+/* строка-подсказка под списком экранов — не пункт выбора (при одном экране: как добавить следующий) */
+.dsr-sel__note { padding: 8px var(--ds-size-4x, 16px); color: var(--ds-color-text-secondary, #616161); font-size: 12px; line-height: 16px; cursor: default; }
 
 /* Кнопки, стрелки и шестерёнка панели — компоненты ДС (Button / Button icon);
    своих стилей кнопкам не задаём. «Пути» — ссылка, но вид кнопки: без браузерного подчёркивания. */

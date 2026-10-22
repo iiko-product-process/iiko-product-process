@@ -1,6 +1,6 @@
 /* app-header — сквозная шапка приложения («App bars: top») — организм дизайн-системы.
    Живёт в DS/organisms/app-header; страницы подключают его как
-   ../DS/organisms/app-header/app-header.css + ../DS/organisms/app-header/app-header.js.
+   ../Design-System/organisms/app-header/app-header.css + ../Design-System/organisms/app-header/app-header.js.
    Один источник разметки на все страницы-кадры: шапка вставляется первым ребёнком .panel
    (перед .frame), поэтому не уезжает при прокрутке содержимого.
    Макет-источник: Figma «Отчеты», node 4318:51379 — меню ресторанов «Все рестораны (5)»,
@@ -19,7 +19,7 @@
    Нет атрибута — показано всё. Компоненты внутри — классы ДС. */
 (function () {
   /* База ассетов — по адресу самого скрипта: шапка работает с любой страницы
-     и при переносе папки организма (../DS/organisms/app-header/). */
+     и при переносе папки организма (../Design-System/organisms/app-header/). */
   var AB = '';
   var hdr = null, sheet = null, scrim = null, popMenu = null, popCal = null, storeNameEl = null;
   var cs = document.currentScript;
@@ -168,7 +168,7 @@
     box.innerHTML = html;
     syncStoreBoxes();
     var cnt = sheet.querySelector('[data-count]');
-    if (cnt) cnt.textContent = 'Выбрано ресторанов: ' + selCount();
+    if (cnt) cnt.textContent = 'Выбрано: ' + selCount();
   }
   function syncStoreBoxes() {
     var boxes = sheet.querySelectorAll('input[data-cb]');
@@ -284,7 +284,7 @@
       H.filter = '';
       sheet.innerHTML = sheetShell('Выберите ресторан',
         '<div class="ds-search apph-field"><span class="material-icons apph-field__icon">search</span><input class="apph-field__input" type="text" placeholder="Поиск" data-input="store"></div>' +
-        '<div class="apph-store__meta"><span class="apph-store__count" data-count>Выбрано ресторанов: ' + selCount() + '</span><span class="apph-vdiv"></span>' +
+        '<div class="apph-store__meta"><span class="apph-store__count" data-count>Выбрано: ' + selCount() + '</span><span class="apph-vdiv"></span>' +
           '<label class="ds-slide-toggle"><span class="ds-slide-toggle__row"><input type="checkbox" class="ds-slide-toggle__input" data-toggle="onlySel"><span class="ds-slide-toggle__track"></span><span class="ds-slide-toggle__title">Показать выбранные</span></span></label></div>' +
         '<div class="apph-store__list" data-list="store"></div>',
         '<button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--outlined" type="button" data-act="cancel"><span class="ds-btn__label">Отменить</span></button>' +

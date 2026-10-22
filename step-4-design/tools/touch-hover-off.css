@@ -1,0 +1,266 @@
+/* touch-hover-off.css — СТАТИЧЕСКАЯ глушилка ховеров для тач-режима кадров (body[data-touch]).
+   Сгенерировано из слоя ДС (после обновлений слоя ДС — перегенерировать).
+   Руками не править; файл не перезаписывается выгрузкой из Фигмы. Обновления из Фигмы его не трогают.
+   Нужен там, где браузер запрещает скриптам читать таблицы стилей (обычный Chrome/Edge по file://):
+   там динамическая глушилка touch-mode.js бессильна, а этот файл работает — это обычный CSS. */
+
+body[data-touch] .ds-autocomplete-form--empty:hover {
+  background: #ffffff;
+  border: none;
+}
+body[data-touch] .ds-autocomplete-form--populated:hover {
+  color: var(--ds-color-form-field-filled-default-label-text-color, #616161);
+}
+body[data-touch] .ds-btn-icon--accent.ds-btn-icon--filled:hover {
+  background: var(--ds-color-button-icon-accent-filled-default-background);
+}
+body[data-touch] .ds-btn-icon--accent.ds-btn-icon--outlined:hover {
+  background: var(--ds-color-button-icon-accent-outlined-default-background);
+}
+body[data-touch] .ds-btn-icon--accent.ds-btn-icon--text:hover {
+  background: var(--ds-color-button-icon-accent-text-default-background);
+}
+body[data-touch] .ds-btn-icon--negative.ds-btn-icon--filled:hover {
+  background: var(--ds-color-button-icon-negative-filled-default-background);
+}
+body[data-touch] .ds-btn-icon--negative.ds-btn-icon--outlined:hover {
+  background: var(--ds-color-button-icon-negative-outlined-default-background);
+}
+body[data-touch] .ds-btn-icon--negative.ds-btn-icon--text:hover {
+  background: var(--ds-color-button-icon-negative-text-default-background);
+}
+body[data-touch] .ds-btn-icon--neutral.ds-btn-icon--filled:hover {
+  background: var(--ds-color-button-icon-neutral-filled-default-background);
+}
+body[data-touch] .ds-btn-icon--neutral.ds-btn-icon--outlined:hover {
+  background: var(--ds-color-button-icon-neutral-outlined-default-background);
+}
+body[data-touch] .ds-btn-icon--neutral.ds-btn-icon--text:hover {
+  background: var(--ds-color-button-icon-neutral-text-default-background);
+}
+body[data-touch] .ds-btn-icon--positive.ds-btn-icon--filled:hover {
+  background: var(--ds-color-button-icon-positive-filled-default-background);
+}
+body[data-touch] .ds-btn-icon--positive.ds-btn-icon--outlined:hover {
+  background: var(--ds-color-button-icon-positive-outlined-default-background);
+}
+body[data-touch] .ds-btn-icon--positive.ds-btn-icon--text:hover {
+  background: var(--ds-color-button-icon-positive-text-default-background);
+}
+body[data-touch] .ds-btn-icon--warning.ds-btn-icon--filled:hover {
+  background: var(--ds-color-button-icon-warning-filled-default-background);
+}
+body[data-touch] .ds-btn-icon--warning.ds-btn-icon--outlined:hover {
+  background: var(--ds-color-button-icon-warning-outlined-default-background);
+}
+body[data-touch] .ds-btn-icon--warning.ds-btn-icon--text:hover {
+  background: var(--ds-color-button-icon-warning-text-default-background);
+}
+body[data-touch] .ds-btn--accent.ds-btn--filled:hover {
+  background: var(--ds-color-button-accent-default);
+}
+body[data-touch] .ds-btn--accent.ds-btn--outlined:hover {
+  background: var(--ds-color-button-accent-lite-default);
+}
+body[data-touch] .ds-btn--accent.ds-btn--text:hover {
+  background: var(--ds-color-button-accent-lite-default);
+}
+body[data-touch] .ds-btn--neutral.ds-btn--filled:hover {
+  background: var(--ds-color-button-neutral-default);
+}
+body[data-touch] .ds-btn--neutral.ds-btn--outlined:hover {
+  background: var(--ds-color-button-neutral-default);
+}
+body[data-touch] .ds-btn--neutral.ds-btn--text:hover {
+  background: var(--ds-color-button-neutral-default);
+}
+body[data-touch] .ds-btn--positive.ds-btn--filled:hover {
+  background: var(--ds-color-button-positive-default);
+}
+body[data-touch] .ds-btn--positive.ds-btn--outlined:hover {
+  background: var(--ds-color-button-positive-lite-default);
+}
+body[data-touch] .ds-btn--positive.ds-btn--text:hover {
+  background: var(--ds-color-button-positive-lite-default);
+}
+body[data-touch] .ds-btn--negative.ds-btn--filled:hover {
+  background: var(--ds-color-button-negative-default);
+}
+body[data-touch] .ds-btn--negative.ds-btn--outlined:hover {
+  background: var(--ds-color-button-negative-lite-default);
+}
+body[data-touch] .ds-btn--negative.ds-btn--text:hover {
+  background: var(--ds-color-button-negative-lite-default);
+}
+body[data-touch] .ds-btn--warning.ds-btn--filled:hover {
+  background: var(--ds-color-button-warning-default);
+}
+body[data-touch] .ds-btn--warning.ds-btn--outlined:hover {
+  background: var(--ds-color-button-warning-lite-default);
+}
+body[data-touch] .ds-btn--warning.ds-btn--text:hover {
+  background: var(--ds-color-button-warning-lite-default);
+}
+body[data-touch] .ds-chips-input:hover {
+  background: transparent;
+  border: none;
+}
+body[data-touch] .ds-chips--outlined:hover {
+  background: var(--ds-color-chips-outlined-default-background, #ffffff);
+  border: 1px solid var(--ds-color-chips-outlined-default-border-color, #e0e0e0);
+}
+body[data-touch] .ds-chips--filled:hover {
+  background: var(--ds-color-chips-filled-default-background, #f8f9fc);
+}
+body[data-touch] .ds-elements--cell.ds-elements--today:hover {
+  background: var(--ds-color-brand-neutral-default, #ffffff);
+}
+body[data-touch] .ds-elements--cell.ds-elements--default:hover {
+  background: transparent;
+}
+body[data-touch] .ds-elements--year.ds-elements--default:hover {
+  background: var(--ds-color-brand-neutral-default, #ffffff);
+}
+body[data-touch] .ds-elements--year.ds-elements--today:hover {
+  background: var(--ds-color-brand-neutral-default, #ffffff);
+}
+body[data-touch] .ds-elements--month.ds-elements--default:hover {
+  background: var(--ds-color-brand-neutral-default, #ffffff);
+}
+body[data-touch] .ds-divider:hover {
+  background: var(--ds-color-divider-solid-default-color);
+}
+body[data-touch] .ds-expansion__header:hover {
+  background: transparent;
+}
+body[data-touch] .ds-input__frame:hover {
+  background: var(--ds-color-shapes-default-variant);
+  border: 1px solid var(--ds-color-stroke-default);
+}
+body[data-touch] .ds-input--xs .ds-input__frame:hover {
+  background: transparent;
+}
+body[data-touch] .ds-input--error .ds-input__frame:hover {
+  background: var(--ds-color-shapes-default-variant);
+  border-color: var(--ds-color-stroke-negative);
+}
+body[data-touch] .ds-input--disabled .ds-input__frame:hover {
+  background: var(--ds-color-surface-disable);
+  border-color: var(--ds-color-stroke-disable);
+}
+body[data-touch] .ds-state:hover {
+  background: transparent;
+}
+body[data-touch] .ds-input-number--populated:hover {
+  color: var(--ds-color-form-field-filled-default-label-text-color, #616161);
+}
+body[data-touch] .ds-input-number--empty:hover {
+  background: transparent;
+  border: none;
+}
+body[data-touch] .ds-list-item:hover {
+  background: var(--ds-color-list-item-default-background, #ffffff);
+}
+body[data-touch] .ds-menu-item:hover {
+  background: var(--ds-color-menu-item-default-background, #ffffff);
+}
+body[data-touch] .ds-scroll--first:hover {
+  background: transparent;
+}
+body[data-touch] .ds-scroll--middle:hover {
+  background: transparent;
+}
+body[data-touch] .ds-scroll--last:hover {
+  background: transparent;
+}
+body[data-touch] .ds-search:hover {
+  border: 1px solid var(--ds-color-search-default-border-color, #e0e0e0);
+}
+body[data-touch] .ds-select-form--empty:hover {
+  background: #ffffff;
+  border: none;
+}
+body[data-touch] .ds-select-form--populated:hover {
+  color: var(--ds-color-form-field-filled-default-label-text-color, #616161);
+}
+body[data-touch] .ds-select-item--false:hover {
+  background: var(--ds-color-select-item-default-background, #ffffff);
+}
+body[data-touch] .ds-sidenav-control--collapsed:hover {
+  background: transparent;
+}
+body[data-touch] .ds-sidenav-control--expanded:hover {
+  background: var(--ds-color-sidenav-control-background, #263136);
+}
+body[data-touch] .ds-sidenav-item--l3.ds-sidenav-item--expanded:hover {
+  background: var(--ds-color-sidenav-item-l3-background, #ffffff);
+}
+body[data-touch] .ds-sidenav-item--l2.ds-sidenav-item--expanded:hover {
+  background: var(--ds-color-sidenav-item-l2-background, #ffffff);
+}
+body[data-touch] .ds-sidenav-item--l1.ds-sidenav-item--expanded:hover {
+  background: var(--ds-color-sidenav-item-l1-background, #263136);
+}
+body[data-touch] .ds-sidenav-item--l1.ds-sidenav-item--collapsed:hover {
+  background: var(--ds-color-sidenav-item-l1-background, #263136);
+}
+body[data-touch] .ds-slide-toggle__row:hover .ds-slide-toggle__track {
+  background: var(--ds-color-slide-toggle-deselected-default-background);
+}
+body[data-touch] .ds-slide-toggle__row:hover .ds-slide-toggle__input:checked + .ds-slide-toggle__track {
+  background: var(--ds-color-slide-toggle-selected-default-background);
+}
+body[data-touch] .ds-slide-toggle__row:hover .ds-slide-toggle__input:disabled + .ds-slide-toggle__track {
+  background: var(--ds-color-slide-toggle-deselected-disable-background);
+}
+body[data-touch] .ds-slide-toggle__row:hover .ds-slide-toggle__input:checked:disabled + .ds-slide-toggle__track {
+  background: var(--ds-color-slide-toggle-selected-disable-background);
+}
+body[data-touch] .ds-element-step--counter:hover {
+  color: var(--ds-color-brand-neutral-super-dark, #333333);
+}
+body[data-touch] .ds-step:hover {
+  color: var(--ds-color-stepper-default-text-color);
+}
+body[data-touch] .ds-step--bg:hover {
+  background: var(--ds-color-stepper-default-background);
+}
+body[data-touch] .ds-chips-input-cell:hover {
+  border: none;
+}
+body[data-touch] .ds-input-cell:hover {
+  background: transparent;
+  border: none;
+}
+body[data-touch] .ds-select-cell:hover {
+  background: transparent;
+  border: none;
+}
+body[data-touch] .ds-table-content-cell:hover {
+  border: none;
+}
+body[data-touch] .ds-table-content-row:hover {
+  background: var(--ds-color-table-row-content-default-background, #ffffff);
+}
+body[data-touch] .ds-table-header-cell:hover {
+  background: var(--ds-color-table-cell-header-default-background, #f0f5ff);
+}
+body[data-touch] .ds-tab:hover {
+  background: var(--ds-color-tab-innactive-default-background);
+}
+body[data-touch] .ds-tab--active:hover {
+  background: var(--ds-color-tab-innactive-default-background);
+}
+body[data-touch] .ds-textarea--populated:hover {
+  color: var(--ds-color-form-field-filled-default-label-text-color, #616161);
+}
+body[data-touch] .ds-textarea--empty:hover {
+  background: transparent;
+  border: none;
+}
+body[data-touch] .ds-elements-2--default:hover {
+  background: var(--ds-color-brand-neutral-default, #ffffff);
+}
+body[data-touch] .nav__item:hover {
+  background: none;
+}

@@ -13,7 +13,7 @@
 
 ## Живой кружок (курсор)
 
-CSS — в константу `CSS` в `_audit/rec/build.py` (не в `rec.css`: его перезаписывает генератор):
+CSS — в собственные стили примера (не в общий агрегатор: его перезаписывает генератор):
 
 ```css
 @media (hover:hover) and (pointer:fine){
@@ -70,12 +70,12 @@ JS — в шаблон страницы (`page()`), рядом с блоком, 
 ```
 
 - **Поверх кнопки, не под ней.** На мобиле все размеры кнопки — 44 px высоты
-  (`iiko-ds-mobile/components/Button_DS/button-touch.css`: M/S/XS = 44), поэтому маркер,
+  (`components-mobile/components/Button_DS/button-touch.css`: M/S/XS = 44), поэтому маркер,
   нарисованный под кнопкой, не виден вовсе (замер: кнопки 53×44 и 56×44 — кружок совпадал с кнопкой).
 - Пунктирный квадрат 48 px `border-radius:8px` — **устаревший вид**, владелец от него отказался.
 - Метка стоит только там, где показан тап: `.pat__hit` в `example_html` — сейчас это 9 компонентов
   (button, button-icon, banners, badge, icon-size, hint-tooltip, chips, stepper, tree). Правило живёт
-  в общем `rec.css`, поэтому разметку менять не нужно — подхватывается всеми страницами.
+  в общем CSS, поэтому разметку менять не нужно — подхватывается всеми страницами.
 
 ## Замер пробой (проверено 14.09.2026)
 
@@ -86,7 +86,7 @@ var ev = new w.PointerEvent('pointermove', { clientX: r.left + 120, clientY: r.t
 scr.dispatchEvent(ev);
 ```
 
-Полученные числа (Button, `recommendations/button.html`):
+Полученные числа (Button):
 
 - `matchMedia('(hover:hover) and (pointer:fine)')` = `true` (headless Chrome ведёт себя как десктоп);
 - экранов 2, `.phone__touch` в них 2 — по одному на экран;

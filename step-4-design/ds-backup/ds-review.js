@@ -2,7 +2,11 @@
    Служебный слой показа: для владельцев и участников. На юзерских прототипах не подключается.
 
    ПОДКЛЮЧЕНИЕ (одна строка, после connect.js):
-     <script src="../DS/ds-review.js" defer></script>
+     <script src="../Design-System/ds-review.js" defer></script>
+   ДЕМО-СТЕНДЫ КОМПОНЕНТОВ — режим «только подсказки» (панель ревью и серая подложка
+   не создаются; кнопка «Подсказки ДС · N» встаёт в [data-hints-host], метки и всплывашки —
+   те же, что в панели):
+     <script src="../../../ds-review.js" data-hints-only data-registry="layouts.js" defer></script>
    Скрипт сам подтягивает ds-review.css (лежит рядом) и — если он есть — реестр
    `layouts.js` РЯДОМ СО СТРАНИЦЕЙ (другой путь можно задать атрибутом data-registry).
 
@@ -10,7 +14,7 @@
      window.dsLayouts = {
        проект:   'Внешнее меню',                 // общий заголовок слева
        адаптив:  true,                           // показывать секцию «Размеры»; нет — секцию не выводим
-       шаги: [                                   // селект «Экраны» (ДС Select) + стрелки ‹ ›; меньше двух — секции нет
+       шаги: [                                   // селект «Экраны» (ДС Select) + стрелки ‹ › и счётчик — при одном и более экране; при одном в списке — строка-подсказка
          { file: 'page.html', title: 'Название шага', hint: 'Строка-пояснение' },
          { file: 'page2.html', state: 'edit', title: '…' }   // state — переключение состояния на той же странице
        ],
@@ -209,6 +213,7 @@
       items.push(node);
       list.appendChild(node);
     });
+    if (cfg.note) list.appendChild(el('div', 'dsr-sel__note', cfg.note));   /* строка-подсказка под пунктами (не пункт выбора) */
     var o = { sel: sel, field: field, fieldText: field.querySelector('.ds-input__field'), list: list, items: items };
     field.addEventListener('click', function (e) { e.stopPropagation(); openSel(o, o.list.hidden); });
     field.addEventListener('keydown', function (e) {
@@ -223,7 +228,11 @@
     if (e) {
       e.prev.disabled = i <= 0;
       e.next.disabled = i < 0 || i >= e.steps.length - 1;
-      if (S.countEl) S.countEl.textContent = (i >= 0 ? i + 1 : '—') + '/' + e.steps.length;
+      if (S.countEl) {
+        S.countEl.textContent = (i >= 0 ? i + 1 : '—') + '/' + e.steps.length;
+        /* листать некуда (один экран) — и цифры в дизейбле, как стрелки */
+        S.countEl.classList.toggle('dsr-count--disabled', e.prev.disabled && e.next.disabled);
+      }
     }
     if (s && e) {
       var st = i >= 0 ? e.steps[i] : null;
@@ -480,16 +489,16 @@
     S.titleEl = titleEl;
     bar.appendChild(titleEl);
 
-    /* Экраны — селект ДС (название текущего экрана + список), стрелки листают;
-       блок центрируется в баре: растушки слева и справа */
+    /* Экраны — селект ДС (название текущего экрана + список), стрелки листают; показывается
+       сразу, даже если экран один (тогда стрелки неактивны, а в списке — подсказка про следующий) */
     var cur = currentStep(steps);
-    if (steps.length >= 2) {
+    if (steps.length >= 1) {
       bar.appendChild(el('span', 'dsr-grow'));
       /* блок «Экраны» — дивами, отступы явные: [лейбл] →8→ [группа: ‹ →4→ 1/3 →4→ ›] →8→ [селект] */
       var sec = el('div', 'dsr-sec');
       sec.appendChild(el('span', 'dsr-lbl', 'Экраны:'));
-      var stepsNav = el('div', 'dsr-steps');             /* группа «шагов»: стрелки, счётчик, форм-селект — внутри 4 */
-      var countEl = el('span', 'dsr-count');             /* счётчик «1/3» — между стрелками */
+      var stepsNav = el('div', 'dsr-steps');           /* группа «шагов»: стрелки, счётчик, форм-селект — внутри 4 */
+      var countEl = el('span', 'dsr-count');           /* счётчик «1/3» — между стрелками */
       countEl.setAttribute('aria-label', 'Счётчик экранов');
       var prev = el('button', 'ds-btn-icon ds-btn-icon--s ds-btn-icon--neutral ds-btn-icon--text');
       prev.type = 'button'; prev.title = 'Предыдущий экран (←)'; prev.setAttribute('aria-label', 'Предыдущий экран');
@@ -508,7 +517,9 @@
         cls: 'dsr-sel--steps',
         aria: 'Экраны прототипа',
         items: steps.map(function (st, i) { return { label: st.title || ('Экран ' + (i + 1)), hint: st.hint || '' }; }),
-        onPick: function (i) { goStep(i); }
+        onPick: function (i) { goStep(i); },
+        /* один экран: в списке второй строкой — подсказка, как добавить следующий */
+        note: steps.length < 2 ? 'Добавьте следующий экран — он появится здесь' : ''
       });
       sec.appendChild(stepsSel.sel);   /* селект — сестрица группы: от › до него 8 (gap секции) */
       S.selEls = stepsSel;
@@ -519,7 +530,7 @@
       setCurrent(cur);
     }
 
-    if (steps.length < 2) bar.appendChild(el('span', 'dsr-grow'));   /* без «Экранов» правый блок уводим вправо */
+    if (steps.length < 1) bar.appendChild(el('span', 'dsr-grow'));   /* без «Экранов» правый блок уводим вправо */
 
     /* Размер (только если у макета есть адаптив): селект ДС с тремя гайдовыми размерами 1440/1024/375 */
     if (adaptive) {
@@ -714,10 +725,34 @@
     s.onerror = function () { S.registry = null; cb(); };                /* нет реестра — работаем без него */
     document.head.appendChild(s);
   }
+  /* ── Режим «только подсказки» (data-hints-only) — для демо-стендов компонентов ──
+     Панель ревью и серая подложка не создаются; кнопка «Подсказки ДС · N» встаёт
+     в [data-hints-host] (иначе — в body), метки/всплывашки — те же, что в панели
+     (номер метки — пункт журнала DS/fixes.md). Маркеры скрытых мест прячутся сами. */
+  function buildHintsOnly() {
+    var hints = (S.registry && (S.registry['подсказки'] || S.registry.hints)) || [];
+    if (!hints.length) return;
+    var host = document.querySelector('[data-hints-host]') || document.body;
+    var hb = el('button', 'ds-btn ds-btn--s ds-btn--neutral ds-btn--outlined dsr-hints-btn', 'Подсказки ДС · ' + hints.length);
+    hb.type = 'button';
+    hb.title = 'Номерные метки находок (номер — пункт журнала DS/fixes.md) — показать/скрыть';
+    hb.addEventListener('click', function () { setHints(!S.hintsOn); });
+    host.appendChild(hb);
+    S.hintsEls = { btn: hb, hints: hints };
+    /* после кликов (в т.ч. переключения вкладок) метки пересчитываются — синхронно,
+       без requestAnimationFrame: в фоновой вкладке raf не срабатывает.
+       Слушатель — в фазе всплытия: обработчик вкладки уже переключил панели. */
+    document.addEventListener('click', function () {
+      if (!S.hintsOn || !S.layer) return;
+      layoutHints();
+    });
+    if (S.hintsOn) setHints(true);
+  }
   function init() {
     if (!document.body) { document.addEventListener('DOMContentLoaded', init); return; }
     addCss();
-    loadRegistry(function () { build(); });
+    var hintsOnly = !!(cs && cs.hasAttribute('data-hints-only'));
+    loadRegistry(function () { if (hintsOnly) buildHintsOnly(); else build(); });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();

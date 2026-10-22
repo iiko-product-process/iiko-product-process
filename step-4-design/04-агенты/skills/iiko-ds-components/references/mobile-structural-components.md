@@ -9,16 +9,16 @@ Stepper → отдельный файл в мобильном слое.
 
 | Что | Куда |
 |---|---|
-| Свой файл варианта | `iiko-ds-mobile/components/<Имя>_DS/<вариант>.css` (пример: `Stepper_DS/stepper-vertical.css`) |
-| Регистрация | `@import "Stepper_DS/stepper-vertical.css";` в агрегаторе `iiko-ds-mobile/components/index.css` |
-| Общие части (шаги, сегменты, поля) | остаются в `iiko-ds-web/components/<Имя>_DS/` — вариант меняет только компоновку |
+| Свой файл варианта | `components-mobile/components/<Имя>_DS/<вариант>.css` (пример: `Stepper_DS/stepper-vertical.css`) |
+| Регистрация | `@import "Stepper_DS/stepper-vertical.css";` в агрегаторе `components-mobile/components/index.css` |
+| Общие части (шаги, сегменты, поля) | остаются в `components-web/components/<Имя>_DS/` — вариант меняет только компоновку |
 
 Первый реальный `*_mob`-файл появился 11.09.2026 (Stepper); до него агрегатор был пустым.
 
 ## Капкан №1 — специфичность (проверено на Stepper)
 
 Регламентный порядок подключения: `font.css → tokens.css → modes.css →`
-**`iiko-ds-mobile/components/index.css`** `→ iiko-ds-web/components/index.css`.
+**`components-mobile/components/index.css`** `→ components-web/components/index.css`.
 Мобильный слой идёт **раньше** библиотеки, поэтому при равной специфичности базовые правила
 выигрывают по порядку. Так и вышло: `.ds-stepper--vertical { align-items: flex-start }` (0,1,0)
 проиграл `.ds-stepper { align-items: center }` (0,1,0) — `flex-direction: column` применился
@@ -34,10 +34,10 @@ Stepper → отдельный файл в мобильном слое.
 Проверка: замерять не только `flex-direction`, но и `align-items`, `gap`, `position` разделителя —
 иначе «раскладка поменялась» маскирует непобеждённое базовое свойство.
 
-## Капкан №2 — страница рекомендаций должна подключать мобильный агрегатор
+## Капкан №2 — пример должен подключать мобильный агрегатор
 
-В шаблоне `page()` в `_audit/rec/build.py` обязательна строка
-`<link rel="stylesheet" href="../../components/index.css">` (до `iiko-ds-web/components/index.css`).
+В шаблоне примера обязательна строка
+`<link rel="stylesheet" href="../../components/index.css">` (до `components-web/components/index.css`).
 Без неё структурные `*_mob`-файлы на страницу не попадают, и мобильная панель показывает
 десктопную раскладку: замер честно отдавал `row` / разделитель `8×1` в панели Mobile, хотя класс
 `ds-stepper--vertical` в разметке был. Добавлено 11.09.2026.
@@ -56,14 +56,14 @@ Stepper → отдельный файл в мобильном слое.
  "stack": true}
 ```
 
-`build.py` берёт `html_mobile` для мобильной панели, если он есть; `stack: true` укладывает
+`html_mobile` в данных примера — отдельная разметка для мобильной панели; `stack: true` укладывает
 пример в колонку. Для «только размерных» компонентов эти поля не нужны — там работает один markup
 и `data-mode`.
 
 ## Кейс Stepper (11.09.2026)
 
 Источник решения: план, группа C («горизонтальный ряд шагов не помещается») +
-`_audit/platform/stepper.json` — мастер-степпер как нормированный компонент есть **только**
+Мастер-степпер как нормированный компонент есть **только**
 у Angular Material («Prefer vertical steppers when building for small screen sizes, as horizontal
 steppers typically take up significantly more horizontal space thus introduce horizontal scrolling»);
 в MD3 степпера нет вообще (ни токенов, ни компонентов), у Apple HIG «Steppers» — это «+ / −»
@@ -71,7 +71,7 @@ steppers typically take up significantly more horizontal space thus introduce ho
 
 Что сделано: `stepper-vertical.css` (шаги в столбик, разделитель 1 × 8 со сдвигом 11,5 px — центр
 линии совпадает с центром маркера при x = 12), регистрация в агрегаторе, страница
-`recommendations/stepper.html`. В `stepper.css` токенизированы три жёстких значения
+В `stepper.css` токенизированы три жёстких значения
 (gap 8 → `--ds-stepper-gap`, ширина линии → `--ds-stepper-divider-width`, gap панели кнопок →
 `--ds-stepper-gap-button`) — регрессия git HEAD → текущий: 0 отличий.
 

@@ -6,7 +6,7 @@
 <title>Icon size — демо стенд компонента</title>
 <!--
   Демо стенд КОМПОНЕНТА Icon size (семейство). Папка: DS/components-web/components/Icon-Size_DS/.
-  Источник — канва Figma «Icon size_DS» (52927:6285). Наборы (порядок как в Figma, слева направо):
+  Источник — канва Figma «Icon size_DS» (52927:6285). Компоненты (порядок как в Figma, слева направо):
     1) Icon size (52927:6286)  — 12 вариантов: Size 16/20/24/32/36/40 × Content=Icon / Content=Img;
        ряды в наборе выровнены по НИЖНЕМУ краю, зазор между иконками 32 (по координатам вариантов);
     2) Icon group (53467:1060) — Size gap=2x (53467:1118) и Size gap=4x (55621:3070) — по три иконки 20;
@@ -83,7 +83,6 @@
   <div class="panel" data-vpanel="size" role="tabpanel">
     <div class="snap-rows">
       <div class="snap-row">
-        <div class="snap-cap snap-cap--side">Content=Icon</div>
         <div class="snap-icons snap-row--icon">
           <span class="ds-icon-size ds-icon-size--4x"><span class="material-icons">info</span></span>
           <span class="ds-icon-size ds-icon-size--5x"><span class="material-icons">info</span></span>
@@ -94,7 +93,6 @@
         </div>
       </div>
       <div class="snap-row">
-        <div class="snap-cap snap-cap--side">Content=Img</div>
         <div class="snap-icons snap-row--img">
           <span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="currentColor"/></svg></span>
           <span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="10" fill="currentColor"/></svg></span>
@@ -111,7 +109,6 @@
   <div class="panel" data-vpanel="group" role="tabpanel" hidden>
     <div class="snap-groups">
       <div>
-        <div class="snap-cap">Size gap=2x</div>
         <div class="ds-icon-group">
           <span class="ds-icon-group__icon"><span class="material-icons">info</span></span>
           <span class="ds-icon-group__icon"><span class="material-icons">info</span></span>
@@ -119,7 +116,6 @@
         </div>
       </div>
       <div>
-        <div class="snap-cap">Size gap=4x</div>
         <div class="ds-icon-group ds-icon-group--4x">
           <span class="ds-icon-group__icon"><span class="material-icons">info</span></span>
           <span class="ds-icon-group__icon"><span class="material-icons">info</span></span>
@@ -134,11 +130,9 @@
     <div class="snap-block">
       <div class="snap-states">
         <div class="snap-col">
-          <div class="snap-cap">State=Hover</div>
           <span class="ds-icon-size ds-icon-size--4x ds-icon-size--state st-hover"><span class="material-icons">info</span></span>
         </div>
         <div class="snap-col">
-          <div class="snap-cap">State=Press</div>
           <span class="ds-icon-size ds-icon-size--4x ds-icon-size--state st-press"><span class="material-icons">info</span></span>
         </div>
       </div>

@@ -6,18 +6,24 @@
 <title>Chips — демо стенд компонента</title>
 <!--
   Демо стенд компонента Chips (страница «Chips_DS», 17168:83541). Папка: DS/components-web/components/Chips_DS/.
-  Источник — канва «Chips_DS» Figma «Iiko Web DS (New)»: наборы «Chips» (17168:83542, 18 вариантов:
-  Size M/S × Type Outlined/Filled × State Default/Hover/Focus/Press/Disable) и «Chips group» (55750:5485,
-  2: Size M/S, слот); блок примеров — фрейм « » (59313:39366): «Быстрые фильтры» (59337:10462) и др.
-  Состав чипа по узлам набора: слот слева (Icon size 20 — в наборе «add»), Chip Container с текстом
-  «Chip text» (M 20, S 16), слот справа (крестик «close» 20/16). В примерах «Быстрых фильтров» чипы —
-  без левого слота, с крестиком справа: «Склад кухня», «Продуктовая категория: 4», «Модификатор».
-  Слоты Element left/right включаются булевыми свойствами варианта; высота M 32 / S 24, паддинги и радиусы —
-  токены chips-*.
-  Состояния: :hover/:active в css живые; Focus в css вырисован только фоном (в наборе вариант шире на 4 —
-  не выяснено, решить в ДС); Disable — класс --disabled. Плашка текста чипа (фон = цвет текста) — артефакт
-  выгрузки, снят в fixes.css п. 24 (журнал №112); крестик/add — fixes пп. 5–6 (журнал №51).
-  Журнал DS/fixes.md №112.
+  Источник — канва «Chips_DS» Figma «Iiko Web DS (New)»: компоненты «Chips» (17168:83542, 18 вариантов:
+  Size M/S × Type Outlined/Filled × State Default/Hover/Press/Focus/Disable) и «Chips group» (55750:5485,
+  2 варианта: Size M/S); примеры — фрейм «Быстрые фильтры» (59337:10462).
+  Состав чипа по узлам компонента: слот слева — инстанс Icon size 20/16 (глиф «add»), Chip Container
+  с текстом «Chip text» (M — Body S 14/20, S — Caption L 12/16), слот справа — Icon size с крестиком
+  «close». В разметке слоты — собственные классы компонента: ds-chips__add / ds-chips__close и контейнер
+  глифа ds-chips__icon (20 у M, 16 у S); в примере «Быстрые фильтры» чипы — без левого слота, с крестиком
+  справа: «Склад кухня», «Продуктовая категория: 4», «Модификатор».
+  Состояния: :hover/:active в css живые (на витрине заморожены стенд-классами st-*); Focus — рамка 1px
+  #448aff (токен chips-outlined-focus-border-color) и каретка «|» в тексте; в css :focus-visible рисует
+  только фон — рамка добавлена в fixes п. 40 (на витрине заморожена st-focus); Disable — класс --disabled. Плашка текста
+  чипа (фон = цвет текста) — артефакт выгрузки, снят в fixes.css п. 24 (журнал №112); крестик/add — fixes
+  пп. 5–6 (журнал №51). 15.10.2026: сверка с Figma (17168:83542) — у S-чипа css оставлял M-размеры
+  (32 / 14-20 / крестик 20 вместо 24 / 12-16 / 16) и Disable не красил текст и иконки (#333/#616161) —
+  исправлено в fixes п. 40; крестик S — отдельный глиф close 16 из Figma — журнал №190.
+  Вкладки — по схеме: «Basic example» + «Chips» + «Chips group» (примеры со страницы — «Быстрые фильтры»
+  в «Basic example»; отдельной вкладки «Примеры» нет — указание заказчика 09.10, инструкция §4).
+  Журнал DS/fixes.md №112, №144, №150, №190.
 -->
 <link rel="stylesheet" href="../../font.css">
 <link rel="stylesheet" href="../../tokens.css">
@@ -40,8 +46,11 @@
   .snap-sect { margin: 0 0 40px; }
   .snap-sect:last-child { margin-bottom: 0; }
   .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
-  .snap-cells { display: grid; grid-template-columns: repeat(5, max-content); gap: 28px 24px; align-items: start; }
-  .snap-cells--4 { grid-template-columns: repeat(4, max-content); }
+  /* витрина как во фрейме компонента: Filled и Outlined — рядами; в ряду M-группа слева, S-группа справа */
+  .snap-set-row { display: flex; align-items: center; gap: 176px; }
+  .snap-set-row + .snap-set-row { margin-top: 24px; }
+  .snap-set-grp { display: flex; align-items: center; gap: 12px; flex: none; }
+  .snap-set-grp > * { flex-shrink: 0; }   /* чипы не ужимаются (иначе текст переносится) */
   .snap-cell { display: flex; flex-direction: column; gap: 10px; }
   .snap-row { display: flex; align-items: center; gap: 16px; }
   .snap-pad { padding: 16px; background: var(--ds-color-brand-neutral-super-light, #f5f5f5); width: fit-content; }
@@ -51,111 +60,117 @@
   .st-hover .ds-chips--filled { background: var(--ds-color-chips-filled-hover-background, #f5f5f5); }
   .st-press .ds-chips--outlined { background: var(--ds-color-chips-outlined-press-background, #e0e0e0); border-color: var(--ds-color-chips-outlined-press-border-color, #e0e0e0); }
   .st-press .ds-chips--filled { background: var(--ds-color-chips-filled-press-background, #e0e0e0); }
-  .st-focus .ds-chips--outlined { background: var(--ds-color-chips-outlined-focus-background, #ffffff); }
+  .st-focus .ds-chips--outlined { background: var(--ds-color-chips-outlined-focus-background, #ffffff); border-color: var(--ds-color-chips-outlined-focus-border-color, #448aff); }
+  .st-hover .ds-btn--text { background: var(--ds-color-button-neutral-text-hover-background, #fafafa); }
 
-  /* иконки чипа: svg-глифы по кадру слота (M 20, S 16); у S-чипа кадры слота уменьшаются */
-  .ds-chips__add svg, .ds-chips__close svg { width: 100%; height: 100%; display: block; }
-  .ds-chips__add svg, .ds-chips__close svg { fill: currentColor; }
-  .ds-chips__add { width: 20px; height: 20px; }
-  .ds-chips__close { width: 20px; height: 20px; }
-  .ds-chips--s .ds-chips__add, .ds-chips--s .ds-chips__close { width: 16px; height: 16px; }
-  /* стрелка в кнопках «Быстрых фильтров» — глиф по кадру 20 */
-  .ds-btn__icon .material-icons { font-size: 20px; line-height: 20px; display: block; }
+  /* иконки чипа — собственные слоты компонента: ds-chips__add / ds-chips__close и контейнер глифа
+     ds-chips__icon (20 у M, 16 у S); размеры задаёт css компонента, глифы — svg из Figma (fill на svg) */
 </style>
 </head>
 <body>
 <div class="demo-bar">
   <span class="demo-bar__title">Chips — демо стенд</span>
-  <span>наборы Figma: Chips (17168-83542, 18), Chips group (55750-5485, 2) · примеры: фрейм 59313-39366</span>
+  <span>Figma: Chips (17168-83542, 18) · Chips group (55750-5485, 2) · примеры: «Быстрые фильтры» (59337-10462)</span>
 </div>
 <div class="view">
   <div class="ds-tabs" role="tablist" aria-label="Chips">
-    <button class="ds-tab ds-tab--active" role="tab" aria-selected="true" data-vtab="sets">Наборы</button>
-    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="examples">Примеры</button>
+    <button class="ds-tab ds-tab--active" role="tab" aria-selected="true" data-vtab="basic">Basic example</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="chips">Chips</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="chips-group">Chips group</button>
   </div>
 
-  <!-- 1. Наборы: Chips 18, Chips group 2 -->
-  <div class="panel" data-vpanel="sets" role="tabpanel">
+  <!-- 1. Basic example: живая группа фильтров — «✕» снимает чип, «Сбросить» возвращает все -->
+  <div class="panel" data-vpanel="basic" role="tabpanel">
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Chips — Type=Outlined (M и S × 5 состояний; слоты как в наборе: слева add, справа close)</div>
-      <div class="snap-cells">
-        <div class="snap-cell"><div class="snap-cap">M · Default</div><div class="snap-pad" style="padding:0"><span class="ds-chips ds-chips--outlined"><span class="ds-chips__add"><svg><use href="#ic-add-20"/></svg></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><svg><use href="#ic-close-20"/></svg></span></span></div></div>
-        <div class="snap-cell"><div class="snap-cap">M · Hover</div><span class="st-hover"><span class="ds-chips ds-chips--outlined"><span class="ds-chips__add"><svg><use href="#ic-add-20"/></svg></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><svg><use href="#ic-close-20"/></svg></span></span></span></div>
-        <div class="snap-cell"><div class="snap-cap">M · Focus</div><span class="st-focus"><span class="ds-chips ds-chips--outlined"><span class="ds-chips__add"><svg><use href="#ic-add-20"/></svg></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><svg><use href="#ic-close-20"/></svg></span></span></span></div>
-        <div class="snap-cell"><div class="snap-cap">M · Press</div><span class="st-press"><span class="ds-chips ds-chips--outlined"><span class="ds-chips__add"><svg><use href="#ic-add-20"/></svg></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><svg><use href="#ic-close-20"/></svg></span></span></span></div>
-        <div class="snap-cell"><div class="snap-cap">M · Disable</div><div class="snap-pad" style="padding:0"><span class="ds-chips ds-chips--outlined ds-chips--disabled"><span class="ds-chips__add"><svg><use href="#ic-add-20"/></svg></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><svg><use href="#ic-close-20"/></svg></span></span></div></div>
-        <div class="snap-cell"><div class="snap-cap">S · Default</div><div class="snap-pad" style="padding:0"><span class="ds-chips ds-chips--outlined ds-chips--s"><span class="ds-chips__add"><svg><use href="#ic-add-16"/></svg></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><svg><use href="#ic-close-16"/></svg></span></span></div></div>
-        <div class="snap-cell"><div class="snap-cap">S · Hover</div><span class="st-hover"><span class="ds-chips ds-chips--outlined ds-chips--s"><span class="ds-chips__add"><svg><use href="#ic-add-16"/></svg></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><svg><use href="#ic-close-16"/></svg></span></span></span></div>
-        <div class="snap-cell"><div class="snap-cap">S · Focus</div><span class="st-focus"><span class="ds-chips ds-chips--outlined ds-chips--s"><span class="ds-chips__add"><svg><use href="#ic-add-16"/></svg></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><svg><use href="#ic-close-16"/></svg></span></span></span></div>
-        <div class="snap-cell"><div class="snap-cap">S · Press</div><span class="st-press"><span class="ds-chips ds-chips--outlined ds-chips--s"><span class="ds-chips__add"><svg><use href="#ic-add-16"/></svg></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><svg><use href="#ic-close-16"/></svg></span></span></span></div>
-        <div class="snap-cell"><div class="snap-cap">S · Disable</div><div class="snap-pad" style="padding:0"><span class="ds-chips ds-chips--outlined ds-chips--s ds-chips--disabled"><span class="ds-chips__add"><svg><use href="#ic-add-16"/></svg></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><svg><use href="#ic-close-16"/></svg></span></span></div></div>
+      <p class="snap-cap" style="margin: 0 0 16px;">Basic example: живая группа фильтров — «✕» снимает чип, «Сбросить» возвращает все</p>
+      <div class="snap-row" style="gap: 8px; align-items: center;">
+        <span class="ds-chips-group" id="bx-group">
+          <span class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Склад кухня</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span>
+          <span class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Продуктовая категория: 4</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span>
+          <span class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Модификатор</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span>
+        </span>
+        <button type="button" class="ds-btn ds-btn--s ds-btn--accent ds-btn--text" id="bx-reset"><span class="ds-btn__label">Сбросить</span></button>
       </div>
     </div>
-
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Chips — Type=Filled (M и S × 4 состояния; Focus у Filled в наборе нет)</div>
-      <div class="snap-cells snap-cells--4">
-        <div class="snap-cell"><div class="snap-cap">M · Default</div><div class="snap-pad" style="padding:0"><span class="ds-chips ds-chips--filled"><span class="ds-chips__add"><svg><use href="#ic-add-20"/></svg></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><svg><use href="#ic-close-20"/></svg></span></span></div></div>
-        <div class="snap-cell"><div class="snap-cap">M · Hover</div><span class="st-hover"><span class="ds-chips ds-chips--filled"><span class="ds-chips__add"><svg><use href="#ic-add-20"/></svg></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><svg><use href="#ic-close-20"/></svg></span></span></span></div>
-        <div class="snap-cell"><div class="snap-cap">M · Press</div><span class="st-press"><span class="ds-chips ds-chips--filled"><span class="ds-chips__add"><svg><use href="#ic-add-20"/></svg></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><svg><use href="#ic-close-20"/></svg></span></span></span></div>
-        <div class="snap-cell"><div class="snap-cap">M · Disable</div><div class="snap-pad" style="padding:0"><span class="ds-chips ds-chips--filled ds-chips--disabled"><span class="ds-chips__add"><svg><use href="#ic-add-20"/></svg></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><svg><use href="#ic-close-20"/></svg></span></span></div></div>
-        <div class="snap-cell"><div class="snap-cap">S · Default</div><div class="snap-pad" style="padding:0"><span class="ds-chips ds-chips--filled ds-chips--s"><span class="ds-chips__add"><svg><use href="#ic-add-16"/></svg></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><svg><use href="#ic-close-16"/></svg></span></span></div></div>
-        <div class="snap-cell"><div class="snap-cap">S · Hover</div><span class="st-hover"><span class="ds-chips ds-chips--filled ds-chips--s"><span class="ds-chips__add"><svg><use href="#ic-add-16"/></svg></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><svg><use href="#ic-close-16"/></svg></span></span></span></div>
-        <div class="snap-cell"><div class="snap-cap">S · Press</div><span class="st-press"><span class="ds-chips ds-chips--filled ds-chips--s"><span class="ds-chips__add"><svg><use href="#ic-add-16"/></svg></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><svg><use href="#ic-close-16"/></svg></span></span></span></div>
-        <div class="snap-cell"><div class="snap-cap">S · Disable</div><div class="snap-pad" style="padding:0"><span class="ds-chips ds-chips--filled ds-chips--s ds-chips--disabled"><span class="ds-chips__add"><svg><use href="#ic-add-16"/></svg></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><svg><use href="#ic-close-16"/></svg></span></span></div></div>
-      </div>
-    </div>
-
-    <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Chips group — Size M / S (слот; здесь — чипы из примера канвы, без левого слота)</div>
-      <div class="snap-sect" style="margin-bottom:20px">
-        <div class="snap-cap" style="margin-bottom:8px">Size=M (gap 8)</div>
-        <div class="snap-pad">
-          <span class="ds-chips-group">
-            <span class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Склад кухня</span></span><span class="ds-chips__close"><svg><use href="#ic-close-20"/></svg></span></span>
-            <span class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Продуктовая категория: 4</span></span><span class="ds-chips__close"><svg><use href="#ic-close-20"/></svg></span></span>
-            <span class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Модификатор</span></span><span class="ds-chips__close"><svg><use href="#ic-close-20"/></svg></span></span>
-          </span>
-        </div>
-      </div>
-      <div>
-        <div class="snap-cap" style="margin-bottom:8px">Size=S (gap 4, чипы S)</div>
-        <div class="snap-pad">
-          <span class="ds-chips-group ds-chips-group--s">
-            <span class="ds-chips ds-chips--outlined ds-chips--s"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Склад кухня</span></span><span class="ds-chips__close"><svg><use href="#ic-close-16"/></svg></span></span>
-            <span class="ds-chips ds-chips--outlined ds-chips--s"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Категория: 4</span></span><span class="ds-chips__close"><svg><use href="#ic-close-16"/></svg></span></span>
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <p class="snap-note">Пометки для ревью: (а) состояния Hover/Press в css живые (:hover/:active), на витрине заморожены классами стенда st-*; Focus в css вырисован только фоном (вариант набора на 4 шире — вероятно рамка; точный вид не выяснен) — решить в ДС; (б) плашка текста чипа (фон = цвет текста) и белые фоны крестика/add — артефакты выгрузки: фон текста снят в fixes.css п. 24, крестик/add — пп. 5–6 (журнал №51): без них глиф 24px вылезал из кадра 20 и белый квадрат красил filled-чип; (в) слоты чипа управляются свойствами варианта (Element left/right): в наборе показаны оба (добавление + снятие), в примерах канвы слева пусто, справа крестик — на стенде и так, и так; (г) группа — только раскладка (gap 8 у M, 4 у S); (д) в примерах канвы есть ещё «Фильтры ????», сегмент-карточки (59313:43108) и чипсы в полях (59367:2996) — не воспроизводим: первые два — паттерны обвязки, третье — компонент Chips Input (страница Chips input_DS). Журнал №112.</p>
-  </div>
-
-  <!-- 2. Примеры: «Быстрые фильтры» из канвы -->
-  <div class="panel" data-vpanel="examples" role="tabpanel" hidden>
-    <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Быстрые фильтры (кадр 59337:10462; тексты — из канвы)</div>
-      <div class="snap-row" style="align-items:center">
+      <div class="snap-cap snap-sect__title">Быстрые фильтры</div>
+      <div class="snap-row" style="gap:8px; align-items:center">
         <span style="font-size:14px;line-height:20px;color:var(--ds-color-text-primary)">Быстрые фильтры:</span>
         <span class="ds-btn-group ds-btn-group--horizontal">
-          <button type="button" class="ds-btn ds-btn--s ds-btn--neutral ds-btn--outlined"><span class="ds-btn__label">Склад</span><span class="ds-btn__icon"><span class="material-icons">arrow_drop_down</span></span></button>
-          <button type="button" class="ds-btn ds-btn--s ds-btn--neutral ds-btn--outlined"><span class="ds-btn__label">Продуктовая категория</span><span class="ds-btn__icon"><span class="material-icons">arrow_drop_down</span></span></button>
+          <span class="st-hover"><button type="button" class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text"><span class="ds-btn__label">Склад</span><span class="ds-btn__icon"><span class="ds-icon-size ds-icon-size--5x"><svg fill="currentColor"><use href="#ic-add-20"/></svg></span></span></button></span>
+          <button type="button" class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text"><span class="ds-btn__label">Продуктовая категория</span><span class="ds-btn__icon"><span class="ds-icon-size ds-icon-size--5x"><svg fill="currentColor"><use href="#ic-add-20"/></svg></span></span></button>
         </span>
-        <button type="button" class="ds-btn ds-btn--s ds-btn--neutral ds-btn--outlined"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Все фильтры</span><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span></button>
+        <button type="button" class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text"><span class="ds-btn__icon"><span class="ds-icon-size ds-icon-size--5x"><svg fill="currentColor"><use href="#ic-add-20"/></svg></span></span><span class="ds-btn__label">Все фильтры</span><span class="ds-btn__icon"><span class="ds-icon-size ds-icon-size--5x"><svg fill="currentColor"><use href="#ic-add-20"/></svg></span></span></button>
       </div>
-      <div class="ds-divider ds-divider--m" style="width:605px;margin:12px 0"></div>
-      <div class="snap-row" style="align-items:center">
+      <div class="ds-divider ds-divider--m" style="width:1180px;margin:8px 0 9px"></div>
+      <div class="snap-row" style="gap:8px; align-items:center">
         <span class="ds-chips-group">
-          <span class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Склад кухня</span></span><span class="ds-chips__close"><svg><use href="#ic-close-20"/></svg></span></span>
-          <span class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Продуктовая категория: 4</span></span><span class="ds-chips__close"><svg><use href="#ic-close-20"/></svg></span></span>
-          <span class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Модификатор</span></span><span class="ds-chips__close"><svg><use href="#ic-close-20"/></svg></span></span>
+          <span class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Склад кухня</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span>
+          <span class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Продуктовая категория: 4</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span>
+          <span class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Модификатор</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span>
         </span>
-        <button type="button" class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text"><span class="ds-btn__label">Сбросить</span></button>
+        <button type="button" class="ds-btn ds-btn--s ds-btn--accent ds-btn--text"><span class="ds-btn__label">Сбросить</span></button>
       </div>
     </div>
-    <p class="snap-note">Пометки для ревью: (а) блок повторяет кадр «Быстрые фильтры» 59337:10462: строка фильтров (подпись + Button group + кнопка «Все фильтры») → Divider → строка выбранных чипов (Chips group) + «Сбросить»; (б) в канве у кнопки «Все фильтры» включены оба слота с иконкой add (слева и справа) — воспроизведено 1:1, как в макете; (в) у кнопок фильтров правый слот — стрелка arrow_drop_down (Material Icons по имени); (г) клики на стенде не собираем — пример статичный (компонент Chips — статика; поведение снятия чипа — логика страницы). Журнал №112.</p>
+    <p class="snap-note">Пометки для ревью: (а) блок «Быстрые фильтры» повторяет кадр 59337:10462: строка фильтров (подпись + Button group «Склад» / «Продуктовая категория» + кнопка «Все фильтры») → Divider (1180) → строка выбранных чипов (Chips group) + «Сбросить» (Accent Text); (б) у кнопок фильтров и «Все фильтры» — стиль Neutral Text, правый слот — иконка «add» (у «Все фильтры» add в обоих слотах — как в кадре); «Склад» в кадре в состоянии Hover — заморожен стендом (фон #fafafa); (в) пример статичный; живая работа чипов («✕» снимает, «Сбросить» возвращает) — выше в этой вкладке; (г) в канве есть ещё кадры (чипсы внутри полей 59367:2996 и Segment card 59313:43108) — не воспроизводим: первое — компонент Chips input (страница Chips input_DS), второе — сборный паттерн продукта. Журнал №112, №144, №150.</p>
   </div>
+
+  <!-- 2. Chips: 18 вариантов — витрина как во фрейме компонента (Filled сверху, Outlined снизу; в ряду M слева, S справа) -->
+  <div class="panel" data-vpanel="chips" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Chips — 18 вариантов</div>
+      <div class="snap-set-row">
+        <div class="snap-set-grp">
+          <span class="ds-chips ds-chips--filled"><span class="ds-chips__add"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add-20"/></svg></span></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span>
+          <span class="st-hover"><span class="ds-chips ds-chips--filled"><span class="ds-chips__add"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add-20"/></svg></span></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span></span>
+          <span class="st-press"><span class="ds-chips ds-chips--filled"><span class="ds-chips__add"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add-20"/></svg></span></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span></span>
+          <span class="ds-chips ds-chips--filled ds-chips--disabled"><span class="ds-chips__add"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add-20"/></svg></span></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span>
+        </div>
+        <div class="snap-set-grp">
+          <span class="ds-chips ds-chips--filled ds-chips--s"><span class="ds-chips__add"><span class="ds-chips__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-close-16"/></svg></span></span></span>
+          <span class="st-hover"><span class="ds-chips ds-chips--filled ds-chips--s"><span class="ds-chips__add"><span class="ds-chips__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-close-16"/></svg></span></span></span></span>
+          <span class="st-press"><span class="ds-chips ds-chips--filled ds-chips--s"><span class="ds-chips__add"><span class="ds-chips__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-close-16"/></svg></span></span></span></span>
+          <span class="ds-chips ds-chips--filled ds-chips--s ds-chips--disabled"><span class="ds-chips__add"><span class="ds-chips__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-close-16"/></svg></span></span></span>
+        </div>
+      </div>
+      <div class="snap-set-row">
+        <div class="snap-set-grp">
+          <span class="ds-chips ds-chips--outlined"><span class="ds-chips__add"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add-20"/></svg></span></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span>
+          <span class="st-hover"><span class="ds-chips ds-chips--outlined"><span class="ds-chips__add"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add-20"/></svg></span></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span></span>
+          <span class="st-press"><span class="ds-chips ds-chips--outlined"><span class="ds-chips__add"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add-20"/></svg></span></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span></span>
+          <span class="st-focus"><span class="ds-chips ds-chips--outlined"><span class="ds-chips__add"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add-20"/></svg></span></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text|</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span></span>
+          <span class="ds-chips ds-chips--outlined ds-chips--disabled"><span class="ds-chips__add"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add-20"/></svg></span></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span>
+        </div>
+        <div class="snap-set-grp">
+          <span class="ds-chips ds-chips--outlined ds-chips--s"><span class="ds-chips__add"><span class="ds-chips__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-close-16"/></svg></span></span></span>
+          <span class="st-hover"><span class="ds-chips ds-chips--outlined ds-chips--s"><span class="ds-chips__add"><span class="ds-chips__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-close-16"/></svg></span></span></span></span>
+          <span class="st-press"><span class="ds-chips ds-chips--outlined ds-chips--s"><span class="ds-chips__add"><span class="ds-chips__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-close-16"/></svg></span></span></span></span>
+          <span class="st-focus"><span class="ds-chips ds-chips--outlined ds-chips--s"><span class="ds-chips__add"><span class="ds-chips__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text|</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-close-16"/></svg></span></span></span></span>
+          <span class="ds-chips ds-chips--outlined ds-chips--s ds-chips--disabled"><span class="ds-chips__add"><span class="ds-chips__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-close-16"/></svg></span></span></span>
+        </div>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: (а) витрина как во фрейме компонента: два ряда — Filled (4 состояния) и Outlined (5: у Filled в компоненте Focus нет); в ряду M-группа слева, S-группа справа, внутри группы интервал 12; порядок состояний — Default, Hover, Press, Focus, Disable (как в канве); (б) Focus — рамка 1px #448aff (chips-outlined-focus-border-color) и каретка «|» в тексте — в css :focus-visible рисует только фон; рамка добавлена в fixes п. 40 и заморожена стенд-классом st-focus; (в) S-чип: в css оставались M-размеры — высота 32 (в компоненте 24), текст 14/20 (в компоненте Caption L 12/16), крестик 20 (в компоненте 16); исправлено в fixes п. 40 — S-чипы в ряду 104×24; (г) состояния Hover/Press в css живые (:hover/:active), на витрине заморожены стенд-классами st-* на токенах; (д) плашка текста чипа (фон = цвет текста) и белые фоны слотов add/close — артефакты выгрузки: сняты в fixes.css (п. 24 — фон текста; пп. 5–6 — слоты, журнал №51); Disable: текст и иконки оставались #333/#616161 (css красит только корень) — исправлено в fixes п. 40 (#9E9E9E); (е) иконки слотов — собственные классы компонента ds-chips__add / ds-chips__close + контейнер глифа ds-chips__icon (20/16); глифы — точные svg-пути из Figma (крестик S — отдельный глиф close 16, сверено с ассетами Figma); (ж) слоты Element left/right включаются свойствами варианта: в компоненте показаны оба, в примерах слева пусто — на стенде и так, и так. Журнал №112, №144, №190.</p>
+  </div>
+
+  <!-- 3. Chips group: 2 варианта — два чипа в один ряд с переносом (левый слот скрыт) -->
+  <div class="panel" data-vpanel="chips-group" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Chips group — 2 варианта</div>
+      <div style="display: flex; align-items: center; gap: 83px;">
+        <span class="ds-chips-group">
+          <span class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span>
+          <span class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span>
+        </span>
+        <span class="ds-chips-group ds-chips-group--s">
+          <span class="ds-chips ds-chips--outlined ds-chips--s"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-close-16"/></svg></span></span></span>
+          <span class="ds-chips ds-chips--outlined ds-chips--s"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-close-16"/></svg></span></span></span>
+        </span>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: (а) группа — чипы-фильтры или выбранные значения в один ряд с переносом (описание компонента); раскладка — flex c gap 8, варианты только по размеру чипов (M/S); у чипов в компоненте скрыт левый слот (Element left = false) — только текст и крестик; (б) тексты «Chip text» — как в компоненте; пример с реальными названиями — в «Basic example»; (в) S-группа: чипы 24 с текстом 12/16 — правка fixes п. 40 (до неё css оставлял M-размеры 32/14). Журнал №144, №150, №190.</p>
+  </div>
+
 </div>
 
 <!-- svg-иконки — точные пути из Figma: add 20/16 (слот чипа), close 20/16 (54025:273 «close») -->
@@ -169,13 +184,28 @@
   <symbol id="ic-close-20" viewBox="0 0 20 20">
     <path d="M5.33329 15.8333L4.16663 14.6667L8.83329 9.99999L4.16663 5.33332L5.33329 4.16666L9.99996 8.83332L14.6666 4.16666L15.8333 5.33332L11.1666 9.99999L15.8333 14.6667L14.6666 15.8333L9.99996 11.1667L5.33329 15.8333Z"/>
   </symbol>
-  <!-- крестик S-чипа: тот же глиф close из Figma (контейнер слота сжимает его до 16 в кадре) -->
-  <symbol id="ic-close-16" viewBox="0 0 20 20">
-    <path d="M5.33329 15.8333L4.16663 14.6667L8.83329 9.99999L4.16663 5.33332L5.33329 4.16666L9.99996 8.83332L14.6666 4.16666L15.8333 5.33332L11.1666 9.99999L15.8333 14.6667L14.6666 15.8333L9.99996 11.1667L5.33329 15.8333Z"/>
+  <!-- крестик S-чипа: отдельный глиф close 16 из Figma (не масштаб 20-го — сверено с ассетами) -->
+  <symbol id="ic-close-16" viewBox="0 0 16 16">
+    <path d="M4.26667 12.6667L3.33333 11.7333L7.06667 8L3.33333 4.26667L4.26667 3.33333L8 7.06667L11.7333 3.33333L12.6667 4.26667L8.93333 8L12.6667 11.7333L11.7333 12.6667L8 8.93333L4.26667 12.6667Z"/>
   </symbol>
 </svg>
 
 <script>
+  /* Basic example: живое снятие чипов и «Сбросить» */
+  (function () {
+    var group = document.getElementById('bx-group');
+    var reset = document.getElementById('bx-reset');
+    if (!group || !reset) return;
+    var initial = group.innerHTML;
+    group.addEventListener('click', function (e) {
+      var close = e.target.closest('.ds-chips__close');
+      if (!close) return;
+      var chip = close.closest('.ds-chips');
+      if (chip) chip.remove();
+    });
+    reset.addEventListener('click', function () { group.innerHTML = initial; });
+  })();
+
   /* табы стенда (верхние) */
   var tabs = Array.prototype.slice.call(document.querySelectorAll('.ds-tab[data-vtab]'));
   var panels = Array.prototype.slice.call(document.querySelectorAll('[data-vpanel]'));

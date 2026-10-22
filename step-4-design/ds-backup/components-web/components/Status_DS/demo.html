@@ -6,17 +6,22 @@
 <title>Status — демо стенд компонента</title>
 <!--
   Демо стенд компонента Status (страница «Status_DS», 52928:6587). Папка: DS/components-web/components/Status_DS/.
-  Источник — канва «Status_DS» Figma «Iiko Web DS (New)»: набор «Status» (52928:6588; 18 вариантов:
+  Источник — канва «Status_DS» Figma «Iiko Web DS (New)»: компонент «Status» (52928:6588; 18 вариантов:
   Style Neutral/Accent/Positive/Warning/Negative/Contrast-1…4 × Type Filled/Text) и блок «Status (UX Examples)»
   (58218:5097) с пятью сценариями (таблица заказов, карточки блюд, карточка заказа + список сотрудников,
-  статусы с иконками, контрастные стили на тёмной карточке). Свойства сета: BOOLEAN Element left / Element right
-  (по умолчанию ВКЛ — в вариантах набора стоят оба слота с иконкой), Style (9), Type (2).
+  статусы с иконками, контрастные стили на тёмной карточке). Свойства компонента: BOOLEAN Element left / Element right
+  (по умолчанию ВКЛ — в вариантах компонента стоят оба слота с иконкой), Style (9), Type (2).
   Состав по узлам: Filled 116×24 (пад 4/6, r8; иконка 16 + текст «Status text» 64 + иконка 16, гэпы 4),
-  Text 104×16 (пад 0); иконка слота — глиф «info» 13×13, цвет Icon/Primary #616161 во ВСЕХ стилях (как в наборе);
+  Text 104×16 (пад 0); иконка слота — глиф «info» 13×13, цвет Icon/Primary #616161 во ВСЕХ стилях (как в компоненте);
+  Раскладка витрины — как в канве: 3 колонки (шаг 300) × 4 ряда — Neutral/Accent/Positive, Warning/Negative,
+  Contrast-1/2, Contrast-3/4; в каждой ячейке пара Filled + Text (зазор 27; ряды сдвинуты как в канве).
+  глиф выводится в контейнере ds-icon-size--4x внутри слота ds-status__icon (вложенный инстанс, fixes п. 14 —
+  как у остальных компонентов); у инстанса Element left/right в Figma есть скрытый State 24×24 — на стенде не выводим
+  (в вариантах он не показан).
   цвет подписи = цвет стиля (корень статуса). Плашки служебных слоёв выгрузки сняты в fixes.css п. 26.
   Примеры: статусы в тексте (без иконок) — Type=Text; в карточках/шапках — Type=Filled; иконки только в сценарии
-  «Статусы с иконками» (в канве у всех примеров глиф — «info», как есть). Мобильный сет «Status_mob» и сравнение
-  с MD3/iOS на стенде не воспроизводим (не веб). Журнал DS/fixes.md №116.
+  «Статусы с иконками» (в канве у всех примеров глиф — «info», как есть). Мобильный компонент «Status_mob» и сравнение
+  с MD3/iOS на стенде не воспроизводим (не веб). Журнал DS/fixes.md №116, №148.
 -->
 <link rel="stylesheet" href="../../font.css">
 <link rel="stylesheet" href="../../tokens.css">
@@ -37,8 +42,14 @@
   .snap-sect:last-child { margin-bottom: 0; }
   .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
   .snap-row { display: flex; gap: 48px; align-items: flex-start; }
-  .snap-col { display: flex; flex-direction: column; gap: 10px; }
-  .snap-cells { display: flex; flex-direction: column; gap: 16px; }
+  /* витрина «Status» — раскладка как в компоненте: 3 колонки (шаг 300) × 4 ряда, пары Filled + Text */
+  .snap-st-matrix { display: flex; flex-direction: column; }
+  .snap-st-row { display: flex; }
+  .snap-st-row:nth-child(2) { margin-top: 135px; }
+  .snap-st-row:nth-child(3) { margin-top: 207px; }
+  .snap-st-row:nth-child(4) { margin-top: 124px; }
+  .snap-st-pair { width: 116px; display: flex; flex-direction: column; gap: 27px; margin-right: 184px; }
+  .snap-st-pair:last-child { margin-right: 0; }
 
   /* иконка слота — svg-спрайт (fill НА самом svg — иначе <use> не красится) */
   .ds-status__icon svg { width: 100%; height: 100%; display: block; fill: currentColor; }
@@ -108,7 +119,7 @@
 <body>
 <div class="demo-bar">
   <span class="demo-bar__title">Status — демо стенд</span>
-  <span>набор Figma: Status (52928-6588, 18) · примеры: «Status (UX Examples)» (58218-5097)</span>
+  <span>Figma: Status (52928-6588, 18) · примеры: «Status (UX Examples)» (58218-5097)</span>
 </div>
 <div class="view">
   <div class="ds-tabs" role="tablist" aria-label="Status">
@@ -116,44 +127,65 @@
     <button class="ds-tab" role="tab" aria-selected="false" data-vtab="status">Status</button>
   </div>
 
-  <!-- 2. Status: Style × Type -->
+  <!-- 2. Status: Style × Type — раскладка как в компоненте (52928:6588) -->
   <div class="panel" data-vpanel="status" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Type=Filled (116×24; слоты Element left/right включены — как в вариантах набора)</div>
-      <div class="snap-cells">
-        <div class="snap-col"><div class="snap-cap">Style=Neutral</div><div class="ds-status ds-status--neutral ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
-        <div class="snap-col"><div class="snap-cap">Style=Accent</div><div class="ds-status ds-status--accent ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
-        <div class="snap-col"><div class="snap-cap">Style=Positive</div><div class="ds-status ds-status--positive ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
-        <div class="snap-col"><div class="snap-cap">Style=Warning</div><div class="ds-status ds-status--warning ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
-        <div class="snap-col"><div class="snap-cap">Style=Negative</div><div class="ds-status ds-status--negative ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
-        <div class="snap-col"><div class="snap-cap">Style=Contrast-1</div><div class="ds-status ds-status--contrast-1 ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
-        <div class="snap-col"><div class="snap-cap">Style=Contrast-2</div><div class="ds-status ds-status--contrast-2 ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
-        <div class="snap-col"><div class="snap-cap">Style=Contrast-3</div><div class="ds-status ds-status--contrast-3 ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
-        <div class="snap-col"><div class="snap-cap">Style=Contrast-4</div><div class="ds-status ds-status--contrast-4 ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
+      <div class="snap-cap snap-sect__title">Status — 18 вариантов</div>
+      <div class="snap-st-matrix">
+        <div class="snap-st-row">
+          <div class="snap-st-pair">
+            <div class="ds-status ds-status--neutral ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></div>
+            <div class="ds-status ds-status--neutral ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></div>
+          </div>
+          <div class="snap-st-pair">
+            <div class="ds-status ds-status--accent ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></div>
+            <div class="ds-status ds-status--accent ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></div>
+          </div>
+          <div class="snap-st-pair">
+            <div class="ds-status ds-status--positive ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></div>
+            <div class="ds-status ds-status--positive ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></div>
+          </div>
+        </div>
+        <div class="snap-st-row">
+          <div class="snap-st-pair">
+            <div class="ds-status ds-status--warning ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></div>
+            <div class="ds-status ds-status--warning ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></div>
+          </div>
+          <div class="snap-st-pair">
+            <div class="ds-status ds-status--negative ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></div>
+            <div class="ds-status ds-status--negative ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></div>
+          </div>
+        </div>
+        <div class="snap-st-row">
+          <div class="snap-st-pair">
+            <div class="ds-status ds-status--contrast-1 ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></div>
+            <div class="ds-status ds-status--contrast-1 ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></div>
+          </div>
+          <div class="snap-st-pair">
+            <div class="ds-status ds-status--contrast-2 ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></div>
+            <div class="ds-status ds-status--contrast-2 ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></div>
+          </div>
+        </div>
+        <div class="snap-st-row">
+          <div class="snap-st-pair">
+            <div class="ds-status ds-status--contrast-3 ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></div>
+            <div class="ds-status ds-status--contrast-3 ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></div>
+          </div>
+          <div class="snap-st-pair">
+            <div class="ds-status ds-status--contrast-4 ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></div>
+            <div class="ds-status ds-status--contrast-4 ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Type=Text (104×16; слоты Element left/right включены — как в вариантах набора)</div>
-      <div class="snap-cells">
-        <div class="snap-col"><div class="snap-cap">Style=Neutral</div><div class="ds-status ds-status--neutral ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
-        <div class="snap-col"><div class="snap-cap">Style=Accent</div><div class="ds-status ds-status--accent ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
-        <div class="snap-col"><div class="snap-cap">Style=Positive</div><div class="ds-status ds-status--positive ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
-        <div class="snap-col"><div class="snap-cap">Style=Warning</div><div class="ds-status ds-status--warning ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
-        <div class="snap-col"><div class="snap-cap">Style=Negative</div><div class="ds-status ds-status--negative ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
-        <div class="snap-col"><div class="snap-cap">Style=Contrast-1</div><div class="ds-status ds-status--contrast-1 ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
-        <div class="snap-col"><div class="snap-cap">Style=Contrast-2</div><div class="ds-status ds-status--contrast-2 ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
-        <div class="snap-col"><div class="snap-cap">Style=Contrast-3</div><div class="ds-status ds-status--contrast-3 ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
-        <div class="snap-col"><div class="snap-cap">Style=Contrast-4</div><div class="ds-status ds-status--contrast-4 ds-status--text"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Status text</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></div></div>
-      </div>
-    </div>
-    <p class="snap-note">Пометки для ревью: (а) в вариантах набора включены ОБА слота (Element left/right — BOOLEAN, по умолчанию on) — на стенде показано как в наборе; в примерах слоты выключены, кроме сценария «Статусы с иконками» (ниже); (б) иконка слота во всех стилях — глиф «info» 13×13 цветом Icon/Primary #616161 (как в узлах) — спрайт, fill задан на самом svg; (в) цвет подписи = цвет стиля (корень статуса), плашки служебных слоёв выгрузки (.ds-status__info белым, .ds-status__content фоном в цвет текста) сняты в fixes п. 26 — там же про жёсткий нейтральный цвет подписи; (г) Filled — пад 4/6, r8, рамки нет; Text — пад 0; (д) мобильный сет «Status_mob» и сравнение с MD3/iOS — вне веба, не воспроизводим. Журнал №116.</p>
+    <p class="snap-note">Пометки для ревью: (а) раскладка витрины — как в компоненте 52928:6588: 3 колонки (шаг 300) × 4 ряда — Neutral/Accent/Positive, Warning/Negative, Contrast-1/2, Contrast-3/4; в каждой ячейке пара Filled + Text (зазор 27; ряды сдвинуты как в канве); слоты Element left/right включены в обеих частях пары (BOOLEAN, по умолчанию on) — как в вариантах компонента; в примерах слоты выключены, кроме сценария «Статусы с иконками» (ниже); (б) иконка слота во всех стилях — глиф «info» 13×13 цветом Icon/Primary #616161 (как в узлах) — спрайт, fill задан на самом svg; (в) цвет подписи = цвет стиля (корень статуса), плашки служебных слоёв выгрузки (.ds-status__info белым, .ds-status__content фоном в цвет текста) сняты в fixes п. 26 — там же про жёсткий нейтральный цвет подписи; (г) Filled — 116×24 (пад 4/6, r8, рамки нет); Text — 104×16 (пад 0); (д) служебные аннотации канвы (Title mode, Body 8…25 — скрыты в Figma), мобильный компонент «Status_mob» и сравнение с MD3/iOS — вне веба, не воспроизводим. Журнал №116, №148.</p>
   </div>
 
   <!-- 1. Basic example: сценарии «Status (UX Examples)» -->
   <div class="panel" data-vpanel="basic" role="tabpanel">
     <div class="snap-sect">
       <div class="snap-h2">Статусы в таблице заказов</div>
-      <div class="snap-sub">Текстовые статусы (Type=Text) в таблице накладных на поставку. Цвет текста передаёт текущий этап обработки — от создания до завершения.</div>
+      <div class="snap-sub">Текстовые статусы в таблице накладных на поставку. Цвет текста передаёт текущий этап обработки — от создания до завершения.</div>
       <div class="snap-table">
         <div class="snap-table__head">
           <div class="snap-table__th snap-table__td--1">Номер заказа</div>
@@ -258,26 +290,26 @@
         <div>
           <div class="snap-group__cap">Карта зала — иконка слева</div>
           <div class="snap-status-row">
-            <span class="ds-status ds-status--positive ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Свободен</span></span>
-            <span class="ds-status ds-status--negative ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Занят</span></span>
-            <span class="ds-status ds-status--accent ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Забронирован</span></span>
-            <span class="ds-status ds-status--warning ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Обслуживается</span></span>
+            <span class="ds-status ds-status--positive ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Свободен</span></span>
+            <span class="ds-status ds-status--negative ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Занят</span></span>
+            <span class="ds-status ds-status--accent ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Забронирован</span></span>
+            <span class="ds-status ds-status--warning ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Обслуживается</span></span>
           </div>
         </div>
         <div>
           <div class="snap-group__cap">Оплата — иконка справа</div>
           <div class="snap-status-row">
-            <span class="ds-status ds-status--positive ds-status--filled"><span class="ds-status__label">Оплачен</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span>
-            <span class="ds-status ds-status--negative ds-status--filled"><span class="ds-status__label">Не оплачен</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span>
-            <span class="ds-status ds-status--warning ds-status--filled"><span class="ds-status__label">Частично</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span>
+            <span class="ds-status ds-status--positive ds-status--filled"><span class="ds-status__label">Оплачен</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></span>
+            <span class="ds-status ds-status--negative ds-status--filled"><span class="ds-status__label">Не оплачен</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></span>
+            <span class="ds-status ds-status--warning ds-status--filled"><span class="ds-status__label">Частично</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></span>
           </div>
         </div>
         <div>
           <div class="snap-group__cap">Активность — две иконки</div>
           <div class="snap-status-row">
-            <span class="ds-status ds-status--positive ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Активен</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span>
-            <span class="ds-status ds-status--negative ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Заблокирован</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span>
-            <span class="ds-status ds-status--neutral ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span><span class="ds-status__label">Архив</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span>
+            <span class="ds-status ds-status--positive ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Активен</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></span>
+            <span class="ds-status ds-status--negative ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Заблокирован</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></span>
+            <span class="ds-status ds-status--neutral ds-status--filled"><span class="ds-status__element-left"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span><span class="ds-status__label">Архив</span><span class="ds-status__element-right"><span class="ds-status__info"><span class="ds-status__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 14 14"><use href="#ic-info"/></svg></span></span></span></span></span>
           </div>
         </div>
       </div>

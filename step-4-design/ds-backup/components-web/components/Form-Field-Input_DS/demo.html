@@ -7,19 +7,26 @@
 <!--
   Демо стенд компонента Form field input (базовый: лежит внутри Select form, Datepicker и др.).
   Папка: DS/components-web/components/Form-Field-Input_DS/.
-  Источник — набор Figma «Input» (52670:7573): 29 вариантов —
+  Источник — компонент Figma «Input» (52670:7573): 29 вариантов —
   колонки M · Empty / M · Populated / S · No label up / XS · No label up;
   ряды Default, Hover, Focus, Focus + Placeholder, Focus + Value, Error, Error + Hover, Disable.
+  Витрина — как в компоненте: колонки 250 на канве 82/355/794/1179 (зазоры 23/189/135), вертикальный
+  ритм по колонкам (M/S — зазор 44, XS — 40); у M Empty нет Focus-рядов — места сохранены пустыми
+  слотами (ряд Error и далее стоят на своих линиях канвы). Примеры страницы («Input (Examples)»,
+  57781:45298) не воспроизводим: компонент динамический — на стенде только живой пример
+  (инструкция §4; правило заказчика 07.10.2026).
   Состав вариантов (по узлам Figma): Element left = ⓘ всегда; Element right = ⓘ (в фокусе у M — ✕ «очистить»),
   в Error правая иконка красная, левая остаётся иконочной; тексты «Label» / «Input text»;
   в кадре фокуса — каретка «|», в Focus + Placeholder текст-плейсхолдер #d6d6d6;
-  Support/Hint в вариантах набора выключены (свойства вне матрицы).
-  Иконки слотов (info/close) — точные svg-пути из Figma (symbol/use).
+  Support/Hint в вариантах выключены (свойства вне матрицы).
+  Иконки слотов (info/close) — точные svg-пути из Figma (symbol/use); в Figma это инстансы
+  «Icon size» (Size=20, Content=Icon) — воспроизведены контейнером ds-icon-size--5x (п. 14 fixes, №99).
   Разметка — классы ДС (ds-input…), значения — токены; пробелы выгрузки обойдены в ../../fixes.css
   п. 15 (XS-underline, текст M Empty, Error-иконка, глиф 20) и п. 16 (плейсхолдер Empty/фокуса);
-  журнал DS/fixes.md №91, 92. Замороженные состояния — st-hover/st-focus (в ДС :hover/:focus-within),
+  журнал DS/fixes.md №91, 92, №149. Замороженные состояния — st-hover/st-focus (в ДС :hover/:focus-within),
   Error/Disable — реальными классами ds-input--error / ds-input--disabled.
--->
+  Единичные инстансы на канве (59493:3538/3576), доки «Audit/Typography/Properties — Input»,
+  «Рекомендации по мобильной адаптации» и компонент «Input_mob» — вне веба, не воспроизводим. -->
 <link rel="stylesheet" href="../../font.css">
 <link rel="stylesheet" href="../../tokens.css">
 <link rel="stylesheet" href="../../styles.css">
@@ -38,9 +45,14 @@
   /* иконки слотов — svg (symbol/use): размер задаёт input.css (.ds-input__icon svg), цвет — currentColor */
   .ds-input__icon svg { fill: currentColor; }
 
-  /* матрица набора: колонки как в Figma (M Empty x82, M Populated x355, S x794, XS x1179), шаг 24 */
-  .snap-inputs { display: grid; grid-template-columns: 96px repeat(4, 250px); gap: var(--ds-size-6x, 24px); align-items: start; }
-  .snap-inputs .snap-cap { margin: 0; }
+  /* витрина — как в компоненте: 4 колонки (M Empty / M Populated / S / XS); зазоры колонок и вертикальный ритм — по узлам */
+  .snap-inputs { display: flex; align-items: flex-start; }
+  .snap-inp-col { display: flex; flex-direction: column; width: 250px; flex-shrink: 0; gap: 44px; }
+  .snap-inp-col--m-empty { margin-right: 23px; }      /* колонки канвы 82/355/794/1179 — зазоры 23/189/135 */
+  .snap-inp-col--m-populated { margin-right: 189px; }
+  .snap-inp-col--s { margin-right: 135px; }
+  .snap-inp-col--xs { gap: 40px; }                    /* XS: шаг 68 (28+40) — по узлам */
+  .snap-gap { height: 48px; }                         /* пустые слоты колонки 1: у M Empty нет Focus-рядов, ритм рядов сохранён */
 
   /* содержимое ячеек фокуса (по узлам: каретка #333, плейсхолдер #d6d6d6) */
   .snap-caret { color: var(--ds-color-form-field-filled-focus-input-text-color, #333); }
@@ -68,266 +80,249 @@
     <button class="ds-tab" role="tab" aria-selected="false" data-vtab="input">Form field input</button>
   </div>
 
-  <!-- 2. Форм-филд инпут: 29 вариантов набора (52670:7573) -->
+  <!-- 2. Форм-филд инпут: 29 вариантов (52670:7573) -->
   <div class="panel" data-vpanel="input" role="tabpanel" hidden>
     <div class="snap-inputs">
-      <div></div>
-      <div class="snap-cap">M · Empty</div>
-      <div class="snap-cap">M · Populated</div>
-      <div class="snap-cap">S · No label up</div>
-      <div class="snap-cap">XS · No label up</div>
-
-      <!-- Default -->
-      <div class="snap-cap">Default</div>
-      <div class="ds-input ds-input--m ds-input--empty">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content"><span class="ds-input__field">Label</span></div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-        </div>
-      </div>
-      <div class="ds-input ds-input--m ds-input--populated">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content">
-            <span class="ds-input__label">Label</span>
-            <span class="ds-input__field">Input text</span>
+      <!-- колонка 1 — M Empty (Focus-рядов у M Empty нет — места сохранены пустыми слотами, ритм рядов как в канве) -->
+      <div class="snap-inp-col snap-inp-col--m-empty">
+        <div class="ds-input ds-input--m ds-input--empty">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content"><span class="ds-input__field">Label</span></div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
           </div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
         </div>
-      </div>
-      <div class="ds-input ds-input--s">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-        </div>
-      </div>
-      <div class="ds-input ds-input--xs">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-        </div>
-      </div>
-
-      <!-- Hover -->
-      <div class="snap-cap">Hover</div>
-      <div class="ds-input ds-input--m ds-input--empty st-hover">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content"><span class="ds-input__field">Label</span></div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-        </div>
-      </div>
-      <div class="ds-input ds-input--m ds-input--populated st-hover">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content">
-            <span class="ds-input__label">Label</span>
-            <span class="ds-input__field">Input text</span>
+        <div class="ds-input ds-input--m ds-input--empty st-hover">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content"><span class="ds-input__field">Label</span></div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
           </div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
         </div>
-      </div>
-      <div class="ds-input ds-input--s st-hover">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-        </div>
-      </div>
-      <div class="ds-input ds-input--xs st-hover">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-        </div>
-      </div>
-
-      <!-- Focus (у M Empty в наборе нет) -->
-      <div class="snap-cap">Focus</div>
-      <div></div>
-      <div class="ds-input ds-input--m ds-input--populated st-focus">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content">
-            <span class="ds-input__label">Label</span>
-            <span class="ds-input__field snap-caret">|</span>
+        <div class="snap-gap"></div>
+        <div class="snap-gap"></div>
+        <div class="snap-gap"></div>
+        <div class="ds-input ds-input--m ds-input--empty ds-input--error">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content"><span class="ds-input__field">Label</span></div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
           </div>
-          <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg><use href="#ic-close"/></svg></span></span>
         </div>
-      </div>
-      <div class="ds-input ds-input--s st-focus">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content"><span class="ds-input__field snap-caret">|</span></div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-        </div>
-      </div>
-      <div class="ds-input ds-input--xs st-focus">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content"><span class="ds-input__field snap-caret">|</span></div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-        </div>
-      </div>
-
-      <!-- Focus + Placeholder -->
-      <div class="snap-cap">Focus + Placeholder</div>
-      <div></div>
-      <div class="ds-input ds-input--m ds-input--populated st-focus">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content">
-            <span class="ds-input__label">Label</span>
-            <span class="ds-input__field"><span class="snap-caret">|</span><span class="snap-ph">Input text</span></span>
+        <div class="ds-input ds-input--m ds-input--empty ds-input--error st-hover">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content"><span class="ds-input__field">Label</span></div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
           </div>
-          <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg><use href="#ic-close"/></svg></span></span>
         </div>
-      </div>
-      <div class="ds-input ds-input--s st-focus">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content"><span class="ds-input__field"><span class="snap-caret">|</span><span class="snap-ph">Input text</span></span></div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-        </div>
-      </div>
-      <div class="ds-input ds-input--xs st-focus">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content"><span class="ds-input__field"><span class="snap-caret">|</span><span class="snap-ph">Input text</span></span></div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-        </div>
-      </div>
-
-      <!-- Focus + Value -->
-      <div class="snap-cap">Focus + Value</div>
-      <div></div>
-      <div class="ds-input ds-input--m ds-input--populated st-focus">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content">
-            <span class="ds-input__label">Label</span>
-            <span class="ds-input__field">Input text</span>
+        <div class="ds-input ds-input--m ds-input--empty ds-input--disabled">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content"><span class="ds-input__field">Label</span></div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
           </div>
-          <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg><use href="#ic-close"/></svg></span></span>
         </div>
       </div>
-      <div class="ds-input ds-input--s st-focus">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-        </div>
-      </div>
-      <div class="ds-input ds-input--xs st-focus">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-        </div>
-      </div>
-
-      <!-- Error -->
-      <div class="snap-cap">Error</div>
-      <div class="ds-input ds-input--m ds-input--empty ds-input--error">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content"><span class="ds-input__field">Label</span></div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-        </div>
-      </div>
-      <div class="ds-input ds-input--m ds-input--populated ds-input--error">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content">
-            <span class="ds-input__label">Label</span>
-            <span class="ds-input__field">Input text</span>
+      <!-- колонка 2 — M Populated -->
+      <div class="snap-inp-col snap-inp-col--m-populated">
+        <div class="ds-input ds-input--m ds-input--populated">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content">
+              <span class="ds-input__label">Label</span>
+              <span class="ds-input__field">Input text</span>
+            </div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
           </div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
         </div>
-      </div>
-      <div class="ds-input ds-input--s ds-input--error">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-        </div>
-      </div>
-      <div class="ds-input ds-input--xs ds-input--error">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-        </div>
-      </div>
-
-      <!-- Error + Hover -->
-      <div class="snap-cap">Error + Hover</div>
-      <div class="ds-input ds-input--m ds-input--empty ds-input--error st-hover">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content"><span class="ds-input__field">Label</span></div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-        </div>
-      </div>
-      <div class="ds-input ds-input--m ds-input--populated ds-input--error st-hover">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content">
-            <span class="ds-input__label">Label</span>
-            <span class="ds-input__field">Input text</span>
+        <div class="ds-input ds-input--m ds-input--populated st-hover">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content">
+              <span class="ds-input__label">Label</span>
+              <span class="ds-input__field">Input text</span>
+            </div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
           </div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
         </div>
-      </div>
-      <div class="ds-input ds-input--s ds-input--error st-hover">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-        </div>
-      </div>
-      <div class="ds-input ds-input--xs ds-input--error st-hover">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-        </div>
-      </div>
-
-      <!-- Disable -->
-      <div class="snap-cap">Disable</div>
-      <div class="ds-input ds-input--m ds-input--empty ds-input--disabled">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content"><span class="ds-input__field">Label</span></div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-        </div>
-      </div>
-      <div class="ds-input ds-input--m ds-input--populated ds-input--disabled">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content">
-            <span class="ds-input__label">Label</span>
-            <span class="ds-input__field">Input text</span>
+        <div class="ds-input ds-input--m ds-input--populated st-focus">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content">
+              <span class="ds-input__label">Label</span>
+              <span class="ds-input__field snap-caret">|</span>
+            </div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg><use href="#ic-close"/></svg></span></span>
           </div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
+        </div>
+        <div class="ds-input ds-input--m ds-input--populated st-focus">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content">
+              <span class="ds-input__label">Label</span>
+              <span class="ds-input__field"><span class="snap-caret">|</span><span class="snap-ph">Input text</span></span>
+            </div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg><use href="#ic-close"/></svg></span></span>
+          </div>
+        </div>
+        <div class="ds-input ds-input--m ds-input--populated st-focus">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content">
+              <span class="ds-input__label">Label</span>
+              <span class="ds-input__field">Input text</span>
+            </div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg><use href="#ic-close"/></svg></span></span>
+          </div>
+        </div>
+        <div class="ds-input ds-input--m ds-input--populated ds-input--error">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content">
+              <span class="ds-input__label">Label</span>
+              <span class="ds-input__field">Input text</span>
+            </div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+          </div>
+        </div>
+        <div class="ds-input ds-input--m ds-input--populated ds-input--error st-hover">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content">
+              <span class="ds-input__label">Label</span>
+              <span class="ds-input__field">Input text</span>
+            </div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+          </div>
+        </div>
+        <div class="ds-input ds-input--m ds-input--populated ds-input--disabled">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content">
+              <span class="ds-input__label">Label</span>
+              <span class="ds-input__field">Input text</span>
+            </div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+          </div>
         </div>
       </div>
-      <div class="ds-input ds-input--s ds-input--disabled">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
+      <!-- колонка 3 — S (No label up) -->
+      <div class="snap-inp-col snap-inp-col--s">
+        <div class="ds-input ds-input--s">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+          </div>
+        </div>
+        <div class="ds-input ds-input--s st-hover">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+          </div>
+        </div>
+        <div class="ds-input ds-input--s st-focus">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content"><span class="ds-input__field snap-caret">|</span></div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+          </div>
+        </div>
+        <div class="ds-input ds-input--s st-focus">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content"><span class="ds-input__field"><span class="snap-caret">|</span><span class="snap-ph">Input text</span></span></div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+          </div>
+        </div>
+        <div class="ds-input ds-input--s st-focus">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+          </div>
+        </div>
+        <div class="ds-input ds-input--s ds-input--error">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+          </div>
+        </div>
+        <div class="ds-input ds-input--s ds-input--error st-hover">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+          </div>
+        </div>
+        <div class="ds-input ds-input--s ds-input--disabled">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+          </div>
         </div>
       </div>
-      <div class="ds-input ds-input--xs ds-input--disabled">
-        <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
-          <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
+      <!-- колонка 4 — XS (No label up) -->
+      <div class="snap-inp-col snap-inp-col--xs">
+        <div class="ds-input ds-input--xs">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+          </div>
+        </div>
+        <div class="ds-input ds-input--xs st-hover">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+          </div>
+        </div>
+        <div class="ds-input ds-input--xs st-focus">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content"><span class="ds-input__field snap-caret">|</span></div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+          </div>
+        </div>
+        <div class="ds-input ds-input--xs st-focus">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content"><span class="ds-input__field"><span class="snap-caret">|</span><span class="snap-ph">Input text</span></span></div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+          </div>
+        </div>
+        <div class="ds-input ds-input--xs st-focus">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+          </div>
+        </div>
+        <div class="ds-input ds-input--xs ds-input--error">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+          </div>
+        </div>
+        <div class="ds-input ds-input--xs ds-input--error st-hover">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+          </div>
+        </div>
+        <div class="ds-input ds-input--xs ds-input--disabled">
+          <div class="ds-input__frame">
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+            <div class="ds-input__content"><span class="ds-input__field">Input text</span></div>
+            <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+          </div>
         </div>
       </div>
     </div>
@@ -339,12 +334,12 @@
       <div class="snap-cap">Basic example: начните вводить — подпись поднимется; очистите поле — вернётся плейсхолдер</div>
       <div class="ds-input ds-input--m ds-input--empty" id="live">
         <div class="ds-input__frame">
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
+          <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
           <div class="ds-input__content">
             <span class="ds-input__label" id="live-label" hidden>Введите текст</span>
             <input class="ds-input__field" id="live-field" type="text" placeholder="Введите текст" aria-label="Введите текст">
           </div>
-          <span class="ds-input__icon"><svg><use href="#ic-info"/></svg></span>
+          <span class="ds-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
         </div>
       </div>
     </div>

@@ -7,11 +7,11 @@ browser or read from a file; nothing was invented.
 
 | Source | What it gave |
 |---|---|
-| `iiko-ds-prototypes/compare-button-mob.html` | Figma `Button_mob` values, transcribed by hand earlier: 138×44 px, HUG/HUG, radius 8, padding 16 h / 12 v, text 16 px / 500, icon 20 px (vector 12×12), accent `#448AFF` |
-| `iiko-ds-mobile/desktop-to-mobile-plan.md` | Button = category A («только размерные значения»), «Частично общая» token binding |
-| `iiko-ds-mobile/mobile-mode-notes.md` §12 | `modes.css` + load order; `tokens.css` is generated |
-| `iiko-ds-web/tokens.css` (collection `Component`) | Existing size tokens — pad/gap/icon-size/text-size/text-weight per `xs|s|m`, `--ds-button-border-radius`, `--ds-button-border-size` |
-| `iiko-ds-web/iiko-ds-spec.md` (`#### Button`) | Desktop sizes M 36 / S 28 / XS 24, states default/hover/pressed/disabled/loading |
+| A former comparison page (removed from the repo) | Figma `Button_mob` values, transcribed by hand earlier: 138×44 px, HUG/HUG, radius 8, padding 16 h / 12 v, text 16 px / 500, icon 20 px (vector 12×12), accent `#448AFF` |
+| `components-mobile/desktop-to-mobile-plan.md` | Button = category A («только размерные значения»), «Частично общая» token binding |
+| `components-mobile/mobile-mode-notes.md` §12 | `modes.css` + load order; `tokens.css` is generated |
+| `components-web/tokens.css` (collection `Component`) | Existing size tokens — pad/gap/icon-size/text-size/text-weight per `xs|s|m`, `--ds-button-border-radius`, `--ds-button-border-size` |
+| `components-web/iiko-ds-spec.md` (`#### Button`) | Desktop sizes M 36 / S 28 / XS 24, states default/hover/pressed/disabled/loading |
 
 Reference numbers from the comparison page (for the design discussion, not for implementation):
 MD3 filled = 40 dp tall, pill radius 20 dp, pad 24 dp, label 14 sp/500, icon 18 dp, primary
@@ -34,13 +34,13 @@ size) and is also the biggest open question: on mobile their 28/24 px targets si
 
 ## Files touched
 
-- `iiko-ds-web/modes.css` (new) — mode axis + Button block.
-- `iiko-ds-web/components/Button_DS/button.css` — sizes moved to component tokens; heights
+- `components-web/modes.css` (new) — mode axis + Button block.
+- `components-web/components/Button_DS/button.css` — sizes moved to component tokens; heights
   derived with `calc()`; new `.ds-btn--full-width`; two latent bugs fixed (below).
-- `iiko-ds-prototypes/button-modes.html` (new) — desktop/mobile side by side (three views:
+- `Prototype-Guide/button-modes.html` (new) — desktop/mobile side by side (three views:
   both / desktop only / mobile only) plus a table of measurements produced by the page's own
   JS (`document.body.dataset.measure`).
-- `iiko-ds-web/iiko-ds-spec.md` — TOC entry 8, new section «Режимы платформы (Desktop /
+- `components-web/iiko-ds-spec.md` — TOC entry 8, new section «Режимы платформы (Desktop /
   Mobile)», `--full-width` added to the `.ds-btn` class-map row.
 
 ## Latent bugs found in the shipped `button.css`

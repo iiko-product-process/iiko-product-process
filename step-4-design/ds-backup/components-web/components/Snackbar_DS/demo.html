@@ -10,7 +10,7 @@
   Single 370×56: [info 20][текст 14/20][Button S 61×28][close 20] + Progress 4px #448AFF; Complex 370×108:
   [info][title 20 + close][description 16][Bottom actions — Button group 28] + Progress), набор «Element left»
   (5 стилей: Neutral/Accent/Positive/Warning/Negative — глиф info 20) + блок «Snackbar (Examples)» (2256×2332):
-  сцены на рабочих экранах и наборы инстансов разных высот; тексты: «Товары добавлены», «Не удалось сохранить изменения»,
+  сцены на рабочих экранах и серии инстансов разных высот; тексты: «Товары добавлены», «Не удалось сохранить изменения»,
   «Товар «Салат Цезарь» удален», «Ошибка интеграции. Код: 34553-…», «Документ база гостей.xsl загружен ошибками. Ошибок: 5».
   ⚠ css: `.ds-snackbar__label` жёстко белый (фикс п. 4 — вариант Light перекрашивает лейбл), Complex-dark ширина в css 232
   (на канве 370) — решить в ДС; цвета глифов Element left по стилям — из токенов. Журнал DS/fixes.md №130.
@@ -61,7 +61,7 @@
 <body>
 <div class="demo-bar">
   <span class="demo-bar__title">Snackbar — демо стенд</span>
-  <span>набор Figma: Snackbar (54373-2203, 4) · Element left (5 стилей) · примеры (сцены + инстансы)</span>
+  <span>Figma: Snackbar (54373-2203, 4) · Element left (5 стилей) · примеры (сцены + инстансы)</span>
 </div>
 <div class="view">
   <div class="ds-tabs" role="tablist" aria-label="Snackbar">
@@ -73,10 +73,9 @@
   <!-- 2. Snackbar (набор 54373:2203, 4 варианта) -->
   <div class="panel" data-vpanel="snackbar" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Snackbar — 4 варианта (Type × Mode; Single: [info][текст][кнопка][close] + Progress)</div>
+      <div class="snap-cap snap-sect__title">Snackbar — 4 варианта</div>
       <div class="snap-row" style="margin-top: 12px;">
         <div class="snap-col">
-          <span class="snap-cap">Type=Single, Mode=Dark (#424242)</span>
           <div class="ds-snackbar ds-snackbar--single ds-snackbar--dark snap-sb">
             <div class="ds-snackbar__body">
               <span class="ds-snackbar__icon" style="color:#ffffff;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
@@ -88,7 +87,6 @@
           </div>
         </div>
         <div class="snap-col">
-          <span class="snap-cap">Type=Single, Mode=Light (#FFFFFF)</span>
           <div class="ds-snackbar ds-snackbar--single ds-snackbar--light snap-sb snap-sb--light">
             <div class="ds-snackbar__body">
               <span class="ds-snackbar__icon" style="color:#616161;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
@@ -100,7 +98,6 @@
           </div>
         </div>
         <div class="snap-col">
-          <span class="snap-cap">Type=Complex, Mode=Dark (title + description + actions)</span>
           <div class="ds-snackbar ds-snackbar--complex ds-snackbar--dark snap-sb">
             <div class="ds-snackbar__body" style="align-items:flex-start;">
               <span class="ds-snackbar__icon" style="color:#ffffff;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
@@ -114,7 +111,6 @@
           </div>
         </div>
         <div class="snap-col">
-          <span class="snap-cap">Type=Complex, Mode=Light</span>
           <div class="ds-snackbar ds-snackbar--complex ds-snackbar--light snap-sb snap-sb--light">
             <div class="ds-snackbar__body" style="align-items:flex-start;">
               <span class="ds-snackbar__icon" style="color:#616161;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>

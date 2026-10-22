@@ -6,7 +6,7 @@
 прогоняет Chrome с --dump-dom и печатает содержимое #probe.
 
 Использование:
-    python probe-headless.py --page C:/p/DS/KDS/multi-shop.html --js probe.js
+    python probe-headless.py --page C:/p/Prototypes/page.html --js probe.js
     python probe-headless.py --page ... --js probe.js --window 1600,1000 --shot block.png
     python probe-headless.py --page ... --js -            # проба из stdin
 

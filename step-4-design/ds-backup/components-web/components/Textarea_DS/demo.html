@@ -6,13 +6,17 @@
 <title>Textarea — демо стенд компонента</title>
 <!--
   Демо стенд компонента Textarea (страница «Textarea_DS», 57759:23094). Папка: DS/components-web/components/Textarea_DS/.
-  Источник — канва Figma «Iiko Web DS (New)»: набор «Textarea» (13 вариантов: Size=M × Variant Populated/Empty ×
-  состояния Default/Hover/Focus/Focus+Placeholder/Focus+Value/Error/Error+Hover/Disable). Состав варианта:
-  Input Frame 250×76 (пад 4/12/12/12, r12, bg #F8F9FC) с подписью «Label» 16 и значением 24, элементы left/right 20,
-  в Focus+Value и Disable — внутренний Scroll 64×8 (при переполнении); Support 250×16 («Support text» + «Hint text»).
-  ⚠ Блока «Textarea (Examples)» на канве НЕТ (только шапка) — вкладка «Примеры» носит справочный характер.
-  ⚠ В Figma внутренности — инстансы (Input/Label/Input text/Scroll); css выгрузки не покрывает подпись 12/16 и цвета
-  Focus/Error — собрано обвязкой стенда по данным канвы (пробел ДС). Журнал DS/fixes.md №125.
+  Источник — канва Figma «Iiko Web DS (New)»: набор «Textarea» (узел 57916:9023, 13 вариантов:
+  Size=M × Variant Populated/Empty × состояния Default/Hover/Focus/Focus+Placeholder/Focus+Value/Error/Error+Hover/Disable).
+  Раскладка набора — снята с Figma: 2 колонки — Empty (слева) | Populated (справа); ряды Default / Hover /
+  [Focus / Focus+Placeholder / Focus+Value — только Populated] / Error / Error+Hover / Disable; кадр 96,
+  шаг 132 (зазор 36), зазор колонок 115. Состав варианта: Input Frame 250×76 (пад 4/12/12/12, r12, bg #F8F9FC)
+  с подписью «Label» 16 и значением 24, инстанс Scroll 8×64 внутри рамки у правого края (дорожка 4),
+  Support 250×16 («Support text» + «Hint text» по половине ширины). Focus — каретка «|»; Focus+Placeholder —
+  «Input text» плейсхолдером; слоты Element left/right в канве скрыты.
+  ⚠ Блока «Textarea (Examples)» на канве нет (только пустая шапка) — витрина собирается из набора.
+  ⚠ В Figma внутренности — инстансы (Input/Label/Input text/Scroll); css выгрузки не покрывает подпись 12/16
+  и цвета Focus/Error — обвязка стенда (пробел ДС). Журнал DS/fixes.md №125.
 -->
 <link rel="stylesheet" href="../../font.css">
 <link rel="stylesheet" href="../../tokens.css">
@@ -34,6 +38,8 @@
   .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
   .snap-grid { display: grid; gap: 18px 40px; align-items: start; }
   .snap-col { display: flex; flex-direction: column; gap: 8px; }
+  /* сетка витрины — раскладка снята с Figma: 2 колонки (Empty | Populated), шаг рядов 132 (кадр 96 + зазор 36), зазор колонок 115 */
+  .snap-ta-grid { display: grid; grid-template-columns: repeat(2, max-content); column-gap: 115px; row-gap: 36px; align-items: start; }
   /* обвязка Textarea: css не покрывает подпись 12/16, цвета Focus/Error, раскладку поддержки */
   .snap-ta { width: 250px; }
   .snap-ta .ds-textarea__input-frame { width: 100%; }
@@ -46,18 +52,33 @@
   .snap-ta--disable .ds-textarea__input-frame { background: #f5f5f5; border-color: #ebebeb; }
   .snap-ta--disable .snap-ta-caption, .snap-ta--disable .ds-textarea__label { color: #9e9e9e; }
   .snap-ta--placeholder .ds-textarea__label { color: #d6d6d6; }
-  .snap-ta__support { display: flex; justify-content: space-between; padding: 0 12px; }
+  /* поддержка — слоты Text/Hint по половине ширины (125+125), как в Figma */
+  .snap-ta .ds-textarea__text, .snap-ta .ds-textarea__hint { flex: 1 1 0; }
+  .snap-ta .ds-textarea__hint { justify-content: flex-end; }
   .snap-ta-support { font-size: 12px; line-height: 16px; color: var(--ds-color-form-field-filled-default-support-text-color, #616161); }
   .snap-ta--error .snap-ta-support { color: var(--ds-color-text-negative, #ff5252); }
   .snap-ta-hint { font-size: 12px; line-height: 16px; color: var(--ds-color-form-field-filled-default-support-text-color, #616161); }
   .snap-ta .ds-textarea__input-content { flex: 1 1 auto; }
-  .snap-ta__scroll { margin-top: auto; margin-left: auto; }
+  /* скролл в рамке — как в Figma: инстанс Scroll 8×64 у правого края (дорожка ds-scroll--s), от верха 4; обрезки нет */
+  .snap-ta .ds-textarea__input-frame { position: relative; }
+  .snap-ta__scroll { position: absolute; top: 5px; right: 0; width: 8px; height: 64px; }
+  .snap-ta__scroll .ds-scroll__background { flex: 1 1 auto; background: var(--ds-color-scroll-default-background, #fafafa); }
+  .snap-ta__scroll .ds-scroll__knob { height: 24px; }
+  /* Empty: подпись ниже, чем у Populated (в Figma y12; пад 4 + бордер 1 → margin 7) */
+  .snap-ta .ds-textarea--empty .ds-textarea__input-content { margin-top: 7px; }
+  .snap-ta-caret { color: var(--ds-color-text-primary, #333333); }
+  /* живой пример (Basic example): реальная textarea в слоте текста; рамка/подпись фокуса — :focus-within обвязкой */
+  .snap-ta-live { width: 250px; }
+  .snap-ta-live .ds-textarea__input-frame:focus-within { border-color: var(--ds-color-form-field-filled-focus-border-color, #448aff); }
+  .snap-ta-live:focus-within .snap-ta-caption { color: var(--ds-color-form-field-filled-focus-label-text-color, #448aff); }
+  .snap-ta-input { border: 0; outline: 0; background: transparent; padding: 0; width: 100%; height: 24px; resize: none; font-family: inherit; font-size: var(--ds-font-body-m-16-normal-regular-size, 16px); line-height: var(--ds-font-body-m-16-normal-regular-line, 24px); color: var(--ds-color-form-field-filled-default-input-text-color, #333333); }
+  .snap-ta-input::placeholder { color: #d6d6d6; opacity: 1; }
 </style>
 </head>
 <body>
 <div class="demo-bar">
   <span class="demo-bar__title">Textarea — демо стенд</span>
-  <span>набор Figma: Textarea (57759-23094, 13) · блока примеров на канве нет</span>
+  <span>Figma: Textarea (57759-23094, 13) · блока примеров на канве нет</span>
 </div>
 <div class="view">
   <div class="ds-tabs" role="tablist" aria-label="Textarea">
@@ -66,146 +87,128 @@
   </div>
 
   <!-- 2. Textarea (набор 57759:23094, 13 вариантов) -->
-  <div class="panel" data-vpanel="textarea" role="tabpanel" hidden>
+    <div class="panel" data-vpanel="textarea" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Variant=Populated — состояния</div>
-      <div class="snap-grid" style="grid-template-columns: repeat(4, max-content);">
-        <div class="snap-col"><span class="snap-cap">Default</span>
-          <div class="ds-textarea ds-textarea--populated snap-ta">
-            <div class="ds-textarea__input-frame">
-              <div class="ds-textarea__input-content"><span class="snap-ta-caption">Label</span><span class="ds-textarea__label">Input text</span></div>
-              <span class="ds-textarea__element-right"></span>
-            </div>
-            <div class="ds-textarea__support"><span class="snap-ta__support"><span class="snap-ta-support">Support text</span><span class="snap-ta-hint">Hint text</span></span></div>
-          </div>
+      <div class="snap-ta-grid">
+        <div class="ds-textarea ds-textarea--empty snap-ta">
+        <div class="ds-textarea__input-frame">
+        <div class="ds-textarea__input-content"><span class="ds-textarea__label">Label</span></div>
+        <div class="ds-scroll ds-scroll--s snap-ta__scroll"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Hover</span>
-          <div class="ds-textarea ds-textarea--populated snap-ta snap-ta--hover">
-            <div class="ds-textarea__input-frame">
-              <div class="ds-textarea__input-content"><span class="snap-ta-caption">Label</span><span class="ds-textarea__label">Input text</span></div>
-              <span class="ds-textarea__element-right"></span>
-            </div>
-            <div class="ds-textarea__support"><span class="snap-ta__support"><span class="snap-ta-support">Support text</span><span class="snap-ta-hint">Hint text</span></span></div>
-          </div>
+        <div class="ds-textarea__support"><div class="ds-textarea__text"><span class="snap-ta-support">Support text</span></div><div class="ds-textarea__hint"><span class="snap-ta-hint">Hint text</span></div></div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Focus</span>
-          <div class="ds-textarea ds-textarea--populated snap-ta snap-ta--focus">
-            <div class="ds-textarea__input-frame">
-              <div class="ds-textarea__input-content"><span class="snap-ta-caption">Label</span><span class="ds-textarea__label">Input text</span></div>
-              <span class="ds-textarea__element-right"></span>
-            </div>
-            <div class="ds-textarea__support"><span class="snap-ta__support"><span class="snap-ta-support">Support text</span><span class="snap-ta-hint">Hint text</span></span></div>
-          </div>
+        <div class="ds-textarea ds-textarea--populated snap-ta">
+        <div class="ds-textarea__input-frame">
+        <div class="ds-textarea__input-content"><span class="snap-ta-caption">Label</span><span class="ds-textarea__label">Input text</span></div>
+        <div class="ds-scroll ds-scroll--s snap-ta__scroll"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Focus · placeholder</span>
-          <div class="ds-textarea ds-textarea--populated snap-ta snap-ta--focus snap-ta--placeholder">
-            <div class="ds-textarea__input-frame">
-              <div class="ds-textarea__input-content"><span class="snap-ta-caption">Label</span><span class="ds-textarea__label">Input text</span></div>
-              <span class="ds-textarea__element-right"></span>
-            </div>
-            <div class="ds-textarea__support"><span class="snap-ta__support"><span class="snap-ta-support">Support text</span><span class="snap-ta-hint">Hint text</span></span></div>
-          </div>
+        <div class="ds-textarea__support"><div class="ds-textarea__text"><span class="snap-ta-support">Support text</span></div><div class="ds-textarea__hint"><span class="snap-ta-hint">Hint text</span></div></div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Focus · value</span>
-          <div class="ds-textarea ds-textarea--populated snap-ta snap-ta--focus">
-            <div class="ds-textarea__input-frame">
-              <div class="ds-textarea__input-content"><span class="snap-ta-caption">Label</span><span class="ds-textarea__label">Input text</span>
-                <div class="ds-scroll ds-scroll--s snap-ta__scroll"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
-              </div>
-              <span class="ds-textarea__element-right"></span>
-            </div>
-            <div class="ds-textarea__support"><span class="snap-ta__support"><span class="snap-ta-support">Support text</span><span class="snap-ta-hint">Hint text</span></span></div>
-          </div>
+        <div class="ds-textarea ds-textarea--empty snap-ta snap-ta--hover">
+        <div class="ds-textarea__input-frame">
+        <div class="ds-textarea__input-content"><span class="ds-textarea__label">Label</span></div>
+        <div class="ds-scroll ds-scroll--s snap-ta__scroll"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Error</span>
-          <div class="ds-textarea ds-textarea--populated snap-ta snap-ta--error">
-            <div class="ds-textarea__input-frame">
-              <div class="ds-textarea__input-content"><span class="snap-ta-caption">Label</span><span class="ds-textarea__label">Input text</span></div>
-              <span class="ds-textarea__element-right"></span>
-            </div>
-            <div class="ds-textarea__support"><span class="snap-ta__support"><span class="snap-ta-support">Support text</span><span class="snap-ta-hint">Hint text</span></span></div>
-          </div>
+        <div class="ds-textarea__support"><div class="ds-textarea__text"><span class="snap-ta-support">Support text</span></div><div class="ds-textarea__hint"><span class="snap-ta-hint">Hint text</span></div></div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Error · hover</span>
-          <div class="ds-textarea ds-textarea--populated snap-ta snap-ta--error snap-ta--hover">
-            <div class="ds-textarea__input-frame">
-              <div class="ds-textarea__input-content"><span class="snap-ta-caption">Label</span><span class="ds-textarea__label">Input text</span></div>
-              <span class="ds-textarea__element-right"></span>
-            </div>
-            <div class="ds-textarea__support"><span class="snap-ta__support"><span class="snap-ta-support">Support text</span><span class="snap-ta-hint">Hint text</span></span></div>
-          </div>
+        <div class="ds-textarea ds-textarea--populated snap-ta snap-ta--hover">
+        <div class="ds-textarea__input-frame">
+        <div class="ds-textarea__input-content"><span class="snap-ta-caption">Label</span><span class="ds-textarea__label">Input text</span></div>
+        <div class="ds-scroll ds-scroll--s snap-ta__scroll"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Disable</span>
-          <div class="ds-textarea ds-textarea--populated ds-textarea--disabled snap-ta snap-ta--disable">
-            <div class="ds-textarea__input-frame">
-              <div class="ds-textarea__input-content"><span class="snap-ta-caption">Label</span><span class="ds-textarea__label">Input text</span>
-                <div class="ds-scroll ds-scroll--s snap-ta__scroll"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
-              </div>
-              <span class="ds-textarea__element-right"></span>
-            </div>
-            <div class="ds-textarea__support"><span class="snap-ta__support"><span class="snap-ta-support">Support text</span><span class="snap-ta-hint">Hint text</span></span></div>
-          </div>
+        <div class="ds-textarea__support"><div class="ds-textarea__text"><span class="snap-ta-support">Support text</span></div><div class="ds-textarea__hint"><span class="snap-ta-hint">Hint text</span></div></div>
         </div>
-      </div>
-
-      <div class="snap-cap snap-sect__title" style="margin-top: 32px;">Variant=Empty — состояния</div>
-      <div class="snap-grid" style="grid-template-columns: repeat(5, max-content);">
-        <div class="snap-col"><span class="snap-cap">Default</span>
-          <div class="ds-textarea ds-textarea--empty snap-ta">
-            <div class="ds-textarea__input-frame">
-              <div class="ds-textarea__input-content"><span class="ds-textarea__label">Label</span></div>
-              <span class="ds-textarea__element-right"></span>
-            </div>
-            <div class="ds-textarea__support"><span class="snap-ta__support"><span class="snap-ta-support">Support text</span><span class="snap-ta-hint">Hint text</span></span></div>
-          </div>
+        <span></span>
+        <div class="ds-textarea ds-textarea--populated snap-ta snap-ta--focus">
+        <div class="ds-textarea__input-frame">
+        <div class="ds-textarea__input-content"><span class="snap-ta-caption">Label</span><span class="ds-textarea__label"><span class="snap-ta-caret">|</span></span></div>
+        <div class="ds-scroll ds-scroll--s snap-ta__scroll"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Hover</span>
-          <div class="ds-textarea ds-textarea--empty snap-ta snap-ta--hover">
-            <div class="ds-textarea__input-frame">
-              <div class="ds-textarea__input-content"><span class="ds-textarea__label">Label</span></div>
-              <span class="ds-textarea__element-right"></span>
-            </div>
-            <div class="ds-textarea__support"><span class="snap-ta__support"><span class="snap-ta-support">Support text</span><span class="snap-ta-hint">Hint text</span></span></div>
-          </div>
+        <div class="ds-textarea__support"><div class="ds-textarea__text"><span class="snap-ta-support">Support text</span></div><div class="ds-textarea__hint"><span class="snap-ta-hint">Hint text</span></div></div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Error</span>
-          <div class="ds-textarea ds-textarea--empty snap-ta snap-ta--error">
-            <div class="ds-textarea__input-frame">
-              <div class="ds-textarea__input-content"><span class="ds-textarea__label">Label</span></div>
-              <span class="ds-textarea__element-right"></span>
-            </div>
-            <div class="ds-textarea__support"><span class="snap-ta__support"><span class="snap-ta-support">Support text</span><span class="snap-ta-hint">Hint text</span></span></div>
-          </div>
+        <span></span>
+        <div class="ds-textarea ds-textarea--populated snap-ta snap-ta--focus snap-ta--placeholder">
+        <div class="ds-textarea__input-frame">
+        <div class="ds-textarea__input-content"><span class="snap-ta-caption">Label</span><span class="ds-textarea__label">Input text</span></div>
+        <div class="ds-scroll ds-scroll--s snap-ta__scroll"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Error · hover</span>
-          <div class="ds-textarea ds-textarea--empty snap-ta snap-ta--error snap-ta--hover">
-            <div class="ds-textarea__input-frame">
-              <div class="ds-textarea__input-content"><span class="ds-textarea__label">Label</span></div>
-              <span class="ds-textarea__element-right"></span>
-            </div>
-            <div class="ds-textarea__support"><span class="snap-ta__support"><span class="snap-ta-support">Support text</span><span class="snap-ta-hint">Hint text</span></span></div>
-          </div>
+        <div class="ds-textarea__support"><div class="ds-textarea__text"><span class="snap-ta-support">Support text</span></div><div class="ds-textarea__hint"><span class="snap-ta-hint">Hint text</span></div></div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Disable</span>
-          <div class="ds-textarea ds-textarea--empty ds-textarea--disabled snap-ta snap-ta--disable">
-            <div class="ds-textarea__input-frame">
-              <div class="ds-textarea__input-content"><span class="ds-textarea__label">Label</span></div>
-              <span class="ds-textarea__element-right"></span>
-            </div>
-            <div class="ds-textarea__support"><span class="snap-ta__support"><span class="snap-ta-support">Support text</span><span class="snap-ta-hint">Hint text</span></span></div>
-          </div>
+        <span></span>
+        <div class="ds-textarea ds-textarea--populated snap-ta snap-ta--focus">
+        <div class="ds-textarea__input-frame">
+        <div class="ds-textarea__input-content"><span class="snap-ta-caption">Label</span><span class="ds-textarea__label">Input text</span>
+                
+        </div>
+        <div class="ds-scroll ds-scroll--s snap-ta__scroll"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+        </div>
+        <div class="ds-textarea__support"><div class="ds-textarea__text"><span class="snap-ta-support">Support text</span></div><div class="ds-textarea__hint"><span class="snap-ta-hint">Hint text</span></div></div>
+        </div>
+        <div class="ds-textarea ds-textarea--empty snap-ta snap-ta--error">
+        <div class="ds-textarea__input-frame">
+        <div class="ds-textarea__input-content"><span class="ds-textarea__label">Label</span></div>
+        <div class="ds-scroll ds-scroll--s snap-ta__scroll"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+        </div>
+        <div class="ds-textarea__support"><div class="ds-textarea__text"><span class="snap-ta-support">Support text</span></div><div class="ds-textarea__hint"><span class="snap-ta-hint">Hint text</span></div></div>
+        </div>
+        <div class="ds-textarea ds-textarea--populated snap-ta snap-ta--error">
+        <div class="ds-textarea__input-frame">
+        <div class="ds-textarea__input-content"><span class="snap-ta-caption">Label</span><span class="ds-textarea__label">Input text</span></div>
+        <div class="ds-scroll ds-scroll--s snap-ta__scroll"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+        </div>
+        <div class="ds-textarea__support"><div class="ds-textarea__text"><span class="snap-ta-support">Support text</span></div><div class="ds-textarea__hint"><span class="snap-ta-hint">Hint text</span></div></div>
+        </div>
+        <div class="ds-textarea ds-textarea--empty snap-ta snap-ta--error snap-ta--hover">
+        <div class="ds-textarea__input-frame">
+        <div class="ds-textarea__input-content"><span class="ds-textarea__label">Label</span></div>
+        <div class="ds-scroll ds-scroll--s snap-ta__scroll"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+        </div>
+        <div class="ds-textarea__support"><div class="ds-textarea__text"><span class="snap-ta-support">Support text</span></div><div class="ds-textarea__hint"><span class="snap-ta-hint">Hint text</span></div></div>
+        </div>
+        <div class="ds-textarea ds-textarea--populated snap-ta snap-ta--error snap-ta--hover">
+        <div class="ds-textarea__input-frame">
+        <div class="ds-textarea__input-content"><span class="snap-ta-caption">Label</span><span class="ds-textarea__label">Input text</span></div>
+        <div class="ds-scroll ds-scroll--s snap-ta__scroll"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+        </div>
+        <div class="ds-textarea__support"><div class="ds-textarea__text"><span class="snap-ta-support">Support text</span></div><div class="ds-textarea__hint"><span class="snap-ta-hint">Hint text</span></div></div>
+        </div>
+        <div class="ds-textarea ds-textarea--empty ds-textarea--disabled snap-ta snap-ta--disable">
+        <div class="ds-textarea__input-frame">
+        <div class="ds-textarea__input-content"><span class="ds-textarea__label">Label</span></div>
+        <div class="ds-scroll ds-scroll--s snap-ta__scroll"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+        </div>
+        <div class="ds-textarea__support"><div class="ds-textarea__text"><span class="snap-ta-support">Support text</span></div><div class="ds-textarea__hint"><span class="snap-ta-hint">Hint text</span></div></div>
+        </div>
+        <div class="ds-textarea ds-textarea--populated ds-textarea--disabled snap-ta snap-ta--disable">
+        <div class="ds-textarea__input-frame">
+        <div class="ds-textarea__input-content"><span class="snap-ta-caption">Label</span><span class="ds-textarea__label">Input text</span>
+                
+        </div>
+        <div class="ds-scroll ds-scroll--s snap-ta__scroll"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+        </div>
+        <div class="ds-textarea__support"><div class="ds-textarea__text"><span class="snap-ta-support">Support text</span></div><div class="ds-textarea__hint"><span class="snap-ta-hint">Hint text</span></div></div>
         </div>
       </div>
     </div>
-    <p class="snap-note">Пометки для ревью: (а) состав варианта с канвы: кадр 250×76 (пад 4/12/12/12), подпись «Label» 16 (12/16), значение 24, элементы left/right 20, внутренний Scroll 64×8 в Focus+Value и Disable (при переполнении), поддержка 250×16 («Support text» + «Hint text» — два слота по половине ширины); (б) css выгрузки не покрывает подпись 12/16, цвета Focus/Error рамки и подписей, раскладку поддержки — собрано обвязкой (пробел ДС, журнал №125); (в) Disable: фон #F5F5F5, рамка #EBEBEB, все тексты #9E9E9E; (г) в вариантах есть слоты Element left/right (пустые в канве); (д) элементов «(Examples)» на канве нет — вкладка «Примеры» справочная. Журнал №125.</p>
+    <p class="snap-note">Пометки для ревью: (а) раскладка — как на канве: 2 колонки Empty | Populated, ряды Default / Hover / Focus / Focus+Placeholder / Focus+Value / Error / Error+Hover / Disable (кадр 96, шаг 132 — зазор 36; зазор колонок 115), без подписей; (б) в каждом варианте — инстанс Scroll вертикально (8×64 у правого края; дорожка 4 с фоном из токена ДС, ползунок 24 сверху) → ds-scroll--s; (в) Focus — каретка «|» (значение не выводится, как в канве), Focus+Placeholder — «Input text» серым плейсхолдером; (г) подпись «Label» 12/16, цвета Focus/Error и раскладка поддержки — обвязка стенда (css выгрузки не покрывает; пробел ДС, журнал №125); (д) Disable: фон #F5F5F5, рамка #EBEBEB, тексты #9E9E9E; (е) слоты Element left/right в канве скрыты. Журнал №125.</p>
   </div>
 
   <!-- 1. Basic example (справочная вкладка — блока примеров на канве нет) -->
-  <div class="panel" data-vpanel="basic" role="tabpanel">
+    <div class="panel" data-vpanel="basic" role="tabpanel">
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Примеры</div>
-      <p class="snap-note" style="margin-top: 8px;">⚠ На канве страницы «Textarea_DS» есть блок «Textarea (Examples)», но он содержит только шапку (контента нет — в работе). Поэтому вкладка носит справочный характер: пример появления Textarea внутри формы есть в примерах «Chips Input (примеры)» — «Заполненная форма» (Input + Textarea + Select form + Chips Input); при появлении кадров примеры будут собраны. Журнал №125.</p>
+      <div class="snap-ta-live">
+        <div class="ds-textarea ds-textarea--populated snap-ta">
+          <div class="ds-textarea__input-frame">
+            <div class="ds-textarea__input-content">
+              <span class="snap-ta-caption">Label</span>
+              <textarea class="snap-ta-input" id="ta-live" placeholder="Input text" aria-label="Input text" rows="1"></textarea>
+            </div>
+          </div>
+          <div class="ds-textarea__support"><div class="ds-textarea__text"><span class="snap-ta-support">Support text</span></div><div class="ds-textarea__hint"><span class="snap-ta-hint">Hint text</span></div></div>
+        </div>
+      </div>
     </div>
+    <p class="snap-note">Пометки для ревью: (а) живая textarea — ввод работает, фокус подсвечивает рамку и подпись (:focus-within — обвязка, в css выгрузки Focus не покрыт); (б) в компоненте поля ввода нет — рабочий &lt;textarea&gt; вставлен в слот текста (пробел ДС, журнал №125); (в) кадров «Textarea (Examples)» на канве нет — витрина собирается из набора. Журнал №125.</p>
   </div>
 </div>
 

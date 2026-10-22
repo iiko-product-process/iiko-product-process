@@ -6,16 +6,17 @@
 <title>Chips Input — демо стенд компонента</title>
 <!--
   Демо стенд компонента Chips Input (страница «Chips input_DS», 52916:14539). Папка: DS/components-web/components/Chips-Input_DS/.
-  Источник — канва Figma «Iiko Web DS (New)»: набор «Chips Input» (16 вариантов: Size M/S × State
-  Default/Hover/Focus/Focus+Value/Focus+Placeholder/Error/Error+Hover/Disable) + два больших блока примеров
-  без имени: «Поведение» 2304×2983 (сценарии Free Input / Autocomplete / нельзя-можно создать категорию /
-  редактирование чипов / перетаскивание / отображение курсора; товары, акции) и «Примеры» 1298×928
-  (форма: сотрудники, цвета, категории). Состав M-варианта: кадр 280×64 (пад 4/12/8/12, r12): подпись «Label» 16,
-  строка чипа + текстовый ввод + Element right 20 (info/close), поддержка 16 («Support text» + «Hint text»);
-  чип — из Chips_DS (ds-chips--outlined). Значения канвы: чипы «Молоко», «Йогрут», «Сметана», «Ромашка» и др.
-  ⚠ Выпадающие списки в примерах — компонент Select (Select Timepicker/Select (Сontainer)) — на стенде не собирались
-  (см. стенд Select_DS); ⚠ css выгрузки не покрывает подпись 12/16, цвета Focus/Error, поле ввода — обвязка стенда
-  (пробел ДС). Журнал DS/fixes.md №126.
+  Источник — Figma «Iiko Web DS (New)», компонент «Chips Input» (52916:14622; 16 вариантов: Size M 280×64 / S 280×36 ×
+  State Default/Hover/Focus/Focus+Value/Focus+Placeholder/Error/Error+Hover/Disable; подложка фрейма — Surface/Default, белая).
+  Витрина — расположение как в Figma: колонка M слева и колонка S справа; шаг рядов 48.
+  Состав M: кадр (пад 4/12/8/12, r12, #F8F9FC, рамка #E0E0E0), подпись «Label» 12/16,
+  строка [чип «Chip text 1» + ввод + Element right 20 (info/close)]; поддержка (Support) в компоненте скрыта — не выводим.
+  Тексты канвы: «Label», «Chip text 1», «Placeholder», «Text»; каретка «|» в Focus, «Text|» в Focus+Value.
+  Чип и его слоты — компонента Chips (ds-chips--outlined: __chip-container/__chip-text + __close > __icon);
+  иконка поля — собственный слот компонента ds-chips-input__icon (20×20). Подпись 12/16 и цвета Focus/Error —
+  css не покрывает (пробел ДС) — обвязка стенда токенами. Basic example — только живой пример (правило: компонент
+  динамический; кадры примеров «Поведение»/«Примеры» не воспроизводим; выпадающие списки — см. стенд Select_DS).
+  Журнал №126, №155, №156.
 -->
 <link rel="stylesheet" href="../../font.css">
 <link rel="stylesheet" href="../../tokens.css">
@@ -35,8 +36,6 @@
   .snap-sect { margin: 0 0 40px; }
   .snap-sect:last-child { margin-bottom: 0; }
   .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
-  .snap-grid { display: grid; gap: 18px 40px; align-items: start; }
-  .snap-ex-caption { font-size: 14px; line-height: 28px; color: var(--ds-color-text-primary, #333333); margin: 0; }
   .snap-row { display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap; }
   .snap-col { display: flex; flex-direction: column; gap: 10px; }
   /* обвязка Chips Input */
@@ -52,13 +51,12 @@
   .snap-ci--error .ds-chips-input__frame { border-color: var(--ds-color-form-field-filled-error-border-color, #ff5252); }
   .snap-ci--error .snap-ci-support { color: var(--ds-color-text-negative, #ff5252); }
   .snap-ci--hover .ds-chips-input__frame { background: var(--ds-color-form-field-filled-hover-input-background-hover, #f5f5f5); border-color: var(--ds-color-form-field-filled-hover-border-color, #9e9e9e); }
-  .snap-ci--disable .ds-chips-input__frame { background: #f5f5f5; border-color: #ebebeb; }
+  .snap-ci--disable .ds-chips-input__frame { background: #f5f5f5; border-color: #e0e0e0; }
   .snap-ci--disable .snap-ci-caption, .snap-ci--disable .snap-ci-input { color: #9e9e9e; }
   .snap-ci--disable .ds-chips--outlined { border-color: #ebebeb; color: #9e9e9e; }
-  .snap-ci__icon { color: #616161; display: inline-flex; width: 20px; height: 20px; flex-shrink: 0; }
-  .snap-ci__icon svg { width: 100%; height: 100%; display: block; }
-  .snap-ci--error .snap-ci__icon { color: var(--ds-color-text-negative, #ff5252); }
-  .snap-ci--disable .snap-ci__icon { color: #9e9e9e; }
+  /* иконка поля — собственный слот компонента ds-chips-input__icon (20×20 из css); цвета состояний — обвязка */
+  .snap-ci--error .ds-chips-input__icon { color: var(--ds-color-text-negative, #ff5252); }
+  .snap-ci--disable .ds-chips-input__icon { color: #9e9e9e; }
   .snap-ci__support { display: flex; justify-content: space-between; padding: 0 12px; width: 100%; box-sizing: border-box; }
   .snap-ci-support { font-size: 12px; line-height: 16px; color: var(--ds-color-form-field-filled-default-support-text-color, #616161); }
   .snap-ci-hint { font-size: 12px; line-height: 16px; color: var(--ds-color-form-field-filled-default-support-text-color, #616161); }
@@ -68,7 +66,7 @@
 <body>
 <div class="demo-bar">
   <span class="demo-bar__title">Chips Input — демо стенд</span>
-  <span>набор Figma: Chips Input (52916-14539, 16) · примеры «Поведение» + «Примеры»</span>
+  <span>Figma: Chips Input (52916-14622, 16)</span>
 </div>
 <div class="view">
   <div class="ds-tabs" role="tablist" aria-label="Chips Input">
@@ -76,306 +74,186 @@
     <button class="ds-tab" role="tab" aria-selected="false" data-vtab="chips-input">Chips Input</button>
   </div>
 
-  <!-- 2. Chips Input (набор 52916:14539, 16 вариантов) -->
+  <!-- 2. Chips Input (компонент 52916:14622, 16 вариантов) -->
   <div class="panel" data-vpanel="chips-input" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Size=M — состояния</div>
-      <div class="snap-grid" style="grid-template-columns: repeat(4, max-content);">
-        <div class="snap-col"><span class="snap-cap">Default</span>
-          <div class="ds-chips-input snap-ci">
-            <div class="ds-chips-input__frame"><span class="snap-ci-caption">Label</span>
-              <div class="ds-chips-input__content">
-                <div class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Чип</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <input class="snap-ci-input" placeholder="Placeholder">
-                <span class="snap-ci__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
+      <div class="snap-cap snap-sect__title">Chips Input — 16 вариантов</div>
+      <div class="snap-row" style="gap: 40px; flex-wrap: nowrap; align-items: flex-start;">
+          <div class="snap-col" style="gap: 48px;"><!-- M, 8 вариантов -->
+            <div class="ds-chips-input snap-ci">
+              <div class="ds-chips-input__frame"><span class="snap-ci-caption">Label</span>
+                <div class="ds-chips-input__content">
+                  <span class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text 1</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span></span>
+                  <input class="snap-ci-input" placeholder="Placeholder">
+                  <span class="ds-chips-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+                </div>
               </div>
             </div>
-            <div class="ds-chips-input__support"><span class="snap-ci__support"><span class="snap-ci-support">Support text</span><span class="snap-ci-hint">Hint text</span></span></div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Hover</span>
-          <div class="ds-chips-input snap-ci snap-ci--hover">
-            <div class="ds-chips-input__frame"><span class="snap-ci-caption">Label</span>
-              <div class="ds-chips-input__content">
-                <div class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Чип</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <input class="snap-ci-input" placeholder="Placeholder">
-                <span class="snap-ci__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
+            <div class="ds-chips-input snap-ci snap-ci--hover">
+              <div class="ds-chips-input__frame"><span class="snap-ci-caption">Label</span>
+                <div class="ds-chips-input__content">
+                  <span class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text 1</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span></span>
+                  <input class="snap-ci-input" placeholder="Placeholder">
+                  <span class="ds-chips-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+                </div>
               </div>
             </div>
-            <div class="ds-chips-input__support"><span class="snap-ci__support"><span class="snap-ci-support">Support text</span><span class="snap-ci-hint">Hint text</span></span></div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Focus</span>
-          <div class="ds-chips-input snap-ci snap-ci--focus">
-            <div class="ds-chips-input__frame"><span class="snap-ci-caption">Label</span>
-              <div class="ds-chips-input__content">
-                <div class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Чип</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <input class="snap-ci-input" placeholder="Placeholder">
-                <span class="snap-ci__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
+            <div class="ds-chips-input snap-ci snap-ci--focus">
+              <div class="ds-chips-input__frame"><span class="snap-ci-caption">Label</span>
+                <div class="ds-chips-input__content">
+                  <span class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text 1</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span></span>
+                  <span class="snap-ci-input">|</span>
+                  <span class="ds-chips-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+                </div>
               </div>
             </div>
-            <div class="ds-chips-input__support"><span class="snap-ci__support"><span class="snap-ci-support">Support text</span><span class="snap-ci-hint">Hint text</span></span></div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Focus · value</span>
-          <div class="ds-chips-input snap-ci snap-ci--focus">
-            <div class="ds-chips-input__frame"><span class="snap-ci-caption">Label</span>
-              <div class="ds-chips-input__content">
-                <div class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Чип</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <input class="snap-ci-input" value="Text">
-                <span class="snap-ci__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span>
+            <div class="ds-chips-input snap-ci snap-ci--focus">
+              <div class="ds-chips-input__frame"><span class="snap-ci-caption">Label</span>
+                <div class="ds-chips-input__content">
+                  <span class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text 1</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span></span>
+                  <span class="snap-ci-input">Text|</span>
+                  <span class="ds-chips-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span>
+                </div>
               </div>
             </div>
-            <div class="ds-chips-input__support"><span class="snap-ci__support"><span class="snap-ci-support">Support text</span><span class="snap-ci-hint">Hint text</span></span></div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Focus · placeholder</span>
-          <div class="ds-chips-input snap-ci snap-ci--focus">
-            <div class="ds-chips-input__frame"><span class="snap-ci-caption">Label</span>
-              <div class="ds-chips-input__content">
-                <div class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Чип</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <input class="snap-ci-input" placeholder="Placeholder">
-                <span class="snap-ci__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span>
+            <div class="ds-chips-input snap-ci snap-ci--focus">
+              <div class="ds-chips-input__frame"><span class="snap-ci-caption">Label</span>
+                <div class="ds-chips-input__content">
+                  <span class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text 1</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span></span>
+                  <input class="snap-ci-input" placeholder="Placeholder">
+                  <span class="ds-chips-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span>
+                </div>
               </div>
             </div>
-            <div class="ds-chips-input__support"><span class="snap-ci__support"><span class="snap-ci-support">Support text</span><span class="snap-ci-hint">Hint text</span></span></div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Error</span>
-          <div class="ds-chips-input snap-ci snap-ci--error">
-            <div class="ds-chips-input__frame"><span class="snap-ci-caption">Label</span>
-              <div class="ds-chips-input__content">
-                <div class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Чип</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <input class="snap-ci-input" placeholder="Placeholder">
-                <span class="snap-ci__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
+            <div class="ds-chips-input snap-ci snap-ci--error">
+              <div class="ds-chips-input__frame"><span class="snap-ci-caption">Label</span>
+                <div class="ds-chips-input__content">
+                  <span class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text 1</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span></span>
+                  <input class="snap-ci-input" placeholder="Placeholder">
+                  <span class="ds-chips-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+                </div>
               </div>
             </div>
-            <div class="ds-chips-input__support"><span class="snap-ci__support"><span class="snap-ci-support">Support text</span><span class="snap-ci-hint">Hint text</span></span></div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Error · hover</span>
-          <div class="ds-chips-input snap-ci snap-ci--error snap-ci--hover">
-            <div class="ds-chips-input__frame"><span class="snap-ci-caption">Label</span>
-              <div class="ds-chips-input__content">
-                <div class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Чип</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <input class="snap-ci-input" placeholder="Placeholder">
-                <span class="snap-ci__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
+            <div class="ds-chips-input snap-ci snap-ci--error snap-ci--hover">
+              <div class="ds-chips-input__frame"><span class="snap-ci-caption">Label</span>
+                <div class="ds-chips-input__content">
+                  <span class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text 1</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span></span>
+                  <input class="snap-ci-input" placeholder="Placeholder">
+                  <span class="ds-chips-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+                </div>
               </div>
             </div>
-            <div class="ds-chips-input__support"><span class="snap-ci__support"><span class="snap-ci-support">Support text</span><span class="snap-ci-hint">Hint text</span></span></div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Disable</span>
-          <div class="ds-chips-input ds-chips-input--disabled snap-ci snap-ci--disable">
-            <div class="ds-chips-input__frame"><span class="snap-ci-caption">Label</span>
-              <div class="ds-chips-input__content">
-                <div class="ds-chips ds-chips--outlined ds-chips--disabled"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Чип</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <input class="snap-ci-input" placeholder="Placeholder" disabled>
-                <span class="snap-ci__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
+            <div class="ds-chips-input ds-chips-input--disabled snap-ci snap-ci--disable">
+              <div class="ds-chips-input__frame"><span class="snap-ci-caption">Label</span>
+                <div class="ds-chips-input__content">
+                  <span class="ds-chips ds-chips--outlined ds-chips--disabled"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text 1</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span></span>
+                  <input class="snap-ci-input" placeholder="Placeholder" disabled>
+                  <span class="ds-chips-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+                </div>
               </div>
             </div>
-            <div class="ds-chips-input__support"><span class="snap-ci__support"><span class="snap-ci-support">Support text</span><span class="snap-ci-hint">Hint text</span></span></div>
           </div>
-        </div>
-      </div>
-
-      <div class="snap-cap snap-sect__title" style="margin-top: 32px;">Size=S — состояния</div>
-      <div class="snap-grid" style="grid-template-columns: repeat(4, max-content);">
-        <div class="snap-col"><span class="snap-cap">Default</span>
-          <div class="ds-chips-input ds-chips-input--s snap-ci snap-ci--s" style="width:280px;">
-            <div class="ds-chips-input__frame">
-              <div class="ds-chips-input__content">
-                <div class="ds-chips ds-chips--outlined ds-chips--s"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Чип</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <input class="snap-ci-input" placeholder="Placeholder">
-                <span class="snap-ci__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
+          <div class="snap-col" style="gap: 48px;"><!-- S, 8 вариантов -->
+            <div class="ds-chips-input ds-chips-input--s snap-ci snap-ci--s">
+              <div class="ds-chips-input__frame">
+                <div class="ds-chips-input__content">
+                  <span class="ds-chips ds-chips--outlined ds-chips--s"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text 1</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span></span>
+                  <input class="snap-ci-input" placeholder="Placeholder">
+                  <span class="ds-chips-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+                </div>
               </div>
             </div>
-            <div class="ds-chips-input__support"><span class="snap-ci__support"><span class="snap-ci-support">Support text</span><span class="snap-ci-hint">Hint text</span></span></div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Focus · value</span>
-          <div class="ds-chips-input ds-chips-input--s snap-ci snap-ci--s snap-ci--focus">
-            <div class="ds-chips-input__frame">
-              <div class="ds-chips-input__content">
-                <div class="ds-chips ds-chips--outlined ds-chips--s"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Чип</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <input class="snap-ci-input" value="Text">
-                <span class="snap-ci__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span>
+            <div class="ds-chips-input ds-chips-input--s snap-ci snap-ci--s snap-ci--hover">
+              <div class="ds-chips-input__frame">
+                <div class="ds-chips-input__content">
+                  <span class="ds-chips ds-chips--outlined ds-chips--s"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text 1</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span></span>
+                  <input class="snap-ci-input" placeholder="Placeholder">
+                  <span class="ds-chips-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+                </div>
               </div>
             </div>
-            <div class="ds-chips-input__support"><span class="snap-ci__support"><span class="snap-ci-support">Support text</span><span class="snap-ci-hint">Hint text</span></span></div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Error</span>
-          <div class="ds-chips-input ds-chips-input--s snap-ci snap-ci--s snap-ci--error">
-            <div class="ds-chips-input__frame">
-              <div class="ds-chips-input__content">
-                <div class="ds-chips ds-chips--outlined ds-chips--s"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Чип</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <input class="snap-ci-input" placeholder="Placeholder">
-                <span class="snap-ci__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
+            <div class="ds-chips-input ds-chips-input--s snap-ci snap-ci--s snap-ci--focus">
+              <div class="ds-chips-input__frame">
+                <div class="ds-chips-input__content">
+                  <span class="ds-chips ds-chips--outlined ds-chips--s"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text 1</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span></span>
+                  <span class="snap-ci-input">|</span>
+                  <span class="ds-chips-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+                </div>
               </div>
             </div>
-            <div class="ds-chips-input__support"><span class="snap-ci__support"><span class="snap-ci-support">Support text</span><span class="snap-ci-hint">Hint text</span></span></div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Disable</span>
-          <div class="ds-chips-input ds-chips-input--s ds-chips-input--disabled snap-ci snap-ci--s snap-ci--disable">
-            <div class="ds-chips-input__frame">
-              <div class="ds-chips-input__content">
-                <div class="ds-chips ds-chips--outlined ds-chips--s ds-chips--disabled"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Чип</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <input class="snap-ci-input" placeholder="Placeholder" disabled>
-                <span class="snap-ci__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
+            <div class="ds-chips-input ds-chips-input--s snap-ci snap-ci--s snap-ci--focus">
+              <div class="ds-chips-input__frame">
+                <div class="ds-chips-input__content">
+                  <span class="ds-chips ds-chips--outlined ds-chips--s"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text 1</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span></span>
+                  <span class="snap-ci-input">Text|</span>
+                  <span class="ds-chips-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span>
+                </div>
               </div>
             </div>
-            <div class="ds-chips-input__support"><span class="snap-ci__support"><span class="snap-ci-support">Support text</span><span class="snap-ci-hint">Hint text</span></span></div>
+            <div class="ds-chips-input ds-chips-input--s snap-ci snap-ci--s snap-ci--focus">
+              <div class="ds-chips-input__frame">
+                <div class="ds-chips-input__content">
+                  <span class="ds-chips ds-chips--outlined ds-chips--s"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text 1</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span></span>
+                  <input class="snap-ci-input" placeholder="Placeholder">
+                  <span class="ds-chips-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span>
+                </div>
+              </div>
+            </div>
+            <div class="ds-chips-input ds-chips-input--s snap-ci snap-ci--s snap-ci--error">
+              <div class="ds-chips-input__frame">
+                <div class="ds-chips-input__content">
+                  <span class="ds-chips ds-chips--outlined ds-chips--s"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text 1</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span></span>
+                  <input class="snap-ci-input" placeholder="Placeholder">
+                  <span class="ds-chips-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+                </div>
+              </div>
+            </div>
+            <div class="ds-chips-input ds-chips-input--s snap-ci snap-ci--s snap-ci--error snap-ci--hover">
+              <div class="ds-chips-input__frame">
+                <div class="ds-chips-input__content">
+                  <span class="ds-chips ds-chips--outlined ds-chips--s"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text 1</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span></span>
+                  <input class="snap-ci-input" placeholder="Placeholder">
+                  <span class="ds-chips-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+                </div>
+              </div>
+            </div>
+            <div class="ds-chips-input ds-chips-input--s ds-chips-input--disabled snap-ci snap-ci--s snap-ci--disable">
+              <div class="ds-chips-input__frame">
+                <div class="ds-chips-input__content">
+                  <span class="ds-chips ds-chips--outlined ds-chips--s ds-chips--disabled"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Chip text 1</span></span><span class="ds-chips__close"><span class="ds-chips__icon"><span class="ds-icon-size ds-icon-size--4x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span></span>
+                  <input class="snap-ci-input" placeholder="Placeholder" disabled>
+                  <span class="ds-chips-input__icon"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span></span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
     </div>
-    <p class="snap-note">Пометки для ревью: (а) состав M-варианта по канве: кадр 280×64, подпись «Label» 16, строка [чип 116×32 + ввод 90×24 + Element right 20], поддержка 16; S — 280×36 без подписи; (б) css выгрузки (chips-input.css) не покрывает подпись 12/16, цвета Focus/Error, поле ввода, фон Element right — собрано обвязкой (пробел ДС, журнал №126); (в) в css два класса — `.ds-chips-input` и `.ds-chips-input-2` (пад 12, гэп 8) — на стенде используется первый (пад 4/12/8/12); `.ds-chips-input-2` остаётся без применения — решить в ДС; (г) у чипа в поле есть слоты: текст + закрыть (левый слот-иконка в варианте с чипом не показан, в примерах — «Chips с аватарами»); (д) состояния Hover/Error+Hover заморожены стенд-классами; (е) фон Element right на канве — прозрачный (белые плашки служебных слоёв). Журнал №126.</p>
+    <p class="snap-note">Пометки для ревью: (а) витрина — 16 вариантов, расположение как в Figma: колонка M (8 вариантов) слева, колонка S (8 вариантов) справа; состав M: кадр (пад 4/12/8/12, r12), подпись «Label» 12/16, строка [чип «Chip text 1» + ввод + Element right 20 (info/close)]; у S подписи нет; поддержка (Support) в компоненте скрыта — не выводим; (б) тексты канвы: «Label», «Chip text 1», «Placeholder», «Text»; каретка «|» в Focus, «Text|» в Focus+Value; правые иконки ⓘ (Default/Hover/Focus/Error/Disable) и ✕ (Focus+Value/Focus+Placeholder); (в) css выгрузки не покрывает подпись 12/16, цвета Focus/Error — обвязка токенами (пробел ДС, журнал №126); высоты полей на стенде: M 66 (кадр 64 + рамка 2 — border сверх кадра), S 38 (в Figma 36: у S-кадра в css нет паддингов 6/12, используется M 4/8; S-чип 24 — уже fixes п.40); Disable: рамка кадра #E0E0E0 (в Figma; #EBEBEB — рамка чипа); плейсхолдер: Figma #333, токен Text/Placeholder #D6D6D6, стенд #616161 — решить в Фигме; зазор ввод↔иконка 8 на стенде против 0 в Figma; в css два класса — `.ds-chips-input` и `.ds-chips-input-2` — второй без применения, решить в ДС; (г) ховер заморожен стенд-классом snap-ci--hover (живой ховер живёт в кадре — fixes №136), Error+Hover — оба класса; (д) иконки — инстансы «Icon size» в Figma: поле (Element right) — Size=20, крестик чипа — Size=20 (M) / Size=16 (S); глифы на стенде обёрнуты в ds-icon-size--5x (поле, чип M) и ds-icon-size--4x (чип S), в живом примере у триггерной иконки поля — ds-icon-size--state; (е) примеры «Поведение» (2304×2983) и «Примеры» (1298×928) не воспроизводим — динамический компонент (Basic = живой, §4); выпадающие списки — компонент Select (см. Select_DS); аватары и форма — вне стенда. Журнал №126, №155, №156.</p>
   </div>
 
-  <!-- 1. Basic example: «Поведение» (2304×2983) + «Примеры» (1298×928) -->
+  <!-- 1. Basic example: живой Chips Input (кадры примеров «Поведение»/«Примеры» не воспроизводим — правило заказчика) -->
   <div class="panel" data-vpanel="basic" role="tabpanel">
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">«Поведение» — сценарии канвы (тексты дословно)</div>
-      <div class="snap-row" style="margin-top: 12px;">
-        <div class="snap-col">
-          <p class="snap-ex-caption">Free Input — «Отправлять на e-mail»</p>
-          <div class="ds-chips-input snap-ci snap-ci--focus" style="width:400px;">
-            <div class="ds-chips-input__frame" style="width:400px;"><span class="snap-ci-caption">Отправлять на e-mail</span>
-              <div class="ds-chips-input__content">
-                <input class="snap-ci-input" placeholder="Введите почту">
-                <span class="snap-ci__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
-              </div>
-            </div>
-            <div class="ds-chips-input__support"><span class="snap-ci__support"><span class="snap-ci-support">Support text</span><span class="snap-ci-hint">Hint text</span></span></div>
+      <p class="snap-cap" style="margin: 0 0 16px;">Basic example — живой Chips Input: введите текст и нажмите Enter (или уйдите из поля) — появится чип; Backspace на пустом вводе удаляет последний чип; «✕» на чипе удаляет его; «✕» справа очищает ввод</p>
+      <div class="ds-chips-input snap-ci" id="ci-live">
+        <div class="ds-chips-input__frame"><span class="snap-ci-caption">Label</span>
+          <div class="ds-chips-input__content" id="ci-live-content">
+            <input class="snap-ci-input" id="ci-live-input" placeholder="Placeholder">
+            <span class="ds-chips-input__icon" id="ci-live-icon"><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span>
           </div>
-          <div class="ds-chips-input snap-ci" style="width:400px;">
-            <div class="ds-chips-input__frame" style="width:400px;"><span class="snap-ci-caption">Отправлять на e-mail</span>
-              <div class="ds-chips-input__content">
-                <input class="snap-ci-input" value="asmirnova@iikosoftware.com">
-                <span class="snap-ci__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span>
-              </div>
-            </div>
-            <div class="ds-chips-input__support"><span class="snap-ci__support"><span class="snap-ci-support">Support text</span><span class="snap-ci-hint">Hint text</span></span></div>
-          </div>
-        </div>
-        <div class="snap-col">
-          <p class="snap-ex-caption">Autocomplete — «Отправлять на e-mail» (значение — чипом)</p>
-          <div class="ds-chips-input snap-ci" style="width:400px;">
-            <div class="ds-chips-input__frame" style="width:400px;"><span class="snap-ci-caption">Отправлять на e-mail</span>
-              <div class="ds-chips-input__content">
-                <span class="snap-ci-input">asmirnova@iikosoftware.com</span>
-                <span class="snap-ci__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span>
-              </div>
-            </div>
-            <div class="ds-chips-input__support"><span class="snap-ci__support"><span class="snap-ci-support">Support text</span><span class="snap-ci-hint">Hint text</span></span></div>
-          </div>
-          <p class="snap-ex-caption" style="margin-top: 10px;">Сценарии канвы: «Нельзя создать новую категорию» / «Можно создать новую категорию»; выпадающие списки — компонент Select (см. стенд Select_DS).</p>
-        </div>
-        <div class="snap-col" style="max-width: 430px;">
-          <p class="snap-ex-caption">Редактирование chips внутри chips input</p>
-          <div class="ds-chips-input snap-ci" style="width:400px;">
-            <div class="ds-chips-input__frame" style="width:400px;"><span class="snap-ci-caption">Товары</span>
-              <div class="ds-chips-input__content">
-                <div class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Молоко</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <div class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Йоргут</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <div class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Сметана</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <input class="snap-ci-input" value="М">
-                <span class="snap-ci__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span>
-              </div>
-            </div>
-            <div class="ds-chips-input__support"><span class="snap-ci__support"><span class="snap-ci-support">Support text</span><span class="snap-ci-hint">Hint text</span></span></div>
-          </div>
-          <p class="snap-ex-caption">Один клик по chip переводит его в режим редактирования. Chip можно удалить крестиком.</p>
-        </div>
-        <div class="snap-col">
-          <p class="snap-ex-caption">Акции — «Участвуют в акции»</p>
-          <div class="ds-chips-input snap-ci" style="width:400px;">
-            <div class="ds-chips-input__frame" style="width:400px;"><span class="snap-ci-caption">Участвуют в акции</span>
-              <div class="ds-chips-input__content">
-                <div class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Ромашка</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <div class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Василёк</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <div class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Майский жук</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <div class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Роза</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <div class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Пчела</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <input class="snap-ci-input" value="Лепесток, Пчела и Шершень">
-                <span class="snap-ci__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span>
-              </div>
-            </div>
-            <div class="ds-chips-input__support"><span class="snap-ci__support"><span class="snap-ci-support">Support text</span><span class="snap-ci-hint">Hint text</span></span></div>
-          </div>
-          <span class="snap-cap">Заметки канвы: «Перетаскивание» (порядок чипов), «Отображение курсора» (курсор после последнего чипа).</span>
         </div>
       </div>
     </div>
 
-    <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">«Примеры» — фрагменты формы (кадры канвы)</div>
-      <div class="snap-row" style="margin-top: 12px;">
-        <div class="snap-col">
-          <p class="snap-ex-caption">Простой пример — «Отправлять на e-mail» (в размере S)</p>
-          <div class="ds-chips-input ds-chips-input--s snap-ci snap-ci--s" style="width:400px;">
-            <div class="ds-chips-input__frame" style="width:400px;">
-              <div class="ds-chips-input__content">
-                <input class="snap-ci-input" placeholder="Placeholder">
-                <span class="snap-ci__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="snap-col">
-          <p class="snap-ex-caption">Chips с аватарами — «Сотрудники»</p>
-          <div class="ds-chips-input snap-ci" style="width:400px;">
-            <div class="ds-chips-input__frame" style="width:400px;"><span class="snap-ci-caption">Сотрудники</span>
-              <div class="ds-chips-input__content">
-                <div class="ds-chips ds-chips--outlined"><span class="ds-chips__icon-size"><span class="ds-chips__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-person"/></svg></span></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Петров Роман</span></span></div>
-                <div class="ds-chips ds-chips--outlined"><span class="ds-chips__icon-size"><span class="ds-chips__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-person"/></svg></span></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Иванова Мария</span></span></div>
-                <div class="ds-chips ds-chips--outlined"><span class="ds-chips__icon-size"><span class="ds-chips__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-person"/></svg></span></span><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Петров Алексей</span></span></div>
-                <input class="snap-ci-input" placeholder="Placeholder">
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="snap-col">
-          <p class="snap-ex-caption">Chips с выбором цвета — «Цвета»</p>
-          <div class="ds-chips-input snap-ci" style="width:400px;">
-            <div class="ds-chips-input__frame" style="width:400px;"><span class="snap-ci-caption">Цвета</span>
-              <div class="ds-chips-input__content">
-                <div class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Красный</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <div class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Оранжевый</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <div class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Синий</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <div class="ds-chips ds-chips--outlined"><span class="ds-chips__chip-container"><span class="ds-chips__chip-text">Фиолетовый</span><span class="ds-chips__close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></div>
-                <input class="snap-ci-input" placeholder="Placeholder">
-                <span class="snap-ci__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="snap-col" style="max-width: 420px;">
-          <p class="snap-ex-caption">«Категории товаров» — пример со слотом</p>
-          <div class="ds-chips-input snap-ci" style="width:400px;">
-            <div class="ds-chips-input__frame" style="width:400px;"><span class="snap-ci-caption">Категории товаров</span>
-              <div class="ds-chips-input__content">
-                <input class="snap-ci-input" placeholder="Placeholder">
-                <span class="snap-ci__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-20"/></svg></span>
-              </div>
-            </div>
-          </div>
-          <span class="snap-cap">«Это Slot. В блоке контента может быть вс…» — заметка канвы (текст в кадре обрезан).</span>
-        </div>
-      </div>
-    </div>
-
-    <p class="snap-note">Пометки для ревью: (а) сценарии и тексты — с канвы (чипы «Молоко», «Йогрут» — орфография канвы сохранена, «Сметана», акции «Ромашка»…); (б) в сценарии «Товары» на канве есть выпадающий список (Select) с значениями «Какао», «Кофе», «Молочный коктейль», «Мороженое», «Ничего не найдено», «Добавить», «Добавьте товары» — это компонент Select, на стенде не собирается (см. Select_DS); (в) «Chips с аватарами» — левый слот-иконка (аватар): на стенде показан глиф person (в Figma — аватар-инстанс; точный состав не снимался); (г) чипы в поле — ds-chips--outlined из Chips_DS; (д) форма целиком («Название рассылки», «Описание» — Input/Textarea/Select) на стенде не собирается — только фрагменты Chips Input (журнал №126).</p>
+    <p class="snap-note">Пометки для ревью: (а) живой пример M 280: старт — пустое поле («Placeholder»); ввод + Enter или уход из поля добавляет чип (addOnBlur — как в Material; разметка чипа — из Chips_DS: __chip-container + __close > __icon); Backspace на пустом вводе удаляет последний чип; «✕» чипа удаляет; «✕» поля очищает ввод; пустой ввод — ⓘ; (б) поле — кадр компонента (подпись «Label» 12/16 — обвязка, css не покрывает), чипы — ds-chips--outlined; (в) примеры канвы «Поведение» (2304×2983) и «Примеры» (1298×928) не воспроизводим — компонент динамический (правило §4); сценарии с выпадающими списками — компонент Select (см. Select_DS), аватары и форма — вне стенда. Журнал №126, №155, №156, №257.</p>
   </div>
 </div>
 
-<!-- иконки: close 20, info, person -->
+<!-- иконки: close 20, info -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="ic-close-20" viewBox="0 0 20 20"><path d="M5.33333 15.8333L4.16667 14.6667L8.83333 10L4.16667 5.33333L5.33333 4.16667L10 8.83333L14.6667 4.16667L15.8333 5.33333L11.1667 10L15.8333 14.6667L14.6667 15.8333L10 11.1667L5.33333 15.8333Z"/></symbol>
   <symbol id="ic-info" viewBox="0 0 24 24"><path d="M11 17H13V11H11V17ZM12 9C12.2833 9 12.5208 8.90417 12.7125 8.7125C12.9042 8.52083 13 8.28333 13 8C13 7.71667 12.9042 7.47917 12.7125 7.2875C12.5208 7.09583 12.2833 7 12 7C11.7167 7 11.4792 7.09583 11.2875 7.2875C11.0958 7.47917 11 7.71667 11 8C11 8.28333 11.0958 8.52083 11.2875 8.7125C11.4792 8.90417 11.7167 9 12 9ZM12 22C10.6167 22 9.31667 21.7375 8.1 21.2125C6.88333 20.6875 5.825 19.975 4.925 19.075C4.025 18.175 3.3125 17.1167 2.7875 15.9C2.2625 14.6833 2 13.3833 2 12C2 10.6167 2.2625 9.31667 2.7875 8.1C3.3125 6.88333 4.025 5.825 4.925 4.925C5.825 4.025 6.88333 3.3125 8.1 2.7875C9.31667 2.2625 10.6167 2 12 2C13.3833 2 14.6833 2.2625 15.9 2.7875C17.1167 3.3125 18.175 4.025 19.075 4.925C19.975 5.825 20.6875 6.88333 21.2125 8.1C21.7375 9.31667 22 10.6167 22 12C22 13.3833 21.7375 14.6833 21.2125 15.9C20.6875 17.1167 19.975 18.175 19.075 19.075C18.175 19.975 17.1167 20.6875 15.9 21.2125C14.6833 21.7375 13.3833 22 12 22ZM12 20C14.2333 20 16.125 19.225 17.675 17.675C19.225 16.125 20 14.2333 20 12C20 9.76667 19.225 7.875 17.675 6.325C16.125 4.775 14.2333 4 12 4C9.76667 4 7.875 4.775 6.325 6.325C4.775 7.875 4 9.76667 4 12C4 14.2333 4.775 16.125 6.325 17.675C7.875 19.225 9.76667 20 12 20Z"/></symbol>
-  <symbol id="ic-person" viewBox="0 0 24 24"><path d="M12 12C10.9 12 9.95833 11.6083 9.175 10.825C8.39167 10.0417 8 9.1 8 8C8 6.9 8.39167 5.95833 9.175 5.175C9.95833 4.39167 10.9 4 12 4C13.1 4 14.0417 4.39167 14.825 5.175C15.6083 5.95833 16 6.9 16 8C16 9.1 15.6083 10.0417 14.825 10.825C14.0417 11.6083 13.1 12 12 12ZM4 20V17.2C4 16.6333 4.14583 16.1125 4.4375 15.6375C4.72917 15.1625 5.11667 14.8 5.6 14.55C6.63333 14.0333 7.68333 13.6458 8.75 13.3875C9.81667 13.1292 10.9 13 12 13C13.1 13 14.1833 13.1292 15.25 13.3875C16.3167 13.6458 17.3667 14.0333 18.4 14.55C18.8833 14.8 19.2708 15.1625 19.5625 15.6375C19.8542 16.1125 20 16.6333 20 17.2V20H4ZM6 18H18V17.2C18 17.0167 17.9542 16.85 17.8625 16.7C17.7708 16.55 17.65 16.4333 17.5 16.35C16.6 15.9 15.6917 15.5625 14.775 15.3375C13.8583 15.1125 12.9333 15 12 15C11.0667 15 10.1417 15.1125 9.225 15.3375C8.30833 15.5625 7.4 15.9 6.5 16.35C6.35 16.4333 6.22917 16.55 6.1375 16.7C6.04583 16.85 6 17.0167 6 17.2V18Z"/></symbol>
 </svg>
 
 <script>
@@ -392,6 +270,43 @@
       panels.forEach(function (p) { p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab'); });
     });
   });
+
+  /* Basic example: живой Chips Input — Enter добавляет чип, «✕» чипа удаляет, «✕» поля очищает ввод */
+  (function () {
+    var root = document.getElementById('ci-live');
+    if (!root) return;
+    var content = document.getElementById('ci-live-content');
+    var input = document.getElementById('ci-live-input');
+    var icon = document.getElementById('ci-live-icon');
+    var svg = icon.querySelector('svg');
+    var use = svg.querySelector('use');
+    function makeChip(text) {
+      var chip = document.createElement('span');
+      chip.className = 'ds-chips ds-chips--outlined';
+      chip.innerHTML = '<span class="ds-chips__chip-container"><span class="ds-chips__chip-text"></span></span><span class="ds-chips__close"><span class="ds-chips__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span></span></span>';
+      chip.querySelector('.ds-chips__chip-text').textContent = text;
+      chip.querySelector('.ds-chips__close').addEventListener('click', function () { chip.remove(); sync(); });
+      content.insertBefore(chip, input);
+    }
+    function sync() {
+      var hasText = input.value !== '';
+      use.setAttribute('href', hasText ? '#ic-close-20' : '#ic-info');
+      svg.setAttribute('viewBox', hasText ? '0 0 20 20' : '0 0 24 24');
+    }
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && input.value.trim() !== '') { makeChip(input.value.trim()); input.value = ''; sync(); }
+      if (e.key === 'Backspace' && input.value === '') {
+        var chips = content.querySelectorAll('.ds-chips');
+        if (chips.length) chips[chips.length - 1].remove();
+      }
+    });
+    input.addEventListener('blur', function () {
+      if (input.value.trim() !== '') { makeChip(input.value.trim()); input.value = ''; sync(); }
+    });
+    input.addEventListener('input', sync);
+    icon.addEventListener('click', function () { if (input.value !== '') { input.value = ''; sync(); input.focus(); } });
+    sync();
+  })();
 </script>
 </body>
 </html>

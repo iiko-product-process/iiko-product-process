@@ -47,6 +47,7 @@
   .ds-scroll--last .ds-scroll__background { justify-content: flex-end; }
   .snap-m .ds-scroll__knob { width: 96px; }
   .snap-s .ds-scroll__knob { width: 24px; }
+  .snap-v { height: 64px; }   /* вертикальный инстанс (fixes.css №253): полоса 12, дорожка 8 во всю высоту, ползунок 8 */
   /* заморозка State=Hover для витрины (в ДС — живые :hover, fixes п. 25) */
   .st-hover .ds-scroll__background { background: var(--ds-color-scroll-hover-background, #ebebeb); }
   .st-hover.ds-scroll--s .ds-scroll__background { background: transparent; }
@@ -69,7 +70,7 @@
 <body>
 <div class="demo-bar">
   <span class="demo-bar__title">Scroll — демо стенд</span>
-  <span>набор Figma: Scroll (53615-15339, 12) · примеры: «Скролл и разделители» (60006-13882)</span>
+  <span>Figma: Scroll (53615-15339, 12) · примеры: «Скролл и разделители» (60006-13882)</span>
 </div>
 <div class="view">
   <div class="ds-tabs" role="tablist" aria-label="Scroll">
@@ -80,47 +81,62 @@
   <!-- 2. Scroll: Size × Position × State -->
   <div class="panel" data-vpanel="scroll" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Size=M (кадр 184×12; полоса 180×8, ползунок 96×8)</div>
+      <div class="snap-cap snap-sect__title">Scroll — M (184×12)</div>
       <div class="snap-col">
-        <div class="snap-cap">Position=First</div>
         <div class="snap-row">
           <div class="ds-scroll ds-scroll--first snap-m"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
           <div class="ds-scroll ds-scroll--first st-hover snap-m"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
         </div>
-        <div class="snap-cap">Position=Middle</div>
         <div class="snap-row">
           <div class="ds-scroll ds-scroll--middle snap-m"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
           <div class="ds-scroll ds-scroll--middle st-hover snap-m"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
         </div>
-        <div class="snap-cap">Position=Last</div>
         <div class="snap-row">
           <div class="ds-scroll ds-scroll--last snap-m"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
           <div class="ds-scroll ds-scroll--last st-hover snap-m"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
         </div>
-        <div class="snap-cap">пары: слева — State=Default (живой ховер), справа — State=Hover (заморожен классом стенда st-hover)</div>
+        <div class="snap-cap">пары: слева — живой ховер, справа — hover заморожен классом стенда st-hover</div>
       </div>
     </div>
 
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Size=S (кадр 64×8; полоса 60×4 прозрачная, ползунок 24×4)</div>
+      <div class="snap-cap snap-sect__title">Scroll — S (64×8)</div>
       <div class="snap-col">
-        <div class="snap-cap">Position=First</div>
         <div class="snap-row">
           <div class="ds-scroll ds-scroll--s ds-scroll--first snap-s"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
           <div class="ds-scroll ds-scroll--s ds-scroll--first st-hover snap-s"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
         </div>
-        <div class="snap-cap">Position=Middle</div>
         <div class="snap-row">
           <div class="ds-scroll ds-scroll--s ds-scroll--middle snap-s"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
           <div class="ds-scroll ds-scroll--s ds-scroll--middle st-hover snap-s"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
         </div>
-        <div class="snap-cap">Position=Last</div>
         <div class="snap-row">
           <div class="ds-scroll ds-scroll--s ds-scroll--last snap-s"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
           <div class="ds-scroll ds-scroll--s ds-scroll--last st-hover snap-s"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
         </div>
-        <div class="snap-cap">у Size=S фон полосы прозрачный (в т.ч. на ховере) — темнеет только ползунок</div>
+        <div class="snap-cap">у S фон полосы прозрачный (в т.ч. на ховере) — темнеет только ползунок</div>
       </div>
+    </div>
+
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Scroll — V, вертикальный (полоса 12 / дорожка 8 / ползунок 8; fixes.css №253, как на стендах Menu и Select)</div>
+      <div class="snap-row" style="gap: 32px;">
+        <div class="snap-col">
+          <div class="snap-row" style="gap: 32px;">
+            <div class="ds-scroll ds-scroll--v ds-scroll--first snap-v"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+            <div class="ds-scroll ds-scroll--v ds-scroll--first st-hover snap-v"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+          </div>
+          <div class="snap-row" style="gap: 32px;">
+            <div class="ds-scroll ds-scroll--v ds-scroll--middle snap-v"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+            <div class="ds-scroll ds-scroll--v ds-scroll--middle st-hover snap-v"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+          </div>
+          <div class="snap-row" style="gap: 32px;">
+            <div class="ds-scroll ds-scroll--v ds-scroll--last snap-v"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+            <div class="ds-scroll ds-scroll--v ds-scroll--last st-hover snap-v"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="snap-cap">вертикальный инстанс — как на стендах Menu (Container) и Select: дорожка во всю высоту #FAFAFA (ховер #EBEBEB), ползунок 8 в толщину; в контексте длину/позицию считает обвязка (ds-patterns.js)</div>
     </div>
 
     <p class="snap-note">Пометки для ревью: (а) ховер живой (fixes п. 25: подложка #EBEBEB и ползунок #9E9E9E; у S фон не темнеет — по наборам); правая колонка каждого ряда — заморозка состояния стендом; (б) в css `--s` задан шириной 8px — это ошибка выгрузки (8 — высота полосы; ширина S = 64), исправлено в fixes п. 25; у ползунка не было ховер-цвета, а ховер красил корень-прямоугольник — поправлено там же; (в) позиции First/Middle/Last в css не выражены (в наборе ползунок стоит на x=0/42/84 при паддинге 2 — выравнивание выходит за паддинг); на стенде выровнено по подложке-треку, расхождение до 2–4px — решить в ДС; (г) в наборе Position=Middle/Last отличаются только положением ползунка (ткань полосы та же); длина ползунка и позиция в контексте зависят от прокрутки — это обвязка/JS, css даёт только вид. Журнал №117.</p>

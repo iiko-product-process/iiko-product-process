@@ -6,14 +6,16 @@
 <title>Badge — демо стенд компонента</title>
 <!--
   Демо стенд компонента Badge (страница «Badge_DS», 54474:1072). Папка: DS/components-web/components/Badge_DS/.
-  Источник — канва «Badge_DS» Figma «Iiko Web DS (New)»: набор «Badge» (54428:187, 8 вариантов:
-  Style Accent/Positive/Warning/Negative × Type Counter/Point) и блок «Badge examples» (58335:20773).
-  Состав: Counter — пилюля 19×18 (пад 1/6, радиус 9999), текст 12/16 Medium белый; Point — точка 8×8.
-  Примеры канвы: бейдж ставится на элемент с перекрытием (кадры примеров: кнопка 97 + бейдж 20 в кадре
-  107×46 — то есть вынос 10 вправо/вверх; Button icon 36 + бейдж 19; Icon size 24 + точка; Text UI + бейдж
-  рядом), в т.ч. на компоненты Button и Button icon.
-  Пробел: текстового варианта бейджа в css нет (журнал №65: в макете «Pro» — текстовая пилюля; в ДС решить) —
-  на стенде не воспроизводим. Журнал DS/fixes.md №114.
+  Источник — канва «Badge_DS» Figma «Iiko Web DS (New)»: компонент «Badge» (54428:187; 8 вариантов:
+  Style Accent/Positive/Warning/Negative × Type Counter/Point) и блок «Badge examples» (58335:20773):
+  9 групп (Text item + Counter/Point; Button + Counter/Point; Button icon + Counter/Point ×3; Icon size 24 + Point)
+  + 2 пункта Sidenav (L1 hover + Counter «17»; L2 + Counter «17» + Divider). Вкладки: Basic example / Badge.
+  Состав: Counter — пилюля 19×18 (пад 1/6, радиус 9999), текст «7» 12/16 Medium белый, трекинг 0.5;
+  Point — точка 8×8. Смещение бейджа на элементе — половина габарита за верхний правый угол
+  (счётчик −9/−9; точка −4/−4; в кадрах 3 и 9 Figma — легаси-инстансы 20×20, смещение −10/−10);
+  у текста («Text item») бейдж сразу за концом строки и приподнят (−9 / −4).
+  Обойдено: трекинг счётчика — фикс п. 32 (в css letter-spacing нет) — журнал №137; легаси 20×20 в примерах —
+  на стенде компонент ДС (см. пометки). Пробел: текстового варианта бейджа в css нет (журнал №65). Журнал №114, №137.
 -->
 <link rel="stylesheet" href="../../font.css">
 <link rel="stylesheet" href="../../tokens.css">
@@ -26,20 +28,54 @@
   .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
   .demo-bar__title { font-weight: 500; margin-right: 8px; }
   .view { padding: 24px; }
+  .view .ds-tabs { margin-bottom: 24px; }
   .panel { width: fit-content; max-width: 1920px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
   .snap-cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0; }
   .snap-note { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 28px 0 0; max-width: 980px; }
   .snap-sect { margin: 0 0 40px; }
   .snap-sect:last-child { margin-bottom: 0; }
   .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
-  .snap-cells { display: grid; grid-template-columns: repeat(4, max-content); gap: 28px 40px; align-items: start; }
-  .snap-cell { display: flex; flex-direction: column; gap: 10px; }
-  .snap-pad { padding: 16px; background: var(--ds-color-brand-neutral-super-light, #f5f5f5); width: fit-content; }
+  .snap-cell { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
 
-  /* примеры: бейдж поверх элемента — вынос 10 вправо/вверх (координаты кадра примера: 107−97 / 46−36) */
+  /* ── витрина вариантов: два ряда, как в Figma (Point над Counter) ── */
+  .snap-vars { display: flex; flex-direction: column; gap: 28px; }
+  .snap-vars__row { display: flex; align-items: flex-start; gap: 36px; }
+
+  /* ── примеры: бейдж за верхним правым углом элемента (обвязка стенда) ──
+     смещение = половина габарита бейджа: счётчик 19×18 → −9/−9, точка 8×8 → −4/−4;
+     у текста бейдж сразу за концом строки (left:100%); кадры 3/9 Figma (легаси 20×20) → −10/−10 */
   .snap-anchor { position: relative; display: inline-flex; }
-  .snap-badge { position: absolute; top: -10px; right: -10px; }
-  /* иконки: svg-глифы по кадру контейнера */
+  .snap-badge { position: absolute; }
+  .snap-badge--c   { top: -9px; right: -9px; }
+  .snap-badge--c10 { top: -10px; right: -10px; }
+  .snap-badge--p   { top: -4px; right: -4px; }
+  .snap-badge--tc  { top: -9px; left: 100%; }
+  .snap-badge--tp  { top: -4px; left: 100%; }
+
+  /* ── примеры: каркас (шаги рядов — по координатам кадров канвы) ── */
+  .snap-ex { display: flex; flex-direction: column; gap: 36px; }
+  .snap-ex__row { display: flex; align-items: flex-start; }
+  .snap-ex__row--r2 { gap: 63px; }
+  .snap-ex__row--r3 { gap: 39px; }
+  .snap-ex__row--r3 .snap-ex__item:last-child { margin-left: 10px; }
+  .snap-ex__row--r4 { gap: 26px; }
+  .snap-ex__row--l1 { margin-top: 24px; }
+  .snap-ex__col { display: flex; flex-direction: column; gap: 15px; }
+  .snap-ex__item { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+
+  /* Text item: в css у .ds-text-ui min-height 52 — артборд компонента; в примере инстанс 62×20 (обвязка) */
+  .snap-text-item { min-height: 0; }
+  /* Icon size 24 в примере — цвет Icon/Primary */
+  .snap-icon-primary { color: var(--ds-color-icon-primary, #616161); }
+  /* пункты Sidenav: ширина 188 в примере (у компонента — 200); L1 hover — фон состояния;
+     индикатор 4×44 и стрелка справа — обвязка стенда (как в стенде Sidenav_DS) */
+  .ds-sidenav-item--l1.snap-snav-l1 { width: 188px; }
+  .st-hover.ds-sidenav-item--l1 { background: var(--ds-color-sidenav-item-l1-background-hover, #36474e); }
+  .snap-ind { position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 4px; height: 44px; background: var(--ds-color-sidenav-item-l1-indicator, #ffffff); }
+  .snap-snav-arrow { margin-left: auto; }
+  .snap-snav-l2 { width: 260px; display: flex; flex-direction: column; }
+
+  /* иконки: svg-глифы в кадре контейнера */
   .ds-icon-size svg { width: 100%; height: 100%; display: block; fill: currentColor; }
   .ds-btn-icon__icon svg { width: 20px; height: 20px; display: block; fill: currentColor; }
 </style>
@@ -47,69 +83,162 @@
 <body>
 <div class="demo-bar">
   <span class="demo-bar__title">Badge — демо стенд</span>
-  <span>набор Figma: Badge (54428-187, 8) · примеры: «Badge examples» (58335-20773)</span>
+  <span>Figma: Badge (54428-187) — 8 вариантов · примеры: «Badge examples» (58335-20773)</span>
 </div>
 <div class="view">
-  <div class="panel">
-    <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Badge — 8 вариантов (Style × Type; Counter — пилюля 19×18, Point — точка 8×8)</div>
-      <div class="snap-cells">
-        <div class="snap-cell"><div class="snap-cap">Style=Accent · Counter</div><div class="snap-pad"><span class="ds-badge ds-badge--counter ds-badge--accent">1</span></div></div>
-        <div class="snap-cell"><div class="snap-cap">Style=Accent · Point</div><div class="snap-pad"><span class="ds-badge ds-badge--point ds-badge--accent"></span></div></div>
-        <div class="snap-cell"><div class="snap-cap">Style=Positive · Counter</div><div class="snap-pad"><span class="ds-badge ds-badge--counter ds-badge--positive">1</span></div></div>
-        <div class="snap-cell"><div class="snap-cap">Style=Positive · Point</div><div class="snap-pad"><span class="ds-badge ds-badge--point ds-badge--positive"></span></div></div>
-        <div class="snap-cell"><div class="snap-cap">Style=Warning · Counter</div><div class="snap-pad"><span class="ds-badge ds-badge--counter ds-badge--warning">1</span></div></div>
-        <div class="snap-cell"><div class="snap-cap">Style=Warning · Point</div><div class="snap-pad"><span class="ds-badge ds-badge--point ds-badge--warning"></span></div></div>
-        <div class="snap-cell"><div class="snap-cap">Style=Negative · Counter</div><div class="snap-pad"><span class="ds-badge ds-badge--counter ds-badge--negative">1</span></div></div>
-        <div class="snap-cell"><div class="snap-cap">Style=Negative · Point</div><div class="snap-pad"><span class="ds-badge ds-badge--point ds-badge--negative"></span></div></div>
-      </div>
-    </div>
+  <div class="ds-tabs" role="tablist" aria-label="Badge">
+    <button class="ds-tab ds-tab--active" role="tab" aria-selected="true" data-vtab="basic">Basic example</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="badge">Badge</button>
+  </div>
 
+  <!-- 2. Badge (54428:187; 8 вариантов) -->
+  <div class="panel" data-vpanel="badge" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Примеры (состав и вынос — по кадрам «Badge examples»): бейдж на кнопке, кнопке-иконке, иконке</div>
-      <div class="snap-cells">
-        <div class="snap-cell">
-          <div class="snap-cap">Button M + Counter</div>
-          <div class="snap-pad" style="padding:24px">
-            <span class="snap-anchor"><button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--outlined"><span class="ds-btn__label">Button</span></button><span class="ds-badge ds-badge--counter ds-badge--accent snap-badge">1</span></span>
-          </div>
+      <div class="snap-cap snap-sect__title">Badge — 8 вариантов</div>
+      <div class="snap-vars">
+        <div class="snap-vars__row">
+          <div class="snap-cell"><span class="ds-badge ds-badge--point ds-badge--accent"></span></div>
+          <div class="snap-cell"><span class="ds-badge ds-badge--point ds-badge--positive"></span></div>
+          <div class="snap-cell"><span class="ds-badge ds-badge--point ds-badge--warning"></span></div>
+          <div class="snap-cell"><span class="ds-badge ds-badge--point ds-badge--negative"></span></div>
         </div>
-        <div class="snap-cell">
-          <div class="snap-cap">Button M + Point</div>
-          <div class="snap-pad" style="padding:24px">
-            <span class="snap-anchor"><button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--outlined"><span class="ds-btn__label">Button</span></button><span class="ds-badge ds-badge--point ds-badge--negative snap-badge"></span></span>
-          </div>
-        </div>
-        <div class="snap-cell">
-          <div class="snap-cap">Button icon M + Counter</div>
-          <div class="snap-pad" style="padding:24px">
-            <span class="snap-anchor"><button type="button" class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--filled"><span class="ds-btn-icon__icon"><svg><use href="#ic-info"/></svg></span></button><span class="ds-badge ds-badge--counter ds-badge--accent snap-badge">1</span></span>
-          </div>
-        </div>
-        <div class="snap-cell">
-          <div class="snap-cap">Button icon M + Point</div>
-          <div class="snap-pad" style="padding:24px">
-            <span class="snap-anchor"><button type="button" class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--filled"><span class="ds-btn-icon__icon"><svg><use href="#ic-info"/></svg></span></button><span class="ds-badge ds-badge--point ds-badge--warning snap-badge"></span></span>
-          </div>
-        </div>
-        <div class="snap-cell">
-          <div class="snap-cap">Icon size 20 + Point</div>
-          <div class="snap-pad" style="padding:24px">
-            <span class="snap-anchor"><span class="ds-icon-size ds-icon-size--5x"><svg><use href="#ic-info"/></svg></span><span class="ds-badge ds-badge--point ds-badge--accent snap-badge"></span></span>
-          </div>
+        <div class="snap-vars__row">
+          <div class="snap-cell"><span class="ds-badge ds-badge--counter ds-badge--accent">7</span></div>
+          <div class="snap-cell"><span class="ds-badge ds-badge--counter ds-badge--positive">7</span></div>
+          <div class="snap-cell"><span class="ds-badge ds-badge--counter ds-badge--warning">7</span></div>
+          <div class="snap-cell"><span class="ds-badge ds-badge--counter ds-badge--negative">7</span></div>
         </div>
       </div>
     </div>
+    <p class="snap-note">Пометки для ревью: (а) компонент — 8 вариантов (ряд точек над рядом счётчиков; порядок Accent/Positive/Warning/Negative — как в Figma); (б) счётчик — 19×18 (пад 1/6, радиус circular), текст «7» 12/16 Medium белый с трекингом 0.5 — в css трекинг отсутствовал, добавлен фиксом п. 32 (журнал №137); (в) цвета — токены badge/* (#448aff / #14b456 / #ffab40 / #ff5252); (г) у Badge нет размеров и состояний (только Style × Type) — как в Figma; (д) число — реальное количество из данных («99+» при больших значениях); бейдж — не Status и не Chips. Журнал №114, №137.</p>
+  </div>
 
-    <p class="snap-note">Пометки для ревью: (а) счётчик и точка — по узлам набора: Counter 19×18 (пад 1/6, радиус circular, текст 12/16 Medium), Point 8×8; (б) в примерах канвы бейдж перекрывает элемент: у кнопки M (97) кадр 107×46 — вынос 10 вправо/вверх; это же смещение применено на стенде (класс стенда snap-badge); позиционирование — обвязка страницы (в css у Badge только сам бейдж, без обвязки); (в) текстового варианта («Pro») в css нет — журнал №65, в ДС решить; здесь не воспроизводим; (г) число — реальное количество из данных (в примерах «1»); при больших значениях — сокращение «99+»; (д) бейдж — не Status и не Chips: для метки состояния объекта — Status, для снятия выбора — Chips. Журнал №114.</p>
+  <!-- 1. Basic example: примеры канвы «Badge examples» (58335:20773) — 9 групп + 2 пункта Sidenav -->
+  <div class="panel" data-vpanel="basic" role="tabpanel">
+    <div class="snap-ex">
+      <div class="snap-ex__row">
+        <div class="snap-ex__col">
+          <div class="snap-ex__item">
+            <span class="snap-anchor">
+              <span class="ds-text-ui snap-text-item"><span class="ds-text-ui__label">Text item</span></span>
+              <span class="ds-badge ds-badge--counter ds-badge--accent snap-badge snap-badge--tc">7</span>
+            </span>
+          </div>
+          <div class="snap-ex__item">
+            <span class="snap-anchor">
+              <span class="ds-text-ui snap-text-item"><span class="ds-text-ui__label">Text item</span></span>
+              <span class="ds-badge ds-badge--point ds-badge--negative snap-badge snap-badge--tp"></span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="snap-ex__row snap-ex__row--r2">
+        <div class="snap-ex__item">
+          <span class="snap-anchor">
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><svg><use href="#ic-add-20"/></svg></span><span class="ds-btn__label">Button</span></button>
+            <span class="ds-badge ds-badge--counter ds-badge--positive snap-badge snap-badge--c10">7</span>
+          </span>
+        </div>
+        <div class="snap-ex__item">
+          <span class="snap-anchor">
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__label">Button</span></button>
+            <span class="ds-badge ds-badge--point ds-badge--positive snap-badge snap-badge--p"></span>
+          </span>
+        </div>
+      </div>
+
+      <div class="snap-ex__row snap-ex__row--r3">
+        <div class="snap-ex__item">
+          <span class="snap-anchor">
+            <button type="button" class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--filled"><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add-20"/></svg></span></button>
+            <span class="ds-badge ds-badge--counter ds-badge--warning snap-badge snap-badge--c">7</span>
+          </span>
+        </div>
+        <div class="snap-ex__item">
+          <span class="snap-anchor">
+            <button type="button" class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--filled"><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add-20"/></svg></span></button>
+            <span class="ds-badge ds-badge--point ds-badge--positive snap-badge snap-badge--p"></span>
+          </span>
+        </div>
+        <div class="snap-ex__item">
+          <span class="snap-anchor">
+            <span class="ds-icon-size ds-icon-size--6x snap-icon-primary"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-date-range-24"/></svg></span>
+            <span class="ds-badge ds-badge--point ds-badge--warning snap-badge snap-badge--p"></span>
+          </span>
+        </div>
+      </div>
+
+      <div class="snap-ex__row snap-ex__row--r4">
+        <div class="snap-ex__item">
+          <span class="snap-anchor">
+            <button type="button" class="ds-btn-icon ds-btn-icon--m ds-btn-icon--accent ds-btn-icon--filled"><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add-20"/></svg></span></button>
+            <span class="ds-badge ds-badge--counter ds-badge--negative snap-badge snap-badge--c">7</span>
+          </span>
+        </div>
+        <div class="snap-ex__item">
+          <span class="snap-anchor">
+            <button type="button" class="ds-btn-icon ds-btn-icon--m ds-btn-icon--negative ds-btn-icon--filled"><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add-20"/></svg></span></button>
+            <span class="ds-badge ds-badge--counter ds-badge--positive snap-badge snap-badge--c10">7</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="snap-ex__row snap-ex__row--l1">
+        <div class="snap-ex__item">
+          <div class="ds-sidenav-item ds-sidenav-item--l1 ds-sidenav-item--expanded st-hover snap-snav-l1">
+            <span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-info"/></svg></span>
+            <span class="ds-sidenav-item__label">Item L1</span>
+            <span class="ds-badge ds-badge--counter ds-badge--positive">17</span>
+            <span class="ds-icon-size ds-icon-size--5x snap-snav-arrow"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-arrow-right-20"/></svg></span>
+            <span class="snap-ind" aria-hidden="true"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="snap-ex__row">
+        <div class="snap-ex__item">
+          <div class="snap-snav-l2">
+            <div class="ds-sidenav-item ds-sidenav-item--l2 ds-sidenav-item--expanded">
+              <span class="ds-sidenav-item__label">Item L2</span>
+              <span class="ds-badge ds-badge--counter ds-badge--negative">17</span>
+              <span class="ds-icon-size ds-icon-size--5x snap-snav-arrow"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-arrow-right-20"/></svg></span>
+            </div>
+            <div class="ds-divider"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="snap-note">Пометки для ревью: (а) примеры — кадры «Badge examples» (58335:20773): девять групп + два пункта Sidenav; тексты дословно («Text item», «Button», «Item L1», «Item L2», счётчики «7»/«17»); (б) смещение бейджа — половина габарита за верхний правый угол элемента (счётчик −9/−9, точка −4/−4); у текста бейдж сразу за концом строки и приподнят (−9 / −4); (в) в кадрах «Button + Counter» и «Button icon (Negative) + Counter» Figma использует легаси-инстансы бейджа 20×20 (Body S 14/20, смещение −10/−10) — на стенде стандартный счётчик ДС 19×18 (смещение кадра сохранено) — примеры канвы привести к текущему компоненту (Фигма); (г) кнопки — Button M Filled (add слева) и Button icon M Filled; иконка — Icon size 24, date_range (Icon/Primary); (д) Sidenav: L1 — Hover (#36474e, индикатор 4×44), L2 — с Divider снизу; ширина 188 — по кадру; (е) у .ds-text-ui min-height 52 (артборд компонента Text UI; в примере инстанс 62×20) — обвязка стенда, решить в ДС; (ж) служебная шапка «Header components» не воспроизводится; (з) текстового варианта «Pro» в css нет (№65) — не воспроизводим. Журнал №114, №137.</p>
   </div>
 </div>
 
-<!-- svg-иконки — точный путь из Figma (ⓘ 20; как на стендах Text UI/Table) -->
+<!-- svg-иконки — точные пути из Figma: ⓘ 20 (Text UI/Table), add 20 (как в Button),
+     keyboard_arrow_right 20 и date_range 24 — из ассетов кадра «Badge examples» (58335:20773) -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="ic-info" viewBox="0 0 20 20">
     <path d="M9.16667 14.1667H10.8333V9.16667H9.16667V14.1667ZM10 7.5C10.2361 7.5 10.434 7.42014 10.5937 7.26042C10.7535 7.10069 10.8333 6.90278 10.8333 6.66667C10.8333 6.43056 10.7535 6.23264 10.5937 6.07292C10.434 5.91319 10.2361 5.83333 10 5.83333C9.76389 5.83333 9.56597 5.91319 9.40625 6.07292C9.24653 6.23264 9.16667 6.43056 9.16667 6.66667C9.16667 6.90278 9.24653 7.10069 9.40625 7.26042C9.56597 7.42014 9.76389 7.5 10 7.5ZM10 18.3333C8.84722 18.3333 7.76389 18.1146 6.75 17.6771C5.73611 17.2396 4.85417 16.6458 4.10417 15.8958C3.35417 15.1458 2.76042 14.2639 2.32292 13.25C1.88542 12.2361 1.66667 11.1528 1.66667 10C1.66667 8.84722 1.88542 7.76389 2.32292 6.75C2.76042 5.73611 3.35417 4.85417 4.10417 4.10417C4.85417 3.35417 5.73611 2.76042 6.75 2.32292C7.76389 1.88542 8.84722 1.66667 10 1.66667C11.1528 1.66667 12.2361 1.88542 13.25 2.32292C14.2639 2.76042 15.1458 3.35417 15.8958 4.10417C16.6458 4.85417 17.2396 5.73611 17.6771 6.75C18.1146 7.76389 18.3333 8.84722 18.3333 10C18.3333 11.1528 18.1146 12.2361 17.6771 13.25C17.2396 14.2639 16.6458 15.1458 15.8958 15.8958C15.1458 16.6458 14.2639 17.2396 13.25 17.6771C12.2361 18.1146 11.1528 18.3333 10 18.3333ZM10 16.6667C11.8611 16.6667 13.4375 16.0208 14.7292 14.7292C16.0208 13.4375 16.6667 11.8611 16.6667 10C16.6667 8.13889 16.0208 6.5625 14.7292 5.27083C13.4375 3.97917 11.8611 3.33333 10 3.33333C8.13889 3.33333 6.5625 3.97917 5.27083 5.27083C3.97917 6.5625 3.33333 8.13889 3.33333 10C3.33333 11.8611 3.97917 13.4375 5.27083 14.7292C6.5625 16.0208 8.13889 16.6667 10 16.6667Z"/>
   </symbol>
+  <symbol id="ic-add-20" viewBox="0 0 20 20"><path d="M9.16667 10.8333H4.16667V9.16667H9.16667V4.16667H10.8333V9.16667H15.8333V10.8333H10.8333V15.8333H9.16667V10.8333Z"/></symbol>
+  <symbol id="ic-arrow-right-20" viewBox="0 0 20 20"><path d="M7.15833 13.825L10.975 10L7.15833 6.175L8.33333 5L13.3333 10L8.33333 15L7.15833 13.825Z"/></symbol>
+  <symbol id="ic-date-range-24" viewBox="0 0 24 24"><path d="M8 14C7.71667 14 7.47917 13.9042 7.2875 13.7125C7.09583 13.5208 7 13.2833 7 13C7 12.7167 7.09583 12.4792 7.2875 12.2875C7.47917 12.0958 7.71667 12 8 12C8.28333 12 8.52083 12.0958 8.7125 12.2875C8.90417 12.4792 9 12.7167 9 13C9 13.2833 8.90417 13.5208 8.7125 13.7125C8.52083 13.9042 8.28333 14 8 14ZM12 14C11.7167 14 11.4792 13.9042 11.2875 13.7125C11.0958 13.5208 11 13.2833 11 13C11 12.7167 11.0958 12.4792 11.2875 12.2875C11.4792 12.0958 11.7167 12 12 12C12.2833 12 12.5208 12.0958 12.7125 12.2875C12.9042 12.4792 13 12.7167 13 13C13 13.2833 12.9042 13.5208 12.7125 13.7125C12.5208 13.9042 12.2833 14 12 14ZM16 14C15.7167 14 15.4792 13.9042 15.2875 13.7125C15.0958 13.5208 15 13.2833 15 13C15 12.7167 15.0958 12.4792 15.2875 12.2875C15.4792 12.0958 15.7167 12 16 12C16.2833 12 16.5208 12.0958 16.7125 12.2875C16.9042 12.4792 17 12.7167 17 13C17 13.2833 16.9042 13.5208 16.7125 13.7125C16.5208 13.9042 16.2833 14 16 14ZM5 22C4.45 22 3.97917 21.8042 3.5875 21.4125C3.19583 21.0208 3 20.55 3 20V6C3 5.45 3.19583 4.97917 3.5875 4.5875C3.97917 4.19583 4.45 4 5 4H6V2H8V4H16V2H18V4H19C19.55 4 20.0208 4.19583 20.4125 4.5875C20.8042 4.97917 21 5.45 21 6V20C21 20.55 20.8042 21.0208 20.4125 21.4125C20.0208 21.8042 19.55 22 19 22H5ZM5 20H19V10H5V20ZM5 8H19V6H5V8Z"/></symbol>
 </svg>
+
+<script>
+  /* табы стенда */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.ds-tab[data-vtab]'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('[data-vpanel]'));
+  tabs.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      tabs.forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle('ds-tab--active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach(function (p) { p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab'); });
+    });
+  });
+</script>
 </body>
 </html>

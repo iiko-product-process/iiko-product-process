@@ -1,0 +1,110 @@
+/* ============================================================
+   page-footer - подвал страницы (и таблицы) - организм дизайн-системы.
+   Источник: компонент новой ДС «Table footer» (набор 59207:20759, вариант
+   Type=Default, страница «🟡Table_DS») - белая полоса с тенью 01 dp,
+   разделитель сверху, внутри слот. Наполнение - по примерам из макета:
+     59342:60193 - итоги блоками;
+     59342:60191 - итоги ячейками + кнопки (Отмена / Сохранить / Сохранить и создать новый);
+     59366:46076 - итоги ячейками + кнопки (Сохранить / Провести);
+     14068:114035, 11906:52165 (Номенклатура) - подвал с кнопками страницы.
+   Числа из источников:
+     · контент - паддинги 32 (по бокам) / 12 (сверху-снизу), мин. высота 64;
+     · ячейка итогов - мин. высота 64, паддинг 12/16, между подписью и значением 4;
+       подпись - 12/16 #616161, значение - 14/20 medium #333; «Итого:» - 14/20 medium;
+     · блоки итогов - гэп 32; блок = подпись 12/16 + строка 14/20 + строка 14/20 medium;
+     · действия - Button ДС (Size=M: 36, r8, 14/500), гэп 8; иконка-подсказка ⓘ - 24;
+     · в конфигурациях с ячейками вертикальные паддинги 12/12 не участвуют
+       (полоса = ячейка 64 + разделитель 1) - модификатор .pf--cells.
+   Переключатели частей: data-pf-content / data-pf-actions = "off" на корне .pf (нет
+   атрибута - часть показана, дефолт). Контент - левая часть (итоги/блоки/текст),
+   действия - правая (кнопки); без контента кнопки остаются прижатыми вправо.
+   Разделитель - всегда (как в компоненте Type=Default), отдельного переключателя нет.
+   Модификаторы вида: .pf--end (контент вправо), .pf--center (по центру), .pf--cells.
+   Иконки - <img data-pf-icon="info|info-negative"> из этой папки (точные SVG из
+   Figma: файл иконок 122:1026; 16 - иконка в подписи, 24 - подсказка перед кнопками).
+   ============================================================ */
+
+/* Контекст: ширину даёт страница, высоту - контент (в наборе полоса 980×65) */
+.pf.ds-table-footer {
+  width: auto;
+  height: auto;
+}
+
+/* Разделитель: обёртка компонента + Divider ДС внутри (линия 1px #E0E0E0) */
+.pf__divider { flex: none; }
+.pf__divider .ds-divider { display: block; width: 100%; }
+
+/* Контент: минимальная высота 64 (в наборе 12 + 40 + 12; бордер-бокс — у контента
+   компонента его нет); по умолчанию итоги слева, действия справа (space-between) */
+.pf .ds-table-footer__content { min-height: 64px; box-sizing: border-box; }
+.pf__content { justify-content: space-between; }
+
+/* Выравнивание контента: вправо (итоги блоками / подвал с кнопками) и по центру (набор) */
+.pf--end .pf__content { justify-content: flex-end; }
+.pf--center .pf__content { justify-content: center; }
+
+/* Ячеечные конфигурации: полоса = высоте ячейки (вертикальные паддинги 12/12
+   в примерах не участвуют - ячейка 64 + разделитель) */
+.pf--cells .pf__content { padding-top: 0; padding-bottom: 0; }
+
+/* Группа ячеек итогов: ячейки стоят вплотную (свои паддинги у каждой) */
+.pf__totals { display: flex; align-items: center; }
+
+/* Ячейка итогов: 64 = 12 + 16 + 4 + 20 + 12 */
+.pf__cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  row-gap: 4px;
+  min-height: 64px;
+  padding: 12px 16px;
+  box-sizing: border-box;
+}
+
+/* Строка подписи в ячейке: подпись + иконка-подсказка 16 (шаг 4) */
+.pf__cell-head { display: flex; align-items: center; gap: 4px; }
+
+/* Блоки итогов (пример 1): блок = подпись + строка + строка (56) */
+.pf__blocks { display: flex; align-items: flex-start; gap: 32px; }
+.pf__block { display: flex; flex-direction: column; }
+
+/* Тексты: подпись 12/16 #616161; строка 14/20 #333; значение 14/20 medium #333 */
+.pf__label {
+  font-size: var(--ds-font-caption-l-12-normal-regular-size);
+  line-height: var(--ds-font-caption-l-12-normal-regular-line);
+  letter-spacing: var(--ds-font-caption-l-12-normal-regular-spacing);
+  font-weight: var(--ds-font-caption-l-12-normal-regular-weight);
+  color: var(--ds-color-text-secondary, #616161);
+  white-space: nowrap;
+}
+.pf__text {
+  font-size: var(--ds-font-body-s-14-normal-regular-size);
+  line-height: var(--ds-font-body-s-14-normal-regular-line);
+  letter-spacing: var(--ds-font-body-s-14-normal-regular-spacing);
+  font-weight: var(--ds-font-body-s-14-normal-regular-weight);
+  color: var(--ds-color-text-primary, #333333);
+  white-space: nowrap;
+}
+.pf__value {
+  font-size: var(--ds-font-body-s-14-normal-medium-size);
+  line-height: var(--ds-font-body-s-14-normal-medium-line);
+  letter-spacing: var(--ds-font-body-s-14-normal-medium-spacing);
+  font-weight: var(--ds-font-body-s-14-normal-medium-weight);
+  color: var(--ds-color-text-primary, #333333);
+  white-space: nowrap;
+}
+.pf__value--negative { color: var(--ds-color-text-negative, #ff5252); }
+
+/* Действия: кнопки ДС (36) + иконка-подсказка перед ними, гэп 8 */
+.pf__actions { display: flex; align-items: center; gap: 8px; }
+.pf__actions > img { flex: none; }
+
+/* Переключатели частей: data-pf-*="off" на корне скрывает часть (дефолт - всё включено) */
+.pf[data-pf-content="off"] .pf__totals,
+.pf[data-pf-content="off"] .pf__blocks,
+.pf[data-pf-content="off"] .pf__text { display: none; }
+/* без левой контентной части кнопки действий остаются прижатыми вправо */
+.pf[data-pf-content="off"] .pf__content { justify-content: flex-end; }
+.pf[data-pf-actions="off"] .pf__actions { display: none; }
+/* разделитель - всегда (как в компоненте); пустая обёртка не оставляет линии */
+.pf__divider:not(:has(*)) { display: none; }

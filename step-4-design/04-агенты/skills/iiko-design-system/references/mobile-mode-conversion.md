@@ -10,24 +10,24 @@ approval-гейтом ACP-клиента (разбор и починка — в
 `hermes-desktop-backend-diagnostics`, раздел про approval-гейт). Что значит для
 следующего захода:
 
-- `iiko-ds-web/modes.css` ещё не существует, `button.css` не токенизирован,
+- `components-web/modes.css` ещё не существует, `button.css` не токенизирован,
   демо-страница `button-modes.html` не собрана;
 - в `iiko-ds-spec.md` соглашения о режимах нет вообще — по grep'у в нём ноль
   упоминаний `data-mode`, `modes.css`, `Button_mob` (раздел 13 из
   `mobile-mode-notes.md` остался планом);
 - файловая часть работы начинается с вопроса о разрешении на запись — без него
   считать/замерять можно, а создавать файлы нет; сперва это, потом код.
-- `iiko-ds-web`: рабочее дерево чистое, ветка `main`, все файлы — под git;
+- `components-web`: рабочее дерево чистое, ветка `main`, все файлы — под git;
   правки стоит группировать в один осмысленный коммит, а не дробить по файлу.
 
 ## Источники значений (читать до проектирования)
 
 | Источник | Что берём |
 |---|---|
-| `iiko-ds-mobile/desktop-to-mobile-plan.md` | Группа A: Button меняет **только размерные значения**; `_mob` уже собран в Figma |
-| `iiko-ds-prototypes/compare-button-mob.html` | Числа `Button_mob`, снятые из Figma |
-| `iiko-ds-web/iiko-ds-spec.md` (якорь `#### Button \``) | Десктоп: M 36, S 28, XS 24; свойства Size/Style/Type/State |
-| `iiko-ds-web/components/Button_DS/button.css` | Текущая реализация (там были хардкоды) |
+| `components-mobile/desktop-to-mobile-plan.md` | Группа A: Button меняет **только размерные значения**; `_mob` уже собран в Figma |
+| Прежняя страница сравнения (файла в репозитории нет) | Числа `Button_mob`, снятые из Figma |
+| `components-web/iiko-ds-spec.md` (якорь `#### Button \``) | Десктоп: M 36, S 28, XS 24; свойства Size/Style/Type/State |
+| `components-web/components/Button_DS/button.css` | Текущая реализация (там были хардкоды) |
 
 ### `Button_mob` из Figma (страница Button_DS, COMPONENT_SET Button_mob)
 
@@ -79,8 +79,8 @@ HUG. Примитива 44 px в Base Size тоже нет (максимум `--
 
 ## Recipe: демо-страница режимов
 
-`iiko-ds-prototypes/button-modes.html` — по образцу
-`metro-general-settings.html`: локальные `../iiko-ds-web/font.css`, `tokens.css`,
+`Prototype-Guide/button-modes.html` — по образцу
+прежняя страница-образец (удалена из репозитория): локальные `../components-web/font.css`, `tokens.css`,
 **`modes.css`**, `styles.css`, `components/index.css`.
 
 - Две колонки: `<div data-mode="desktop">` и `<div data-mode="mobile">` — один

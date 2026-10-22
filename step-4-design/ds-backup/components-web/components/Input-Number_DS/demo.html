@@ -60,22 +60,30 @@
   /* close 20 #616161 */
   .snap-clear { color: #616161; cursor: pointer; }
   .snap-clear svg { width: 20px; height: 20px; display: block; }
-  /* степпер but icon: кнопки 36 (#EBEBEB у «минус», белая с тенью у «плюс»), иконки 20 (#9E9E9E / #616161) */
-  .snap-step { display: flex; flex-direction: row; align-items: center; gap: 4px; }
-  .snap-step__btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: 0; padding: 0; border-radius: 8px; cursor: pointer; background: #ffffff; box-shadow: var(--ds-shadow-shadows-01-dp-sl); color: #616161; }
-  .snap-step__btn--minus { background: #ebebeb; border-radius: 8px; color: #9e9e9e; box-shadow: none; }
-  .snap-step__btn svg { width: 20px; height: 20px; display: block; }
-  .snap-step__input { height: 36px; display: flex; align-items: center; padding: 0 12px; border-radius: 12px; background: var(--ds-color-form-field-input-filled-background, #f8f9fc); border: 1px solid var(--ds-color-form-field-filled-default-border-color, #e0e0e0); box-sizing: border-box; }
-  .snap-step--xs .snap-step__btn { width: 24px; height: 24px; border-radius: 8px; }
-  .snap-step--xs .snap-step__btn svg { width: 16px; height: 16px; }
-  .snap-step--xs .snap-step__input { height: 28px; padding: 0 10px; }
-  .snap-step .ds-input-number__label { font-size: 14px; line-height: 20px; }
+  /* степпер = компонент «Input number_but icon» (корень/контейнер/кнопка/иконка) + поле — инстанс «Input» (ds-input--s/--xs) */
+  .snap-step { min-height: 0; }                                   /* артефакт css: min-height 56 у корня */
+  .snap-step .ds-input-number-but-icon__button { cursor: pointer; border: 0; color: #616161; }
+  .snap-step .ds-input-number-but-icon__button.snap-step__btn--minus { background: #ebebeb; box-shadow: none; color: #9e9e9e; }
+  .snap-step--xs .ds-input-number-but-icon__button { padding: 4px; }   /* XS: кнопка 24, иконка 16 */
+  .snap-step--xs .ds-input-number-but-icon__icon { width: 16px; height: 16px; }
+  .snap-step__support { background: none; }                       /* артефакт css: фон = цвет текста */
+  .snap-step .ds-input__field { font-size: 14px; line-height: 20px; white-space: nowrap; }
+  /* сетка набора: «полка» ряда 48px — ряды колонок M/S/XS выравниваются; пустые ряды M·Empty */
+  .snap-step--cell { height: 48px; justify-content: center; }
+  .snap-cell-gap { height: 76px; }                                /* пустой ряд M·Empty = высота ячейки (16+12+48), ряды совпадают с колонкой Populated */
+  /* состояния поля степпера (заморозка; значения — токены, как у M-ячеек) */
+  .snap-step--hover .ds-input__frame { background: #f5f5f5; border-color: #9e9e9e; }
+  .snap-step--hover .ds-input--error .ds-input__frame { border-color: var(--ds-color-form-field-filled-error-border-color, #ff5252); }
+  .snap-step--focus .ds-input__frame { border-color: var(--ds-color-form-field-filled-focus-border-color, #448aff); }
+  .snap-step--ph .ds-input__field { color: var(--ds-color-form-field-filled-focus-input-text-placeholder-color, #d6d6d6); }
+  .snap-step--disable .ds-input-number-but-icon__button { background: #f5f5f5; box-shadow: none; color: #d6d6d6; }
+  .snap-step--disable .snap-step__btn--minus { background: #ffffff; }
 </style>
 </head>
 <body>
 <div class="demo-bar">
   <span class="demo-bar__title">Input number — демо стенд</span>
-  <span>наборы Figma: Input number (17193-84749, 29) · Control arrow button (3) · Input number_but icon · примеры (17193-84749+1)</span>
+  <span>Figma: Input number (17193-84749, 29) · Control arrow button (3) · Input number_but icon · примеры (17193-84749+1)</span>
 </div>
 <div class="view">
   <div class="ds-tabs" role="tablist" aria-label="Input number">
@@ -86,110 +94,266 @@
 
   <!-- 2. Input number (набор 17193:84749, 29 вариантов) -->
   <div class="panel" data-vpanel="input-number" role="tabpanel" hidden>
+    <div class="snap-cap snap-sect__title">Input number — 29 вариантов</div>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Size=M, Variant=Populated — состояния</div>
-      <div class="snap-grid" style="grid-template-columns: repeat(4, max-content);">
-        <div class="snap-col"><span class="snap-cap">Default</span>
+      <div class="snap-grid" style="grid-template-columns: max-content max-content max-content max-content; align-items: start;">
+        <!-- Колонка 1: Size=M · Variant=Empty (ряды Focus-семейства пустые — как в наборе Figma) -->
+        <div class="snap-col">
+        <div class="snap-col">
+            <div class="ds-input-number ds-input-number--empty snap-in" style="width:138px;">
+              <div class="ds-input-number__frame"><div class="snap-in-content"><span class="ds-input-number__label">Label</span></div>
+                <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
+              </div>
+            </div>
+          </div>
+          <div class="snap-col">
+            <div class="ds-input-number ds-input-number--empty snap-in snap-in--hover" style="width:138px;">
+              <div class="ds-input-number__frame"><div class="snap-in-content"><span class="ds-input-number__label">Label</span></div>
+                <span class="ds-input-number__icon snap-clear"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close"/></svg></span>
+                <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
+              </div>
+            </div>
+          </div>
+          <div class="snap-cell-gap" aria-hidden="true"></div>
+          <div class="snap-cell-gap" aria-hidden="true"></div>
+          <div class="snap-cell-gap" aria-hidden="true"></div>
+          <div class="snap-col">
+            <div class="ds-input-number ds-input-number--empty snap-in snap-in--error" style="width:138px;">
+              <div class="ds-input-number__frame"><div class="snap-in-content"><span class="ds-input-number__label">Label</span></div>
+                <span class="ds-input-number__icon snap-clear"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close"/></svg></span>
+                <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
+              </div>
+            </div>
+          </div>
+          <div class="snap-col">
+            <div class="ds-input-number ds-input-number--empty snap-in snap-in--error snap-in--hover" style="width:138px;">
+              <div class="ds-input-number__frame"><div class="snap-in-content"><span class="ds-input-number__label">Label</span></div>
+                <span class="ds-input-number__icon snap-clear"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close"/></svg></span>
+                <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
+              </div>
+            </div>
+          </div>
+          <div class="snap-col">
+            <div class="ds-input-number ds-input-number--empty ds-input-number--disabled snap-in snap-in--disable" style="width:138px;">
+              <div class="ds-input-number__frame"><div class="snap-in-content"><span class="ds-input-number__label">Label</span></div>
+                <span class="ds-input-number__icon snap-clear"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close"/></svg></span>
+                <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Колонка 2: Size=M · Variant=Populated -->
+        <div class="snap-col">
+        <div class="snap-col">
           <div class="ds-input-number ds-input-number--populated snap-in" style="width:138px;" data-ind="1">
             <div class="ds-input-number__frame"><div class="snap-in-content"><span class="snap-in-caption">Label</span><span class="ds-input-number__label">0 000 ₽</span></div>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+              <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
             </div>
           </div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Hover</span>
+        <div class="snap-col">
           <div class="ds-input-number ds-input-number--populated snap-in snap-in--hover" style="width:138px;">
             <div class="ds-input-number__frame"><div class="snap-in-content"><span class="snap-in-caption">Label</span><span class="ds-input-number__label">0 000 ₽</span></div>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+              <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
             </div>
           </div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Focus</span>
+        <div class="snap-col">
           <div class="ds-input-number ds-input-number--populated snap-in snap-in--focus" style="width:138px;">
-            <div class="ds-input-number__frame"><div class="snap-in-content"><span class="snap-in-caption">Label</span><span class="ds-input-number__label">0 000 ₽</span></div>
+            <div class="ds-input-number__frame"><div class="snap-in-content"><span class="snap-in-caption">Label</span><span class="ds-input-number__label">|</span></div>
               <span class="ds-input-number__icon snap-clear"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close"/></svg></span>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+              <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
             </div>
           </div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Focus · placeholder</span>
+        <div class="snap-col">
           <div class="ds-input-number ds-input-number--populated snap-in snap-in--focus snap-in--placeholder" style="width:138px;">
             <div class="ds-input-number__frame"><div class="snap-in-content"><span class="snap-in-caption">Label</span><span class="ds-input-number__label">0 000 ₽</span></div>
               <span class="ds-input-number__icon snap-clear"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close"/></svg></span>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+              <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
             </div>
           </div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Focus · value</span>
+        <div class="snap-col">
           <div class="ds-input-number ds-input-number--populated snap-in snap-in--focus" style="width:138px;">
             <div class="ds-input-number__frame"><div class="snap-in-content"><span class="snap-in-caption">Label</span><span class="ds-input-number__label">0 000 ₽</span></div>
               <span class="ds-input-number__icon snap-clear"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close"/></svg></span>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+              <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
             </div>
           </div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Error</span>
+        <div class="snap-col">
           <div class="ds-input-number ds-input-number--populated snap-in snap-in--error" style="width:138px;">
             <div class="ds-input-number__frame"><div class="snap-in-content"><span class="snap-in-caption">Label</span><span class="ds-input-number__label">0 000 ₽</span></div>
               <span class="ds-input-number__icon snap-clear"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close"/></svg></span>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+              <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
             </div>
           </div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Error · hover</span>
+        <div class="snap-col">
           <div class="ds-input-number ds-input-number--populated snap-in snap-in--error snap-in--hover" style="width:138px;">
             <div class="ds-input-number__frame"><div class="snap-in-content"><span class="snap-in-caption">Label</span><span class="ds-input-number__label">0 000 ₽</span></div>
               <span class="ds-input-number__icon snap-clear"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close"/></svg></span>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+              <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
             </div>
           </div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Disable</span>
+        <div class="snap-col">
           <div class="ds-input-number ds-input-number--populated ds-input-number--disabled snap-in snap-in--disable" style="width:138px;">
             <div class="ds-input-number__frame"><div class="snap-in-content"><span class="snap-in-caption">Label</span><span class="ds-input-number__label">0 000 ₽</span></div>
               <span class="ds-input-number__icon snap-clear"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close"/></svg></span>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+              <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
             </div>
           </div>
         </div>
-      </div>
-
-      <div class="snap-cap snap-sect__title" style="margin-top: 32px;">Size=M, Variant=Empty — состояния</div>
-      <div class="snap-grid" style="grid-template-columns: repeat(5, max-content);">
-        <div class="snap-col"><span class="snap-cap">Default</span>
-          <div class="ds-input-number ds-input-number--empty snap-in" style="width:138px;">
-            <div class="ds-input-number__frame"><div class="snap-in-content"><span class="ds-input-number__label">Label</span></div>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+        </div>
+        <!-- Колонка 3: Size=S · Variant=No label up — состояния поля (степпер [−][поле][+]) -->
+        <div class="snap-col">
+        <div class="snap-col">
+          <div class="ds-input-number-but-icon snap-step snap-step--cell">
+              <div class="ds-input-number-but-icon__container">
+                <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-remove"/></svg></span></button>
+                <div class="ds-input ds-input--s" style="width:82px;"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">0 000 ₽</span></div></div></div>
+                <button class="ds-input-number-but-icon__button"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+              </div>
+            </div>
+          </div>
+          <div class="snap-col">
+            <div class="ds-input-number-but-icon snap-step snap-step--cell snap-step--hover">
+              <div class="ds-input-number-but-icon__container">
+                <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-remove"/></svg></span></button>
+                <div class="ds-input ds-input--s" style="width:82px;"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">0 000 ₽</span></div></div></div>
+                <button class="ds-input-number-but-icon__button"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+              </div>
+            </div>
+          </div>
+          <div class="snap-col">
+            <div class="ds-input-number-but-icon snap-step snap-step--cell snap-step--focus">
+              <div class="ds-input-number-but-icon__container">
+                <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-remove"/></svg></span></button>
+                <div class="ds-input ds-input--s" style="width:82px;"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">|</span></div></div></div>
+                <button class="ds-input-number-but-icon__button"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+              </div>
+            </div>
+          </div>
+          <div class="snap-col">
+            <div class="ds-input-number-but-icon snap-step snap-step--cell snap-step--focus snap-step--ph">
+              <div class="ds-input-number-but-icon__container">
+                <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-remove"/></svg></span></button>
+                <div class="ds-input ds-input--s" style="width:82px;"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">Input text</span></div></div></div>
+                <button class="ds-input-number-but-icon__button"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+              </div>
+            </div>
+          </div>
+          <div class="snap-col">
+            <div class="ds-input-number-but-icon snap-step snap-step--cell snap-step--focus">
+              <div class="ds-input-number-but-icon__container">
+                <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-remove"/></svg></span></button>
+                <div class="ds-input ds-input--s" style="width:82px;"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">Input text</span></div></div></div>
+                <button class="ds-input-number-but-icon__button"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+              </div>
+            </div>
+          </div>
+          <div class="snap-col">
+            <div class="ds-input-number-but-icon snap-step snap-step--cell">
+              <div class="ds-input-number-but-icon__container">
+                <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-remove"/></svg></span></button>
+                <div class="ds-input ds-input--s ds-input--error" style="width:82px;"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">0 000 ₽</span></div></div></div>
+                <button class="ds-input-number-but-icon__button"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+              </div>
+            </div>
+          </div>
+          <div class="snap-col">
+            <div class="ds-input-number-but-icon snap-step snap-step--cell snap-step--hover">
+              <div class="ds-input-number-but-icon__container">
+                <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-remove"/></svg></span></button>
+                <div class="ds-input ds-input--s ds-input--error" style="width:82px;"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">0 000 ₽</span></div></div></div>
+                <button class="ds-input-number-but-icon__button"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+              </div>
+            </div>
+          </div>
+          <div class="snap-col">
+            <div class="ds-input-number-but-icon snap-step snap-step--cell snap-step--disable">
+              <div class="ds-input-number-but-icon__container">
+                <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-remove"/></svg></span></button>
+                <div class="ds-input ds-input--s ds-input--disabled" style="width:82px;"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">0 000 ₽</span></div></div></div>
+                <button class="ds-input-number-but-icon__button"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+              </div>
             </div>
           </div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Hover</span>
-          <div class="ds-input-number ds-input-number--empty snap-in snap-in--hover" style="width:138px;">
-            <div class="ds-input-number__frame"><div class="snap-in-content"><span class="ds-input-number__label">Label</span></div>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+        <!-- Колонка 4: Size=XS · Variant=No label up — состояния поля (подчёркнутое поле) -->
+        <div class="snap-col">
+        <div class="snap-col">
+          <div class="ds-input-number-but-icon snap-step snap-step--xs snap-step--cell">
+              <div class="ds-input-number-but-icon__container">
+                <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-remove-16"/></svg></span></button>
+                <div class="ds-input ds-input--xs" style="width:67px;"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">0 000 ₽</span></div></div></div>
+                <button class="ds-input-number-but-icon__button"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></button>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Error</span>
-          <div class="ds-input-number ds-input-number--empty snap-in snap-in--error" style="width:138px;">
-            <div class="ds-input-number__frame"><div class="snap-in-content"><span class="ds-input-number__label">Label</span></div>
-              <span class="ds-input-number__icon snap-clear"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close"/></svg></span>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+          <div class="snap-col">
+            <div class="ds-input-number-but-icon snap-step snap-step--xs snap-step--cell snap-step--hover">
+              <div class="ds-input-number-but-icon__container">
+                <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-remove-16"/></svg></span></button>
+                <div class="ds-input ds-input--xs" style="width:67px;"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">0 000 ₽</span></div></div></div>
+                <button class="ds-input-number-but-icon__button"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></button>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Error · hover</span>
-          <div class="ds-input-number ds-input-number--empty snap-in snap-in--error snap-in--hover" style="width:138px;">
-            <div class="ds-input-number__frame"><div class="snap-in-content"><span class="ds-input-number__label">Label</span></div>
-              <span class="ds-input-number__icon snap-clear"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close"/></svg></span>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+          <div class="snap-col">
+            <div class="ds-input-number-but-icon snap-step snap-step--xs snap-step--cell snap-step--focus">
+              <div class="ds-input-number-but-icon__container">
+                <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-remove-16"/></svg></span></button>
+                <div class="ds-input ds-input--xs" style="width:67px;"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">|</span></div></div></div>
+                <button class="ds-input-number-but-icon__button"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></button>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Disable</span>
-          <div class="ds-input-number ds-input-number--empty ds-input-number--disabled snap-in snap-in--disable" style="width:138px;">
-            <div class="ds-input-number__frame"><div class="snap-in-content"><span class="ds-input-number__label">Label</span></div>
-              <span class="ds-input-number__icon snap-clear"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close"/></svg></span>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+          <div class="snap-col">
+            <div class="ds-input-number-but-icon snap-step snap-step--xs snap-step--cell snap-step--focus snap-step--ph">
+              <div class="ds-input-number-but-icon__container">
+                <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-remove-16"/></svg></span></button>
+                <div class="ds-input ds-input--xs" style="width:67px;"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">Input text</span></div></div></div>
+                <button class="ds-input-number-but-icon__button"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></button>
+              </div>
+            </div>
+          </div>
+          <div class="snap-col">
+            <div class="ds-input-number-but-icon snap-step snap-step--xs snap-step--cell snap-step--focus">
+              <div class="ds-input-number-but-icon__container">
+                <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-remove-16"/></svg></span></button>
+                <div class="ds-input ds-input--xs" style="width:67px;"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">Input text</span></div></div></div>
+                <button class="ds-input-number-but-icon__button"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></button>
+              </div>
+            </div>
+          </div>
+          <div class="snap-col">
+            <div class="ds-input-number-but-icon snap-step snap-step--xs snap-step--cell">
+              <div class="ds-input-number-but-icon__container">
+                <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-remove-16"/></svg></span></button>
+                <div class="ds-input ds-input--xs ds-input--error" style="width:67px;"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">0 000 ₽</span></div></div></div>
+                <button class="ds-input-number-but-icon__button"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></button>
+              </div>
+            </div>
+          </div>
+          <div class="snap-col">
+            <div class="ds-input-number-but-icon snap-step snap-step--xs snap-step--cell snap-step--hover">
+              <div class="ds-input-number-but-icon__container">
+                <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-remove-16"/></svg></span></button>
+                <div class="ds-input ds-input--xs ds-input--error" style="width:67px;"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">0 000 ₽</span></div></div></div>
+                <button class="ds-input-number-but-icon__button"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></button>
+              </div>
+            </div>
+          </div>
+          <div class="snap-col">
+            <div class="ds-input-number-but-icon snap-step snap-step--xs snap-step--cell snap-step--disable">
+              <div class="ds-input-number-but-icon__container">
+                <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-remove-16"/></svg></span></button>
+                <div class="ds-input ds-input--xs ds-input--disabled" style="width:67px;"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">0 000 ₽</span></div></div></div>
+                <button class="ds-input-number-but-icon__button"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></button>
+              </div>
             </div>
           </div>
         </div>
@@ -201,35 +365,39 @@
   <!-- 3. Input number_but icon (составной степпер [−][поле][+]) -->
   <div class="panel" data-vpanel="input-number-but-icon" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Size=S (162×36) и Size=XS (123×28) — Variant=No label up: составной степпер «Input number_but icon» ([−][поле][+])</div>
+      <div class="snap-cap snap-sect__title">Input number_but icon — 3 варианта</div>
       <div class="snap-row" style="margin-top: 8px;">
-        <div class="snap-col"><span class="snap-cap">Size=S · State=Default (проверено по канве; у S/XS — 8 состояний)</span>
-          <div class="snap-step">
-            <button class="snap-step__btn snap-step__btn--minus"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-remove"/></svg></button>
-            <div class="snap-step__input" style="width:82px;"><span class="ds-input-number__label">0 000 ₽</span></div>
-            <button class="snap-step__btn"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></button>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Size=XS · State=Default</span>
-          <div class="snap-step snap-step--xs">
-            <button class="snap-step__btn snap-step__btn--minus"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-remove-16"/></svg></button>
-            <div class="snap-step__input" style="width:67px;"><span class="ds-input-number__label">0 000 ₽</span></div>
-            <button class="snap-step__btn"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></button>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Input number_but icon + support (162×56) и (123×48) — из примеров</span>
-          <div class="snap-step" style="flex-direction: column; align-items: flex-start; gap: 4px; width: 162px;">
-            <div class="snap-step">
-              <button class="snap-step__btn snap-step__btn--minus"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-remove"/></svg></button>
-              <div class="snap-step__input" style="width:82px;"><span class="ds-input-number__label">0 000 ₽</span></div>
-              <button class="snap-step__btn"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></button>
+        <div class="snap-col">
+          <div class="ds-input-number-but-icon snap-step">
+            <div class="ds-input-number-but-icon__container">
+              <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-remove"/></svg></span></button>
+              <div class="ds-input ds-input--s" style="width:82px;"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">0 000 ₽</span></div></div></div>
+              <button class="ds-input-number-but-icon__button"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
             </div>
-            <span class="snap-in-support">Support text</span>
+          </div>
+        </div>
+        <div class="snap-col">
+          <div class="ds-input-number-but-icon snap-step snap-step--xs">
+            <div class="ds-input-number-but-icon__container">
+              <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-remove-16"/></svg></span></button>
+              <div class="ds-input ds-input--xs" style="width:67px;"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">0 000 ₽</span></div></div></div>
+              <button class="ds-input-number-but-icon__button"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></button>
+            </div>
+          </div>
+        </div>
+        <div class="snap-col">
+          <div class="ds-input-number-but-icon snap-step" style="width: 162px;">
+            <div class="ds-input-number-but-icon__container">
+              <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-remove"/></svg></span></button>
+              <div class="ds-input ds-input--s" style="width:82px;"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">0 000 ₽</span></div></div></div>
+              <button class="ds-input-number-but-icon__button"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+            </div>
+            <span class="ds-input-number-but-icon__support-text snap-step__support">Support text</span>
           </div>
         </div>
       </div>
     </div>
-    <p class="snap-note">Пометки для ревью: (а) в Figma M-вариант собран из инстансов «Input» (Form-Field-Input) + «Element right» (close + Control arrow button 20×36: кнопки 20×17 #EBEBEB, глиф 12); css выгрузки (input-number.css) не покрывает подпись 12/16, цвета Focus/Error и фон кнопок стрелок — на стенде добавлено обвязкой (решить в ДС, журнал №124); (б) у M Populated стрелки показаны у Default; в Focus появляется close (20×20); (в) Empty — только подпись-плейсхолдер 16/24 #616161; (г) Disable: фон #F5F5F5, рамка #EBEBEB, тексты #9E9E9E; (д) S/XS (No label up) — это отдельный составной компонент «Input number_but icon»: [−][поле][+], где «минус» серый, «плюс» белый с тенью 01dp; (е) состояния Hover/Error+Hover заморожены стенд-классами; (ж) курсор ввода в Focus не рисуем (статика канвы). Журнал №124.</p>
+    <p class="snap-note">Пометки для ревью: (а) в Figma M-вариант собран из инстансов «Input» (Form-Field-Input) + «Element right» (close + Control arrow button 20×36: кнопки 20×17 #EBEBEB, глиф 12); css выгрузки (input-number.css) не покрывает подпись 12/16, цвета Focus/Error и фон кнопок стрелок — на стенде добавлено обвязкой (решить в ДС, журнал №124); (б) у M Populated стрелки показаны у Default; в Focus появляется close (20×20); (в) Empty — только подпись-плейсхолдер 16/24 #616161; (г) Disable: фон #F5F5F5, рамка #EBEBEB, тексты #9E9E9E; (д) S/XS (No label up) — это отдельный составной компонент «Input number_but icon»: [−][поле][+], где «минус» серый, «плюс» белый с тенью 01dp; (е) состояния Hover/Error+Hover заморожены стенд-классами; (ж) в Focus значение пустое — как в наборе: тонкая каретка «|»; (з) экран — единая сетка как фрейм набора 17193:84750: четыре колонки M·Empty / M·Populated / S / XS, у M·Empty ряды Focus-семейства пустые (в наборе таких вариантов нет), S/XS — те же 8 состояний на компоненте «Input number_but icon» с полем-инстансом Input (ds-input--s/--xs), состояния поля — реальными классами ДС (--error/--disabled) и заморозкой (hover/focus/placeholder). Журнал №124.</p>
   </div>
 
   <!-- 1. Basic example: «Input number (Examples)» (7 групп) -->
@@ -240,19 +408,19 @@
           <p class="snap-ex-caption">Number with a clear button</p>
           <div class="ds-input-number ds-input-number--empty snap-in" style="width:250px;">
             <div class="ds-input-number__frame"><div class="snap-in-content"><span class="ds-input-number__label">Label</span></div>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+              <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
             </div>
           </div>
           <div class="ds-input-number ds-input-number--populated snap-in snap-in--focus" style="width:250px;">
             <div class="ds-input-number__frame"><div class="snap-in-content"><span class="snap-in-caption">Label</span><span class="ds-input-number__label">0 000 ₽</span></div>
               <span class="ds-input-number__icon snap-clear"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close"/></svg></span>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+              <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
             </div>
           </div>
           <div class="ds-input-number ds-input-number--populated snap-in" style="width:250px;">
             <div class="ds-input-number__frame"><div class="snap-in-content"><span class="snap-in-caption">Label</span><span class="ds-input-number__label">0 000 ₽</span></div>
               <span class="ds-input-number__icon snap-clear"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close"/></svg></span>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+              <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
             </div>
           </div>
         </div>
@@ -261,21 +429,21 @@
           <div class="ds-input-number ds-input-number--populated snap-in" style="width:250px;">
             <div class="ds-input-number__frame"><div class="snap-in-content"><span class="snap-in-caption">Label</span><span class="ds-input-number__label">1 000 ₽</span></div>
               <span class="snap-cap">4/6</span>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+              <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
             </div>
             <div class="ds-input-number__support"><span class="snap-in-support">Support text</span></div>
           </div>
           <div class="ds-input-number ds-input-number--populated snap-in" style="width:250px;">
             <div class="ds-input-number__frame"><div class="snap-in-content"><span class="snap-in-caption">Label</span><span class="ds-input-number__label">50 000 ₽</span></div>
               <span class="snap-cap">4/6</span>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+              <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
             </div>
             <div class="ds-input-number__support"><span class="snap-in-support">Limit max 100 000 ₽</span></div>
           </div>
           <div class="ds-input-number ds-input-number--populated snap-in snap-in--error" style="width:250px;">
             <div class="ds-input-number__frame"><div class="snap-in-content"><span class="snap-in-caption">Label</span><span class="ds-input-number__label">150 000 ₽</span></div>
               <span class="snap-cap">7/6</span>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+              <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
             </div>
             <div class="ds-input-number__support"><span class="snap-in-support">Limit max 100 000 ₽</span></div>
           </div>
@@ -284,28 +452,32 @@
           <p class="snap-ex-caption">Number with support</p>
           <div class="ds-input-number ds-input-number--empty snap-in" style="width:138px;">
             <div class="ds-input-number__frame"><div class="snap-in-content"><span class="ds-input-number__label">Label</span></div>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+              <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
             </div>
             <div class="ds-input-number__support"><span class="snap-in-support">Support text</span></div>
           </div>
           <div class="ds-input-number ds-input-number--populated snap-in" style="width:138px;">
             <div class="ds-input-number__frame"><div class="snap-in-content"><span class="snap-in-caption">Label</span><span class="ds-input-number__label">0 000 ₽</span></div>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+              <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
             </div>
             <div class="ds-input-number__support"><span class="snap-in-support">Support text</span></div>
           </div>
         </div>
         <div class="snap-col">
           <p class="snap-ex-caption">Number with prefixes (в размерных вариантах S/XS)</p>
-          <div class="snap-step">
-            <button class="snap-step__btn snap-step__btn--minus"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-remove"/></svg></button>
-            <div class="snap-step__input" style="width:101px;"><span class="ds-input-number__label">0 000 ₽</span></div>
-            <button class="snap-step__btn"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></button>
+          <div class="ds-input-number-but-icon snap-step">
+            <div class="ds-input-number-but-icon__container">
+              <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-remove"/></svg></span></button>
+              <div class="ds-input ds-input--s" style="width:101px;"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">0 000 ₽</span></div></div></div>
+              <button class="ds-input-number-but-icon__button"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+            </div>
           </div>
-          <div class="snap-step snap-step--xs">
-            <button class="snap-step__btn snap-step__btn--minus"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-remove-16"/></svg></button>
-            <div class="snap-step__input" style="width:84px;"><span class="ds-input-number__label">0 000 ₽</span></div>
-            <button class="snap-step__btn"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></button>
+          <div class="ds-input-number-but-icon snap-step snap-step--xs">
+            <div class="ds-input-number-but-icon__container">
+              <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-remove-16"/></svg></span></button>
+              <div class="ds-input ds-input--xs" style="width:84px;"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">0 000 ₽</span></div></div></div>
+              <button class="ds-input-number-but-icon__button"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></button>
+            </div>
           </div>
         </div>
       </div>
@@ -317,13 +489,13 @@
           <p class="snap-ex-caption">Number with error messages</p>
           <div class="ds-input-number ds-input-number--populated snap-in" style="width:250px;">
             <div class="ds-input-number__frame"><div class="snap-in-content"><span class="snap-in-caption">Label *</span><span class="ds-input-number__label">0 000 ₽</span></div>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+              <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
             </div>
             <div class="ds-input-number__support"><span class="snap-in-support snap-in-support--error" style="color:var(--ds-color-text-negative, #ff5252);">Error text</span></div>
           </div>
           <div class="ds-input-number ds-input-number--populated snap-in snap-in--error" style="width:250px;">
             <div class="ds-input-number__frame"><div class="snap-in-content"><span class="snap-in-caption">Label *</span><span class="ds-input-number__label">0 000 ₽</span></div>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+              <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
             </div>
             <div class="ds-input-number__support"><span class="snap-in-support">Error text</span></div>
           </div>
@@ -333,13 +505,13 @@
           <div class="ds-input-number ds-input-number--empty snap-in" style="width:250px;">
             <div class="ds-input-number__frame"><div class="snap-in-content"><span class="ds-input-number__label">Label</span></div>
               <span class="ds-input-number__icon snap-clear" style="color:#616161;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+              <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
             </div>
           </div>
           <div class="ds-input-number ds-input-number--populated snap-in" style="width:250px;">
             <div class="ds-input-number__frame"><div class="snap-in-content"><span class="ds-input-number__label">0 000 ₽</span></div>
               <span class="ds-input-number__icon snap-clear" style="color:#616161;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+              <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
             </div>
           </div>
         </div>
@@ -347,18 +519,20 @@
           <p class="snap-ex-caption">Number disable</p>
           <div class="ds-input-number ds-input-number--empty ds-input-number--disabled snap-in snap-in--disable" style="width:250px;">
             <div class="ds-input-number__frame"><div class="snap-in-content"><span class="ds-input-number__label">Label</span></div>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+              <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
             </div>
           </div>
           <div class="ds-input-number ds-input-number--populated ds-input-number--disabled snap-in snap-in--disable" style="width:250px;">
             <div class="ds-input-number__frame"><div class="snap-in-content"><span class="ds-input-number__label">0 000 ₽</span></div>
-              <div class="ds-control-arrow-button"><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></button><button class="snap-cab"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></button></div>
+              <div class="ds-control-arrow-button"><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span></button><button class="snap-cab"><span class="ds-control-arrow-button__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span></button></div>
             </div>
           </div>
-          <div class="snap-step" style="margin-top: 8px;">
-            <button class="snap-step__btn snap-step__btn--minus"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-remove"/></svg></button>
-            <div class="snap-step__input" style="width:82px; background:#f5f5f5; border-color:#ebebeb;"><span class="ds-input-number__label" style="color:#9e9e9e;">0 000 ₽</span></div>
-            <button class="snap-step__btn snap-step__btn--minus"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></button>
+          <div class="ds-input-number-but-icon snap-step" style="margin-top: 8px;">
+            <div class="ds-input-number-but-icon__container">
+              <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-remove"/></svg></span></button>
+              <div class="ds-input ds-input--s ds-input--disabled" style="width:82px;"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">0 000 ₽</span></div></div></div>
+              <button class="ds-input-number-but-icon__button snap-step__btn--minus"><span class="ds-input-number-but-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
+            </div>
           </div>
         </div>
       </div>

@@ -1,0 +1,70 @@
+/* device-chrome — системные полосы устройств на страницах-кадрах:
+   статусбар (время «9:41» + системные иконки) сверху и навбар (home-индикатор) снизу.
+   Телефон 375×812 — статус 44 / дом 34; планшет 768×1024 — 24 / 20; монитор полос не имеет.
+   Полосы ТЁМНЫЕ (brand-neutral-super-dark — как безель и чёлка; запрос заказчика 2026-09-13),
+   время/иконки/индикатор — светлые.
+   Разметку вставляет device-chrome.js (после app-header.js — статусбар встаёт перед шапкой).
+   Радиусы верхних/нижних углов «экрана» при полосах принадлежат им, а не шапке/кадру. */
+
+body.device-phone { --dev-status-h: 44px; --dev-nav-h: 34px; --dev-screen-radius: 24px; }
+body.device-tablet { --dev-status-h: 24px; --dev-nav-h: 20px; --dev-screen-radius: 14px; }
+
+.dev-status, .dev-nav { display: none; }
+body.device-phone .dev-status, body.device-tablet .dev-status,
+body.device-phone .dev-nav, body.device-tablet .dev-nav { display: flex; }
+
+.dev-status {
+  flex: 0 0 var(--dev-status-h);
+  height: var(--dev-status-h);
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  background: var(--ds-color-brand-neutral-super-dark, #333333);   /* как безель/чёлка */
+  color: #fff;
+  border-top-left-radius: var(--dev-screen-radius);
+  border-top-right-radius: var(--dev-screen-radius);
+}
+body.device-phone .dev-status { padding: 0 24px 0 28px; }
+body.device-tablet .dev-status { padding: 0 20px 0 22px; }
+.dev-status__time { font: 600 15px/20px 'Roboto'; letter-spacing: .1px; }
+body.device-tablet .dev-status__time { font: 600 13px/18px 'Roboto'; }
+.dev-status__icons { display: inline-flex; align-items: center; gap: 4px; }
+.dev-status__icons .material-icons { font-size: 16px; line-height: 16px; }
+body.device-tablet .dev-status__icons .material-icons { font-size: 14px; line-height: 14px; }
+
+.dev-nav {
+  flex: 0 0 var(--dev-nav-h);
+  height: var(--dev-nav-h);
+  align-items: flex-end;
+  justify-content: center;
+  box-sizing: border-box;
+  background: var(--ds-color-brand-neutral-super-dark, #333333);   /* как безель */
+  border-bottom-left-radius: var(--dev-screen-radius);
+  border-bottom-right-radius: var(--dev-screen-radius);
+}
+body.device-phone .dev-nav, body.device-tablet .dev-nav { padding-bottom: 8px; }
+.dev-nav__home { width: 134px; height: 5px; border-radius: 3px; background: #fff; }   /* светлый индикатор на тёмном навбаре */
+
+/* Полосы — выше оверлеев страниц (панель «Создать продукт» — z-index 60, скрим фильтра 7431 — 38):
+   оверлеи заходят на 1px ПОД полосы (внахлёст) — субпиксельный стык не просветит фоном кадра */
+.dev-status, .dev-nav { position: relative; z-index: 61; }
+
+/* Фон «экрана» — тёмный (как полосы и безель). На стыке закругления полосы и внутренней дуги безеля
+   остаётся антиалиасинговый шов — белый фон просвечивал тонкой линией по дугам скругления
+   (видно стало после затемнения полос). Контент приложения (кадр) остаётся на белом. */
+body.device-phone .panel, body.device-tablet .panel { background: var(--ds-color-brand-neutral-super-dark, #333333); }
+body.device-phone .frame, body.device-tablet .frame { background: #fff; }
+/* Субпиксельная защита кромок (как у рейла, app-sidenav): тёмный фон «экрана» продлеваем
+   на 2px НАРУЖУ — на дробном масштабе антиалиасинговый шов между кромкой экрана и безелем
+   не просветит белым фоном страницы; под безелем продление не видно */
+body.device-phone .panel, body.device-tablet .panel { box-shadow: 0 0 0 2px var(--ds-color-brand-neutral-super-dark, #333333); }
+
+/* радиусы «экрана» при системных полосах — у полос, а не у шапки/кадра */
+body.device-phone:not(.ui-clean) .apph, body.device-tablet:not(.ui-clean) .apph { border-top-left-radius: 0; border-top-right-radius: 0; }
+body.device-phone:not(.ui-clean) .frame, body.device-tablet:not(.ui-clean) .frame { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+/* Служебный outline кадра (страницы рисуют им границу «экрана») при системных полосах вылезал светлой
+   линией (#e0e0e0) на нижнюю кромку тёмного статусбара — границу отдаём полосам и безелю */
+body.device-phone:not(.ui-clean) .panel .frame, body.device-tablet:not(.ui-clean) .panel .frame { outline: 0; }
+
+/* шапка не должна сжиматься во flex-колонке экрана */
+body.device-phone .apph, body.device-tablet .apph, body.device-desktop .apph { flex-shrink: 0; }

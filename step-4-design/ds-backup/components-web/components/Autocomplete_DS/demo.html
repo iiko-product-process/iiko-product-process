@@ -6,13 +6,24 @@
 <title>Autocomplete — демо стенд компонента</title>
 <!--
   Демо стенд компонента Autocomplete form (страница «Autocomplete_DS», 57759:28983). Папка: DS/components-web/components/Autocomplete_DS/.
-  Источник — канва Figma «Iiko Web DS (New)»: набор «Autocomplete form» (10 вариантов: Variant Empty/Populated ×
-  State Default/Hover/Focus/Focus+Value/Error/Disable; 250×48, кадр #F8F9FC r12) + блок «Autocomplete (Examples)» (3981×1131):
-  «Basic pattern» (ввод «Lis|», список с заголовками «Title 1» / «Item text 1.1–1.3» / «Title 2» / «Item text 2.1–2.2»),
-  «Fix select width container», «Autocomplete default» («List item text»), «Disable select», «Autocomplete error» («Label *»),
-  «Item text (2)|» и группы «Title/Item text». Дропдауны на канве — контейнеры Select (240×304 r12: Title 36 + Select item 36,
-  одна строка hover #F5F5F5); на стенде собраны обвязкой (классы Select не выгружались — см. стенд Select_DS).
-  ⚠ css выгрузки не покрывает подпись 12/16 и цвета Focus/Error — обвязка стенда. Журнал DS/fixes.md №128.
+  Источник — Figma «Iiko Web DS (New)», компонент «Autocomplete form» (58107:8230; 10 вариантов:
+  Variant Empty/Populated × State Default/Hover/Focus/Focus+Value/Error/Disable; 250×48; поле без иконок).
+  Витрина — на подложке компонента (#F8F9FC); расположение как в Figma: 6 колонок состояний × 2 ряда, у Empty пропуски на месте колонок Focus/Focus+Value.
+  Разметка — классы ДС, значения — токены. ПОЛЕ — ДВА УРОВНЯ НАСТРОЕК (как в Figma):
+  (1) «Autocomplete form» — своя настройка на обёртке: Variant Empty/Populated + State
+      (классы ds-autocomplete-form--empty/--populated, заморозка st-hover/st-focus, --disabled);
+  (2) внутри — ИНСТАНС ИНПУТА «Input» (52670:7573) со своими настройками: Size=M + Variant + State
+      и слоты Element left / Element right / Support (классы ds-input ds-input--m --empty/--populated,
+      --error/--disabled). Наследование: всё поле (рамка, фон, подписи, состояния) — из css инпута;
+      обёртка добавляет только своё. В этих 10 вариантах слоты Element left/right и Support в Figma
+      выключены — на стенде не выводим (выведутся разметкой инпута, когда понадобится:
+      ds-input__icon + ds-icon-size; ds-input__support-row + __support/__hint).
+  Пробелы инпута обойдены в ../../fixes.css п. 15/16 (журнал №31, 34–37, 91, 92); ховер формы на корне — №136.
+  Замороженные состояния — st-hover/st-focus (в ДС :hover/:focus-within) и реальные классы инпута
+  ds-input--error/--disabled; значения — токенами.
+  Basic example — только живой пример (правило заказчика: динамический элемент; фреймы «(Examples)» не воспроизводим):
+  ввод фильтрует подсказки, выбор подставляет текст (мышь и клавиатура), ↑↓/Home/End — активная строка, Enter — выбрать,
+  Esc/Tab/клик вне — закрыть, ARIA combobox/listbox, список со скроллом и ползунком Scroll. Журнал №128, №136, №138, №153, №154, №156, №206.
 -->
 <link rel="stylesheet" href="../../font.css">
 <link rel="stylesheet" href="../../tokens.css">
@@ -20,7 +31,7 @@
 <link rel="stylesheet" href="../index.css">
 <link rel="stylesheet" href="../../fixes.css">
 <style>
-  /* каркас демо-стенда */
+  /* каркас демо-стенда — как у других стендов */
   html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
   .demo-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); font-size: 13px; }
   .demo-bar__title { font-weight: 500; margin-right: 8px; }
@@ -32,33 +43,44 @@
   .snap-sect { margin: 0 0 40px; }
   .snap-sect:last-child { margin-bottom: 0; }
   .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
-  .snap-grid { display: grid; gap: 18px 40px; align-items: start; }
+  .snap-col { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
   .snap-row { display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap; }
-  .snap-col { display: flex; flex-direction: column; gap: 10px; }
-  .snap-ex-caption { font-size: 14px; line-height: 28px; color: var(--ds-color-text-primary, #333333); margin: 0; }
-  /* обвязка формы автокомплита */
+
+  /* обвязка поля: ширины по контексту (компонент 250; живой пример 240) */
   .snap-ac { width: 250px; }
-  .snap-ac .ds-autocomplete-form__input-frame { width: 100%; box-sizing: border-box; }
-  .snap-ac-content { display: flex; flex-direction: column; flex: 1 1 auto; }
-  .snap-ac-caption { font-size: 12px; line-height: 16px; color: var(--ds-color-form-field-filled-default-label-text-color, #616161); }
-  .snap-ac--focus .snap-ac-caption { color: #448aff; }
-  .snap-ac--focus .ds-autocomplete-form__input-frame { border-color: #448aff; }
-  .snap-ac--error .snap-ac-caption { color: var(--ds-color-text-negative, #ff5252); }
-  .snap-ac--error .ds-autocomplete-form__input-frame { border-color: var(--ds-color-form-field-filled-error-border-color, #ff5252); }
-  .snap-ac--disable .ds-autocomplete-form__input-frame { background: #f5f5f5; border-color: #ebebeb; }
-  .snap-ac--disable .snap-ac-caption, .snap-ac--disable .ds-autocomplete-form__label { color: #9e9e9e; }
-  .snap-ac--empty .ds-autocomplete-form__label { line-height: 24px; }
-  /* дропдаун (обвязка по данным канвы) */
-  .snap-ac-dd { width: 240px; background: #fff; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); border-radius: 12px; box-shadow: var(--ds-shadow-shadows-08-dp-s); overflow: hidden; }
-  .snap-ac-dd__title { height: 36px; display: flex; align-items: center; padding: 0 16px; font-size: 16px; line-height: 20px; color: #333; }
-  .snap-ac-dd__item { height: 36px; display: flex; align-items: center; padding: 0 16px; font-size: 14px; line-height: 20px; color: #333; cursor: pointer; }
-  .snap-ac-dd__item:hover, .snap-ac-dd__item.snap-hover { background: #f5f5f5; }
+  .snap-ac--240 { width: 240px; }
+  .snap-ac .ds-input__frame { width: 100%; box-sizing: border-box; }
+
+  /* замороженные состояния — как у Селекта (в ДС :hover/:focus-within; значения — токенами) */
+  .st-hover .ds-input .ds-input__frame { background: var(--ds-color-form-field-filled-hover-input-background-hover, #f5f5f5); border-color: var(--ds-color-form-field-filled-hover-border-color, #9e9e9e); }
+  .st-focus .ds-input__frame { border-color: var(--ds-color-form-field-filled-focus-border-color, #448aff); }
+  .st-focus .ds-input__label { color: var(--ds-color-form-field-filled-focus-label-text-color, #448aff); }
+
+  /* поле и список — встык (поле → список через 2px, как в компоненте) */
+  .snap-ac-block { display: flex; flex-direction: column; gap: 2px; align-items: flex-start; }
+
+  /* список Basic: контейнер по содержимому (в css min-height 406 — артефакт), зона значений со скроллом — как в Select */
+  .snap-ac-list { min-height: 0; width: 240px; }
+  .snap-ac-list .ds-select-item { cursor: pointer; flex: none; }
+  .snap-ac-ccontent { display: flex; flex-direction: row; align-items: stretch; width: 100%; }
+  .snap-ac-ccontent > .ds-select-container__content { flex: 1 1 auto; min-width: 0; max-height: 272px; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+  .snap-ac-ccontent > .ds-select-container__content::-webkit-scrollbar { width: 0; height: 0; }
+  .snap-ac-scroll { flex: none; width: var(--ds-size-3x, 12px); align-self: stretch; }
+  .snap-ac-scroll .ds-scroll__background { width: 100%; height: 100%; justify-content: center; }
+  .snap-ac-scroll .ds-scroll__knob { width: var(--ds-size-2x, 8px); height: 96px; padding: 0; gap: 0; }
+  /* активная строка (навигация клавиатурой) — тот же фон, что :hover пункта */
+  .snap-ac-list .ds-select-item.is-active { background: var(--ds-color-select-item-hover-background, #f5f5f5); }
+  /* крестик очистки — слот Element right инпута (Icon size 20 + State) */
+  .snap-ac-clear { cursor: pointer; }
+
+  /* подложка витрины — фон компонента в Figma (#F8F9FC), как у Card/Banners; поля — обвязка стенда */
+  .snap-stage { width: fit-content; padding: 16px; background: var(--ds-paint-surface-default-v2, #f8f9fc); }
 </style>
 </head>
 <body>
 <div class="demo-bar">
   <span class="demo-bar__title">Autocomplete — демо стенд</span>
-  <span>набор Figma: Autocomplete form (57759-28983, 10) · примеры (Basic pattern, default, error, disable)</span>
+  <span>Figma: Autocomplete form (58107-8230) — 10 вариантов</span>
 </div>
 <div class="view">
   <div class="ds-tabs" role="tablist" aria-label="Autocomplete">
@@ -66,146 +88,80 @@
     <button class="ds-tab" role="tab" aria-selected="false" data-vtab="autocomplete-form">Autocomplete form</button>
   </div>
 
-  <!-- 2. Autocomplete form (набор 57759:28983, 10 вариантов) -->
+  <!-- 2. Autocomplete form (58107:8230; 10 вариантов) -->
   <div class="panel" data-vpanel="autocomplete-form" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Variant=Empty — состояния</div>
-      <div class="snap-grid" style="grid-template-columns: repeat(5, max-content);">
-        <div class="snap-col"><span class="snap-cap">Default</span>
-          <div class="ds-autocomplete-form ds-autocomplete-form--empty snap-ac">
-            <div class="ds-autocomplete-form__input"><div class="ds-autocomplete-form__input-frame"><div class="snap-ac-content"><span class="ds-autocomplete-form__label">Label</span></div></div></div>
-          </div>
+      <div class="snap-cap snap-sect__title">Autocomplete form — 10 вариантов</div>
+      <div class="snap-stage">
+      <div class="snap-col" style="gap: 48px;">
+        <div class="snap-row" style="gap: 24px; flex-wrap: nowrap;">
+          <div class="ds-autocomplete-form ds-autocomplete-form--empty snap-ac"><div class="ds-input ds-input--m ds-input--empty"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">Label</span></div></div></div></div>
+          <div class="ds-autocomplete-form ds-autocomplete-form--empty st-hover snap-ac"><div class="ds-input ds-input--m ds-input--empty"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">Label</span></div></div></div></div>
+          <div style="width: 250px;"></div>
+          <div style="width: 250px;"></div>
+          <div class="ds-autocomplete-form ds-autocomplete-form--empty snap-ac"><div class="ds-input ds-input--m ds-input--empty ds-input--error"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">Label</span></div></div></div></div>
+          <div class="ds-autocomplete-form ds-autocomplete-form--empty ds-autocomplete-form--disabled snap-ac"><div class="ds-input ds-input--m ds-input--empty ds-input--disabled"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__field">Label</span></div></div></div></div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Hover</span>
-          <div class="ds-autocomplete-form ds-autocomplete-form--empty snap-ac">
-            <div class="ds-autocomplete-form__input"><div class="ds-autocomplete-form__input-frame" style="background:#f5f5f5;border-color:#9e9e9e;"><div class="snap-ac-content"><span class="ds-autocomplete-form__label">Label</span></div></div></div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Error</span>
-          <div class="ds-autocomplete-form ds-autocomplete-form--empty snap-ac snap-ac--error">
-            <div class="ds-autocomplete-form__input"><div class="ds-autocomplete-form__input-frame"><div class="snap-ac-content"><span class="ds-autocomplete-form__label">Label</span></div></div></div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Disable</span>
-          <div class="ds-autocomplete-form ds-autocomplete-form--empty ds-autocomplete-form--disabled snap-ac snap-ac--disable">
-            <div class="ds-autocomplete-form__input"><div class="ds-autocomplete-form__input-frame"><div class="snap-ac-content"><span class="ds-autocomplete-form__label">Label</span></div></div></div>
-          </div>
+        <div class="snap-row" style="gap: 24px; flex-wrap: nowrap;">
+          <div class="ds-autocomplete-form ds-autocomplete-form--populated snap-ac"><div class="ds-input ds-input--m ds-input--populated"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__label">Label</span><span class="ds-input__field">Select item</span></div></div></div></div>
+          <div class="ds-autocomplete-form ds-autocomplete-form--populated st-hover snap-ac"><div class="ds-input ds-input--m ds-input--populated"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__label">Label</span><span class="ds-input__field">Select item</span></div></div></div></div>
+          <div class="ds-autocomplete-form ds-autocomplete-form--populated st-focus snap-ac"><div class="ds-input ds-input--m ds-input--populated"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__label">Label</span><span class="ds-input__field">|</span></div></div></div></div>
+          <div class="ds-autocomplete-form ds-autocomplete-form--populated st-focus snap-ac"><div class="ds-input ds-input--m ds-input--populated"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__label">Label</span><span class="ds-input__field">Select item</span></div></div></div></div>
+          <div class="ds-autocomplete-form ds-autocomplete-form--populated snap-ac"><div class="ds-input ds-input--m ds-input--populated ds-input--error"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__label">Label</span><span class="ds-input__field">Select item</span></div></div></div></div>
+          <div class="ds-autocomplete-form ds-autocomplete-form--populated ds-autocomplete-form--disabled snap-ac"><div class="ds-input ds-input--m ds-input--populated ds-input--disabled"><div class="ds-input__frame"><div class="ds-input__content"><span class="ds-input__label">Label</span><span class="ds-input__field">Select item</span></div></div></div></div>
         </div>
       </div>
-    </div>
-
-    <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Variant=Populated — состояния</div>
-      <div class="snap-grid" style="grid-template-columns: repeat(5, max-content);">
-        <div class="snap-col"><span class="snap-cap">Default</span>
-          <div class="ds-autocomplete-form ds-autocomplete-form--populated snap-ac">
-            <div class="ds-autocomplete-form__input"><div class="ds-autocomplete-form__input-frame"><div class="snap-ac-content"><span class="snap-ac-caption">Label</span><span class="ds-autocomplete-form__label" style="color:#333333;">Input text</span></div></div></div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Hover</span>
-          <div class="ds-autocomplete-form ds-autocomplete-form--populated snap-ac">
-            <div class="ds-autocomplete-form__input"><div class="ds-autocomplete-form__input-frame"><div class="snap-ac-content"><span class="snap-ac-caption">Label</span><span class="ds-autocomplete-form__label" style="color:#333333;">Input text</span></div></div></div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Focus</span>
-          <div class="ds-autocomplete-form ds-autocomplete-form--populated snap-ac snap-ac--focus">
-            <div class="ds-autocomplete-form__input"><div class="ds-autocomplete-form__input-frame"><div class="snap-ac-content"><span class="snap-ac-caption">Label</span><span class="ds-autocomplete-form__label" style="color:#333333;">Input text</span></div></div></div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Focus · value</span>
-          <div class="ds-autocomplete-form ds-autocomplete-form--populated snap-ac snap-ac--focus">
-            <div class="ds-autocomplete-form__input"><div class="ds-autocomplete-form__input-frame"><div class="snap-ac-content"><span class="snap-ac-caption">Label</span><span class="ds-autocomplete-form__label" style="color:#333333;">Lis</span></div></div></div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Error</span>
-          <div class="ds-autocomplete-form ds-autocomplete-form--populated snap-ac snap-ac--error">
-            <div class="ds-autocomplete-form__input"><div class="ds-autocomplete-form__input-frame"><div class="snap-ac-content"><span class="snap-ac-caption">Label *</span><span class="ds-autocomplete-form__label" style="color:#333333;">Input text</span></div></div></div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Disable</span>
-          <div class="ds-autocomplete-form ds-autocomplete-form--populated ds-autocomplete-form--disabled snap-ac snap-ac--disable">
-            <div class="ds-autocomplete-form__input"><div class="ds-autocomplete-form__input-frame"><div class="snap-ac-content"><span class="snap-ac-caption">Label</span><span class="ds-autocomplete-form__label">Input text</span></div></div></div>
-          </div>
-        </div>
       </div>
     </div>
-    <p class="snap-note">Пометки для ревью: (а) набор — 10 вариантов (Empty/Populated × Default/Hover/Focus/Focus+Value/Error/Disable), 250×48; на канве состояния собраны инстансами «Input» (Form-Field-Input), css выгрузки не покрывает подпись 12/16 и цвета Focus/Error — обвязка стенда; (б) Empty — подпись-плейсхолдер 16/24 #616161; (в) Error — подпись «Label *»; (г) hover для Populated на канве без смены фона рамки. Журнал №128.</p>
+    <p class="snap-note">Пометки для ревью: (а) витрина — 10 вариантов на подложке компонента (#F8F9FC), два ряда, как в Figma (в верхнем ряду фокусных ячеек нет — на месте колонок Focus и Focus+Value пропуски): Empty — подпись-плейсхолдер «Label» 16/24 #616161, Populated — подпись-над-полем 12/16 + значение «Select item» 16/24 #333; (б) фокус — рамка и подпись accent (#448aff), в Focus значение пустое (каретка «|»), в Focus+Value — со значением; (в) ошибка — рамка и подпись красные, у Empty-подписи цвет остаётся #616161; (г) Disable — фон #f5f5f5, рамка #ebebeb, текст #9e9e9e; (д) ховер заморожен классом st-hover — живой ховер живёт в кадре поля (fixes №136); (е) поле — два уровня: обёртка ds-autocomplete-form (свои настройки Variant/State) + внутри инстанс инпута ds-input (настройки: Size/Variant/State; всё поле — из css инпута), состояния — реальными классами инпута и st-hover/st-focus, пробелы инпута — fixes п. 15/16 (журнал №31, 34–37, 91); (ж) слоты Element left/right и Support у всех 10 вариантов в Figma выключены — на стенде не выводим (выведутся разметкой инпута по запросу). Журнал №128, №136, №138, №153, №154, №156.</p>
   </div>
 
-  <!-- 1. Basic example: «Autocomplete (Examples)» (Basic pattern, default, error, disable) -->
+  <!-- 1. Basic example: живой пример (фреймы «(Examples)» на стенде не воспроизводим — правило заказчика) -->
   <div class="panel" data-vpanel="basic" role="tabpanel">
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Basic pattern — ввод по буквам + список с заголовками («Title 1/2», «Item text …»)</div>
-      <div class="snap-row" style="margin-top: 12px;">
-        <div class="snap-col"><span class="snap-cap">Поле (Empty)</span>
-          <div class="ds-autocomplete-form ds-autocomplete-form--empty snap-ac">
-            <div class="ds-autocomplete-form__input"><div class="ds-autocomplete-form__input-frame"><div class="snap-ac-content"><span class="ds-autocomplete-form__label">Label</span></div></div></div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Ввод «Lis» + дропдаун</span>
-          <div style="display:flex;gap:16px;align-items:flex-start;">
-            <div class="ds-autocomplete-form ds-autocomplete-form--populated snap-ac snap-ac--focus">
-              <div class="ds-autocomplete-form__input"><div class="ds-autocomplete-form__input-frame"><div class="snap-ac-content"><span class="snap-ac-caption">Label</span><span class="ds-autocomplete-form__label" style="color:#333333;">Lis</span></div></div></div>
-            </div>
-            <div class="snap-ac-dd">
-              <div class="snap-ac-dd__title">Title 1</div>
-              <div class="snap-ac-dd__item">Item text 1.1</div>
-              <div class="snap-ac-dd__item snap-hover">Item text 1.2</div>
-              <div class="snap-ac-dd__item">Item text 1.3</div>
-              <div class="snap-ac-dd__title">Title 2</div>
-              <div class="snap-ac-dd__item">Item text 2.1</div>
-              <div class="snap-ac-dd__item">Item text 2.2</div>
+      <p class="snap-cap" style="margin: 0 0 16px;">Basic example — живой автокомплит: поле «Город» с подсказками-городами; клик — лейбл уезжает наверх и открывается список; ввод фильтрует; ↑↓/Enter — выбрать; крестик справа очищает значение; Esc или клик вне — закрыть</p>
+      <div class="snap-ac-block">
+        <div class="ds-autocomplete-form ds-autocomplete-form--empty snap-ac snap-ac--240" id="ac-live">
+          <div class="ds-input ds-input--m ds-input--empty" id="ac-live-input-wrap">
+            <div class="ds-input__frame">
+              <div class="ds-input__content">
+                <span class="ds-input__label" id="ac-live-label" hidden>Город</span>
+                <input class="ds-input__field" id="ac-live-input" type="text" placeholder="Город" autocomplete="off" spellcheck="false" aria-label="Город" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="ac-live-list" aria-haspopup="listbox">
+              </div>
+              <span class="ds-input__icon snap-ac-clear" id="ac-live-clear" role="button" tabindex="0" aria-label="Очистить" hidden><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-24"/></svg></span></span>
             </div>
           </div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Выбор пункта — «Item text (2)|»</span>
-          <div class="ds-autocomplete-form ds-autocomplete-form--populated snap-ac snap-ac--focus">
-            <div class="ds-autocomplete-form__input"><div class="ds-autocomplete-form__input-frame"><div class="snap-ac-content"><span class="snap-ac-caption">Label</span><span class="ds-autocomplete-form__label" style="color:#333333;">Item text (2)</span></div></div></div>
+        <div class="ds-select-container snap-ac-list" id="ac-live-list" role="listbox" aria-label="Подсказки" hidden>
+          <div class="snap-ac-ccontent">
+            <div class="ds-select-container__content" id="ac-live-content">
+              <div class="ds-select-item ds-select-item--false" role="option" id="ac-opt-1" aria-selected="false"><span class="ds-select-item__label">Москва</span></div>
+              <div class="ds-select-item ds-select-item--false" role="option" id="ac-opt-2" aria-selected="false"><span class="ds-select-item__label">Санкт-Петербург</span></div>
+              <div class="ds-select-item ds-select-item--false" role="option" id="ac-opt-3" aria-selected="false"><span class="ds-select-item__label">Новосибирск</span></div>
+              <div class="ds-select-item ds-select-item--false" role="option" id="ac-opt-4" aria-selected="false"><span class="ds-select-item__label">Екатеринбург</span></div>
+              <div class="ds-select-item ds-select-item--false" role="option" id="ac-opt-5" aria-selected="false"><span class="ds-select-item__label">Казань</span></div>
+              <div class="ds-select-item ds-select-item--false" role="option" id="ac-opt-6" aria-selected="false"><span class="ds-select-item__label">Нижний Новгород</span></div>
+              <div class="ds-select-item ds-select-item--false" role="option" id="ac-opt-7" aria-selected="false"><span class="ds-select-item__label">Челябинск</span></div>
+              <div class="ds-select-item ds-select-item--false" role="option" id="ac-opt-8" aria-selected="false"><span class="ds-select-item__label">Самара</span></div>
+              <div class="ds-select-item ds-select-item--false" role="option" id="ac-opt-9" aria-selected="false"><span class="ds-select-item__label">Омск</span></div>
+              <div class="ds-select-item ds-select-item--false" role="option" id="ac-opt-10" aria-selected="false"><span class="ds-select-item__label">Ростов-на-Дону</span></div>
+              <div class="ds-select-item ds-select-item--false" role="option" id="ac-opt-11" aria-selected="false"><span class="ds-select-item__label">Уфа</span></div>
+              <div class="ds-select-item ds-select-item--false" role="option" id="ac-opt-12" aria-selected="false"><span class="ds-select-item__label">Красноярск</span></div>
+            </div>
+            <div class="ds-scroll ds-scroll--middle snap-ac-scroll"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Autocomplete default · error · disable · «Fix select width container»</div>
-      <div class="snap-row" style="margin-top: 12px;">
-        <div class="snap-col"><span class="snap-cap">Autocomplete default («List item text»)</span>
-          <div style="display:flex;gap:16px;align-items:flex-start;">
-            <div class="ds-autocomplete-form ds-autocomplete-form--populated snap-ac snap-ac--focus">
-              <div class="ds-autocomplete-form__input"><div class="ds-autocomplete-form__input-frame"><div class="snap-ac-content"><span class="snap-ac-caption">Label</span><span class="ds-autocomplete-form__label" style="color:#333333;">List item text</span></div></div></div>
-            </div>
-            <div class="snap-ac-dd">
-              <div class="snap-ac-dd__item">List item text</div>
-              <div class="snap-ac-dd__item snap-hover">List item text</div>
-              <div class="snap-ac-dd__item">List item text</div>
-              <div class="snap-ac-dd__item">List item text</div>
-              <div class="snap-ac-dd__item">List item text</div>
-            </div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Autocomplete error («Label *»)</span>
-          <div class="ds-autocomplete-form ds-autocomplete-form--populated snap-ac snap-ac--error">
-            <div class="ds-autocomplete-form__input"><div class="ds-autocomplete-form__input-frame"><div class="snap-ac-content"><span class="snap-ac-caption">Label *</span><span class="ds-autocomplete-form__label" style="color:#333333;">Select item text</span></div></div></div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Disable select</span>
-          <div class="ds-autocomplete-form ds-autocomplete-form--populated ds-autocomplete-form--disabled snap-ac snap-ac--disable">
-            <div class="ds-autocomplete-form__input"><div class="ds-autocomplete-form__input-frame"><div class="snap-ac-content"><span class="snap-ac-caption">Label</span><span class="ds-autocomplete-form__label">Select item text</span></div></div></div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">«Fix select width container»</span>
-          <div class="snap-ac-dd" style="width:208px;">
-            <div class="snap-ac-dd__item">List item text</div>
-            <div class="snap-ac-dd__item snap-hover">List item text</div>
-          </div>
-          <span class="snap-cap" style="max-width:240px;">Демонстрация ширины контейнера списка (имя кадра канвы); строки подстраиваются под ширину поля.</span>
-        </div>
-      </div>
-    </div>
-
-    <p class="snap-note">Пометки для ревью: (а) тексты и структура — с канвы («Basic pattern», «Title 1», «Item text 1.1–1.3», «Title 2», «Item text 2.1–2.2», «Autocomplete default», «Autocomplete error», «Disable select», «Item text (2)», «Fix select width container», «List item text», «Select item text»); (б) списки на канве — контейнеры Select (Title 36 + Select item 36, строка hover #F5F5F5) — на стенде обвязка, компонент Select соберётся отдельно; (в) заголовки групп в списке («Title 1/2») — слоты Select; (г) курсор ввода показан статикой («|»): не рисуем. Журнал №128.</p>
+    <p class="snap-note">Пометки для ревью: (а) живой пример компонента «Autocomplete form»: список — компоненты ДС («Select (Сontainer)» + «Select item»); старт — Empty (подпись-плейсхолдер «Город» 16/24, список скрыт), при вводе подпись поднимается (12/16, accent), подсказки фильтруются; выбранная строка при повторном открытии помечается Back selected (#f5f9ff); (б) поле — инстанс инпута (ds-input внутри обёртки автокомплита, как у Селекта); пробелы инпута обойдены fixes п. 15/16, живой ховер — №136; (в) автокомплит — динамический элемент: статичные кадры примеров на стенде не воспроизводим — правило заказчика (только живой пример); (г) поведение (как в Material): открытие — фокус/клик/ввод; при открытии лейбл «Город» уезжает наверх (12/16, accent при фокусе — floating label), а в пустом поле остаётся плейсхолдер-подсказка «Начните вводить название»; стрелки ↑↓ — активная строка (фон hover #F5F5F5, скроллится в видимую зону), Home/End, Enter — подставить, Esc/Tab — закрыть, клик вне — закрыть (пустое поле при закрытии возвращает лейбл вниз); иконки слотов (Element left / Element right) в Figma скрыты — в живом примере не показываются; крестик очистки — слот Element right инпута (ds-input__icon → ds-icon-size--5x ds-icon-size--state, глиф close 14 в 20): виден, когда есть значение, клик/Enter — очистить и открыть полный список; ARIA: input role=combobox + aria-expanded/aria-controls/aria-activedescendant, список role=listbox, пункты role=option + aria-selected; (д) список — 12 значений в зоне 272px со скроллом: системный скроллбар скрыт, полоса компонента Scroll пропорциональна содержимому и перетаскивается; когда прокручивать нечего (мало пунктов/фильтр) — полоса скрыта целиком, а не только ползунок; (е) min-height 406 у контейнера в css — артефакт выгрузки, в списке снят (журнал №128). Журнал №128, №136, №138, №153, №154, №156, №206.</p>
   </div>
 </div>
+
+<!-- иконки -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-close-24" viewBox="0 0 24 24"><path d="M6.4 19L5 17.6L10.6 12L5 6.4L6.4 5L12 10.6L17.6 5L19 6.4L13.4 12L19 17.6L17.6 19L12 13.4L6.4 19Z"/></symbol>
+</svg>
 
 <script>
   /* табы стенда */
@@ -221,6 +177,146 @@
       panels.forEach(function (p) { p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab'); });
     });
   });
+
+  /* Basic example: живой автокомплит — открытие по фокусу/клику/вводу, фильтрация, выбор мышью и клавиатурой
+     (↑↓/Home/End/Enter/Esc/Tab), активная строка, ARIA (combobox → listbox/option), скролл списка с ползунком */
+  (function () {
+    var root = document.getElementById('ac-live');
+    var wrap = document.getElementById('ac-live-input-wrap');
+    var label = document.getElementById('ac-live-label');
+    var input = document.getElementById('ac-live-input');
+    var list = document.getElementById('ac-live-list');
+    if (!root || !wrap || !label || !input || !list) return;
+    var content = document.getElementById('ac-live-content');
+    var scroll = list.querySelector('.snap-ac-scroll');
+    var knob = scroll ? scroll.querySelector('.ds-scroll__knob') : null;
+    var track = scroll ? scroll.querySelector('.ds-scroll__background') : null;
+    var items = Array.prototype.slice.call(list.querySelectorAll('.ds-select-item'));
+    var clearBtn = document.getElementById('ac-live-clear');
+    var open = false;
+    var active = -1;
+
+    function visible() { return items.filter(function (i) { return !i.hidden; }); }
+    function renderScroll() {
+      if (!content || !knob || !track || !scroll) return;
+      var max = Math.max(0, content.scrollHeight - content.clientHeight);
+      if (!max) { knob.style.display = 'none'; scroll.style.display = 'none'; return; }   /* скроллить нечего — полосу Scroll не показываем */
+      if (scroll.style.display === 'none') scroll.style.display = '';
+      knob.style.display = '';
+      var trackH = track.clientHeight;   /* forced reflow — замер уже с видимой полосой */
+      if (!trackH) return;
+      var h = Math.max(24, Math.round(trackH * content.clientHeight / content.scrollHeight));
+      knob.style.height = h + 'px';
+      knob.style.marginTop = Math.round((trackH - h) * content.scrollTop / max) + 'px';
+    }
+    function filter() {
+      var q = input.value.trim().toLowerCase();
+      items.forEach(function (item) {
+        item.hidden = q !== '' && item.textContent.toLowerCase().indexOf(q) === -1;
+      });
+    }
+    function showAll() { items.forEach(function (i) { i.hidden = false; }); }
+    function setActive(idx) {
+      var vis = visible();
+      vis.forEach(function (i) { i.classList.remove('is-active'); });
+      active = vis.length ? Math.max(0, Math.min(vis.length - 1, idx)) : -1;
+      if (active >= 0) {
+        var it = vis[active];
+        it.classList.add('is-active');
+        input.setAttribute('aria-activedescendant', it.id);
+        if (content) {
+          var top = it.offsetTop, bottom = top + it.offsetHeight;
+          if (top < content.scrollTop) content.scrollTop = top;
+          else if (bottom > content.scrollTop + content.clientHeight) content.scrollTop = bottom - content.clientHeight;
+          renderScroll();
+        }
+      } else {
+        input.removeAttribute('aria-activedescendant');
+      }
+    }
+    function render() {
+      var hasValue = input.value !== '';
+      var labelUp = hasValue || open;   /* лейбл уезжает наверх при фокусе/открытии списка (floating label, как в Material) */
+      root.classList.toggle('ds-autocomplete-form--empty', !hasValue);
+      root.classList.toggle('ds-autocomplete-form--populated', hasValue);
+      wrap.classList.toggle('ds-input--empty', !hasValue);
+      wrap.classList.toggle('ds-input--populated', hasValue);
+      label.hidden = !labelUp;
+      /* когда лейбл наверху, а поле пустое — в поле плейсхолдер-подсказка (действие) */
+      input.placeholder = labelUp ? 'Начните вводить название' : 'Город';
+      if (clearBtn) clearBtn.hidden = !hasValue;   /* крестик — когда есть что очищать */
+      list.hidden = !(open && visible().length > 0);
+      input.setAttribute('aria-expanded', list.hidden ? 'false' : 'true');
+      if (list.hidden) { active = -1; input.removeAttribute('aria-activedescendant'); }
+      renderScroll();
+    }
+    function closeList() { open = false; active = -1; render(); }
+    function choose(item) {
+      if (!item) return;
+      input.value = item.querySelector('.ds-select-item__label').textContent;
+      items.forEach(function (i) {
+        i.classList.remove('ds-select-item--back-selected', 'is-active');
+        i.setAttribute('aria-selected', 'false');
+      });
+      item.classList.add('ds-select-item--back-selected');
+      item.setAttribute('aria-selected', 'true');
+      closeList();
+    }
+
+    input.addEventListener('focus', function () { open = true; showAll(); render(); });
+    input.addEventListener('input', function () { open = true; active = -1; filter(); render(); if (content) content.scrollTop = 0; renderScroll(); });
+    input.addEventListener('keydown', function (e) {
+      var vis = visible();
+      if (e.key === 'ArrowDown') { e.preventDefault(); if (!open) { open = true; render(); } setActive(active + 1); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); if (!open) { open = true; render(); } setActive(active - 1); }
+      else if (e.key === 'Home' && open) { e.preventDefault(); setActive(0); }
+      else if (e.key === 'End' && open) { e.preventDefault(); setActive(vis.length - 1); }
+      else if (e.key === 'Enter') {
+        if (open && active >= 0 && vis[active]) { e.preventDefault(); choose(vis[active]); }
+        else if (open) { e.preventDefault(); closeList(); }
+      }
+      else if (e.key === 'Escape') { e.preventDefault(); closeList(); }
+      else if (e.key === 'Tab') { closeList(); }
+    });
+    root.addEventListener('click', function () { open = true; showAll(); render(); input.focus(); });
+    list.addEventListener('click', function (e) {
+      var item = e.target.closest('.ds-select-item');
+      if (item) choose(item);
+    });
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        input.value = '';
+        items.forEach(function (i) { i.classList.remove('ds-select-item--back-selected', 'is-active'); i.setAttribute('aria-selected', 'false'); });
+        open = true; active = -1; showAll(); render();
+        if (content) content.scrollTop = 0;
+        input.focus();
+      });
+      clearBtn.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); clearBtn.click(); }
+      });
+    }
+    document.addEventListener('pointerdown', function (e) {
+      if (!root.contains(e.target) && !list.contains(e.target)) closeList();
+    });
+    if (content) content.addEventListener('scroll', renderScroll);
+    if (knob && track) {
+      knob.addEventListener('mousedown', function (e) {
+        e.preventDefault();
+        var startY = e.clientY, startTop = content.scrollTop;
+        var max = Math.max(0, content.scrollHeight - content.clientHeight);
+        var range = Math.max(1, track.clientHeight - knob.offsetHeight);
+        function move(ev) { content.scrollTop = startTop + (ev.clientY - startY) * max / range; renderScroll(); }
+        function up() {
+          document.removeEventListener('mousemove', move);
+          document.removeEventListener('mouseup', up);
+        }
+        document.addEventListener('mousemove', move);
+        document.addEventListener('mouseup', up);
+      });
+    }
+    render();
+  })();
 </script>
 </body>
 </html>

@@ -8,8 +8,8 @@ css/js организма она подтягивает автоматическ
 ## Подключение
 
 ```html
-<link rel="stylesheet" href="../DS/organisms/app-right-panel/app-right-panel.css?v=2">
-<script src="../DS/organisms/app-right-panel/app-right-panel.js?v=1" defer></script>
+<link rel="stylesheet" href="../Design-System/organisms/app-right-panel/app-right-panel.css?v=2">
+<script src="../Design-System/organisms/app-right-panel/app-right-panel.js?v=1" defer></script>
 ```
 
 ## Разметка (декларативно)
@@ -53,4 +53,4 @@ css/js организма она подтягивает автоматическ
   `app-rp-open` / `app-rp-close` (detail.id).
 - Демо стенд — `demo.html`: каркас (кнопка «Открыть панель»); контент и подвал показаны как в карточке
   («Content title» / текст, кнопка «Подробнее» справа) — для понимания.
-- Что добавлено «от себя» и открытые вопросы — журнал `DS/fixes.md` №105.
+- Что добавлено «от себя» и открытые вопросы — журнал `Design-System/fixes.md` №105.

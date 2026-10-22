@@ -48,9 +48,9 @@
 ## Подключение
 
 ```html
-<link rel="stylesheet" href="../DS/components-web/components/index.css">   <!-- включает css сайднава -->
+<link rel="stylesheet" href="../Design-System/components-web/components/index.css">   <!-- включает css сайднава -->
 <!-- плюс ручной слой последним: -->
-<link rel="stylesheet" href="../DS/components-web/fixes.css">
+<link rel="stylesheet" href="../Design-System/components-web/fixes.css">
 ```
 
 Живая проверка и показ — `demo.html` в этой папке (открывается с диска, file://).

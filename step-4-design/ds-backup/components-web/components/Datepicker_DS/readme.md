@@ -18,15 +18,15 @@
 Ручные правки поверх генерации — в `../../fixes.css`: раздел «Datepicker» (п. 9–11: фон/hover
 выбранных ячеек и пилюли, композиция сетки и строки недели, разделитель, opacity выключенных
 ячеек, space-between панели Control) и раздел «Input Datepicker» (п. 12: выпадашка,
-float-модель лейбла «Выберите дату», размер иконки). Журнал находок — `DS/fixes.md` (№75, 77–81).
+float-модель лейбла «Выберите дату», размер иконки). Журнал находок — `Design-System/fixes.md` (№75, 77–81).
 
 ## Подключение
 
 ```html
-<link rel="stylesheet" href="../DS/components-web/components/index.css">   <!-- включает css дейтпикера и поля -->
-<script src="../DS/components-web/components/Datepicker_DS/datepicker.js" defer></script>
+<link rel="stylesheet" href="../Design-System/components-web/components/index.css">   <!-- включает css дейтпикера и поля -->
+<script src="../Design-System/components-web/components/Datepicker_DS/datepicker.js" defer></script>
 <!-- плюс ручной слой последним: -->
-<link rel="stylesheet" href="../DS/components-web/fixes.css">
+<link rel="stylesheet" href="../Design-System/components-web/fixes.css">
 ```
 
 Иконка `date_range` — глиф Material Icons Outlined (токен ДС `--ds-input-datepicker-icon`).

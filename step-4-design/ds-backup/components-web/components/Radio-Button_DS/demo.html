@@ -6,13 +6,15 @@
 <title>Radio Button — демо стенд компонента</title>
 <!--
   Демо стенд компонента Radio-Button (страница «Radio-Button_DS», 54063:309). Папка: DS/components-web/components/Radio-Button_DS/.
-  Источник — канва «Radio-Button_DS» Figma «Iiko Web DS (New)»: набор «Radio button» (54095:4263; 14 вариантов:
-  Variant Normal/Error × Type Deselected/Selected × State Default/Hover/Press + Variant Disable × Type Deselected/Selected),
-  «Radio button label» (54095:4306; 6 вариантов Variant × Type; текст канвы «Цвет и палитра», поддержка «Support/Error text»),
-  «Radio button group» (54095:4392; Orientation Vertical/Horizontal) и блок примеров «Radio button (Examples)» (58346:3220).
+  Источник — Figma «Iiko Web DS (New)»: «Radio button» (54095:4263; 14 вариантов:
+  Normal/Error × Deselected/Selected × Default/Hover/Press + Disable × Deselected/Selected),
+  «Radio button label» (54095:4306; 6 вариантов; в варианте оба слота left/right; текст компонента «Цвет и палитра»,
+  поддержка «Support/Error text») и «Radio button group» (54095:4392; 2 варианта: Vertical/Horizontal).
+  Блок примеров «Radio button (Examples)» (58346:3220) на стенде НЕ воспроизводим — компонент динамический,
+  в «Basic example» — только живой переключатель (§4).
   ⚠ В css лейбла класс текста называется `.ds-radio-button-label__цвет-и-палитра` — артефакт генератора (русское имя),
   класс используется как есть; ему нужен сброс фона — fixes п. 28. Иконки radio — SVG data-URI из radio-icons.css.
-  Обойдено: fixes п. 28 (фон текста лейбла + цвета иконок в label). Журнал DS/fixes.md №120.
+  Обойдено: fixes п. 28 (фон текста лейбла + цвета иконок в label). Журнал DS/fixes.md №120, №161.
 -->
 <link rel="stylesheet" href="../../font.css">
 <link rel="stylesheet" href="../../tokens.css">
@@ -37,23 +39,20 @@
   .snap-sect:last-child { margin-bottom: 0; }
   .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
   .snap-grid { display: grid; gap: 12px 40px; align-items: start; }
-  .snap-grid--3 { grid-template-columns: repeat(3, max-content); }
-  /* матрица набора — как в эталонных стендах (голые заголовки столбцов + метки строк) */
+  /* матрица компонента — как в эталонных стендах (голые заголовки столбцов + метки строк) */
   .snap-grid--matrix { column-gap: 32px; row-gap: 12px; align-items: center; justify-items: start; }
   .snap-cell { display: flex; flex-direction: column; gap: 4px; }
   .snap-h3 { font-size: 14px; line-height: 20px; font-weight: 500; color: var(--ds-color-text-primary, #333333); margin: 20px 0 8px; }
-  .snap-ex-caption { font-size: 14px; line-height: 28px; color: var(--ds-color-text-primary, #333333); margin: 0; }
   .snap-col { display: flex; flex-direction: column; gap: 10px; }
   .snap-row { display: flex; gap: 48px; align-items: flex-start; flex-wrap: wrap; }
   .snap-item-gap { display: flex; flex-direction: column; gap: 8px; }
   .snap-groupbox { display: flex; flex-direction: column; }
-  .snap-wrap { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
 </style>
 </head>
 <body>
 <div class="demo-bar">
   <span class="demo-bar__title">Radio Button — демо стенд</span>
-  <span>наборы Figma: Radio button (54095-4263, 14) · Radio button label (54095-4306, 6) · Radio button group (54095-4392, 2) · примеры (58346-3220)</span>
+  <span>Figma: Radio button (54095-4263, 14) · Radio button label (54095-4306, 6) · Radio button group (54095-4392, 2) · примеры (58346-3220)</span>
 </div>
 <div class="view">
   <div class="ds-tabs" role="tablist" aria-label="Radio Button">
@@ -63,12 +62,12 @@
     <button class="ds-tab" role="tab" aria-selected="false" data-vtab="radio-button-group">Radio button group</button>
   </div>
 
-  <!-- 2. Radio button (набор 54095:4263, 14): Variant × Type × State -->
+  <!-- 2. Radio button (компонент 54095:4263, 14 вариантов) -->
   <div class="panel" data-vpanel="radio-button" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Radio button — 14 вариантов (Variant × Type × State); клик переключает</div>
+      <div class="snap-cap snap-sect__title">Radio button — 14 вариантов</div>
 
-      <div class="snap-h3" style="margin-top: 8px;">Variant=Normal</div>
+      <div class="snap-h3" style="margin-top: 8px;">Normal</div>
       <div class="snap-grid snap-grid--matrix" style="grid-template-columns: max-content max-content max-content;">
         <span class="snap-cap"></span><span class="snap-cap">Deselected</span><span class="snap-cap">Selected</span>
         <span class="snap-cap">Default</span>
@@ -82,7 +81,7 @@
         <label class="ds-radio"><input class="ds-radio__input" type="radio" name="rb-n3" checked><span class="ds-radio__box"></span></label>
       </div>
 
-      <div class="snap-h3">Variant=Error</div>
+      <div class="snap-h3">Error</div>
       <div class="snap-grid snap-grid--matrix" style="grid-template-columns: max-content max-content max-content;">
         <span class="snap-cap"></span><span class="snap-cap">Deselected</span><span class="snap-cap">Selected</span>
         <span class="snap-cap">Default</span>
@@ -96,7 +95,7 @@
         <label class="ds-radio ds-radio--error"><input class="ds-radio__input" type="radio" name="rb-e3" checked><span class="ds-radio__box"></span></label>
       </div>
 
-      <div class="snap-h3">Variant=Disable</div>
+      <div class="snap-h3">Disable</div>
       <div class="snap-grid snap-grid--matrix" style="grid-template-columns: max-content max-content max-content;">
         <span class="snap-cap"></span><span class="snap-cap">Deselected</span><span class="snap-cap">Selected</span>
         <span class="snap-cap">Default</span>
@@ -104,13 +103,13 @@
         <label class="ds-radio ds-radio--disabled"><input class="ds-radio__input" type="radio" name="rb-d1" checked disabled><span class="ds-radio__box"></span></label>
       </div>
     </div>
-
+    <p class="snap-note">Пометки для ревью: (а) 14 вариантов: Normal/Error × Default/Hover/Press × Deselected/Selected + Disable (Default); у Hover/Press в компоненте — подложка State 28×28 (круг), в css класс `.ds-radio__state` объявлен (28×28), но фон не задан — состояния показаны без подложки (решить в ДС); (б) иконки — SVG data-URI radio-icons.css: Selected — кольцо+точка; (в) Disable — #9E9E9E через токены; пары живые — клик переключает выбор в паре. Журнал №120, №161.</p>
   </div>
 
-  <!-- 3. Radio button label (набор 54095:4306, 6) -->
+  <!-- 3. Radio button label (компонент 54095:4306, 6 вариантов) -->
   <div class="panel" data-vpanel="radio-button-label" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Radio button label — Variant × Type</div>
+      <div class="snap-cap snap-sect__title">Radio button label — 6 вариантов</div>
       <div class="snap-grid snap-grid--matrix" style="grid-template-columns: max-content max-content max-content;">
         <span class="snap-cap"></span><span class="snap-cap">Deselected</span><span class="snap-cap">Selected</span>
         <span class="snap-cap">Normal</span>
@@ -124,13 +123,13 @@
         <div class="ds-radio-button-label ds-radio-button-label--disable ds-radio-button-label--selected"><div class="ds-radio-button-label__form"><span class="ds-radio-button-label__left"><span class="ds-radio-button-label__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-rb-on"/></svg></span></span><span class="ds-radio-button-label__цвет-и-палитра">Цвет и палитра</span><span class="ds-radio-button-label__right"><span class="ds-radio-button-label__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-rb-on"/></svg></span></span></div><div class="ds-radio-button-label__support"><span class="ds-radio-button-label__support-text">Support/Error text</span></div></div>
       </div>
     </div>
-
+    <p class="snap-note">Пометки для ревью: (а) 6 вариантов: Normal/Error/Disable × Deselected/Selected; в варианте оба слота left/right (по свойствам компонента) + поддержка «Support/Error text»; иконки — в собственных слотах `__icon` (24); (б) класс текста `.ds-radio-button-label__цвет-и-палитра` — артефакт генератора (русское имя из текста слоя), в нём протекал фон = цвет текста — обойдено fixes п. 28, класс оставлен как есть — стоит переименовать генератором; (в) текст лейбла канвы — «Цвет и палитра». Журнал №120, №161.</p>
   </div>
 
-  <!-- 4. Radio button group (набор 54095:4392, 2) -->
+  <!-- 4. Radio button group (компонент 54095:4392, 2 варианта) -->
   <div class="panel" data-vpanel="radio-button-group" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Radio button group — Orientation; выбор переключается внутри группы</div>
+      <div class="snap-cap snap-sect__title">Radio button group — 2 варианта</div>
       <div class="snap-row">
         <div class="snap-col">
           <span class="snap-cap">Vertical</span>
@@ -155,88 +154,25 @@
       </div>
     </div>
 
-    <p class="snap-note">Пометки для ревью: (а) в наборе у Hover/Press есть подложка State 28×28 (круг); в css у radio класс `.ds-radio__state` объявлен (28×28, круг), но фон не задан — состояния на стенде показаны без подложки; решить в ДС; (б) класс текста лейбла в css называется `.ds-radio-button-label__цвет-и-палитра` — имя сгенерировано из текста слоя (единственный такой артефакт в ДС), в нём протекает фон = цвет текста; обойдено в fixes п. 28, класс оставлен как есть — стоит переименовать генератором; (в) иконки radio в css — SVG data-URI (radio-icons.css): Selected — кольцо + точка; (г) у Disable иконки и подпись #9E9E9E; (д) текст примеров лейблов в наборе — «Цвет и палитра» (как на канве). Журнал №120.</p>
+    <p class="snap-note">Пометки для ревью: (а) 2 варианта: Vertical (зазор 8) и Horizontal (зазор 32) — подписи поддержки «Support/Error text» сверху и снизу; (б) выбор переключается внутри группы (нативные radio с общим именем); (в) группы живые — можно кликать. Журнал №120, №161.</p>
   </div>
 
-  <!-- 1. Basic example: «Radio button (Examples)» (58346:3220) -->
+  <!-- 1. Basic example: живой Radio button (§4 — только работающий компонент) -->
   <div class="panel" data-vpanel="basic" role="tabpanel">
     <div class="snap-sect">
-      <div class="snap-row">
-        <div class="snap-col">
-          <p class="snap-ex-caption">Basic radio button left</p>
-          <label class="ds-radio"><input class="ds-radio__input" type="radio" name="ex1"><span class="ds-radio__box"></span><span class="ds-radio__label">Radio button label</span></label>
-          <p class="snap-ex-caption" style="margin-top: 18px;">Radio button support text</p>
-          <div class="snap-wrap">
-            <label class="ds-radio"><input class="ds-radio__input" type="radio" name="ex2"><span class="ds-radio__box"></span><span class="ds-radio__label">Radio button label</span></label>
-            <span class="ds-radio__support">Support text</span>
-          </div>
-          <p class="snap-ex-caption" style="margin-top: 18px;">Radio button error text</p>
-          <div class="snap-wrap">
-            <label class="ds-radio ds-radio--error"><input class="ds-radio__input" type="radio" name="ex3"><span class="ds-radio__box"></span><span class="ds-radio__label">Radio button label</span></label>
-            <span class="ds-radio__support">Error text</span>
-          </div>
-        </div>
-        <div class="snap-col">
-          <p class="snap-ex-caption">Basic radio button right</p>
-          <label class="ds-radio"><input class="ds-radio__input" type="radio" name="exr1"><span class="ds-radio__label">Radio button label</span><span class="ds-radio__box"></span></label>
-          <p class="snap-ex-caption" style="margin-top: 18px;">Radio button support text (right)</p>
-          <div class="snap-wrap">
-            <label class="ds-radio"><input class="ds-radio__input" type="radio" name="exr2"><span class="ds-radio__label">Radio button label</span><span class="ds-radio__box"></span></label>
-            <span class="ds-radio__support" style="margin-left: 0; align-self: flex-end;">Support text</span>
-          </div>
-          <p class="snap-ex-caption" style="margin-top: 18px;">Radio button error text (right)</p>
-          <div class="snap-wrap">
-            <label class="ds-radio ds-radio--error"><input class="ds-radio__input" type="radio" name="exr3"><span class="ds-radio__label">Radio button label</span><span class="ds-radio__box"></span></label>
-            <span class="ds-radio__support" style="margin-left: 0; align-self: flex-end;">Error text</span>
-          </div>
-        </div>
-        <div class="snap-col">
-          <p class="snap-ex-caption">Radio button group support text</p>
-          <div class="snap-groupbox">
-            <span class="ds-radio__support" style="margin: 0 0 4px;">Support text</span>
-            <div class="snap-item-gap">
-              <label class="ds-radio"><input class="ds-radio__input" type="radio" name="exg1"><span class="ds-radio__box"></span><span class="ds-radio__label">Radio button label</span></label>
-              <label class="ds-radio"><input class="ds-radio__input" type="radio" name="exg1"><span class="ds-radio__box"></span><span class="ds-radio__label">Radio button label</span></label>
-              <label class="ds-radio"><input class="ds-radio__input" type="radio" name="exg1"><span class="ds-radio__box"></span><span class="ds-radio__label">Radio button label</span></label>
-            </div>
-          </div>
-          <p class="snap-ex-caption" style="margin-top: 18px;">Radio button group error text</p>
-          <div class="snap-groupbox">
-            <div class="snap-item-gap">
-              <label class="ds-radio"><input class="ds-radio__input" type="radio" name="exg2"><span class="ds-radio__box"></span><span class="ds-radio__label">Radio button label</span></label>
-              <label class="ds-radio"><input class="ds-radio__input" type="radio" name="exg2"><span class="ds-radio__box"></span><span class="ds-radio__label">Radio button label</span></label>
-              <label class="ds-radio"><input class="ds-radio__input" type="radio" name="exg2"><span class="ds-radio__box"></span><span class="ds-radio__label">Radio button label</span></label>
-            </div>
-            <span class="ds-radio__support" style="margin: 4px 0 0;">Error text</span>
+      <div class="snap-cap snap-sect__title">Basic example — живой переключатель</div>
+      <div class="snap-col" style="margin-top: 12px; align-items: flex-start;">
+        <div class="snap-groupbox">
+          <span class="ds-radio__support" style="margin: 0 0 4px;">Support/Error text</span>
+          <div class="snap-item-gap">
+            <label class="ds-radio"><input class="ds-radio__input" type="radio" name="basic"><span class="ds-radio__box"></span><span class="ds-radio__label">Radio button label</span></label>
+            <label class="ds-radio"><input class="ds-radio__input" type="radio" name="basic"><span class="ds-radio__box"></span><span class="ds-radio__label">Radio button label</span></label>
+            <label class="ds-radio"><input class="ds-radio__input" type="radio" name="basic"><span class="ds-radio__box"></span><span class="ds-radio__label">Radio button label</span></label>
           </div>
         </div>
       </div>
     </div>
-
-    <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Группы с реальными текстами (из канвы)</div>
-      <div class="snap-row">
-        <div class="snap-col" style="width: 577px;">
-          <span class="ds-radio__support" style="margin: 0 0 4px;">Подсказка: обычно отмечают «Склад поставки», если товар может прийти на разные склады. Выберите один из вариантов (обязательно)</span>
-          <div class="snap-item-gap">
-            <label class="ds-radio"><input class="ds-radio__input" type="radio" name="real1"><span class="ds-radio__box"></span><span class="ds-radio__label">Фасовки у товаров</span></label>
-            <label class="ds-radio"><input class="ds-radio__input" type="radio" name="real1"><span class="ds-radio__box"></span><span class="ds-radio__label">Добавлять товары, которых не было в заказе</span></label>
-            <label class="ds-radio"><input class="ds-radio__input" type="radio" name="real1"><span class="ds-radio__box"></span><span class="ds-radio__label">Склад поставки</span></label>
-          </div>
-        </div>
-        <div class="snap-col" style="width: 577px;">
-          <span class="ds-radio__support" style="margin: 0 0 4px;">Подсказка: обычно отмечают «Склад поставки», если товар может прийти на разные склады. Выберите один из вариантов (обязательно)</span>
-          <div class="snap-item-gap">
-            <label class="ds-radio ds-radio--error"><input class="ds-radio__input" type="radio" name="real2"><span class="ds-radio__box"></span><span class="ds-radio__label">Фасовки у товаров</span></label>
-            <label class="ds-radio ds-radio--error"><input class="ds-radio__input" type="radio" name="real2"><span class="ds-radio__box"></span><span class="ds-radio__label">Добавлять товары, которых не было в заказе</span></label>
-            <label class="ds-radio ds-radio--error"><input class="ds-radio__input" type="radio" name="real2"><span class="ds-radio__box"></span><span class="ds-radio__label">Склад поставки</span></label>
-          </div>
-          <span class="ds-radio__support" style="margin: 4px 0 0; color: var(--ds-color-text-negative, #ff5252);">Ошибка: выберите хотя бы один пункт в группе «Товары и склад»</span>
-        </div>
-      </div>
-    </div>
-
-    <p class="snap-note">Пометки для ревью: (а) сценарии повторяют кадры блока «Radio button (Examples)» (58346:3220) — подписи и тексты из канвы; есть отдельный кадр с правым выравниванием (Frame 746) — включён в блок right; (б) в группах с реальными текстами — те же формулировки, что у checkbox (отличие: «Выберите один из вариантов»); (в) selected рисуется кольцом с точкой (data-URI); (г) ячейки и группы живые. Журнал №120.</p>
+    <p class="snap-note">Пометки для ревью: (а) живой переключатель: группа из трёх пунктов с подписью поддержки — клик выбирает, выбор переключается внутри группы; (б) клетки состояний (Hover/Press/Disable) — в витрине «Radio button»; (в) кадры примеров «Radio button (Examples)» (58346:3220) на стенде НЕ воспроизводим — компонент динамический, в Basic только живой компонент (§4); (г) мобильные компоненты — вне веба. Журнал №120, №161.</p>
   </div>
 </div>
 

@@ -12,13 +12,24 @@
   «Arrow menu» (13 стрелок) + блок «Menu (Examples)» (6254×1339; сценарии: Basic menu «Профиль/Выбор языка/Уведомления/
   Настройки/Выход», Nested menu, State menu, Icon menu, «Menu with text sections/counter», «Menu inputs» (Название, А-Я/Я-А,
   Дата, Сначала новые/старые), «Selection check menu» (Статус: Черновик/Запланирована/…; Каналы: Только канал/…), «Menu all» и др.).
-  ⚠ В css у Menu item НЕТ классов Selected/Negative/Back selected (только :hover/:active/:disabled) — собраны обвязкой стенда;
-  высоты пунктов внутри контейнера на канве не сняты (слот 228×272) — на стенде строки 36 (обвязка). Журнал DS/fixes.md №131.
+  ⚠ В css у Menu item НЕТ классов Selected/Back selected/Negative (только :hover/:active/:disabled) — на стенде состояния
+  собраны классами стенда на токенах (st-backsel, st-negative; Selected — выбранный Checkbox) — решить в ДС (№131).
+  15.10.2026: сверка контейнера/пункта/элементов/стрелок с Figma — fixes.css п. 39, журнал №188
+  (контейнер 55613:135: подвал 44 вправо, заголовок Medium 500, пункты по контейнеру; стрелки — все 13 из набора 56090:1628).
+  15.10.2026 (позже): поиск и скролл контейнера сделаны рабочими — в слоте текста Search реальное поле ввода
+  (состояния компонента Focus / Focus+Value), область пунктов прокручивается с живым ползунком Scroll
+  (слот наполнен 11 пунктами — видно 4 = 272/68) — журнал №189.
 -->
 <link rel="stylesheet" href="../../font.css">
 <link rel="stylesheet" href="../../tokens.css">
 <link rel="stylesheet" href="../../styles.css">
 <link rel="stylesheet" href="../index.css">
+<!-- checkbox.css/checkbox-icons.css и radio.css/radio-icons.css в components/index.css не подключены (журнал №108, №32) —
+     подключаем явно, как это делают стенды Checkbox_DS/Radio-Button_DS -->
+<link rel="stylesheet" href="../Checkbox_DS/checkbox.css">
+<link rel="stylesheet" href="../Checkbox_DS/checkbox-icons.css">
+<link rel="stylesheet" href="../Radio-Button_DS/radio.css">
+<link rel="stylesheet" href="../Radio-Button_DS/radio-icons.css">
 <link rel="stylesheet" href="../../fixes.css">
 <style>
   /* каркас демо-стенда */
@@ -36,32 +47,47 @@
   .snap-row { display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap; }
   .snap-col { display: flex; flex-direction: column; gap: 10px; }
   .snap-ex-caption { font-size: 14px; line-height: 28px; color: var(--ds-color-text-primary, #333333); margin: 0; }
-  /* пункт меню в контейнере (обвязка: 36 высота) */
-  .ds-menu-container { min-height: 0; }
-  .snap-mi { width: 100%; display: flex; align-items: center; gap: 8px; padding: 8px 16px; box-sizing: border-box; font-size: 14px; line-height: 20px; color: #333; background: #fff; cursor: pointer; }
-  .snap-mi:hover { background: var(--ds-color-menu-item-hover-background, #f5f5f5); }
-  .snap-mi--pressed { background: var(--ds-color-menu-item-press-background, #e0e0e0); }
-  .snap-mi--selected { background: var(--ds-palette-accent-10, #f5f9ff); color: var(--ds-color-icon-accent, #448aff); }
-  .snap-mi--negative { color: var(--ds-color-text-negative, #ff5252); }
-  .snap-mi--disable { color: var(--ds-color-text-disable, #9e9e9e); pointer-events: none; }
-  .snap-mi--back { background: var(--ds-palette-accent-10, #f5f9ff); }
-  .snap-mi__right { margin-left: auto; display: inline-flex; gap: 8px; color: inherit; }
-  .snap-mi__icon { width: 20px; height: 20px; display: inline-flex; color: var(--ds-color-icon-primary, #616161); }
-  .snap-mi__icon svg { width: 100%; height: 100%; display: block; }
-  .snap-mi--selected .snap-mi__icon { color: inherit; }
-  .snap-counter { display: inline-flex; align-items: center; justify-content: center; min-width: 19px; height: 18px; padding: 1px 6px; box-sizing: border-box; border-radius: 9999px; background: var(--ds-color-badge-accent-background, #448aff); color: #fff; font-size: 12px; line-height: 16px; }
-  .snap-ind { width: 8px; height: 8px; border-radius: 50%; background: var(--ds-color-badge-accent-background, #448aff); display: inline-block; }
-  .snap-sect .ds-menu-item { width: 100%; min-height: 36px; align-items: center; box-sizing: border-box; }
-  .snap-mi2 { width: 258px; min-height: 68px; }
-  .snap-btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; border: 0; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer; }
-  .snap-btn--accent { background: var(--ds-color-button-accent-filled-default-background, #448aff); color: #ffffff; }
-  .snap-btn--text { background: none; color: var(--ds-color-button-accent-outlined-default-text-color, #448aff); }
+  /* обвязка стенда; остальное — классы ДС (menu-container, menu-item, element-menu, badge, divider, btn) */
+  .st-hover.ds-menu-item { background: var(--ds-color-menu-item-hover-background, #f5f5f5); }
+  .st-press.ds-menu-item { background: var(--ds-color-menu-item-press-background, #e0e0e0); }
+  /* состояния пункта из набора 56090:1476 (в css ДС классов нет — токены компонента; №131/№188) */
+  .st-backsel.ds-menu-item { background: var(--ds-color-menu-item-selected-back-selected, #f5f9ff); }
+  .st-backsel.ds-menu-item .ds-menu-item__icon,
+  .st-selected.ds-menu-item .ds-menu-item__icon { color: var(--ds-color-menu-item-selected-icon-color, #448aff); }
+  .st-negative.ds-menu-item .ds-menu-item__label-up,
+  .st-negative.ds-menu-item .ds-menu-item__text,
+  .st-negative.ds-menu-item .ds-menu-item__label-down { color: var(--ds-color-menu-item-negative-text-color, #ff5252); }
+  .snap-live-hint { margin: 0 0 16px; }
+  .snap-item-right { margin-left: auto; display: inline-flex; gap: 8px; align-items: center; }
+  .snap-arrow { color: var(--ds-color-icon-primary, #616161); }
+  /* витрины: ячейки 240 — ширина использования компонента (размеры фреймов не воспроизводим, №156) */
+  .snap-mw240 { width: 240px; }
+  /* витрина контейнера: строка «Content container» — пункты + полоса скролла (узел 55613:135) */
+  .snap-mc-row { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+  .snap-mc-scroll { width: 12px; height: 272px; flex: none; }
+  .snap-mc-scroll .ds-scroll__background { flex: 1 1 auto; }
+  .snap-mc-scroll .ds-scroll__knob { height: 96px; }   /* старт — артворк кадра; дальше длину и положение считает обвязка по прокрутке */
+  .snap-mc-scroll:hover .ds-scroll__background { background: var(--ds-color-scroll-hover-background, #ebebeb); }   /* ховер полосы — токены (fixes п. 25) */
+  /* рабочий скролл: область пунктов прокручивается; родная полоса скрыта — полосу рисует компонент Scroll */
+  .snap-mc-content { height: 272px; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+  .snap-mc-content::-webkit-scrollbar { width: 0; height: 0; }
+  .snap-mc-content > .ds-menu-item { flex: none; }   /* обвязка: в flex-колонке пункты не сжимаются — иначе они утрамбовываются в 272 вместо прокрутки */
+  /* рабочий поиск: поле ввода в слоте текста Search (в компоненте поля нет — журнал №9) */
+  .snap-mc-search [hidden] { display: none; }
+  .snap-mc-search:focus-within { border: 1px solid var(--ds-color-search-focus-border-color, #448aff); }   /* Focus: рамка-акцент — в css не выгружено (обвязка токеном, как в стенде Search_DS) */
+  .snap-mc-search .ds-search__right-icon { align-self: stretch; }
+  .snap-mc-search .ds-search__right-icon > .ds-divider { width: 1px; height: auto; align-self: stretch; flex: none; }
+  .snap-mc-search:not(.ds-search--disabled) .ds-icon-size { color: var(--ds-color-icon-primary, #616161); }
+  .snap-mc-search-icons { display: flex; align-items: center; gap: 8px; }
+  .snap-mc-clear, .snap-mc-off { cursor: pointer; }
+  .snap-mc-search-input { flex: 1 1 auto; min-width: 0; border: 0; outline: 0; background: transparent; padding: 0; font-family: inherit; color: var(--ds-color-search-focusvalue-text-color, #333333); }   /* текст ввода — #333 (Focus+Value/Completed в узле) */
+  .snap-mc-search-input::placeholder { color: var(--ds-color-search-focus-text-color, #d6d6d6); opacity: 1; }
 </style>
 </head>
 <body>
 <div class="demo-bar">
   <span class="demo-bar__title">Menu — демо стенд</span>
-  <span>наборы Figma: Menu (Container) · Menu item (7 состояний) · Element menu (8) · Arrow menu (13) · примеры (6254×1339)</span>
+  <span>Figma: Menu (Container) · Menu item (7 состояний) · Element menu (8) · Arrow menu (13) · примеры (6254×1339)</span>
 </div>
 <div class="view">
   <div class="ds-tabs" role="tablist" aria-label="Menu">
@@ -72,163 +98,231 @@
     <button class="ds-tab" role="tab" aria-selected="false" data-vtab="arrow-menu">Arrow menu</button>
   </div>
 
-  <!-- 2. Menu (Container) — состав: Search + Title menu + Divider + пункты + Divider + Button group -->
+  <!-- 2. Menu (Container) — состав по узлу 55613:135: Search 40 + Title 36 + Divider + 4 двойных пункта (68) + Scroll 12×272 + Divider + Button group 44 -->
   <div class="panel" data-vpanel="menu-container" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Menu (Container) — состав: Search + Title menu + Divider + пункты + Divider + Button group</div>
+      <div class="snap-cap snap-sect__title">Menu (Container) — состав: Search + Title menu + Divider + пункты меню + Scroll + Divider + Button group</div>
       <div class="snap-row" style="margin-top: 12px;">
-        <div class="ds-menu-container" style="width:240px;padding:8px 0;">
-          <div class="ds-menu-container__search"><div class="ds-search ds-search--s" style="width:208px;"><span class="ds-search__icon" style="color:#616161;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-search"/></svg></span><span class="ds-search__text" style="color:#d6d6d6;">Search text</span></div></div>
-          <div class="ds-menu-container__title"><span class="ds-menu-container__label" style="color:#333333;">Title menu</span></div>
-          <div style="height:1px;background:var(--ds-color-stroke-default,#e0e0e0);"></div>
-          <div class="snap-mi">Menu item text</div>
-          <div class="snap-mi">Menu item text</div>
-          <div class="snap-mi">Menu item text</div>
-          <div class="snap-mi">Menu item text</div>
-          <div style="height:1px;background:var(--ds-color-stroke-default,#e0e0e0);"></div>
-          <div class="ds-menu-container__button-group"><button class="snap-btn snap-btn--text" style="padding:4px 8px;">Button</button><button class="snap-btn snap-btn--accent" style="padding:4px 8px;">Button</button></div>
+        <div class="ds-menu-container">
+          <div class="ds-menu-container__search"><div class="ds-search ds-search--s snap-mc-search" id="mc-search"><span class="ds-search__icon"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-search-20"/></svg></span></span><input class="ds-search__label snap-mc-search-input" id="mc-search-input" type="text" placeholder="Search text" aria-label="Search text"><span class="snap-mc-search-icons" id="mc-search-icons" hidden><span class="ds-icon-size ds-icon-size--5x snap-mc-clear" role="button" tabindex="0" aria-label="Очистить"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-close-20"/></svg></span><span class="ds-search__right-icon"><span class="ds-divider"></span><span class="ds-icon-size ds-icon-size--5x snap-mc-off" role="button" tabindex="0" aria-label="Сбросить поиск"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-search-off-20"/></svg></span></span></span><span class="ds-search__right-icon" id="mc-search-right" hidden><span class="ds-divider"></span><span class="ds-icon-size ds-icon-size--5x snap-mc-off" role="button" tabindex="0" aria-label="Сбросить поиск"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-search-off-20"/></svg></span></span></div></div>
+          <div class="ds-menu-container__title"><span class="ds-menu-container__label">Title menu</span></div>
+          <div class="ds-divider"></div>
+          <div class="snap-mc-row">
+            <div class="ds-menu-container__content snap-mc-content" id="mc-content">
+              <div class="ds-menu-item">
+                <div class="ds-menu-item__element-left"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label></div>
+                <div class="ds-menu-item__content"><span class="ds-menu-item__label-up">Label up</span><span class="ds-menu-item__text">Menu item text</span><span class="ds-menu-item__label-down">Label down</span></div>
+                <div class="ds-menu-item__element-right"><span class="ds-menu-item__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              </div>
+              <div class="ds-menu-item">
+                <div class="ds-menu-item__element-left"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label></div>
+                <div class="ds-menu-item__content"><span class="ds-menu-item__label-up">Label up</span><span class="ds-menu-item__text">Menu item text</span><span class="ds-menu-item__label-down">Label down</span></div>
+                <div class="ds-menu-item__element-right"><span class="ds-menu-item__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              </div>
+              <div class="ds-menu-item">
+                <div class="ds-menu-item__element-left"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label></div>
+                <div class="ds-menu-item__content"><span class="ds-menu-item__label-up">Label up</span><span class="ds-menu-item__text">Menu item text</span><span class="ds-menu-item__label-down">Label down</span></div>
+                <div class="ds-menu-item__element-right"><span class="ds-menu-item__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              </div>
+              <div class="ds-menu-item">
+                <div class="ds-menu-item__element-left"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label></div>
+                <div class="ds-menu-item__content"><span class="ds-menu-item__label-up">Label up</span><span class="ds-menu-item__text">Menu item text</span><span class="ds-menu-item__label-down">Label down</span></div>
+                <div class="ds-menu-item__element-right"><span class="ds-menu-item__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              </div>
+              <!-- для рабочего скролла слот наполнен пунктами (в кадре 55613:135 — 4; видно 272/68) -->
+              <div class="ds-menu-item">
+                <div class="ds-menu-item__element-left"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label></div>
+                <div class="ds-menu-item__content"><span class="ds-menu-item__label-up">Label up</span><span class="ds-menu-item__text">Menu item text</span><span class="ds-menu-item__label-down">Label down</span></div>
+                <div class="ds-menu-item__element-right"><span class="ds-menu-item__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              </div>
+              <div class="ds-menu-item">
+                <div class="ds-menu-item__element-left"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label></div>
+                <div class="ds-menu-item__content"><span class="ds-menu-item__label-up">Label up</span><span class="ds-menu-item__text">Menu item text</span><span class="ds-menu-item__label-down">Label down</span></div>
+                <div class="ds-menu-item__element-right"><span class="ds-menu-item__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              </div>
+              <div class="ds-menu-item">
+                <div class="ds-menu-item__element-left"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label></div>
+                <div class="ds-menu-item__content"><span class="ds-menu-item__label-up">Label up</span><span class="ds-menu-item__text">Menu item text</span><span class="ds-menu-item__label-down">Label down</span></div>
+                <div class="ds-menu-item__element-right"><span class="ds-menu-item__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              </div>
+              <div class="ds-menu-item">
+                <div class="ds-menu-item__element-left"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label></div>
+                <div class="ds-menu-item__content"><span class="ds-menu-item__label-up">Label up</span><span class="ds-menu-item__text">Menu item text</span><span class="ds-menu-item__label-down">Label down</span></div>
+                <div class="ds-menu-item__element-right"><span class="ds-menu-item__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              </div>
+              <div class="ds-menu-item">
+                <div class="ds-menu-item__element-left"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label></div>
+                <div class="ds-menu-item__content"><span class="ds-menu-item__label-up">Label up</span><span class="ds-menu-item__text">Menu item text</span><span class="ds-menu-item__label-down">Label down</span></div>
+                <div class="ds-menu-item__element-right"><span class="ds-menu-item__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              </div>
+              <div class="ds-menu-item">
+                <div class="ds-menu-item__element-left"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label></div>
+                <div class="ds-menu-item__content"><span class="ds-menu-item__label-up">Label up</span><span class="ds-menu-item__text">Menu item text</span><span class="ds-menu-item__label-down">Label down</span></div>
+                <div class="ds-menu-item__element-right"><span class="ds-menu-item__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              </div>
+              <div class="ds-menu-item">
+                <div class="ds-menu-item__element-left"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label></div>
+                <div class="ds-menu-item__content"><span class="ds-menu-item__label-up">Label up</span><span class="ds-menu-item__text">Menu item text</span><span class="ds-menu-item__label-down">Label down</span></div>
+                <div class="ds-menu-item__element-right"><span class="ds-menu-item__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              </div>
+            </div>
+            <div class="ds-scroll snap-mc-scroll" id="mc-scroll"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+          </div>
+          <div class="ds-divider"></div>
+          <div class="ds-menu-container__button-group">
+            <button type="button" class="ds-btn ds-btn--s ds-btn--neutral ds-btn--outlined"><span class="ds-btn__label">Button</span></button>
+            <button type="button" class="ds-btn ds-btn--s ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Button</span></button>
+          </div>
         </div>
-        <div class="snap-col" style="max-width: 300px;">
-          <span class="snap-cap">Пункт «Menu item» в контейнере — строки 36 (обвязка); на канве слот 228×272 без детализации высот. Search — ds-search--s (36), Title 36, Button group 52. Тексты — заглушки канвы.</span>
+        <div class="snap-col" style="max-width: 320px;">
+          <span class="snap-cap">Состав — по узлу 55613:135: Search (ds-search--s), Title menu, Divider, пункты Menu item (чекбокс + Label up / Menu item text / Label down + ⓘ), разделитель, Button group (кнопки S, прижаты вправо — узел 57846:6973). Поиск и скролл — рабочие: в поле можно печатать, область пунктов прокручивается колесом и перетаскиванием ползунка; для рабочего скролла в слот добавлены пункты (в кадре видно 4 = 272/68; при 11 ползунок ≈96 — как в кадре).</span>
         </div>
       </div>
     </div>
-
+    <p class="snap-note">Пометки для ревью: (а) подвал в css ДС был height 52 (в content-box давало 68 вместо 44) и кнопки слева — приведено к Figma: высота по контенту, кнопки прижаты вправо (fixes п. 39); (б) заголовок Title menu — Roboto Medium 500 #333 (в css был regular и цвет плейсхолдера #D6D6D6 — fixes п. 39); (в) пункты в css были width 258 / min-height 68 (артбордные) — тянутся по контейнеру и высоте по контенту (однострочный 36, двойной 68); (г) Scroll — компонент ds-scroll (дорожка #FAFAFA, ползунок 96, пад 2); (д) поиск — рабочий: в слоте текста Search реальное поле ввода (в компоненте поля нет — журнал №9); Focus — рамка-акцент, при вводе — состояния компонента («✕» + разделитель + search_off; «✕» очищает и возвращает фокус, search_off сбрасывает) — механика стенда, как в Search_DS; в кадре инстанс собран с rightIcon=false — правая иконка приходит только с состояниями; (е) скролл — рабочий: область пунктов (272) прокручивается колесом и перетаскиванием ползунка, ползунок считает длину/положение от прокрутки (при 11 пунктах ползунок ≈96 — как в кадре); родная полоса скрыта — полосу рисует компонент Scroll. Журнал №131, №188, №189.</p>
   </div>
 
-  <!-- 3. Menu item — 7 состояний -->
+  <!-- 3. Menu item — 7 состояний (набор 56090:1476: Default/Hover/Press/Selected/Back selected/Negative/Disable) -->
   <div class="panel" data-vpanel="menu-item" role="tabpanel" hidden>
     <div class="snap-sect">
       <div class="snap-cap snap-sect__title">Menu item — 7 состояний</div>
       <div class="snap-row" style="margin-top: 8px;">
-        <div class="snap-col"><span class="snap-cap">Default</span><div class="ds-menu-item snap-mi2"><span class="ds-menu-item__label">Menu item text</span></div></div>
-        <div class="snap-col"><span class="snap-cap">Hover</span><div class="ds-menu-item snap-mi2" style="background:var(--ds-color-menu-item-hover-background,#f5f5f5);"><span class="ds-menu-item__label">Menu item text</span></div></div>
-        <div class="snap-col"><span class="snap-cap">Press</span><div class="ds-menu-item snap-mi2" style="background:var(--ds-color-menu-item-press-background,#e0e0e0);"><span class="ds-menu-item__label">Menu item text</span></div></div>
-        <div class="snap-col"><span class="snap-cap">Negative</span><div class="ds-menu-item snap-mi2"><span class="ds-menu-item__label" style="color:var(--ds-color-text-negative,#ff5252);">Menu item text</span></div></div>
-        <div class="snap-col"><span class="snap-cap">Selected</span><div class="ds-menu-item snap-mi2" style="background:var(--ds-palette-accent-10,#f5f9ff);"><span class="ds-menu-item__label" style="color:var(--ds-color-icon-accent,#448aff);">Menu item text</span></div></div>
-        <div class="snap-col"><span class="snap-cap">Back selected</span><div class="ds-menu-item snap-mi2" style="background:var(--ds-palette-accent-10,#f5f9ff);"><span class="ds-menu-item__icon" style="color:#448aff;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-arr-left"/></svg></span><span class="ds-menu-item__label">Menu item text</span></div></div>
-        <div class="snap-col"><span class="snap-cap">Disable</span><div class="ds-menu-item snap-mi2 ds-menu-item--disabled"><span class="ds-menu-item__label" style="color:#9e9e9e;">Menu item text</span></div></div>
+        <div class="snap-col snap-mw240"><span class="snap-cap">Default</span>
+          <div class="ds-menu-item">
+            <div class="ds-menu-item__element-left"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label></div>
+            <div class="ds-menu-item__content"><span class="ds-menu-item__label-up">Label up</span><span class="ds-menu-item__text">Menu item text</span><span class="ds-menu-item__label-down">Label down</span></div>
+            <div class="ds-menu-item__element-right"><span class="ds-menu-item__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+          </div>
+        </div>
+        <div class="snap-col snap-mw240"><span class="snap-cap">Hover</span>
+          <div class="ds-menu-item st-hover">
+            <div class="ds-menu-item__element-left"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label></div>
+            <div class="ds-menu-item__content"><span class="ds-menu-item__label-up">Label up</span><span class="ds-menu-item__text">Menu item text</span><span class="ds-menu-item__label-down">Label down</span></div>
+            <div class="ds-menu-item__element-right"><span class="ds-menu-item__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+          </div>
+        </div>
+        <div class="snap-col snap-mw240"><span class="snap-cap">Press</span>
+          <div class="ds-menu-item st-press">
+            <div class="ds-menu-item__element-left"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label></div>
+            <div class="ds-menu-item__content"><span class="ds-menu-item__label-up">Label up</span><span class="ds-menu-item__text">Menu item text</span><span class="ds-menu-item__label-down">Label down</span></div>
+            <div class="ds-menu-item__element-right"><span class="ds-menu-item__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+          </div>
+        </div>
+        <div class="snap-col snap-mw240"><span class="snap-cap">Selected</span>
+          <div class="ds-menu-item st-selected">
+            <div class="ds-menu-item__element-left"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox" checked><span class="ds-checkbox__box"></span></label></div>
+            <div class="ds-menu-item__content"><span class="ds-menu-item__label-up">Label up</span><span class="ds-menu-item__text">Menu item text</span><span class="ds-menu-item__label-down">Label down</span></div>
+            <div class="ds-menu-item__element-right"><span class="ds-menu-item__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+          </div>
+        </div>
+        <div class="snap-col snap-mw240"><span class="snap-cap">Back selected</span>
+          <div class="ds-menu-item st-backsel">
+            <div class="ds-menu-item__element-left"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox" checked><span class="ds-checkbox__box"></span></label></div>
+            <div class="ds-menu-item__content"><span class="ds-menu-item__label-up">Label up</span><span class="ds-menu-item__text">Menu item text</span><span class="ds-menu-item__label-down">Label down</span></div>
+            <div class="ds-menu-item__element-right"><span class="ds-menu-item__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+          </div>
+        </div>
+        <div class="snap-col snap-mw240"><span class="snap-cap">Negative</span>
+          <div class="ds-menu-item st-negative">
+            <div class="ds-menu-item__element-left"><label class="ds-checkbox ds-checkbox--error"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label></div>
+            <div class="ds-menu-item__content"><span class="ds-menu-item__label-up">Label up</span><span class="ds-menu-item__text">Menu item text</span><span class="ds-menu-item__label-down">Label down</span></div>
+            <div class="ds-menu-item__element-right"><span class="ds-menu-item__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+          </div>
+        </div>
+        <div class="snap-col snap-mw240"><span class="snap-cap">Disable</span>
+          <div class="ds-menu-item ds-menu-item--disabled">
+            <div class="ds-menu-item__element-left"><label class="ds-checkbox ds-checkbox--disabled"><input class="ds-checkbox__input" type="checkbox" disabled><span class="ds-checkbox__box"></span></label></div>
+            <div class="ds-menu-item__content"><span class="ds-menu-item__label-up">Label up</span><span class="ds-menu-item__text">Menu item text</span><span class="ds-menu-item__label-down">Label down</span></div>
+            <div class="ds-menu-item__element-right"><span class="ds-menu-item__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+          </div>
+        </div>
       </div>
     </div>
-
+    <p class="snap-note">Пометки для ревью: (а) 7 состояний — по набору 56090:1476, каждый = полный пункт (слот слева + Label up / Menu item text / Label down + слот справа): Selected — выбранный Checkbox (белая подложка) и акцентная иконка ⓘ, Back selected — то же + фон #F5F9FF (Accent/10), Negative — тексты и чекбокс #FF5252, Hover/Press — #F5F5F5/#E0E0E0; (б) в css ДС классов Selected/Back selected/Negative нет — состояния собраны классами стенда на токенах (st-backsel / st-negative; negative-чекбокс — компонент ds-checkbox--error) — решить в ДС; (в) у набора артборд 258×68 — на стенде пункты 240 (ширина использования), высота по контенту; слоты left/right прижаты к верху строки (как в наборе, узел 56090:1522 — fixes п. 39); (г) Disable — тексты и чекбокс #9E9E9E. Журнал №131, №188.</p>
   </div>
 
-  <!-- 4. Element menu — 8 вариантов контента -->
+  <!-- 4. Element menu — 8 вариантов контента (набор 56090:1611) -->
   <div class="panel" data-vpanel="element-menu" role="tabpanel" hidden>
     <div class="snap-sect">
       <div class="snap-cap snap-sect__title">Element menu — 8 вариантов контента (в строке меню)</div>
       <div class="snap-row" style="margin-top: 8px; align-items: center;">
-        <div class="snap-col"><span class="snap-cap">Image size</span><span style="width:24px;height:24px;border-radius:50%;background:#e0e0e0;display:inline-block;"></span></div>
-        <div class="snap-col"><span class="snap-cap">Icon size</span><span class="snap-mi__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
-        <div class="snap-col"><span class="snap-cap">Text default</span><span style="font-size:14px;line-height:20px;">Text default</span></div>
-        <div class="snap-col"><span class="snap-cap">Checkbox</span><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox" checked><span class="ds-checkbox__box"></span></label></div>
-        <div class="snap-col"><span class="snap-cap">Radio button</span><label class="ds-radio"><input class="ds-radio__input" type="radio" checked><span class="ds-radio__box"></span></label></div>
-        <div class="snap-col"><span class="snap-cap">Indicator</span><span class="snap-ind"></span></div>
-        <div class="snap-col"><span class="snap-cap">Slide toggle</span><label class="ds-slide-toggle"><span class="ds-slide-toggle__row"><input class="ds-slide-toggle__input" type="checkbox" checked><span class="ds-slide-toggle__track"></span></span></label></div>
-        <div class="snap-col"><span class="snap-cap">Counter</span><span class="snap-counter">5</span></div>
+        <div class="snap-col"><span class="snap-cap">Image size</span><span class="ds-element-menu__image-size" style="width:24px;background:var(--ds-palette-neutral-100,#ebebeb);"></span></div>
+        <div class="snap-col"><span class="snap-cap">Icon size</span><span class="ds-element-menu__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+        <div class="snap-col"><span class="snap-cap">Text default</span><span class="ds-element-menu__label">Цвет и палитра</span></div>
+        <div class="snap-col"><span class="snap-cap">Checkbox</span><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span></label></div>
+        <div class="snap-col"><span class="snap-cap">Radio button</span><label class="ds-radio"><input class="ds-radio__input" type="radio"><span class="ds-radio__box"></span></label></div>
+        <div class="snap-col"><span class="snap-cap">Indicator</span><span class="ds-element-menu--indicator"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect x="19.5" y="3" width="2" height="18" rx="1"/></svg></span></div>
+        <div class="snap-col"><span class="snap-cap">Slide toggle</span><label class="ds-slide-toggle"><span class="ds-slide-toggle__row"><input class="ds-slide-toggle__input" type="checkbox"><span class="ds-slide-toggle__track"></span></span></label></div>
+        <div class="snap-col"><span class="snap-cap">Counter</span><span class="ds-element-menu--counter"><span class="ds-badge ds-badge--counter ds-badge--negative">17</span></span></div>
       </div>
     </div>
-
+    <p class="snap-note">Пометки для ревью: (а) 8 вариантов по набору 56090:1611 в дефолтных состояниях: Checkbox/Radio — не выбранные, Slide toggle — Off (как в наборе; раньше на стенде были включены — поправлено); (б) Icon size — контейнер 20 (в css было 24 — fixes п. 39); (в) Image size — круг 24 #EBEBEB (Icon/Image color); (г) Text default — текст компонента (Body S 14/20 #333); (д) Indicator — акцентная полоса 18×2 (Icon/Accent #448AFF, узел 56090:1622); (е) Counter — Badge counter negative «17» (узел 56090:1626). Журнал №131, №188.</p>
   </div>
 
-  <!-- 5. Arrow menu — стрелки -->
+  <!-- 5. Arrow menu — 13 стрелок (набор 56090:1628) -->
   <div class="panel" data-vpanel="arrow-menu" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Arrow menu — стрелки (в наборе 13; показаны доступные глифы)</div>
-      <div class="snap-row" style="margin-top: 8px; align-items:center;">
-        <span class="snap-mi__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span>
-        <span class="snap-mi__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span>
-        <span class="snap-mi__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-right"/></svg></span>
-        <span class="snap-mi__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-arr-left"/></svg></span>
-        <span class="snap-mi__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-arr-right"/></svg></span>
-        <span class="snap-mi__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-up"/></svg></span>
-        <span class="snap-mi__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-up"/></svg></span>
-        <span class="snap-mi__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-left"/></svg></span>
-        <span class="snap-cap">…и ещё: arrow_downward_alt, arrow_forward, unfold_less, unfold_more, arrow_upward (состав из 13 — по канве; часть глифов не экспортировалась).</span>
+      <div class="snap-cap snap-sect__title">Arrow menu — 13 стрелок (как в наборе)</div>
+      <div class="snap-row" style="margin-top: 8px; align-items:center; gap: 24px;">
+        <span class="ds-arrow-menu__icon snap-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-arrow-left"/></svg></span>
+        <span class="ds-arrow-menu__icon snap-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-arrow-drop-up"/></svg></span>
+        <span class="ds-arrow-menu__icon snap-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-arrow-right"/></svg></span>
+        <span class="ds-arrow-menu__icon snap-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-arrow-drop-down"/></svg></span>
+      </div>
+      <div class="snap-row" style="margin-top: 24px; align-items:center; gap: 24px;">
+        <span class="ds-arrow-menu__icon snap-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-left"/></svg></span>
+        <span class="ds-arrow-menu__icon snap-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-up"/></svg></span>
+        <span class="ds-arrow-menu__icon snap-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-right"/></svg></span>
+        <span class="ds-arrow-menu__icon snap-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span>
+      </div>
+      <div class="snap-row" style="margin-top: 24px; align-items:center; gap: 24px;">
+        <span class="ds-arrow-menu__icon snap-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-arrow-back"/></svg></span>
+        <span class="ds-arrow-menu__icon snap-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-arrow-forward"/></svg></span>
+        <span class="ds-arrow-menu__icon snap-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-arrow-downward-alt"/></svg></span>
+        <span class="ds-arrow-menu__icon snap-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-arrow-upward-alt"/></svg></span>
+        <span class="ds-arrow-menu__icon snap-arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-unfold-less"/></svg></span>
       </div>
     </div>
-    <p class="snap-note">Пометки для ревью: (а) в css Menu item состояния Selected/Negative/Back selected отсутствуют (только hover/press/disable) — на стенде собраны обвязкой по смыслу (подложка accent-10/текст accent, negative #FF5252) — сверить с Figma и решить в ДС; (б) высоты пунктов внутри контейнера на канве не детализированы (слот) — строки 36 обвязкой; (в) Element menu — элементы из своих компонентов (Checkbox/Radio/Slide toggle из ДС); Image size показан круглым плейсхолдером (аватар/картинка — ассет); (г) Counter — по Badge (accent); (д) Search в контейнере — ds-search--s; (е) «Menu item» из набора — 258×68 (по css), компактные меню в примерах — строки меньшей высоты. Журнал №131.</p>
+    <p class="snap-note">Пометки для ревью: (а) 13 стрелок — по набору 56090:1628 (Google Material; глифы дословно из Figma), порядок рядов как в наборе; (б) в пункте меню стрелка ставится в слот (Back selected — arrow_back, раскрытие подменю — keyboard_arrow_right и т.п.); (в) витрины пунктов и элементов — вкладки «Menu item» и «Element menu». Журнал №131, №188.</p>
   </div>
 
-  <!-- 1. Basic example: сценарии канвы (тексты дословно) -->
+  <!-- 1. Basic example: живое меню «Basic menu» (канва «Menu (Examples)» 57604:4733, контейнер 57640:8414) -->
   <div class="panel" data-vpanel="basic" role="tabpanel">
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Сценарии канвы (тексты дословно; меню собраны строками обвязки)</div>
-      <div class="snap-row" style="margin-top: 12px;">
-        <div class="snap-col"><p class="snap-ex-caption">Basic menu</p>
-          <div class="ds-menu-container" style="width:240px;padding:8px 0;">
-            <div class="snap-mi">Профиль</div>
-            <div class="snap-mi">Выбор языка</div>
-            <div class="snap-mi">Уведомления</div>
-            <div class="snap-mi">Настройки</div>
-            <div class="snap-mi snap-mi--negative">Выход</div>
-          </div>
-        </div>
-        <div class="snap-col"><p class="snap-ex-caption">Nested menu</p>
-          <div class="ds-menu-container" style="width:240px;padding:8px 0;">
-            <div class="snap-mi">Menu item text</div>
-            <div class="snap-mi">Menu item text</div>
-            <div class="snap-mi">Menu item text <span class="snap-mi__right"><span class="snap-mi__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-right"/></svg></span></span></div>
-            <div class="snap-mi">Menu item text</div>
-            <div class="snap-mi">Menu item text <span class="snap-mi__right"><span class="snap-mi__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-right"/></svg></span></span></div>
-          </div>
-        </div>
-        <div class="snap-col"><p class="snap-ex-caption">Menu with text sections &amp; counter</p>
-          <div class="ds-menu-container" style="width:240px;padding:8px 0;">
-            <div class="ds-menu-container__title"><span class="ds-menu-container__label" style="color:#333;">Title menu</span></div>
-            <div class="snap-mi">Menu item text <span class="snap-mi__right"><span class="snap-counter">7</span></span></div>
-            <div class="snap-mi">Menu item text <span class="snap-mi__right"><span class="snap-counter">17</span></span></div>
-            <div class="ds-menu-container__title"><span class="ds-menu-container__label" style="color:#333;">Title menu</span></div>
-            <div class="snap-mi">Menu item text</div>
-            <div class="snap-mi">Menu item text</div>
-          </div>
-        </div>
-        <div class="snap-col"><p class="snap-ex-caption">Menu inputs (сортировка)</p>
-          <div class="ds-menu-container" style="width:240px;padding:8px 0;">
-            <div class="snap-mi snap-mi--selected">Название</div>
-            <div class="snap-mi">А-Я</div>
-            <div class="snap-mi">Я-А</div>
-            <div class="snap-mi snap-mi--selected">Дата</div>
-            <div class="snap-mi">Сначала новые</div>
-            <div class="snap-mi">Сначала старые</div>
-          </div>
-        </div>
-        <div class="snap-col"><p class="snap-ex-caption">Selection check menu (Статус / Каналы)</p>
-          <div class="ds-menu-container" style="width:240px;padding:8px 0;">
-            <div class="ds-menu-container__title"><span class="ds-menu-container__label" style="color:#333;">Статус</span></div>
-            <div class="snap-mi"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Черновик</span></label></div>
-            <div class="snap-mi"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox" checked><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Запланирована</span></label></div>
-            <div class="snap-mi"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Отправлена</span></label></div>
-            <div class="ds-menu-container__title"><span class="ds-menu-container__label" style="color:#333;">Каналы</span></div>
-            <div class="snap-mi"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox" checked><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Только канал</span></label></div>
-            <div class="snap-mi"><label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Telegram</span></label></div>
-          </div>
-        </div>
-        <div class="snap-col"><p class="snap-ex-caption">Selection radio menu</p>
-          <div class="ds-menu-container" style="width:240px;padding:8px 0;">
-            <div class="snap-mi"><label class="ds-radio"><input class="ds-radio__input" type="radio" name="menur" checked><span class="ds-radio__box"></span><span class="ds-radio__label">Menu item text</span></label></div>
-            <div class="snap-mi"><label class="ds-radio"><input class="ds-radio__input" type="radio" name="menur"><span class="ds-radio__box"></span><span class="ds-radio__label">Menu item text</span></label></div>
-            <div class="snap-mi"><label class="ds-radio"><input class="ds-radio__input" type="radio" name="menur"><span class="ds-radio__box"></span><span class="ds-radio__label">Menu item text</span></label></div>
-          </div>
-        </div>
+      <p class="snap-cap snap-live-hint">Basic example: наведите и нажмите пункт — состояния из компонента (у «Уведомления» заморожен Hover — как в кадре)</p>
+      <div class="ds-menu-container">
+        <div class="ds-menu-item"><span class="ds-menu-item__label">Профиль</span></div>
+        <div class="ds-divider"></div>
+        <div class="ds-menu-item"><span class="ds-menu-item__label">Выбор языка</span></div>
+        <div class="ds-menu-item st-hover"><span class="ds-menu-item__label">Уведомления</span></div>
+        <div class="ds-menu-item"><span class="ds-menu-item__label">Настройки</span></div>
+        <div class="ds-divider"></div>
+        <div class="ds-menu-item"><span class="ds-menu-item__label">Выход</span></div>
       </div>
     </div>
-    <p class="snap-note">Пометки для ревью: (а) тексты — с канвы (Basic menu: «Профиль/Выбор языка/Уведомления/Настройки/Выход»; «Название / А-Я / Я-А / Дата / Сначала новые / Сначала старые»; Статус/Каналы — «Черновик/Запланирована/Отправлена/Отправляется/Ошибка/Отменена» и «Только канал/Только каскад/Приложение/Telegram/MAX/СМС» — на стенде показаны частично); (б) в канве ещё сценарии: State menu, Icon menu, «Menu with toogle selection», «Menu with scroll & divider», «Menu with single selection», «Selection check all menu» («Menu all»), «Menu hierarchy», «Menu complex», «Menu moving items» — воспроизведены репрезентативно, кадры с наложением (divider/scroll) смотрим при следующем проходе; (в) «Menu item text» в кадрах — заглушки канвы. Журнал №131.</p>
+    <p class="snap-note">Пометки для ревью: (а) «Basic menu» канвы (контейнер 57640:8414): пункты «Профиль / Выбор языка / Уведомления / Настройки / Выход», у «Уведомления» — состояние Hover, разделители — под «Профиль» и «Настройки» (на канве — нижняя граница пункта; на стенде — компонент ds-divider); (б) меню собрано из компонентов ДС (ds-menu-container + ds-menu-item): подложка, тень 08 dp, скругление, пады и ховер — из компонента; (в) в css Menu item нет классов Selected / Back selected / Negative (в наборе есть) — состояния собраны классами стенда на токенах (st-backsel / st-negative; Selected — выбранный Checkbox), решить в ДС; (г) пример однострочный: пункты 240×36 (8+20+8), у набора двойной пункт — 68; (д) горизонтальный скролл — компонент ds-scroll (в примере скрыт). Журнал №131, №188.</p>
   </div>
 </div>
 
 <!-- иконки -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="ic-info" viewBox="0 0 24 24"><path d="M11 17H13V11H11V17ZM12 9C12.2833 9 12.5208 8.90417 12.7125 8.7125C12.9042 8.52083 13 8.28333 13 8C13 7.71667 12.9042 7.47917 12.7125 7.2875C12.5208 7.09583 12.2833 7 12 7C11.7167 7 11.4792 7.09583 11.2875 7.2875C11.0958 7.47917 11 7.71667 11 8C11 8.28333 11.0958 8.52083 11.2875 8.7125C11.4792 8.90417 11.7167 9 12 9ZM12 22C10.6167 22 9.31667 21.7375 8.1 21.2125C6.88333 20.6875 5.825 19.975 4.925 19.075C4.025 18.175 3.3125 17.1167 2.7875 15.9C2.2625 14.6833 2 13.3833 2 12C2 10.6167 2.2625 9.31667 2.7875 8.1C3.3125 6.88333 4.025 5.825 4.925 4.925C5.825 4.025 6.88333 3.3125 8.1 2.7875C9.31667 2.2625 10.6167 2 12 2C13.3833 2 14.6833 2.2625 15.9 2.7875C17.1167 3.3125 18.175 4.025 19.075 4.925C19.975 5.825 20.6875 6.88333 21.2125 8.1C21.7375 9.31667 22 10.6167 22 12C22 13.3833 21.7375 14.6833 21.2125 15.9C20.6875 17.1167 19.975 18.175 19.075 19.075C18.175 19.975 17.1167 20.6875 15.9 21.2125C14.6833 21.7375 13.3833 22 12 22ZM12 20C14.2333 20 16.125 19.225 17.675 17.675C19.225 16.125 20 14.2333 20 12C20 9.76667 19.225 7.875 17.675 6.325C16.125 4.775 14.2333 4 12 4C9.76667 4 7.875 4.775 6.325 6.325C4.775 7.875 4 9.76667 4 12C4 14.2333 4.775 16.125 6.325 17.675C7.875 19.225 9.76667 20 12 20Z"/></symbol>
-  <symbol id="ic-search" viewBox="0 0 24 24"><path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z"/></symbol>
-  <symbol id="ic-drop-down" viewBox="0 0 24 24"><path d="M7 10L12 15L17 10H7Z"/></symbol>
-  <symbol id="ic-drop-up" viewBox="0 0 24 24"><path d="M7 14L12 9L17 14H7Z"/></symbol>
-  <symbol id="ic-kb-down" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17L16.59 8.59L18 10L12 16L6 10L7.41 8.59Z"/></symbol>
-  <symbol id="ic-kb-up" viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83L16.59 15.41L18 14L12 8L6 14L7.41 15.41Z"/></symbol>
+  <symbol id="ic-search-20" viewBox="0 0 20 20"><path d="M16.3333 17.5L11.0833 12.25C10.6667 12.5833 10.1875 12.8472 9.64583 13.0417C9.10417 13.2361 8.52778 13.3333 7.91667 13.3333C6.40278 13.3333 5.12153 12.809 4.07292 11.7604C3.02431 10.7118 2.5 9.43056 2.5 7.91667C2.5 6.40278 3.02431 5.12153 4.07292 4.07292C5.12153 3.02431 6.40278 2.5 7.91667 2.5C9.43056 2.5 10.7118 3.02431 11.7604 4.07292C12.809 5.12153 13.3333 6.40278 13.3333 7.91667C13.3333 8.52778 13.2361 9.10417 13.0417 9.64583C12.8472 10.1875 12.5833 10.6667 12.25 11.0833L17.5 16.3333L16.3333 17.5ZM7.91667 11.6667C8.95833 11.6667 9.84375 11.3021 10.5729 10.5729C11.3021 9.84375 11.6667 8.95833 11.6667 7.91667C11.6667 6.875 11.3021 5.98958 10.5729 5.26042C9.84375 4.53125 8.95833 4.16667 7.91667 4.16667C6.875 4.16667 5.98958 4.53125 5.26042 5.26042C4.53125 5.98958 4.16667 6.875 4.16667 7.91667C4.16667 8.95833 4.53125 9.84375 5.26042 10.5729C5.98958 11.3021 6.875 11.6667 7.91667 11.6667Z"/></symbol>
+  <symbol id="ic-close-20" viewBox="0 0 20 20"><path d="M5.33329 15.8333L4.16663 14.6667L8.83329 9.99999L4.16663 5.33332L5.33329 4.16666L9.99996 8.83332L14.6666 4.16666L15.8333 5.33332L11.1666 9.99999L15.8333 14.6667L14.6666 15.8333L9.99996 11.1667L5.33329 15.8333Z"/></symbol>
+  <symbol id="ic-search-off-20" viewBox="0 0 20 20"><path d="M5.83333 18.4167C4.68056 18.4167 3.69792 18.0104 2.88542 17.1979C2.07292 16.3854 1.66667 15.4028 1.66667 14.25C1.66667 13.0972 2.07292 12.1146 2.88542 11.3021C3.69792 10.4896 4.68056 10.0833 5.83333 10.0833C6.98611 10.0833 7.96875 10.4896 8.78125 11.3021C9.59375 12.1146 10 13.0972 10 14.25C10 15.4028 9.59375 16.3854 8.78125 17.1979C7.96875 18.0104 6.98611 18.4167 5.83333 18.4167ZM17.1667 17.5833L11.8333 12.25C11.6667 12.0694 11.4896 11.8854 11.3021 11.6979C11.1146 11.5104 10.9306 11.3333 10.75 11.1667C11.2778 10.8333 11.7014 10.3889 12.0208 9.83333C12.3403 9.27778 12.5 8.66667 12.5 8C12.5 6.95833 12.1354 6.07292 11.4062 5.34375C10.6771 4.61458 9.79167 4.25 8.75 4.25C7.70833 4.25 6.82292 4.61458 6.09375 5.34375C5.36458 6.07292 5 6.95833 5 8C5 8.08333 5.00347 8.16319 5.01042 8.23958C5.01736 8.31597 5.02778 8.39583 5.04167 8.47917C4.79167 8.50694 4.51736 8.5625 4.21875 8.64583C3.92014 8.72917 3.65278 8.82639 3.41667 8.9375C3.38889 8.78472 3.36806 8.63194 3.35417 8.47917C3.34028 8.32639 3.33333 8.16667 3.33333 8C3.33333 6.48611 3.85764 5.20486 4.90625 4.15625C5.95486 3.10764 7.23611 2.58333 8.75 2.58333C10.2639 2.58333 11.5451 3.10764 12.5937 4.15625C13.6424 5.20486 14.1667 6.48611 14.1667 8C14.1667 8.59722 14.0729 9.16319 13.8854 9.69792C13.6979 10.2326 13.4375 10.7222 13.1042 11.1667L18.3333 16.4167L17.1667 17.5833ZM4.35417 16.3125L5.83333 14.8333L7.29167 16.3125L7.89583 15.7292L6.41667 14.25L7.89583 12.7708L7.3125 12.1875L5.83333 13.6667L4.35417 12.1875L3.77083 12.7708L5.25 14.25L3.77083 15.7292L4.35417 16.3125Z"/></symbol>
+  <symbol id="ic-arrow-left" viewBox="0 0 24 24"><path d="M14 17L9 12L14 7V17Z"/></symbol>
+  <symbol id="ic-arrow-drop-up" viewBox="0 0 24 24"><path d="M7 14L12 9L17 14H7Z"/></symbol>
+  <symbol id="ic-arrow-right" viewBox="0 0 24 24"><path d="M10 17V7L15 12L10 17Z"/></symbol>
+  <symbol id="ic-arrow-drop-down" viewBox="0 0 24 24"><path d="M12 15L7 10H17L12 15Z"/></symbol>
   <symbol id="ic-kb-left" viewBox="0 0 24 24"><path d="M15.41 16.59L10.83 12L15.41 7.41L14 6L8 12L14 18L15.41 16.59Z"/></symbol>
+  <symbol id="ic-kb-up" viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83L16.59 15.41L18 14L12 8L6 14L7.41 15.41Z"/></symbol>
   <symbol id="ic-kb-right" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12L8.59 7.41L10 6L16 12L10 18L8.59 16.59Z"/></symbol>
-  <symbol id="ic-arr-left" viewBox="0 0 24 24"><path d="M20 11H7.83L13.42 5.41L12 4L4 12L12 20L13.42 18.59L7.83 13H20V11Z"/></symbol>
-  <symbol id="ic-arr-right" viewBox="0 0 24 24"><path d="M4 13H16.17L10.58 18.59L12 20L20 12L12 4L10.58 5.41L16.17 11H4V13Z"/></symbol>
+  <symbol id="ic-kb-down" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17L16.59 8.59L18 10L12 16L6 10L7.41 8.59Z"/></symbol>
+  <symbol id="ic-arrow-back" viewBox="0 0 24 24"><path d="M7.825 13L13.425 18.6L12 20L4 12L12 4L13.425 5.4L7.825 11H20V13H7.825Z"/></symbol>
+  <symbol id="ic-arrow-forward" viewBox="0 0 24 24"><path d="M16.175 13H4V11H16.175L10.575 5.4L12 4L20 12L12 20L10.575 18.6L16.175 13Z"/></symbol>
+  <symbol id="ic-arrow-downward-alt" viewBox="0 0 24 24"><path d="M12 18L6 12L7.4 10.6L11 14.2V5H13V14.2L16.6 10.6L18 12L12 18Z"/></symbol>
+  <symbol id="ic-arrow-upward-alt" viewBox="0 0 24 24"><path d="M11 18V8.8L7.4 12.4L6 11L12 5L18 11L16.6 12.4L13 8.8V18H11Z"/></symbol>
+  <symbol id="ic-unfold-less" viewBox="0 0 24 24"><path d="M8.9 20L7.5 18.6L12 14.1L16.5 18.6L15.1 20L12 16.9L8.9 20ZM12 9.9L7.5 5.4L8.9 4L12 7.1L15.1 4L16.5 5.4L12 9.9Z"/></symbol>
 </svg>
 
 <script>
@@ -245,6 +339,91 @@
       panels.forEach(function (p) { p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab'); });
     });
   });
+
+  /* Menu (Container): рабочий поиск — реальное поле ввода в слоте текста Search
+     (в компоненте поля нет — журнал №9); состояния компонента: Focus — разделитель + search_off,
+     Focus+Value — «✕» + разделитель + search_off («✕» очищает, search_off сбрасывает) */
+  (function () {
+    var search = document.getElementById('mc-search');
+    if (!search) return;
+    var input = document.getElementById('mc-search-input');
+    var right = document.getElementById('mc-search-right');
+    var icons = document.getElementById('mc-search-icons');
+    function sync() {
+      var filled = input.value.length > 0;
+      icons.hidden = !filled;
+      right.hidden = filled || document.activeElement !== input;
+    }
+    input.addEventListener('input', sync);
+    input.addEventListener('focus', sync);
+    input.addEventListener('blur', function () { setTimeout(sync, 0); });
+    Array.prototype.forEach.call(search.querySelectorAll('.snap-mc-clear'), function (btn) {
+      btn.addEventListener('mousedown', function (e) { e.preventDefault(); });
+      btn.addEventListener('click', function () { input.value = ''; input.focus(); sync(); });
+    });
+    Array.prototype.forEach.call(search.querySelectorAll('.snap-mc-off'), function (btn) {
+      btn.addEventListener('mousedown', function (e) { e.preventDefault(); });
+      btn.addEventListener('click', function () { input.value = ''; input.blur(); sync(); });
+    });
+    sync();
+  })();
+
+  /* Menu (Container): рабочий скролл — область пунктов прокручивается; ползунок компонента Scroll
+     отражает прокрутку (длина и положение), перетаскивается мышью; колесо работает и над полосой */
+  (function () {
+    var content = document.getElementById('mc-content');
+    var scroll = document.getElementById('mc-scroll');
+    if (!content || !scroll) return;
+    var track = scroll.querySelector('.ds-scroll__background');
+    var knob = scroll.querySelector('.ds-scroll__knob');
+    function render() {
+      var viewH = content.clientHeight;
+      if (!viewH) return;   /* панель скрыта — посчитаем при показе */
+      var contentH = content.scrollHeight;
+      var trackH = track.clientHeight;
+      var h = contentH > viewH ? Math.round(trackH * viewH / contentH) : trackH;
+      if (h < 24) h = 24;   /* короче ползунка размера S не бывает */
+      var max = contentH - viewH;
+      var top = max > 0 ? Math.round((trackH - h) * content.scrollTop / max) : 0;
+      knob.style.height = h + 'px';
+      knob.style.marginTop = top + 'px';
+    }
+    content.addEventListener('scroll', render);
+    /* резерв: в некоторых окружениях scroll-событие приходит с задержкой — следим и кадром, и таймером
+       (кадры в фоне останавливаются, поэтому дублируем интервалом; render идемпотентен) */
+    var lastTop = -1;
+    function watch() {
+      if (content.scrollTop !== lastTop) { lastTop = content.scrollTop; render(); }
+    }
+    (function tick() { watch(); requestAnimationFrame(tick); })();
+    setInterval(watch, 250);
+    window.addEventListener('resize', render);
+    var tabBtn = document.querySelector('.ds-tab[data-vtab="menu-container"]');
+    if (tabBtn) tabBtn.addEventListener('click', render);   /* панель показывается — пересчитать */
+    knob.addEventListener('mousedown', function (e) {
+      e.preventDefault();
+      var startY = e.clientY;
+      var startTop = content.scrollTop;
+      var range = track.clientHeight - knob.offsetHeight;
+      var max = content.scrollHeight - content.clientHeight;
+      function move(ev) {
+        content.scrollTop = startTop + (ev.clientY - startY) * max / Math.max(1, range);
+        render();
+      }
+      function up() {
+        document.removeEventListener('mousemove', move);
+        document.removeEventListener('mouseup', up);
+      }
+      document.addEventListener('mousemove', move);
+      document.addEventListener('mouseup', up);
+    });
+    scroll.addEventListener('wheel', function (e) {
+      content.scrollTop += e.deltaY;
+      render();
+      e.preventDefault();
+    }, { passive: false });
+    render();
+  })();
 </script>
 </body>
 </html>

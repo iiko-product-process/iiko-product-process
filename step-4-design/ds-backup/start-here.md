@@ -17,16 +17,16 @@ python --version
 
 ## 2. Склонировать репозитории в одну папку
 
-Создать папку, например `DS`, и склонировать в неё репозиторий `DS` целиком: обе папки слоёв ДС лежат вместе — на их имена по относительным путям ссылаются прототипы, менять их нельзя. Репозиторий `Prototypes` — отдельно, рядом.
+Создать папку, например `Design-System`, и склонировать в неё репозиторий `DS` целиком: обе папки слоёв ДС лежат вместе — на их имена по относительным путям ссылаются прототипы, менять их нельзя. Репозиторий `Prototypes` — отдельно, рядом.
 
-В GitHub Desktop: `File → Clone repository → GitHub.com` — склонировать `DS` (в папку `DS`), `Prototypes` — рядом с ней:
+В GitHub Desktop: `File → Clone repository → GitHub.com` — склонировать `DS` (в папку `Design-System`), `Prototypes` — рядом с ней (папка `Prototype-Guide`):
 
 ```
-iiko-DS/DS                   ДС целиком: папки компонентов components-web и components-mobile, connect.js
-iiko-DS/Prototypes           прототипы и база знаний (рядом с папкой DS)
+iiko-DS/Design-System        ДС целиком: папки компонентов components-web и components-mobile, connect.js
+iiko-DS/Prototype-Guide      прототипы и база знаний (рядом с папкой Design-System)
 ```
 
-Прототипы экранов (`Prototypes`) — отдельно: клонировать **рядом** с папкой `DS`, не внутрь неё.
+Прототипы экранов (`Prototypes`) — отдельно: клонировать **рядом** с папкой `Design-System`, не внутрь неё.
 
 Если репозиториев не видно в списке — нет доступа в организацию, попроси приглашение.
 
@@ -47,7 +47,7 @@ DS/
 python pull.py      # забрать свежий main из репозиториев DS и Prototypes
 ```
 
-Пример живой страницы-прототипа — `Prototypes/demo-connect.html`: ДС подключается одной строкой, стили, шапка и меню приходят сами (подробности — [`prototyping-guide/подключение-ds.md`](https://github.com/iiko-DS/Prototypes/blob/main/prototyping-guide/подключение-ds.md)).
+Пример живой страницы-прототипа — `Prototype-Guide/demo-connect.html`: ДС подключается одной строкой, стили, шапка и меню приходят сами (подробности — [`prototyping-guide/подключение-ds.md`](https://github.com/iiko-DS/Prototypes/blob/main/prototyping-guide/подключение-ds.md)).
 
 ## 4. Что дальше
 

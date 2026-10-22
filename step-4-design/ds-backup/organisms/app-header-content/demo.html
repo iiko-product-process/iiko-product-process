@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>header-content — демо стенд хедера контента</title>
+<!--
+  Демо стенд ОРГАНИЗМА «хедер контента» (header-content): все состояния и правила подключения.
+  Отдельный файл организма: правится независимо от стендов других организмов/молекул
+  (может условно повторять то же, что и они, — это нормально).
+  Источник — компонент «Header content» (63308:202539) Figma «Iiko Web DS (New)»,
+  страница «Header content_ORG». Состав: стрелка назад (Icon size 24), подпись + заголовок
+  (Text UI), слот «После заголовка» (Status + Text UI с иконкой edit), поиск (Search XS),
+  действия (Button group из Button).
+  Живой блок стоит первым в кадре-«странице» (шапка контентной зоны, как на страницах):
+  пресеты ширины меняют ширину кадра; тумблеры повторяют булевы свойства компонента
+  (Стрелка назад, Подпись, Статус, Показ дополнения, Поиск, Кнопки действий) — включают/
+  выключают части у живого блока. Конфигурации из фрейма «Header контента — примеры
+  использования» — в разметке ниже кадра, но скрыты (атрибут hidden; не показываем, не
+  удалять — чтобы показать, убрать hidden). Иконки — SVG из Figma (img в папке),
+  подставляет header-content.js.
+-->
+<link rel="stylesheet" href="../../components-web/font.css">
+<link rel="stylesheet" href="../../components-web/tokens.css">
+<link rel="stylesheet" href="../../components-web/styles.css">
+<link rel="stylesheet" href="../../components-web/components/index.css">
+<link rel="stylesheet" href="../../components-web/fixes.css">
+<!-- header-content — хедер контента: один источник стилей и поведения -->
+<link rel="stylesheet" href="header-content.css?v=1">
+<script src="header-content.js?v=1" defer></script>
+<style>
+  /* каркас демо-стенда — как у остальных организмов */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0);
+    font-size: 13px;
+  }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .demo-bar__btn {
+    height: 28px; padding: 0 12px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0);
+    border-radius: var(--ds-radius-2x, 8px); background: transparent; font: inherit; cursor: pointer;
+  }
+  .demo-bar__btn:hover { background: var(--ds-color-button-neutral-hover, #f5f5f5); }
+  .demo-bar__btn.is-on { background: var(--ds-color-button-neutral-press, #f5f5f5); }
+  .demo-bar__sep { width: 1px; height: 20px; background: var(--ds-color-stroke-default, #e0e0e0); margin: 0 4px; }
+  .demo-bar__state { margin-left: 12px; color: var(--ds-color-text-secondary, #616161); font-variant-numeric: tabular-nums; }
+  .demo-bar__hint { color: var(--ds-color-text-secondary, #616161); }
+  .view { padding: 24px; }
+  /* кадр-«страница»: как у остальных организмов (ширина — пресетами сверху) */
+  .panel { position: relative; width: var(--panel-w, 1440px); height: 860px; overflow: hidden; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  /* контентная зона кадра: хедер контента — первым, с полями контейнера (24/32) */
+  .hc-zone { padding: 24px 32px 0; }
+  .frame { padding: 24px 32px; box-sizing: border-box; }
+  .frame h1 { font-size: 24px; line-height: 24px; font-weight: 500; margin: 0 0 12px; }
+  .frame p { font-size: 14px; line-height: 20px; max-width: 640px; color: var(--ds-color-text-primary, #333); }
+  .frame ul { font-size: 14px; line-height: 22px; max-width: 640px; padding-left: 20px; }
+  /* конфигурации из фрейма «примеры использования» — ниже кадра, той же ширины */
+  .cfgs { width: var(--panel-w, 1440px); box-sizing: border-box; padding: 0 32px; margin-top: 24px; }
+  .cfgs__title { font-size: 14px; line-height: 20px; color: var(--ds-color-text-secondary, #616161); margin: 0 0 16px; }
+  .demo-block { margin: 0 0 24px; }
+  .demo-block:last-child { margin-bottom: 0; }
+  .cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0 0 12px; }
+  /* раскрытие поиска — механика стенда (организм кликов не задаёт): круглая Search XS → поле Search S */
+  .hc__search { cursor: pointer; }
+  .hc__search[hidden] { display: none; }
+  .hc-search[hidden] { display: none; }
+  .hc-search__input { flex: 1 1 auto; min-width: 0; border: 0; outline: 0; background: transparent; padding: 0; font: inherit; color: var(--ds-color-search-focusvalue-text-color, #333333); }
+  .hc-search__input::placeholder { color: var(--ds-color-search-focus-text-color, #d6d6d6); opacity: 1; }
+  .hc-search:focus-within { border-color: var(--ds-color-search-focus-border-color, #448aff); }
+  .hc-search__clear { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
+  .hc-search__clear[hidden] { display: none; }
+  .hc-search .ds-search__right-icon { align-self: stretch; }  /* разделитель тянется по строке (в css height:100% схлопывался) */
+  .hc-search .ds-search__right-icon > .ds-divider { width: 1px; height: 100%; flex: none; }  /* разделитель — компонент Divider (в слоте выгрузки белый фон — артефакт) */
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Демо стенд header-content</span>
+  <button class="demo-bar__btn" id="btn-w1440">1440</button>
+  <button class="demo-bar__btn" id="btn-w1000">1000</button>
+  <button class="demo-bar__btn" id="btn-w760">760</button>
+  <button class="demo-bar__btn" id="btn-w360">360</button>
+  <span class="demo-bar__sep"></span>
+  <button class="demo-bar__btn is-on" data-part="arrow">Стрелка назад</button>
+  <button class="demo-bar__btn is-on" data-part="subtitle">Подпись</button>
+  <button class="demo-bar__btn is-on" data-part="status">Статус</button>
+  <button class="demo-bar__btn is-on" data-part="after">Показ дополнения</button>
+  <button class="demo-bar__btn is-on" data-part="search">Поиск</button>
+  <button class="demo-bar__btn is-on" data-part="actions">Кнопки действий</button>
+  <span class="demo-bar__state" id="demo-state">…</span>
+  <span class="demo-bar__hint">· тумблеры — как свойства компонента «Header content» в Figma</span>
+</div>
+<div class="view" id="view">
+
+  <!-- Живой блок — дефолты компонента (всё включено); тумблеры в шапке стенда выключают части.
+       Стоит первым в кадре-«странице» — как шапка контентной зоны на страницах -->
+  <div class="panel" id="panel">
+    <div class="hc-zone">
+      <header class="hc" id="hc-live">
+        <div class="hc__left">
+          <div class="ds-text-ui hc__title">
+            <span class="ds-text-ui__element-left hc__back" role="button" tabindex="0" aria-label="Назад">
+              <span class="ds-icon-size ds-icon-size--6x ds-icon-size--state"><img data-hc-icon="arrow-back" width="24" height="24" alt=""></span>
+            </span>
+            <span class="ds-text-ui__content">
+              <span class="ds-text-ui__label-up hc__subtitle">Подзаголовок раздела</span>
+              <span class="ds-text-ui__list-item hc__heading">Заголовок раздела</span>
+            </span>
+          </div>
+          <div class="hc__after">
+            <span class="ds-status ds-status--accent ds-status--filled hc__status"><span class="ds-status__label">Активная</span></span>
+            <span class="ds-text-ui hc__addition">
+              <span class="ds-text-ui__content"><span class="ds-text-ui__list-item">с 01.10.2024</span></span>
+              <span class="ds-text-ui__element-right"><span class="ds-icon-size ds-icon-size--5x"><img data-hc-icon="edit" width="20" height="20" alt=""></span></span>
+            </span>
+          </div>
+        </div>
+        <div class="hc__right">
+          <span class="ds-search ds-search--xs hc__search" role="button" tabindex="0" aria-label="Поиск">
+            <span class="ds-search__icon"><span class="ds-icon-size ds-icon-size--5x"><img data-hc-icon="search" width="20" height="20" alt=""></span></span>
+          </span>
+          <!-- раскрытое поле поиска (механика стенда): Search S; показывается кликом по круглой кнопке.
+               Состав по компоненту: лупа + текст + (крестик при вводе) + «Right icon» (разделитель + search_off) -->
+          <span class="ds-search ds-search--s hc-search" id="hc-search" hidden>
+            <span class="ds-search__icon"><span class="ds-icon-size ds-icon-size--5x"><img data-hc-icon="search" width="20" height="20" alt=""></span></span>
+            <input class="ds-search__label hc-search__input" type="text" placeholder="Search text" aria-label="Поиск">
+            <span class="hc-search__clear" id="hc-search-clear" role="button" tabindex="0" aria-label="Очистить" hidden><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><img data-hc-icon="close" width="20" height="20" alt=""></span></span>
+            <span class="ds-search__right-icon"><span class="ds-divider"></span><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><img data-hc-icon="search-off" width="20" height="20" alt=""></span></span>
+          </span>
+          <div class="ds-btn-group ds-btn-group--horizontal hc__actions">
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><img data-hc-icon="add" width="20" height="20" alt=""></span><span class="ds-btn__label">Button</span></button>
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><img data-hc-icon="add" width="20" height="20" alt=""></span><span class="ds-btn__label">Button</span></button>
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><img data-hc-icon="add" width="20" height="20" alt=""></span><span class="ds-btn__label">Button</span></button>
+          </div>
+        </div>
+      </header>
+    </div>
+    <div class="frame">
+      <h1>Кадр контента (заглушка)</h1>
+      <p>Это демо стенд хедера контента: сверху — сам блок (шапка раздела), ниже — заглушка
+         контентной зоны. Страница подключает ДС и header-content — тот же набор, что и страницы-прототипы.</p>
+      <ul>
+        <li>пресеты сверху меняют ширину кадра — блок растягивается по ширине контентной зоны;</li>
+        <li>тумблеры повторяют булевы свойства компонента «Header content» (Стрелка назад, Подпись,
+            Статус, Показ дополнения, Поиск, Кнопки действий); дефолт — всё включено;</li>
+        <li>клики в организме не заданы: стрелка назад, поиск и кнопки — действия страницы
+            (на стенде клик по поиску раскрывает поле — демонстрационная механика).
+            js организма делает только две вещи: подставляет иконки и переключает части —
+            <code>HeaderContent.set(блок, { arrow: false, … })</code> или атрибуты
+            <code>data-hc-*="off"</code> на корне;</li>
+        <li>поиск — круглая кнопка Search XS: фон Accent/50, без рамки (обводка пробела ДС —
+            в header-content.css); на стенде клик по ней раскрывает поле Search S — ввод
+            работает, «✕» очищает, Esc или клик мимо — свернуть.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Конфигурации из фрейма «Header контента — примеры использования» — скрыты (не показываем),
+       не удалять; показать снова — убрать атрибут hidden -->
+  <div class="cfgs" hidden>
+    <p class="cfgs__title">Конфигурации из фрейма компонента «Header контента — примеры использования» (части включаются тумблерами; тексты — из примеров)</p>
+
+    <div class="demo-block">
+      <p class="cap">Базовый — без стрелки, подписи и слота «После заголовка»</p>
+      <header class="hc" data-hc-arrow="off" data-hc-subtitle="off" data-hc-status="off" data-hc-after="off">
+        <div class="hc__left">
+          <div class="ds-text-ui hc__title">
+            <span class="ds-text-ui__element-left hc__back" role="button" tabindex="0" aria-label="Назад">
+              <span class="ds-icon-size ds-icon-size--6x ds-icon-size--state"><img data-hc-icon="arrow-back" width="24" height="24" alt=""></span>
+            </span>
+            <span class="ds-text-ui__content">
+              <span class="ds-text-ui__label-up hc__subtitle">Подзаголовок раздела</span>
+              <span class="ds-text-ui__list-item hc__heading">Приходные накладные</span>
+            </span>
+          </div>
+          <div class="hc__after">
+            <span class="ds-status ds-status--accent ds-status--filled hc__status"><span class="ds-status__label">Активная</span></span>
+            <span class="ds-text-ui hc__addition">
+              <span class="ds-text-ui__content"><span class="ds-text-ui__list-item">с 01.10.2024</span></span>
+              <span class="ds-text-ui__element-right"><span class="ds-icon-size ds-icon-size--5x"><img data-hc-icon="edit" width="20" height="20" alt=""></span></span>
+            </span>
+          </div>
+        </div>
+        <div class="hc__right">
+          <span class="ds-search ds-search--xs hc__search" role="button" tabindex="0" aria-label="Поиск">
+            <span class="ds-search__icon"><img data-hc-icon="search" width="20" height="20" alt=""></span>
+          </span>
+          <div class="ds-btn-group ds-btn-group--horizontal hc__actions">
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><img data-hc-icon="add" width="20" height="20" alt=""></span><span class="ds-btn__label">Создать накладную</span></button>
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><img data-hc-icon="add" width="20" height="20" alt=""></span><span class="ds-btn__label">Провести</span></button>
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><img data-hc-icon="add" width="20" height="20" alt=""></span><span class="ds-btn__label">Удалить</span></button>
+          </div>
+        </div>
+      </header>
+    </div>
+
+    <div class="demo-block">
+      <p class="cap">Со стрелкой</p>
+      <header class="hc" data-hc-subtitle="off" data-hc-status="off" data-hc-after="off">
+        <div class="hc__left">
+          <div class="ds-text-ui hc__title">
+            <span class="ds-text-ui__element-left hc__back" role="button" tabindex="0" aria-label="Назад">
+              <span class="ds-icon-size ds-icon-size--6x ds-icon-size--state"><img data-hc-icon="arrow-back" width="24" height="24" alt=""></span>
+            </span>
+            <span class="ds-text-ui__content">
+              <span class="ds-text-ui__label-up hc__subtitle">Подзаголовок раздела</span>
+              <span class="ds-text-ui__list-item hc__heading">Накладная № 1042</span>
+            </span>
+          </div>
+          <div class="hc__after">
+            <span class="ds-status ds-status--accent ds-status--filled hc__status"><span class="ds-status__label">Активная</span></span>
+            <span class="ds-text-ui hc__addition">
+              <span class="ds-text-ui__content"><span class="ds-text-ui__list-item">с 01.10.2024</span></span>
+              <span class="ds-text-ui__element-right"><span class="ds-icon-size ds-icon-size--5x"><img data-hc-icon="edit" width="20" height="20" alt=""></span></span>
+            </span>
+          </div>
+        </div>
+        <div class="hc__right">
+          <span class="ds-search ds-search--xs hc__search" role="button" tabindex="0" aria-label="Поиск">
+            <span class="ds-search__icon"><img data-hc-icon="search" width="20" height="20" alt=""></span>
+          </span>
+          <div class="ds-btn-group ds-btn-group--horizontal hc__actions">
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><img data-hc-icon="add" width="20" height="20" alt=""></span><span class="ds-btn__label">Провести</span></button>
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><img data-hc-icon="add" width="20" height="20" alt=""></span><span class="ds-btn__label">Сохранить</span></button>
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><img data-hc-icon="add" width="20" height="20" alt=""></span><span class="ds-btn__label">Удалить</span></button>
+          </div>
+        </div>
+      </header>
+    </div>
+
+    <div class="demo-block">
+      <p class="cap">Со стрелкой и статусом (статус — вариант ДС «Черновик»)</p>
+      <header class="hc" data-hc-subtitle="off" data-hc-after="off">
+        <div class="hc__left">
+          <div class="ds-text-ui hc__title">
+            <span class="ds-text-ui__element-left hc__back" role="button" tabindex="0" aria-label="Назад">
+              <span class="ds-icon-size ds-icon-size--6x ds-icon-size--state"><img data-hc-icon="arrow-back" width="24" height="24" alt=""></span>
+            </span>
+            <span class="ds-text-ui__content">
+              <span class="ds-text-ui__label-up hc__subtitle">Подзаголовок раздела</span>
+              <span class="ds-text-ui__list-item hc__heading">Накладная № 1042</span>
+            </span>
+          </div>
+          <div class="hc__after">
+            <span class="ds-status ds-status--warning ds-status--filled hc__status"><span class="ds-status__label">Черновик</span></span>
+            <span class="ds-text-ui hc__addition">
+              <span class="ds-text-ui__content"><span class="ds-text-ui__list-item">с 01.10.2024</span></span>
+              <span class="ds-text-ui__element-right"><span class="ds-icon-size ds-icon-size--5x"><img data-hc-icon="edit" width="20" height="20" alt=""></span></span>
+            </span>
+          </div>
+        </div>
+        <div class="hc__right">
+          <span class="ds-search ds-search--xs hc__search" role="button" tabindex="0" aria-label="Поиск">
+            <span class="ds-search__icon"><img data-hc-icon="search" width="20" height="20" alt=""></span>
+          </span>
+          <div class="ds-btn-group ds-btn-group--horizontal hc__actions">
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><img data-hc-icon="add" width="20" height="20" alt=""></span><span class="ds-btn__label">Провести</span></button>
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><img data-hc-icon="add" width="20" height="20" alt=""></span><span class="ds-btn__label">Сохранить</span></button>
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><img data-hc-icon="add" width="20" height="20" alt=""></span><span class="ds-btn__label">Удалить</span></button>
+          </div>
+        </div>
+      </header>
+    </div>
+
+    <div class="demo-block">
+      <p class="cap">С подписью</p>
+      <header class="hc" data-hc-status="off" data-hc-after="off">
+        <div class="hc__left">
+          <div class="ds-text-ui hc__title">
+            <span class="ds-text-ui__element-left hc__back" role="button" tabindex="0" aria-label="Назад">
+              <span class="ds-icon-size ds-icon-size--6x ds-icon-size--state"><img data-hc-icon="arrow-back" width="24" height="24" alt=""></span>
+            </span>
+            <span class="ds-text-ui__content">
+              <span class="ds-text-ui__label-up hc__subtitle">Управление складом</span>
+              <span class="ds-text-ui__list-item hc__heading">Инвентаризации</span>
+            </span>
+          </div>
+          <div class="hc__after">
+            <span class="ds-status ds-status--accent ds-status--filled hc__status"><span class="ds-status__label">Активная</span></span>
+            <span class="ds-text-ui hc__addition">
+              <span class="ds-text-ui__content"><span class="ds-text-ui__list-item">с 01.10.2024</span></span>
+              <span class="ds-text-ui__element-right"><span class="ds-icon-size ds-icon-size--5x"><img data-hc-icon="edit" width="20" height="20" alt=""></span></span>
+            </span>
+          </div>
+        </div>
+        <div class="hc__right">
+          <span class="ds-search ds-search--xs hc__search" role="button" tabindex="0" aria-label="Поиск">
+            <span class="ds-search__icon"><img data-hc-icon="search" width="20" height="20" alt=""></span>
+          </span>
+          <div class="ds-btn-group ds-btn-group--horizontal hc__actions">
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><img data-hc-icon="add" width="20" height="20" alt=""></span><span class="ds-btn__label">Создать инвентаризацию</span></button>
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><img data-hc-icon="add" width="20" height="20" alt=""></span><span class="ds-btn__label">Провести</span></button>
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><img data-hc-icon="add" width="20" height="20" alt=""></span><span class="ds-btn__label">Удалить</span></button>
+          </div>
+        </div>
+      </header>
+    </div>
+
+    <div class="demo-block">
+      <p class="cap">Без поиска — Технологическая карта (статус + дополнение, без стрелки и подписи)</p>
+      <header class="hc" data-hc-arrow="off" data-hc-subtitle="off" data-hc-search="off">
+        <div class="hc__left">
+          <div class="ds-text-ui hc__title">
+            <span class="ds-text-ui__element-left hc__back" role="button" tabindex="0" aria-label="Назад">
+              <span class="ds-icon-size ds-icon-size--6x ds-icon-size--state"><img data-hc-icon="arrow-back" width="24" height="24" alt=""></span>
+            </span>
+            <span class="ds-text-ui__content">
+              <span class="ds-text-ui__label-up hc__subtitle">Подзаголовок раздела</span>
+              <span class="ds-text-ui__list-item hc__heading">Технологическая карта</span>
+            </span>
+          </div>
+          <div class="hc__after">
+            <span class="ds-status ds-status--accent ds-status--filled hc__status"><span class="ds-status__label">Активная</span></span>
+            <span class="ds-text-ui hc__addition">
+              <span class="ds-text-ui__content"><span class="ds-text-ui__list-item">с 01.10.2024</span></span>
+              <span class="ds-text-ui__element-right"><span class="ds-icon-size ds-icon-size--5x"><img data-hc-icon="edit" width="20" height="20" alt=""></span></span>
+            </span>
+          </div>
+        </div>
+        <div class="hc__right">
+          <span class="ds-search ds-search--xs hc__search" role="button" tabindex="0" aria-label="Поиск">
+            <span class="ds-search__icon"><img data-hc-icon="search" width="20" height="20" alt=""></span>
+          </span>
+          <div class="ds-btn-group ds-btn-group--horizontal hc__actions">
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><img data-hc-icon="add" width="20" height="20" alt=""></span><span class="ds-btn__label">Редактировать</span></button>
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--filled"><span class="ds-btn__icon"><img data-hc-icon="add" width="20" height="20" alt=""></span><span class="ds-btn__label">Добавить</span></button>
+          </div>
+        </div>
+      </header>
+    </div>
+
+  </div>
+
+</div>
+<script>
+  window.addEventListener('DOMContentLoaded', function () {
+    var st = document.getElementById('demo-state');
+    var root = document.getElementById('hc-live');
+    var view = document.getElementById('view');
+    var tg = Array.prototype.slice.call(document.querySelectorAll('.demo-bar__btn[data-part]'));
+    function refresh() {
+      var w = document.getElementById('panel').clientWidth;
+      var parts = {}, on = 0;
+      tg.forEach(function (b) {
+        var k = b.getAttribute('data-part');
+        var v = b.classList.contains('is-on');
+        parts[k] = v;
+        if (v) on++;
+      });
+      window.HeaderContent.set(root, parts);
+      st.textContent = 'ширина кадра: ' + w + ' px · частей включено: ' + on + ' из ' + tg.length;
+    }
+    tg.forEach(function (b) {
+      b.addEventListener('click', function () { closeSearch(); b.classList.toggle('is-on'); refresh(); });
+    });
+    function setW(px) { view.style.setProperty('--panel-w', px + 'px'); refresh(); }
+    /* — раскрытие поиска (механика стенда; организм кликов не задаёт): круглая Search XS → поле Search S — */
+    var sBtn = root.querySelector('.hc__search');
+    var sField = document.getElementById('hc-search');
+    var sInput = sField ? sField.querySelector('.hc-search__input') : null;
+    var sClear = document.getElementById('hc-search-clear');
+    function openSearch() { sBtn.hidden = true; sField.hidden = false; sInput.focus(); }
+    function closeSearch() {
+      if (!sField || sField.hidden) return;
+      sField.hidden = true; sBtn.hidden = false; sInput.value = ''; sClear.hidden = true;
+    }
+    if (sBtn && sField && sInput && sClear) {
+      sBtn.addEventListener('click', openSearch);
+      sBtn.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSearch(); } });
+      sInput.addEventListener('input', function () { sClear.hidden = !sInput.value; });
+      sClear.addEventListener('click', function () { sInput.value = ''; sClear.hidden = true; sInput.focus(); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSearch(); });
+      document.addEventListener('click', function (e) { if (!sField.hidden && !sField.contains(e.target) && !sBtn.contains(e.target)) closeSearch(); });
+    }
+    document.getElementById('btn-w1440').onclick = function () { setW(1440); };
+    document.getElementById('btn-w1000').onclick = function () { setW(1000); };
+    document.getElementById('btn-w760').onclick = function () { setW(760); };
+    document.getElementById('btn-w360').onclick = function () { setW(360); };
+    refresh();
+  });
+</script>
+</body>
+</html>

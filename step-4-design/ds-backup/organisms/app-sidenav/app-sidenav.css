@@ -5,8 +5,8 @@
    Поведение и данные — app-sidenav.js (макеты DS «Взаимодействие с меню» 59160:36140 и «Адаптив» 59193:17635).
 
    Подключение (одинаковое на всех страницах, см. app-sidenav/readme.md):
-     <link rel="stylesheet" href="app-sidenav/app-sidenav.css?v=15">
-     <script src="app-sidenav/app-sidenav.js?v=13" defer></script>
+     <link rel="stylesheet" href="app-sidenav/app-sidenav.css?v=16">
+     <script src="app-sidenav/app-sidenav.js?v=15" defer></script>
    Страница подключает ДС (font/tokens/styles/components/index/fixes) и Material Icons; если что-то
    забыли — скрипт дострахует (кроме мобильного слоя: меню десктопное).
 
@@ -28,7 +28,8 @@
 /* ── 1. Меню в кадре: во всю высоту слева; шапка и кадр — правее меню ──────────
    Макет 59160:21175: логотип — в шапке меню, шапка приложения начинается правее меню
    (бургер и лого в ней — только в адаптиве, <760; правила в app-header.css) ── */
-.app-snav { display: none; }
+/* базовая гарнитура ДС: без неё всё, что не обёрнуто классом ds-*, наследует шрифт страницы */
+.app-snav { display: none; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; }
 .panel.app-snav-on .app-snav {
   position: absolute;
   left: 0;

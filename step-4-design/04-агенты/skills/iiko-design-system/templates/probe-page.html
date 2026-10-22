@@ -1,6 +1,6 @@
 <!-- Шаблон пробы для проверки страницы прототипа в headless Chrome.
      Порядок: 1) взять копию проверяемой страницы, 2) вставить этот блок перед </body>,
-     3) подставить вместо __SPEC__ JSON вида {"card": {"sel": ".kds-card", "props": ["width"]}},
+     3) подставить вместо __SPEC__ JSON вида {"card": {"sel": ".card", "props": ["width"]}},
      4) запустить:
         chrome --headless --disable-gpu --no-first-run --user-data-dir=<свой профиль> \
           --virtual-time-budget=9000 --window-size=1600,1000 --dump-dom file:///.../probe.html > out.html

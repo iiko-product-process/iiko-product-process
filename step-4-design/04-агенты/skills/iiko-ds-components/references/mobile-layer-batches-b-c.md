@@ -2,12 +2,12 @@
 
 Продолжение `references/mobile-mode-values-sizes.md` (там Button…Card и партия 2: Textarea, Input number,
 List, Expansion panel, Icon size, Badge, Divider, Logo, Backdrop, Status, Scroll).
-Все числа — замеры headless Chrome, источники — `_audit/platform/<slug>.json` (в Figma по мобильным не ходить).
+Все числа — замеры headless Chrome, источники — рекомендации платформ (в Figma по мобильным не ходить).
 
 ## Итог по плану
 
-Страниц в оболочке `iiko-ds-mobile/prototypes/recommendations/index.html`: **38**, ровно по числу компонентов
-сводной таблицы плана. Мобильных файлов в `iiko-ds-mobile/components/*_DS/`: **26** (`modes.css` остаётся осью
+Страниц-примеров по компонентам: **38**, ровно по числу компонентов
+сводной таблицы плана. Мобильных файлов в `components-mobile/components/*_DS/`: **26** (`modes.css` остаётся осью
 токенов, структурные файлы — рядом с компонентами, агрегатор `components/index.css`).
 
 ## Группа B — «размеры + поведение»
@@ -47,10 +47,10 @@ List, Expansion panel, Icon size, Badge, Divider, Logo, Backdrop, Status, Scroll
 - **Геометрия шторки без `position: fixed`.** В мобильном файле задавать `width: 100%`, верхние углы
   (`border-radius: 12px 12px 0 0`), `max-height: 80vh`, ряды 48 — а **само позиционирование оставлять странице**.
   Причина двойная: компонент не должен «висеть» сам, и `fixed` в панели рядом с десктопом перекрыл бы всю страницу
-  на демо-странице рекомендаций. Так сделаны Select, Menu, Timepicker, Datepicker, Hint, Sidenav, Dialog.
+  на демо-странице с панелями. Так сделаны Select, Menu, Timepicker, Datepicker, Hint, Sidenav, Dialog.
 - **Полноширинные контейнеры — `width: 100%`, не `auto`** (см. капкан в SKILL.md: в flex `auto` сжимается).
 - **Диалог:** кнопки в столбик + `width: 100%` у кнопки; full-screen вариант в ДС не описан — записать как открытый пункт.
-- **Table:** структура `ds-table-*-row` — колонка, поэтому на демо-странице строку собирать нейтральной flex-обёрткой,
+- **Table:** структура `ds-table-*-row` — колонка, поэтому в демо-прототипе строку собирать нейтральной flex-обёрткой,
   а `min-height` вешать на ячейки (`ds-table-content-cell` / `ds-table-header-cell`) — иначе «строка 52» не видна.
 - **Sidenav рисовать на тёмной поверхности** (`--ds-color-brand-neutral-super-dark`): его пункты рассчитаны на тёмный фон,
   на белом выглядят чёрными плашками.

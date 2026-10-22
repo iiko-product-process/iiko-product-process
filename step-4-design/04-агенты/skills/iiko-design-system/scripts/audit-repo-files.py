@@ -4,7 +4,7 @@
 
 Запуск из корня DS:
     python scripts/audit-repo-files.py
-    python scripts/audit-repo-files.py --root C:/Users/asukharev/GitHub/DS --top 40
+    python scripts/audit-repo-files.py --root C:/Users/asukharev/GitHub/iiko-DS/Design-System --top 40
 
 Печатает три отчёта: ссылочный анализ (кто упомянут, кто нет), группы дублей по содержимому,
 вес по папкам (через `git ls-files`, а не `git cat-file` — на 1000+ файлах тот уходит в таймаут).

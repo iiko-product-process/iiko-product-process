@@ -5,9 +5,9 @@
 Form field, Card, **Checkbox, Radio**, затем **партия 2 (20 страниц в оболочке)**: Textarea, Input number, List,
 Expansion panel, Icon size, Badge и пять «без изменений» — Divider, Logo, Backdrop, Status, Scroll.
 
-Источник чисел по мобиле — **только** `DS/_audit/platform/<slug>.json` (рекомендации платформ,
-собранные субагентами; поля `sizes[]` с `height_dp`/`width_dp`, `quote`, `source`). Figma по мобильным
-не смотрим. Десктопные числа — из `iiko-ds-web/components/<Имя>_DS/*.css`, токенов и спеки.
+Источник чисел по мобиле — **только** рекомендации платформ (первоисточники: Material,
+Angular Material, iOS HIG). Figma по мобильным не смотрим. Десктопные числа — из
+`components-web/components/<Имя>_DS/*.css`, токенов и спеки.
 
 ## Правило: мобильные значения — ВСЕМ размерам, не только базовому
 
@@ -16,7 +16,7 @@ Expansion panel, Icon size, Badge и пять «без изменений» — 
 многим компонентам как и у десктопа» — и был прав: в мобильной панели иконка-кнопка XS рисовалась 24 × 24,
 строка шага 24, то есть десктопными числами.
 
-Что делать с плотными размерами (числа — из собранных рекомендаций, не на глаз):
+Что делать с плотными размерами (числа — из рекомендаций платформ, не на глаз):
 
 | Что | Desktop | Mobile | Откуда |
 |---|---|---|---|
@@ -28,9 +28,9 @@ Expansion panel, Icon size, Badge и пять «без изменений» — 
 
 Тач-зона 48 у кнопок — невидимый слой (`::after` с `position:absolute; left/top:50%; width/height:100%;
 min-width/min-height:48px; transform:translate(-50%,-50%); background:none`), файл
-`iiko-ds-mobile/components/Button_DS/button-touch.css`; строки — `Checkbox_DS/checkbox-touch.css`,
+`components-mobile/components/Button_DS/button-touch.css`; строки — `Checkbox_DS/checkbox-touch.css`,
 `Slide-Toggle_DS/slide-toggle-touch.css`, `Stepper_DS/stepper-vertical.css` (min-height 48). Все они
-подключены в `iiko-ds-mobile/components/index.css`. Формулы HUG дают нужную высоту без новых токенов:
+подключены в `components-mobile/components/index.css`. Формулы HUG дают нужную высоту без новых токенов:
 Button S 12+12+20 = 44, XS 14+14+16 = 44; Button icon S 10+10+20 = 40, XS 12+12+16 = 40.
 
 Замерено на одной разметке: desktop 36 / 28 / 24 → mobile 44 / 44 / 44 (Button), 40 / 40 / 40 (иконка),
@@ -55,7 +55,7 @@ Button S 12+12+20 = 44, XS 14+14+16 = 44; Button icon S 10+10+20 = 40, XS 12+12+
 ## Slide toggle — как получены числа
 
 Платформы (MD3 switch, Angular `mat-slide-toggle`) дают один набор: трек 52 × 32, ручка 16 (unselected) /
-24 (selected) / 28 (pressed), state layer 40, тач-таргет 48. В собранных рекомендациях «трек меньше 32 и
+24 (selected) / 28 (pressed), state layer 40, тач-таргет 48. «Трек меньше 32 и
 ручка вне шкалы 16/24/28» помечены как **не рекомендуемые** — а наш десктоп 34 × 20 как раз такой.
 HIG чисел не даёт, но требует switch только в строке списка.
 
@@ -121,7 +121,7 @@ S, XS, с иконкой, с поддержкой/подсказкой, error, d
 - iOS HIG: ни страницы Checkboxes, ни Radio buttons нет (404); и то и другое описано только для macOS
   внутри Toggles, без чисел. HIG же советует >5 радио-опций выносить в pop-up button, а «вкл/выкл» — на switch.
 
-**Дефект, найденный 12.09.2026 (исправлен):** агрегатор `iiko-ds-web/components/index.css` импортировал у
+**Дефект, найденный 12.09.2026 (исправлен):** агрегатор `components-web/components/index.css` импортировал у
 Checkbox и Radio **только `*-label.css`**, а `checkbox.css`, `checkbox-icons.css`, `radio.css`,
 `radio-icons.css` не подключал никто и ни одна страница в DS. Поэтому `.ds-checkbox` / `.ds-radio`
 рендерились без стилей: `display: inline`, без маркера 20 × 20 и без цветов состояний — а `min-height`
@@ -151,15 +151,12 @@ gap шапки 8, типографика заголовка/подписей) �
   уже были. Лечится свежим профилем (`--user-data-dir=<новый каталог>`) или `?v=<epoch>` в адресе.
   Перед выводом «не применилось» — проверить `getComputedStyle(panel).getPropertyValue('--ds-…-токен')`:
   если токен на панели верный, а размер нет — дело в кэше или в специфичности, а не в токенах.
-- **С 12.09.2026 кэш закрыт с двух сторон.** `serve.py` в корне DS отдаёт всё с
-  `Cache-Control: no-store, no-cache, must-revalidate, max-age=0` (запускать вместо `python -m http.server`),
-  а `build.py` штампует `?v=<max mtime CSS>` в каждую ссылку на CSS и в `src` iframe оболочки. Если владелец
-  видит «старые» числа, а замер свежим профилем верный — предложить ему один `Ctrl+Shift+R` (обычная F5
-  не перезапрашивает подресурсы) и не спорить.
+- **Если владелец видит «старые» числа, а замер свежим профилем верный** — предложить ему один
+  `Ctrl+Shift+R` (обычная F5 не перезапрашивает подресурсы) и не спорить.
 - **`display` важнее правила.** Прежде чем искать специфичность или кэш, посмотреть `getComputedStyle(el).display`:
   у `inline`-элемента `min-height`/`height` **молча не применяются**, а внутри flex-строки тот же элемент
   становится flex-элементом и высота работает («в одном примере работает, в другом нет»). И до этого —
-  проверить, что файл компонента вообще есть в `iiko-ds-web/components/index.css`. Один прогон:
+  проверить, что файл компонента вообще есть в `components-web/components/index.css`. Один прогон:
   `scripts/verify-mobile-values.py --component Checkbox_DS --url <страница> --selector .ds-checkbox`.
 - **Пробник писать рядом со страницей, а не в `%TEMP%`.** Копия страницы в темп-каталоге ломает
   относительные ссылки на CSS, и замер показывает нестилизованный документ (высоты 21/49, padding 0 при
@@ -174,25 +171,6 @@ gap шапки 8, типографика заголовка/подписей) �
   (не через `innerHTML`), поэтому `<script>` внутри примера выполняется. Так на странице чекбокса показано
   смешанное состояние.
 
-## Оболочка страниц рекомендаций (index.html)
-
-`_audit/rec/build.py` → `index_page()` собирает оболочку: меню компонентов слева (`nav__item` с `data-slug`,
-активный пункт подсвечен), справа `iframe`. Клик меняет `location.hash` (`index.html#<slug>` — прямая ссылка),
-на `load` фрейм подгоняет высоту по содержимому и прячет внутри себя ссылку «← Все компоненты».
-Меню строится из `data/*.json`, поэтому новый компонент появляется в нём сам после `python build.py`
-(сейчас 9: Button, Button icon, Button toggle, Card, Checkbox, Form field, Radio, Slide toggle, Stepper).
-
-Ширина: пользователь попросил «сделай страницу шире» — `.wrap` без ограничения по ширине
-(`width:100%; max-width:100%`), сплошной текст («Почему так», «Итог») ограничен ~1100 px
-(`.point`, `ul.list`), таблицы и панели — на всю ширину.
-
-Один компонент — одна панель: `panel()` берёт `html` для десктопа и `html_mobile` (если есть) для мобильной
-панели; структурные варианты показываются именно так, а не правилом `data-mode`.
-
-Данные страницы: `data/<slug>.json` (`summary_ru`, `changes[]`, `examples[]`, `result_html`) и
-`data-tech/<slug>.json` (цитаты платформ с источниками, `verdict.keep/drop/open`, `measured_ru`).
-Примеры для Button и Button icon должны показывать **M, S и XS** — иначе изменения плотных размеров
-на странице не видно и владелец читает это как «ничего не поменялось». Сейчас в оболочке **20 страниц**.
 
 ## Партия 2 — группа «только размеры» (Textarea, Input number, List, Expansion panel, Icon size, Badge)
 
@@ -238,7 +216,7 @@ gap шапки 8, типографика заголовка/подписей) �
 ## Харнесс проверки мобильных значений — три капкана
 
 1. **Подключать ОБА мобильных файла.** Тестовая страница, которая линкует только `modes.css` (токены), но
-   забыла `iiko-ds-mobile/components/index.css` (агрегатор), молча теряет все `*-mobile.css` и `*-touch.css`:
+   забыла `components-mobile/components/index.css` (агрегатор), молча теряет все `*-mobile.css` и `*-touch.css`:
    замер печатает десктопные числа, и это читается как «правило не применяется» (стоило прогона: список 68
    вместо 72, шапка 44 вместо 48, тач-слой 0 вместо 48). Порядок ссылок: font → tokens → **modes.css** →
    **mobile components/index.css** → styles → web components/index.css.

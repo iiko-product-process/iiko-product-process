@@ -15,7 +15,7 @@ import subprocess
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPOS = [
     ("DS (корень)", HERE),
-    ("Prototypes (рядом)", os.path.normpath(os.path.join(HERE, "..", "Prototypes"))),
+    ("Prototype-Guide (рядом)", os.path.normpath(os.path.join(HERE, "..", "Prototype-Guide"))),
 ]
 
 

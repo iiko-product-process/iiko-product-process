@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>table-header-actions — демо стенд полосы над таблицей</title>
+<!--
+  Демо стенд ОРГАНИЗМА «Table header actions» (table-header-actions): все состояния
+  и правила подключения. Отдельный файл организма: правится независимо от стендов других
+  организмов/молекул (может условно повторять то же, что и они, — это нормально).
+  Источник — старая ДС «Iiko Web DS (Old)»: мастер «Title actions table» (8455:19257,
+  варианты Type=Title / Type=Title+actions) и копии по разделам: Номенклатура
+  (13014:11189, 13023:14504), Заказ товаров (4661:9071), Персонал (8402:19671),
+  Конструктор сайта (9441:22975), Модификаторы (8384:19757), Отчёты (5814:13959).
+  Состав: заголовок (стиль «Body M (16) / Normal / Medium»), слот «После заголовка»
+  (Divider 1×16 + Slide toggle с подписью), действия (Button / Button icon ДС).
+  Живой блок стоит первым в кадре-«странице» (полоса над таблицей, как на страницах):
+  пресеты ширины меняют ширину кадра; тумблеры повторяют свойства компонента
+  (Заголовок, Тумблер, Действия) — включают/выключают части у живого блока. Разделитель
+  в слоте «После заголовка» — автоматический: без заголовка или без тумблера исчезает сам.
+  Конфигурации из разделов старой ДС — в разметке ниже кадра, но скрыты (атрибут hidden;
+  не показываем, не удалять — чтобы показать, убрать hidden). Иконки — SVG из Figma
+  (img в папке), подставляет table-header-actions.js.
+  ВТОРОЙ ВАРИАНТ ОТОБРАЖЕНИЯ — «выделение строк» (.tha--selection, по просьбе владельца 15.10;
+  уточнён 16.10 — «как сейчас делаем во 2 варианте баннеров»): когда в таблице выбраны строки
+  (чекбоксами или иначе), страница показывает ВМЕСТО обычной полосы полосу активных действий —
+  по Figma «Централизованное управление киосками», «Title actions table» (2495:9199): слева счётчик,
+  сразу за ним — крестик очистки (зазор 8 МЕЖДУ цифрой и крестиком — группа .tha__sel; текст
+  «Очистить выбор» и Divider убраны), справа «Удалить» (Negative Text) + Divider + «Добавить».
+  Оба варианта выведены в кадре стопкой.
+-->
+<link rel="stylesheet" href="../../components-web/font.css">
+<link rel="stylesheet" href="../../components-web/tokens.css">
+<link rel="stylesheet" href="../../components-web/styles.css">
+<link rel="stylesheet" href="../../components-web/components/index.css">
+<link rel="stylesheet" href="../../components-web/fixes.css">
+<!-- table-header-actions — полоса над таблицей: один источник стилей и поведения -->
+<link rel="stylesheet" href="table-header-actions.css?v=2">
+<script src="table-header-actions.js?v=2" defer></script>
+<style>
+  /* каркас демо-стенда — как у остальных организмов */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0);
+    font-size: 13px;
+  }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .demo-bar__btn {
+    height: 28px; padding: 0 12px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0);
+    border-radius: var(--ds-radius-2x, 8px); background: transparent; font: inherit; cursor: pointer;
+  }
+  .demo-bar__btn:hover { background: var(--ds-color-button-neutral-hover, #f5f5f5); }
+  .demo-bar__btn.is-on { background: var(--ds-color-button-neutral-press, #f5f5f5); }
+  .demo-bar__sep { width: 1px; height: 20px; background: var(--ds-color-stroke-default, #e0e0e0); margin: 0 4px; }
+  .demo-bar__state { margin-left: 12px; color: var(--ds-color-text-secondary, #616161); font-variant-numeric: tabular-nums; }
+  .demo-bar__hint { color: var(--ds-color-text-secondary, #616161); }
+  .view { padding: 24px; }
+  /* кадр-«страница»: как у остальных организмов (ширина — пресетами сверху) */
+  .panel { position: relative; width: var(--panel-w, 1440px); height: 860px; overflow: hidden; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  /* контентная зона кадра: полоса над таблицей — первой, с полями контейнера (24/32) */
+  .tha-zone { padding: 24px 32px 0; }
+  /* группа «счётчик + крестик очистки» в варианте 2: зазор 8 ТОЛЬКО между цифрой и крестиком
+     (решение владельца 16.10: «как сейчас делаем во 2 варианте баннеров»); остальные зазоры — родные */
+  .tha__sel { display: flex; align-items: center; gap: var(--ds-size-2x, 8px); min-width: 0; }
+  .frame { padding: 24px 32px; box-sizing: border-box; }
+  .frame h1 { font-size: 24px; line-height: 24px; font-weight: 500; margin: 0 0 12px; }
+  .frame p { font-size: 14px; line-height: 20px; max-width: 640px; color: var(--ds-color-text-primary, #333); }
+  .frame ul { font-size: 14px; line-height: 22px; max-width: 640px; padding-left: 20px; }
+  /* конфигурации из разделов старой ДС — ниже кадра, той же ширины */
+  .cfgs { width: var(--panel-w, 1440px); box-sizing: border-box; padding: 0 32px; margin-top: 24px; }
+  .cfgs__title { font-size: 14px; line-height: 20px; color: var(--ds-color-text-secondary, #616161); margin: 0 0 16px; }
+  .demo-block { margin: 0 0 24px; }
+  .demo-block:last-child { margin-bottom: 0; }
+  .cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0 0 12px; }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Демо стенд table-header-actions</span>
+  <button class="demo-bar__btn" id="btn-w1440">1440</button>
+  <button class="demo-bar__btn" id="btn-w1000">1000</button>
+  <button class="demo-bar__btn" id="btn-w760">760</button>
+  <button class="demo-bar__btn" id="btn-w360">360</button>
+  <span class="demo-bar__sep"></span>
+  <button class="demo-bar__btn is-on" data-part="title">Заголовок</button>
+  <button class="demo-bar__btn is-on" data-part="toggle">Тумблер</button>
+  <button class="demo-bar__btn is-on" data-part="actions">Действия</button>
+  <span class="demo-bar__state" id="demo-state">…</span>
+  <span class="demo-bar__hint">· тумблеры — как свойства компонента в Figma</span>
+</div>
+<div class="view" id="view">
+
+  <!-- Живой блок — дефолты (всё включено); тумблеры в шапке стенда выключают части.
+       Стоит первым в кадре-«странице» — как полоса над таблицей на страницах -->
+  <div class="panel" id="panel">
+    <div class="tha-zone">
+      <p class="cap">Вариант 1 — обычная полоса (дефолт)</p>
+      <div class="tha" id="tha-live">
+        <div class="tha__left">
+          <span class="tha__title">Товары</span>
+          <div class="tha__after">
+            <span class="ds-divider tha__divider"></span>
+            <label class="ds-slide-toggle tha__toggle"><span class="ds-slide-toggle__row"><input class="ds-slide-toggle__input" type="checkbox"><span class="ds-slide-toggle__track"></span><span class="ds-slide-toggle__title">Удалённые: 2</span></span></label>
+          </div>
+        </div>
+        <div class="tha__right">
+          <button type="button" class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text" aria-label="Редактировать"><span class="ds-btn-icon__icon"><img data-tha-icon="edit" width="20" height="20" alt=""></span></button>
+          <span class="ds-divider tha__divider"></span>
+          <button type="button" class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text" aria-label="Копировать"><span class="ds-btn-icon__icon"><img data-tha-icon="content_copy" width="20" height="20" alt=""></span></button>
+          <span class="ds-divider tha__divider"></span>
+          <button type="button" class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text" aria-label="Фильтр"><span class="ds-btn-icon__icon"><img data-tha-icon="filter_list" width="20" height="20" alt=""></span></button>
+          <span class="ds-divider tha__divider"></span>
+          <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text"><span class="ds-btn__icon"><img data-tha-icon="add" width="20" height="20" alt=""></span><span class="ds-btn__label">Добавить</span></button>
+        </div>
+      </div>
+      <!-- Вариант 2 — режим выделения: страница показывает его ВМЕСТО обычной полосы,
+           когда в таблице выбраны строки (чекбоксами или иначе). Состав — по Figma
+           «Централизованное управление киосками», «Title actions table» (2495:9199) и по решению
+           владельца 16.10 («как сейчас делаем во 2 варианте баннеров»): слева счётчик, сразу за ним
+           крестик очистки (зазор 8 МЕЖДУ цифрой и крестиком — группа .tha__sel); текст
+           «Очистить выбор» и Divider убраны; справа «Удалить» (красная ТОЛЬКО иконка, текст тёмный)
+           + Divider + «Добавить» -->
+      <p class="cap" style="margin-top: 24px;">Вариант 2 — выделение строк: активные действия с таблицей (показывается вместо варианта 1, когда выбраны строки)</p>
+      <div class="tha tha--selection">
+        <div class="tha__left">
+          <span class="tha__sel">
+            <span class="tha__title">Выбрано: 3</span>
+            <div class="tha__after">
+              <button type="button" class="tha__text-action" aria-label="Очистить выбор"><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><img data-tha-icon="close" width="20" height="20" alt=""></span></button>
+            </div>
+          </span>
+        </div>
+        <div class="tha__right">
+          <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text"><span class="ds-btn__icon"><img data-tha-icon="delete-negative" width="20" height="20" alt=""></span><span class="ds-btn__label">Удалить</span></button>
+          <span class="ds-divider tha__divider"></span>
+          <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text"><span class="ds-btn__icon"><img data-tha-icon="add" width="20" height="20" alt=""></span><span class="ds-btn__label">Добавить</span></button>
+        </div>
+      </div>
+    </div>
+    <div class="frame">
+      <h1>Кадр контента (заглушка)</h1>
+      <p>Это демо стенд полосы над таблицей: сверху — сам блок (шапка таблицы), ниже — заглушка
+         контентной зоны. Страница подключает ДС и table-header-actions — тот же набор, что и страницы-прототипы.</p>
+      <ul>
+        <li>пресеты сверху меняют ширину кадра — блок растягивается по ширине контентной зоны;</li>
+        <li>тумблеры повторяют свойства компонента (Заголовок, Тумблер, Действия);
+            дефолт — всё включено;</li>
+        <li>клики в организме не заданы: тумблер и кнопки — действия страницы. js организма
+            делает только две вещи: подставляет иконки и переключает части —
+            <code>TableHeaderActions.set(блок, { title: false, … })</code> или атрибуты
+            <code>data-tha-*="off"</code> на корне;</li>
+        <li>разделители — Divider ДС, вертикальный штрих 1×16; в слоте «После заголовка»
+            разделитель автоматический — без заголовка или без тумблера исчезает сам.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Конфигурации из разделов старой ДС — скрыты (не показываем), не удалять;
+       показать снова — убрать атрибут hidden -->
+  <div class="cfgs" hidden>
+    <p class="cfgs__title">Конфигурации из разделов старой ДС (тексты — из копий; части включаются тумблерами)</p>
+
+    <div class="demo-block">
+      <p class="cap">Базовый — заголовок и основное действие (Заказ товаров)</p>
+      <div class="tha">
+        <div class="tha__left">
+          <span class="tha__title">Товары</span>
+        </div>
+        <div class="tha__right">
+          <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text"><span class="ds-btn__icon"><img data-tha-icon="add" width="20" height="20" alt=""></span><span class="ds-btn__label">Добавить товар</span></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <p class="cap">Тумблер «Удалённые: N» и иконочные действия (Номенклатура)</p>
+      <div class="tha">
+        <div class="tha__left">
+          <span class="tha__title">Товары</span>
+          <div class="tha__after">
+            <span class="ds-divider tha__divider"></span>
+            <label class="ds-slide-toggle tha__toggle"><span class="ds-slide-toggle__row"><input class="ds-slide-toggle__input" type="checkbox"><span class="ds-slide-toggle__track"></span><span class="ds-slide-toggle__title">Удалённые: 2</span></span></label>
+          </div>
+        </div>
+        <div class="tha__right">
+          <button type="button" class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text" aria-label="Вид"><span class="ds-btn-icon__icon"><img data-tha-icon="grid_view" width="20" height="20" alt=""></span></button>
+          <span class="ds-divider tha__divider"></span>
+          <button type="button" class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text" aria-label="Переместить"><span class="ds-btn-icon__icon"><img data-tha-icon="open_with" width="20" height="20" alt=""></span></button>
+          <span class="ds-divider tha__divider"></span>
+          <button type="button" class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text" aria-label="Фильтр"><span class="ds-btn-icon__icon"><img data-tha-icon="filter_list" width="20" height="20" alt=""></span></button>
+          <span class="ds-divider tha__divider"></span>
+          <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text"><span class="ds-btn__icon"><img data-tha-icon="arrow_drop_down" width="20" height="20" alt=""></span><span class="ds-btn__label">Добавить</span></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <p class="cap">Четыре текстовых действия с разделителями (Номенклатура)</p>
+      <div class="tha">
+        <div class="tha__left">
+          <span class="tha__title">Товары</span>
+          <div class="tha__after">
+            <span class="ds-divider tha__divider"></span>
+            <label class="ds-slide-toggle tha__toggle"><span class="ds-slide-toggle__row"><input class="ds-slide-toggle__input" type="checkbox"><span class="ds-slide-toggle__track"></span><span class="ds-slide-toggle__title">Удалённые: 2</span></span></label>
+          </div>
+        </div>
+        <div class="tha__right">
+          <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text"><span class="ds-btn__icon"><img data-tha-icon="compare_arrows" width="20" height="20" alt=""></span><span class="ds-btn__label">Переместить</span></button>
+          <span class="ds-divider tha__divider"></span>
+          <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text"><span class="ds-btn__icon"><img data-tha-icon="edit" width="20" height="20" alt=""></span><span class="ds-btn__label">Редактировать</span></button>
+          <span class="ds-divider tha__divider"></span>
+          <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text"><span class="ds-btn__icon"><img data-tha-icon="content_copy" width="20" height="20" alt=""></span><span class="ds-btn__label">Копировать</span></button>
+          <span class="ds-divider tha__divider"></span>
+          <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text"><span class="ds-btn__icon"><img data-tha-icon="delete" width="20" height="20" alt=""></span><span class="ds-btn__label">Удалить</span></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <p class="cap">Счётчик выбранного и тумблер без подписи (Персонал)</p>
+      <div class="tha">
+        <div class="tha__left">
+          <span class="tha__title">Выбрано: 2</span>
+          <div class="tha__after">
+            <span class="ds-divider tha__divider"></span>
+            <label class="ds-slide-toggle tha__toggle"><span class="ds-slide-toggle__row"><input class="ds-slide-toggle__input" type="checkbox"><span class="ds-slide-toggle__track"></span></span></label>
+          </div>
+        </div>
+        <div class="tha__right">
+          <button type="button" class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text" aria-label="Фильтр"><span class="ds-btn-icon__icon"><img data-tha-icon="filter_list" width="20" height="20" alt=""></span></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <p class="cap">Тумблер включён (Модификаторы)</p>
+      <div class="tha">
+        <div class="tha__left">
+          <span class="tha__title">Лучёк (min=1, max=4)</span>
+          <div class="tha__after">
+            <span class="ds-divider tha__divider"></span>
+            <label class="ds-slide-toggle tha__toggle"><span class="ds-slide-toggle__row"><input class="ds-slide-toggle__input" type="checkbox" checked><span class="ds-slide-toggle__track"></span></span></label>
+          </div>
+        </div>
+        <div class="tha__right">
+          <button type="button" class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text" aria-label="Редактировать"><span class="ds-btn-icon__icon"><img data-tha-icon="edit" width="20" height="20" alt=""></span></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <p class="cap">Без заголовка — только тумблер с подписью (Отчёты)</p>
+      <div class="tha">
+        <div class="tha__left">
+          <div class="tha__after">
+            <label class="ds-slide-toggle tha__toggle"><span class="ds-slide-toggle__row"><input class="ds-slide-toggle__input" type="checkbox"><span class="ds-slide-toggle__track"></span><span class="ds-slide-toggle__title">Редактировать дашборд</span></span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+<script>
+  window.addEventListener('DOMContentLoaded', function () {
+    var st = document.getElementById('demo-state');
+    var root = document.getElementById('tha-live');
+    var view = document.getElementById('view');
+    var tg = Array.prototype.slice.call(document.querySelectorAll('.demo-bar__btn[data-part]'));
+    function refresh() {
+      var w = document.getElementById('panel').clientWidth;
+      var parts = {}, on = 0;
+      tg.forEach(function (b) {
+        var k = b.getAttribute('data-part');
+        var v = b.classList.contains('is-on');
+        parts[k] = v;
+        if (v) on++;
+      });
+      window.TableHeaderActions.set(root, parts);
+      st.textContent = 'ширина кадра: ' + w + ' px · частей включено: ' + on + ' из ' + tg.length;
+    }
+    tg.forEach(function (b) {
+      b.addEventListener('click', function () { b.classList.toggle('is-on'); refresh(); });
+    });
+    function setW(px) { view.style.setProperty('--panel-w', px + 'px'); refresh(); }
+    document.getElementById('btn-w1440').onclick = function () { setW(1440); };
+    document.getElementById('btn-w1000').onclick = function () { setW(1000); };
+    document.getElementById('btn-w760').onclick = function () { setW(760); };
+    document.getElementById('btn-w360').onclick = function () { setW(360); };
+    refresh();
+  });
+</script>
+</body>
+</html>

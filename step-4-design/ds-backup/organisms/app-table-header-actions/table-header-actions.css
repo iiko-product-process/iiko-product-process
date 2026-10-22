@@ -1,0 +1,95 @@
+/* ============================================================
+   table-header-actions - «полоса над таблицей» (шапка таблицы) - организм дизайн-системы.
+   Источник: старая ДС «Iiko Web DS (Old)» - мастер «Title actions table» (8455:19257)
+   и копии по разделам (Номенклатура, Заказ товаров, Персонал, Конструктор сайта,
+   Модификаторы, Отчёты). Собрано на компонентах новой ДС:
+     · заголовок - текст стилем ДС «Body M (16) / Normal / Medium» (или счётчик);
+     · слот «После заголовка» - Divider (вертикальный штрих 1×16 #E0E0E0)
+       + Slide toggle (трек 34×20 + подпись, шаг 8);
+     · действия - Button / Button icon (Size=M, Style=Neutral, Type=Text),
+       между группами - тот же вертикальный Divider.
+   Размеры из копий: высота строки 36; заголовок↔слот 16; внутри слота 16;
+   между действиями 8; мин. зазор заголовок↔действия 8; блок растягивается
+   на всю ширину, действия прижаты вправо (space-between).
+   Переключатели частей - атрибуты на корне .tha (нет атрибута = часть показана):
+   data-tha-title / data-tha-toggle / data-tha-actions = "off"
+   (ставит TableHeaderActions.set). Разделитель в слоте «После заголовка» - автоматический:
+   показывается, только когда есть и заголовок, и тумблер (без одного из них исчезает сам).
+   Иконки - <img> из этой папки (точные SVG из Figma; #616161 = Icon/Primary);
+   src подставляет table-header-actions.js по data-tha-icon (работает с любой страницы).
+   ============================================================ */
+
+.tha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;                        /* мин. зазор заголовок ↔ действия (из копий) */
+  min-height: 36px;                /* высота строки (из копий) */
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* левая часть: заголовок + слот «После заголовка» (гэп 16 - из копий) */
+.tha__left { display: flex; align-items: center; gap: 16px; min-width: 0; flex: 1 1 auto; }
+
+/* правая часть: действия (гэп 8 - из копий) */
+.tha__right { display: flex; align-items: center; gap: 8px; flex: none; }
+
+/* заголовок (или счётчик) - стиль ДС «Body M (16) / Normal / Medium» */
+.tha__title {
+  font-size: var(--ds-font-body-m-16-normal-medium-size);
+  line-height: var(--ds-font-body-m-16-normal-medium-line);
+  letter-spacing: var(--ds-font-body-m-16-normal-medium-spacing);
+  font-weight: var(--ds-font-body-m-16-normal-medium-weight);
+  color: var(--ds-color-text-primary, #333333);
+}
+
+/* текстовое действие — слой «Text default» в Figma (вариант 2, «Очистить выбор»):
+   иконка + текст БЕЗ кнопочной плашки и паддингов; гэп 8; текст — токены Body S 14/20 Regular */
+.tha__text-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: var(--ds-font-body-s-14-normal-regular-size);
+  line-height: var(--ds-font-body-s-14-normal-regular-line);
+  letter-spacing: var(--ds-font-body-s-14-normal-regular-spacing);
+  font-weight: var(--ds-font-body-s-14-normal-regular-weight);
+  color: var(--ds-color-text-primary, #333333);
+  cursor: pointer;
+}
+.tha__text-action img { flex: none; }
+
+/* слот «После заголовка»: разделитель + тумблер (гэп 16 - из копий) */
+.tha__after { display: flex; align-items: center; gap: 16px; }
+
+/* разделитель - компонент Divider ДС; вертикальное использование: 1×16 */
+.tha__divider { width: 1px; height: 16px; flex: none; }
+
+/* переключатели частей: data-tha-*="off" на корне скрывает часть (дефолт - всё включено) */
+.tha[data-tha-title="off"] .tha__title,
+.tha[data-tha-toggle="off"] .tha__toggle,
+.tha[data-tha-actions="off"] .tha__right { display: none; }
+
+/* разделитель в слоте «После заголовка» - автоматический: он разделяет заголовок и тумблер
+   и без одного из них не нужен (отдельного переключателя у разделителя нет) */
+.tha[data-tha-title="off"] .tha__after .tha__divider { display: none; }
+/* без тумблера в слоте остаётся только разделитель - схлопываем слот целиком;
+   пустая правая часть не оставляет гэпа */
+.tha[data-tha-toggle="off"] .tha__after { display: none; }
+.tha__after:not(:has(*)) { display: none; }
+.tha__right:not(:has(*)) { display: none; }
+
+/* ── Вариант 2 — «выделение строк» (второй вариант отображения; Figma «Централизованное
+   управление киосками», «Title actions table» 2495:9199): когда в таблице выбраны строки
+   (чекбоксами или иначе), страница показывает ВМЕСТО обычной полосы полосу активных
+   действий с выбранным — слева счётчик «Выбрано: N» и сразу за ним крестик очистки
+   (слой «Text default» — иконка + текст, НЕ кнопка: класс .tha__text-action; текст «Очистить выбор»
+   и Divider в паре убраны 16.10),
+   справа «Удалить» (Button Neutral Text, красная ТОЛЬКО иконка delete — сверено
+   пикселями макета) + Divider + «Добавить» (Button Neutral Text). Высота 36 и зазоры
+   16/8 — как у варианта 1. Класс .tha--selection на корне — маркер варианта; замена
+   полос — дело страницы (по событию выбора строк) */

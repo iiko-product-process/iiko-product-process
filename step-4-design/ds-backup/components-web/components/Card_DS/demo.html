@@ -6,14 +6,14 @@
 <title>Card — демо стенд компонента</title>
 <!--
   Демо стенд КОМПОНЕНТА Card (семейство). Папка: DS/components-web/components/Card_DS/.
-  Источник — страница Figma «Card_DS» (52916:15125). Наборы (порядок как в Figma, слева направо):
+  Источник — страница Figma «Card_DS» (52916:15125). Компоненты (порядок как в Figma, слева направо):
     1) Card header  (52916:15126) — Content=Default (53745:3292), 500×117: Label up / Card title / Label down + разделитель снизу;
     2) Card content (53744:3079)  — Type=Custom (58799:18962), 500×80;
     3) Card footer  (53744:3139)  — Content=Default (53753:358), 501×61: разделитель + Accent-кнопка «Подробнее» (справа);
     4) Card view    (53744:3181)  — Type=Filled (53766:240) / Outlined (53788:8947) / Shadow (53788:8993) / Custom (61667:100036), 501×256, Custom 500×80.
   «Basic example» (первым) — живая сборка: шапка + контент + подвал, кнопка «Подробнее» кликабельна (счётчик в баре).
   ВАЖНО (по дереву Figma): в сборке карточек шапка и подвал БЕЗ разделителей (116/60) — разделитель только
-  у отдельных вариантов шапки и подвала (117/61). Витрины статичные, как наборы; «замороженных» состояний нет
+  у отдельных вариантов шапки и подвала (117/61). Витрины статичные, как в Figma; «замороженных» состояний нет
   (в наборах только типы). Фон витрин — Surface/Default V2 (#F8F9FC), как фон наборов в Figma (белая Filled-карточка
   иначе не отличается от белого).
   Вид — сгенерированный слой ДС (card-view.css: ds-card*) + ручной слой ../../fixes.css п. 21 (выгрузка отстала
@@ -47,6 +47,7 @@
   .snap-ct { color: var(--ds-color-text-primary, #333); margin: 0; }
   .snap-cs { color: var(--ds-color-text-secondary, #616161); margin: 0; }
   .snap-card-body { display: flex; flex-direction: column; gap: var(--ds-card-content-gap, 8px); width: 100%; }
+  .snap-note { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 24px 0 0; max-width: 980px; }
 </style>
 </head>
 <body>
@@ -56,7 +57,7 @@
 </div>
 <div class="view">
   <!-- табы — компонент ДС Tabs; переключение панелей — скрипт внизу страницы -->
-  <div class="ds-tabs" role="tablist" aria-label="Наборы страницы Card_DS">
+  <div class="ds-tabs" role="tablist" aria-label="Card_DS">
     <button class="ds-tab ds-tab--active" role="tab" data-vtab="basic" aria-selected="true">Basic example</button>
     <button class="ds-tab" role="tab" data-vtab="header" aria-selected="false">Card header</button>
     <button class="ds-tab" role="tab" data-vtab="content" aria-selected="false">Card content</button>
@@ -84,13 +85,13 @@
         </div>
       </div>
     </div>
+    <p class="snap-note">Пометки для ревью: (а) сверка с Figma («Card_DS»): размеры, паддинги, типы, тень и радиус совпадают; паддинги в сгенерированном css отстали от Figma — перекрыты fixes п.21 (журнал №104); (б) косяк токена: Card/Content/Text weight = Medium, в Figma текст контента Regular (400) — обойдено утилитой ds-text-body-m-16-normal-regular (журнал №256); (в) правила Figma: действия — справа; заголовок не дублировать в контенте; подвал — только когда есть действия; Type=Shadow — «кликабельна», но состояний hover/pressed/focus нет ни в Figma, ни в ДС; (г) Angular Material (референс): actions align=end — есть (footer--right); медиа-слота (изображение S/M/L/XL) в ДС нет. Журнал №104, №256.</p>
   </div>
 
   <!-- 2. Card header (52916:15126): Content=Default (53745:3292), 500×117 — разделитель снизу -->
   <div class="panel" data-vpanel="header" role="tabpanel" hidden>
     <div class="snap-stage">
       <div class="snap-col">
-        <div class="snap-cap">Content=Default</div>
         <div class="ds-card ds-card--filled snap-w500">
           <div class="ds-card__header">
             <p class="ds-card__label-up">Label up</p>
@@ -107,7 +108,6 @@
   <div class="panel" data-vpanel="content" role="tabpanel" hidden>
     <div class="snap-stage">
       <div class="snap-col">
-        <div class="snap-cap">Type=Custom</div>
         <div class="ds-card ds-card--custom snap-w500">
           <div class="snap-card-body">
             <p class="ds-text-body-m-16-normal-medium snap-ct">Content title</p>
@@ -122,7 +122,6 @@
   <div class="panel" data-vpanel="footer" role="tabpanel" hidden>
     <div class="snap-stage">
       <div class="snap-col">
-        <div class="snap-cap">Content=Default</div>
         <div class="ds-card ds-card--filled snap-w501">
           <div class="ds-card__footer ds-card__footer--right">
             <div class="ds-card__divider"></div>
@@ -140,7 +139,6 @@
     <div class="snap-stage">
       <div class="snap-col snap-viewcol">
         <div class="snap-item">
-          <div class="snap-cap">Type=Filled, Shadow=False, Border=False</div>
           <div class="ds-card ds-card--filled snap-w501">
             <div class="ds-card__header">
               <p class="ds-card__label-up">Label up</p>
@@ -159,7 +157,6 @@
           </div>
         </div>
         <div class="snap-item">
-          <div class="snap-cap">Type=Outlined, Shadow=False, Border=True</div>
           <div class="ds-card ds-card--outlined snap-w501">
             <div class="ds-card__header">
               <p class="ds-card__label-up">Label up</p>
@@ -178,7 +175,6 @@
           </div>
         </div>
         <div class="snap-item">
-          <div class="snap-cap">Type=Shadow, Shadow=True, Border=False</div>
           <div class="ds-card ds-card--shadow snap-w501">
             <div class="ds-card__header">
               <p class="ds-card__label-up">Label up</p>
@@ -197,7 +193,6 @@
           </div>
         </div>
         <div class="snap-item snap-item--last">
-          <div class="snap-cap">Type=Custom, Shadow=False, Border=True</div>
           <div class="ds-card ds-card--custom ds-card--outlined snap-w500">
             <div class="snap-card-body">
               <p class="ds-text-body-m-16-normal-medium snap-ct">Content title</p>

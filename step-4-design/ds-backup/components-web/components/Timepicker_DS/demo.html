@@ -6,15 +6,15 @@
 <title>Timepicker — демо стенд компонента</title>
 <!--
   Демо стенд группы компонентов Timepicker (страница «Timepicker_DS», 56227:19973). Папка: DS/components-web/components/Timepicker_DS/.
-  Источник — канва Figma «Iiko Web DS (New)»: наборы «Input Timepicker» (2: Type=Empty/Populated, 250×48, иконка
-  schedule_time 20 #616161), «Elements Timepicker» (8: Selected × Default/Hover/Press + Default × Default/Hover/Press/
-  Disable/Range; пилюли 74×40 r9999, Selected — заливка accent #448AFF белый текст, Range — подложка #F0F5FF по бокам),
-  «Select Timepicker» (2: Type=Time grid 251×224 — сетка 3×N из элементов 69×36 + Scroll 208×12 (bg #FAFAFA, ползунок
-  #D6D6D6 96×8); Type=Time line 100×232 — колонка Select item 88×36 + Scroll), «Control Panel Timepicker» (2: Type=Control
-  280×48 — [капсула даты «09.06.2026» + arrow_drop_down] + [keyboard_arrow_left / keyboard_arrow_right 36×36];
-  Type=Time 222×44 — ряд из трёх элементов 74×40) + блок «Timepicker (Examples)» (1943×3537; шесть сценариев).
-  ⚠ Дропдауны/списки собраны обвязкой стенда (классы Select-компонентов не выгружены); Week-кадр внутри Select Time grid
-  на канве — служебный (от датпикера). Журнал DS/fixes.md №127.
+  Источник — канва Figma «Iiko Web DS (New)»: «Input Timepicker» (58982:9561, 2: Empty/Populated — 250×48,
+  столбиком, зазор 57), «Elements Timepicker» (58982:9594, 8: две колонки — Default (Default/Hover/Press/Disable/
+  Range, x50) и Selected (Default/Hover/Press, x156); 74×40 r9999, шаг 56, зазор колонок 32), «Select Timepicker»
+  (58982:9858, 2: Time grid 251×224 — панель 239×208, сетка 5×3 из 69×36 + Scroll 12×208 справа; Time line 100×232 —
+  колонка 6 инстансов Select item 88×36 + Scroll 12×216; зазор 74), «Control Panel Timepicker» (58982:11018, 2:
+  Control 280×48 и Time 222×44, столбиком, зазор 24) + «Timepicker (Examples)» (61676:93763 — шесть сценариев,
+  в стенд не воспроизводим: у динамического компонента — живой пример).
+  Раскладка снята по метаданным координат; пиксельно сверены цвета Selected hover/press (#3969D5/#2651B5) и Range (#F0F5FF).
+  ⚠ В кадре «Type=Time grid» лежит служебный «Week 6» (от Datepicker) — не выводим. Журнал DS/fixes.md №127, №168.
 -->
 <link rel="stylesheet" href="../../font.css">
 <link rel="stylesheet" href="../../tokens.css">
@@ -50,7 +50,7 @@
   .snap-tp--focus .ds-input-timepicker__frame { border-color: #448aff; }
   /* дропдауны (обвязка) */
   .snap-dd { display: flex; flex-direction: column; gap: 4px; align-items: center; }
-  .snap-dd__grid { display: grid; grid-template-columns: repeat(3, 69px); gap: 4px; justify-content: center; }
+  .snap-dd__grid { display: grid; grid-template-columns: repeat(3, 69px); column-gap: 0; row-gap: 4px; justify-content: center; }
   .snap-el-s { height: 36px; padding: 6px 14px; font-size: 14px; line-height: 20px; }
   .snap-dd__scroll { width: 208px; }
   .snap-dd__col { display: flex; flex-direction: column; align-items: center; }
@@ -64,12 +64,40 @@
   .snap-cp-date svg { width: 20px; height: 20px; color: #616161; }
   .snap-icon-btn { width: 36px; height: 36px; border: 0; border-radius: 8px; background: #fff; display: inline-flex; align-items: center; justify-content: center; color: #616161; cursor: pointer; padding: 0; }
   .snap-icon-btn svg { width: 20px; height: 20px; display: block; }
+  /* витрины Timepicker — раскладка из координат Figma */
+  .snap-tp-input-col { display: flex; flex-direction: column; gap: 57px; align-items: flex-start; }
+  .snap-el2-band { display: flex; align-items: flex-start; }
+  .snap-el2-col { display: flex; flex-direction: column; align-items: center; }
+  .snap-el2-col + .snap-el2-col { margin-left: 32px; }
+  .snap-el2-col > * + * { margin-top: 16px; }
+  .snap-range { display: flex; align-items: center; }
+  .snap-tp-grid { width: 251px; flex-direction: row; align-items: flex-start; padding: calc(var(--ds-size-2x, 8px) - 1px) 0; }
+  .snap-tp-grid .ds-timepicker__control-panel { width: 239px; justify-content: center; padding: 4px 0; box-sizing: border-box; }
+  .snap-tp-grid .snap-dd__grid { row-gap: 0; }   /* шаг рядов 40 = высота элемента (min-height) — как в наборе */
+  .ds-scroll.snap-tp-scroll { width: 12px; height: 208px; flex-shrink: 0; margin-top: -8px; }
+  .ds-scroll.snap-tp-scroll .ds-scroll__background { flex: 1 1 auto; }
+  .ds-scroll.snap-tp-scroll .ds-scroll__knob { height: 96px; }
+  .snap-tp-line2 { width: 100px; flex-direction: row; padding: calc(var(--ds-size-2x, 8px) - 1px) 0; }
+  .snap-tp-line-col { width: 88px; display: flex; flex-direction: column; flex-shrink: 0; }
+  .snap-tp-line-col .ds-select-item { width: 88px; }
+  .ds-scroll.snap-tp-scroll2 { width: 12px; height: 216px; flex-shrink: 0; }
+  .ds-scroll.snap-tp-scroll2 .ds-scroll__background { flex: 1 1 auto; }
+  .ds-scroll.snap-tp-scroll2 .ds-scroll__knob { height: 96px; }
+  .snap-cp2 { display: flex; flex-direction: column; gap: 24px; align-items: flex-start; }
+  .snap-cp-control { width: 280px; height: 48px; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; }
+  .snap-cp-time { width: 222px; height: 44px; display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
+  /* живой пример (Basic example) */
+  .snap-tp-live-btn { border: 0; background: transparent; padding: 0; cursor: pointer; }
+  .snap-tp-drop { margin-top: 4px; }
+  .snap-tp-live .ds-input-timepicker__frame:focus-within { border-color: var(--ds-color-form-field-filled-focus-border-color, #448aff); }
+  .snap-tp-cell { cursor: pointer; }
+  .snap-tp-cell:hover { background: #f5f5f5; }
 </style>
 </head>
 <body>
 <div class="demo-bar">
   <span class="demo-bar__title">Timepicker — демо стенд</span>
-  <span>наборы Figma: Input Timepicker (2) · Elements Timepicker (8) · Select Timepicker (2) · Control Panel (2) · примеры (6 сценариев)</span>
+  <span>Figma: Input Timepicker (2) · Elements Timepicker (8) · Select Timepicker (2) · Control Panel (2)</span>
 </div>
 <div class="view">
   <div class="ds-tabs" role="tablist" aria-label="Timepicker">
@@ -80,310 +108,142 @@
     <button class="ds-tab" role="tab" aria-selected="false" data-vtab="control-panel">Control Panel Timepicker</button>
   </div>
 
-  <!-- 2. Input Timepicker (набор «Input Timepicker», 2) -->
+  <!-- 2. Input Timepicker (набор 58982:9561, 2 варианта) -->
   <div class="panel" data-vpanel="input-timepicker" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Input Timepicker — 2 варианта</div>
-      <div class="snap-grid" style="grid-template-columns: repeat(3, max-content);">
-        <div class="snap-col"><span class="snap-cap">Empty</span>
-          <div class="ds-input-timepicker ds-input-timepicker--empty snap-tp-in">
-            <div class="ds-input-timepicker__frame"><div class="snap-tp-content"><span class="ds-input-timepicker__label" style="color:#616161;">ЧЧ.ММ</span></div>
-              <span class="ds-input-timepicker__icon" style="color:#616161;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-schedule-time"/></svg></span>
-            </div>
+      <div class="snap-tp-input-col">
+        <div class="ds-input-timepicker ds-input-timepicker--empty snap-tp-in">
+          <div class="ds-input-timepicker__frame"><div class="snap-tp-content"><span class="ds-input-timepicker__label" style="color:#616161;">ЧЧ.ММ</span></div>
+            <span class="ds-input-timepicker__icon" style="color:#616161;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-schedule-time"/></svg></span>
           </div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Populated</span>
-          <div class="ds-input-timepicker ds-input-timepicker--populated snap-tp-in">
-            <div class="ds-input-timepicker__frame"><div class="snap-tp-content"><span class="snap-tp-caption">Время</span><span class="ds-input-timepicker__label snap-tp-placeholder">ЧЧ.ММ</span></div>
-              <span class="ds-input-timepicker__icon" style="color:#616161;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-schedule-time"/></svg></span>
-            </div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Populated · value</span>
-          <div class="ds-input-timepicker ds-input-timepicker--populated snap-tp-in">
-            <div class="ds-input-timepicker__frame"><div class="snap-tp-content"><span class="snap-tp-caption">Время</span><span class="ds-input-timepicker__label" style="color:#333333;">09:30</span></div>
-              <span class="ds-input-timepicker__icon" style="color:#616161;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-schedule-time"/></svg></span>
-            </div>
+        <div class="ds-input-timepicker ds-input-timepicker--populated snap-tp-in">
+          <div class="ds-input-timepicker__frame"><div class="snap-tp-content"><span class="snap-tp-caption">Время</span><span class="ds-input-timepicker__label snap-tp-placeholder">ЧЧ.ММ</span></div>
+            <span class="ds-input-timepicker__icon" style="color:#616161;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-schedule-time"/></svg></span>
           </div>
         </div>
       </div>
     </div>
-
   </div>
 
-  <!-- 3. Elements Timepicker (набор «Elements Timepicker», 8) -->
+  <!-- 3. Elements Timepicker (набор 58982:9594, 8 вариантов) -->
   <div class="panel" data-vpanel="elements-timepicker" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Elements Timepicker — 8 вариантов</div>
-      <div class="snap-row" style="margin-top: 8px; align-items: center;">
-        <div class="snap-col"><span class="snap-cap">Selected · Default</span>
+      <div class="snap-el2-band">
+        <div class="snap-el2-col">
+          <div class="ds-elements-2 ds-elements-2--default" style="width:74px;justify-content:center;"><span class="ds-elements-2__label">10:00</span></div>
+          <div class="ds-elements-2 ds-elements-2--default snap-tp-hover" style="width:74px;justify-content:center;"><span class="ds-elements-2__label">10:00</span></div>
+          <div class="ds-elements-2 ds-elements-2--default snap-tp-press" style="width:74px;justify-content:center;"><span class="ds-elements-2__label">10:00</span></div>
+          <div class="ds-elements-2 ds-elements-2--default ds-elements-2--disabled" style="width:74px;justify-content:center;"><span class="ds-elements-2__label">10:00</span></div>
+          <div class="snap-range"><span class="ds-elements-2__range-highlight-start" style="width:8px;"></span><span class="ds-elements-2 ds-elements-2--default" style="padding:8px;"><span class="ds-elements-2__label">10:00</span></span><span class="ds-elements-2__range-highlight-end" style="width:8px;"></span></div>
+        </div>
+        <div class="snap-el2-col">
           <div class="ds-elements-2 ds-elements-2--selected" style="width:74px;justify-content:center;"><span class="ds-elements-2__date"><span class="ds-elements-2__label">10:00</span></span></div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Selected · Hover</span>
-          <div class="ds-elements-2 ds-elements-2--selected" style="width:74px;justify-content:center;"><span class="ds-elements-2__date snap-tp-hover" style="background:#3969d5;"><span class="ds-elements-2__label">10:00</span></span></div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Selected · Press</span>
-          <div class="ds-elements-2 ds-elements-2--selected" style="width:74px;justify-content:center;"><span class="ds-elements-2__date snap-tp-press" style="background:#2651b5;"><span class="ds-elements-2__label">10:00</span></span></div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Default · Default</span>
-          <div class="ds-elements-2 ds-elements-2--default" style="width:74px;justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">10:00</span></div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Default · Hover</span>
-          <div class="ds-elements-2 ds-elements-2--default snap-tp-hover" style="width:74px;justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">10:00</span></div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Default · Press</span>
-          <div class="ds-elements-2 ds-elements-2--default snap-tp-press" style="width:74px;justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">10:00</span></div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Default · Disable</span>
-          <div class="ds-elements-2 ds-elements-2--default ds-elements-2--disabled" style="width:74px;justify-content:center;color:#9e9e9e;"><span class="ds-elements-2__label" style="color:#9e9e9e;">10:00</span></div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Default · Range</span>
-          <div class="ds-elements-2" style="justify-content:center;">
-            <span class="ds-elements-2__range-highlight-start" style="width:18px;"></span>
-            <span class="ds-elements-2 ds-elements-2--default" style="width:74px;justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">10:00</span></span>
-            <span class="ds-elements-2__range-highlight-end" style="width:18px;"></span>
-          </div>
+          <div class="ds-elements-2 ds-elements-2--selected" style="width:74px;justify-content:center;"><span class="ds-elements-2__date" style="background:#3969d5;"><span class="ds-elements-2__label">10:00</span></span></div>
+          <div class="ds-elements-2 ds-elements-2--selected" style="width:74px;justify-content:center;"><span class="ds-elements-2__date" style="background:#2651b5;"><span class="ds-elements-2__label">10:00</span></span></div>
         </div>
       </div>
     </div>
-
   </div>
 
-  <!-- 4. Select Timepicker (набор «Select Timepicker», 2) -->
+  <!-- 4. Select Timepicker (набор 58982:9858, 2 варианта) -->
   <div class="panel" data-vpanel="select-timepicker" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Select Timepicker — 2 варианта</div>
-      <div class="snap-row" style="margin-top: 8px;">
-        <div class="snap-col"><span class="snap-cap">Time grid</span>
-          <div class="ds-timepicker ds-timepicker--time-grid" style="width:251px;">
-            <div class="ds-timepicker__control-panel" style="width:239px;">
-              <div class="snap-dd__grid">
-                <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">06:45</span></span>
-                <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">07:00</span></span>
-                <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">07:15</span></span>
-                <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">07:30</span></span>
-                <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">07:45</span></span>
-                <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">08:00</span></span>
-                <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">08:15</span></span>
-                <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">08:30</span></span>
-                <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">08:45</span></span>
-                <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">09:00</span></span>
-                <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">09:15</span></span>
-                <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">09:30</span></span>
-              </div>
+      <div class="snap-row" style="gap: 74px; align-items: flex-start;">
+        <div class="ds-timepicker ds-timepicker--time-grid snap-tp-grid">
+          <div class="ds-timepicker__control-panel">
+            <div class="snap-dd__grid">
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">06:45</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">07:00</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">07:15</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">07:30</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">07:45</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">08:00</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">08:15</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">08:30</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">08:45</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">09:00</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">09:15</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">09:30</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">09:45</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">10:00</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">10:15</span></span>
             </div>
-            <div class="ds-scroll snap-dd__scroll"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
           </div>
+          <div class="ds-scroll ds-scroll--s snap-tp-scroll"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Type=Time line (колонка Select item 88×36 + Scroll 216×12)</span>
-          <div class="ds-timepicker ds-timepicker--time-line" style="width:100px;flex-direction:column;align-items:center;">
-            <div class="snap-dd__col" style="width:88px;">
-              <span class="snap-dd__row" style="display:block;width:88px;height:36px;line-height:36px;text-align:center;font-size:16px;color:#333;">07</span>
-              <span class="snap-dd__row" style="display:block;width:88px;height:36px;line-height:36px;text-align:center;font-size:16px;color:#333;">08</span>
-              <span class="snap-dd__row" style="display:block;width:88px;height:36px;line-height:36px;text-align:center;font-size:16px;color:#333;">09</span>
-              <span class="snap-dd__row" style="display:block;width:88px;height:36px;line-height:36px;text-align:center;font-size:16px;color:#333;">10</span>
-              <span class="snap-dd__row" style="display:block;width:88px;height:36px;line-height:36px;text-align:center;font-size:16px;color:#333;">11</span>
-              <span class="snap-dd__row" style="display:block;width:88px;height:36px;line-height:36px;text-align:center;font-size:16px;color:#333;">12</span>
-            </div>
-            <div class="ds-scroll" style="width:216px;"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+        <div class="ds-timepicker ds-timepicker--time-line snap-tp-line2">
+          <div class="snap-tp-line-col">
+          <div class="ds-select-item ds-select-item--false" role="option" tabindex="-1"><span class="ds-select-item__label">07:00</span></div>
+          <div class="ds-select-item ds-select-item--false" role="option" tabindex="-1"><span class="ds-select-item__label">07:15</span></div>
+          <div class="ds-select-item ds-select-item--false" role="option" tabindex="-1"><span class="ds-select-item__label">07:30</span></div>
+          <div class="ds-select-item ds-select-item--false" role="option" tabindex="-1"><span class="ds-select-item__label">07:45</span></div>
+          <div class="ds-select-item ds-select-item--false" role="option" tabindex="-1"><span class="ds-select-item__label">08:00</span></div>
+          <div class="ds-select-item ds-select-item--false" role="option" tabindex="-1"><span class="ds-select-item__label">08:15</span></div>
           </div>
+          <div class="ds-scroll ds-scroll--s snap-tp-scroll2"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 5. Control Panel Timepicker (набор «Control Panel Timepicker», 2) -->
+  <!-- 5. Control Panel Timepicker (набор 58982:11018, 2 варианта) -->
   <div class="panel" data-vpanel="control-panel" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Control Panel Timepicker (2 варианта)</div>
-      <div class="snap-row">
-        <div class="snap-col"><span class="snap-cap">Control Panel · Type=Control (капсула даты + стрелки ←/→)</span>
-          <div style="display:flex;align-items:center;gap:24px;padding:6px 0;">
-            <span class="snap-cp-date">09.06.2026 <svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span>
-            <span style="display:inline-flex;gap:8px;">
-              <button class="snap-icon-btn"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-arr-left"/></svg></button>
-              <button class="snap-icon-btn"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-arr-right"/></svg></button>
-            </span>
-          </div>
+      <div class="snap-cp2">
+        <div class="snap-cp-control">
+          <span class="snap-cp-date">09.06.2026 <svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-drop-down"/></svg></span>
+          <span class="ds-control-panel__button-icon-group">
+            <span class="ds-control-panel__button-icon"><span class="ds-icon-size ds-icon-size--6x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-arr-left"/></svg></span></span>
+            <span class="ds-control-panel__button-icon"><span class="ds-icon-size ds-icon-size--6x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-arr-right"/></svg></span></span>
+          </span>
         </div>
-        <div class="snap-col"><span class="snap-cap">Control Panel · Type=Time (ряд из трёх элементов 74×40)</span>
-          <div style="display:flex;gap:4px;padding:6px 0;">
-            <span class="ds-elements-2 ds-elements-2--default" style="width:66px;justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">10:00</span></span>
-            <span class="ds-elements-2 ds-elements-2--default" style="width:66px;justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">10:00</span></span>
-            <span class="ds-elements-2 ds-elements-2--default" style="width:66px;justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">10:00</span></span>
-          </div>
+        <div class="snap-cp-time">
+          <div class="ds-elements-2 ds-elements-2--default" style="width:74px;justify-content:center;"><span class="ds-elements-2__label">10:00</span></div>
+          <div class="ds-elements-2 ds-elements-2--default" style="width:74px;justify-content:center;"><span class="ds-elements-2__label">10:00</span></div>
+          <div class="ds-elements-2 ds-elements-2--default" style="width:74px;justify-content:center;"><span class="ds-elements-2__label">10:00</span></div>
         </div>
       </div>
     </div>
-    <p class="snap-note">Пометки для ревью: (а) выпадающие списки (Select Timepicker) на канве — контейнеры Select: сетка 3×69×36 + Scroll 208×12 (bg #FAFAFA, ползунок #D6D6D6 96×8), колонка Select item 88×36 + Scroll 216×12; на стенде собраны обвязкой (классы Select-компонента не выгружались — см. стенд Select_DS); (б) внутри кадра «Type=Time grid» на канве лежит служебный кадр «Week 6» (7 дней ×48 — привет от Datepicker) — в дропдаун не включался; (в) hover/press выделенного элемента на канве показаны только вариантами «State=Hover/Press» — точные цвета фона в CSS не заданы (на стенде взяты #3969D5/#2651B5 из токенов accent hover/press — сверить); (г) элементы в списке 69×36 (пад 6/14), в наборе/панели — 74×40 (пад 8/16); (д) Range — подложка #F0F5FF по бокам от капсулы (классы `__range-highlight-start/end`); (е) Control Panel: капсула даты + кнопки перелистывания (keyboard_arrow_left/right, 36×36, фон белый). Журнал №127.</p>
+    <p class="snap-note">Пометки для ревью: (а) Control — капсула «09.06.2026 ⌄» + кнопки 36×36 (keyboard_arrow_left/right, слоты ds-control-panel__button-icon) в кадре 280×48; (б) Time — ряд из трёх элементов 74×40 вплотную (222×44); зазор вариантов 24 — как в наборе 58982:11018; (в) Select Timepicker: Time grid 251×224 — панель 239×208 (5 рядов × 3 ячейки 69×36; ряды шаг 40), Scroll 12×208 справа (ползунок 96), время 06:45–10:15; Time line 100×232 — 6 инстансов Select item 88×36 (07:00–08:15) + Scroll 12×216; зазор вариантов 74; (г) hover/press Selected — #3969D5 / #2651B5 — сверено пиксельно с канвой; (д) Range — плашка accent-50 (#F0F5FF) с белой пилюлей (8+58+8 = группа 74); элементы списка 69×36 (пад 6/14); (е) в кадре Type=Time grid на канве лежит служебный «Week 6» (от Datepicker) — не выводим; (ж) в наборе Input Timepicker — 2 варианта (Empty / Populated), столбиком, зазор 57. Журнал №127, №168.</p>
   </div>
 
-  <!-- 1. Basic example: «Timepicker (Examples)» (6 сценариев) -->
+  <!-- 1. Basic example: живой timepicker -->
   <div class="panel" data-vpanel="basic" role="tabpanel">
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">1. Дефолтный выбор времени (по текстовому полю и по иконке часов) — состояния поля «Выберите время»</div>
-      <div class="snap-row" style="margin-top: 12px;">
-        <div class="snap-col"><span class="snap-cap">Default</span>
-          <div class="ds-input-timepicker ds-input-timepicker--populated snap-tp-in"><div class="ds-input-timepicker__frame"><div class="snap-tp-content"><span class="ds-input-timepicker__label" style="color:#616161;">Выберите время</span></div><span class="ds-input-timepicker__icon" style="color:#616161;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-schedule-time"/></svg></span></div></div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Hover</span>
-          <div class="ds-input-timepicker ds-input-timepicker--populated snap-tp-in"><div class="ds-input-timepicker__frame" style="background:#f5f5f5;border-color:#9e9e9e;"><div class="snap-tp-content"><span class="ds-input-timepicker__label" style="color:#616161;">Выберите время</span></div><span class="ds-input-timepicker__icon" style="color:#616161;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-schedule-time"/></svg></span></div></div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Focus («|ЧЧ:ММ»)</span>
-          <div class="ds-input-timepicker ds-input-timepicker--populated snap-tp-in snap-tp--focus"><div class="ds-input-timepicker__frame"><div class="snap-tp-content"><span class="ds-input-timepicker__label" style="color:#616161;">Выберите время</span></div><span class="ds-input-timepicker__icon" style="color:#616161;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-schedule-time"/></svg></span></div></div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Focus+Value («07:30»)</span>
-          <div class="ds-input-timepicker ds-input-timepicker--populated snap-tp-in snap-tp--focus"><div class="ds-input-timepicker__frame"><div class="snap-tp-content"><span class="ds-input-timepicker__label" style="color:#616161;">Выберите время</span><span class="ds-input-timepicker__label" style="color:#333333;">07:30</span></div><span class="ds-input-timepicker__icon" style="color:#616161;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-schedule-time"/></svg></span></div></div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Selected («07:30» — как в кадре)</span>
-          <div class="ds-input-timepicker ds-input-timepicker--populated snap-tp-in"><div class="ds-input-timepicker__frame"><div class="snap-tp-content"><span class="ds-input-timepicker__label" style="color:#616161;">Выберите время</span><span class="ds-input-timepicker__label" style="color:#333333;">07:30</span></div><span class="ds-input-timepicker__icon" style="color:#616161;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-schedule-time"/></svg></span></div></div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Дропдаун: «07:00–08:15», выбран «07:30»</span>
-          <div class="ds-timepicker ds-timepicker--time-grid" style="width:251px;">
-            <div class="snap-dd__grid">
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">07:00</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">07:15</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">07:30</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">07:45</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">08:00</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">08:15</span></span>
-            </div>
+      <div class="snap-tp-live">
+        <div class="ds-input-timepicker ds-input-timepicker--populated snap-tp-in" id="tp-live">
+          <div class="ds-input-timepicker__frame">
+            <div class="snap-tp-content"><span class="snap-tp-caption">Время</span><span class="ds-input-timepicker__label snap-tp-placeholder" id="tp-live-value">ЧЧ.ММ</span></div>
+            <button type="button" class="ds-input-timepicker__icon snap-tp-live-btn" id="tp-live-btn" aria-label="Открыть список времени"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-schedule-time"/></svg></button>
           </div>
-        </div>
-      </div>
-      <span class="snap-cap" style="display:block;margin-top:8px;">«Выпадающий список появляется при клике на иконку часов» (заметка канвы).</span>
-    </div>
-
-    <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">2. Выбор времени заблокирован (disable)</div>
-      <div class="snap-row" style="margin-top: 12px; align-items: center;">
-        <div class="ds-input-timepicker ds-input-timepicker--populated ds-input-timepicker--disabled snap-tp-in snap-tp--disable">
-          <div class="ds-input-timepicker__frame"><div class="snap-tp-content"><span class="snap-tp-caption">Время</span><span class="ds-input-timepicker__label" style="color:#9e9e9e;">09:30</span></div><span class="ds-input-timepicker__icon" style="color:#9e9e9e;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-schedule-time"/></svg></span></div>
-        </div>
-        <span class="snap-cap" style="max-width: 400px;">«Компонент не реагирует на наведение курсора и клики. Текст внутри поля и иконка отображаются в приглушенном сером цвете с пониженной прозрачностью.» (описание канвы)</span>
-      </div>
-    </div>
-
-    <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">3. Выбор диапазона времени («Время с» — «Время по»)</div>
-      <div class="snap-row" style="margin-top: 12px;">
-        <div class="snap-col" style="max-width: 430px;">
-          <div style="display:flex;gap:8px;align-items:center;">
-            <div class="ds-input-timepicker ds-input-timepicker--populated" style="width:128px;"><div class="ds-input-timepicker__frame"><div class="snap-tp-content"><span class="ds-input-timepicker__label" style="color:#616161;">Время с</span></div></div></div>
-            <span class="snap-cap" style="font-size:16px;">-</span>
-            <div class="ds-input-timepicker ds-input-timepicker--populated" style="width:128px;"><div class="ds-input-timepicker__frame"><div class="snap-tp-content"><span class="ds-input-timepicker__label" style="color:#616161;">Время по</span></div></div></div>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <div class="ds-input-timepicker ds-input-timepicker--populated" style="width:128px;"><div class="ds-input-timepicker__frame"><div class="snap-tp-content"><span class="ds-input-timepicker__label" style="color:#616161;">Время с</span><span class="ds-input-timepicker__label" style="color:#333;">09:00</span></div></div></div>
-            <span class="snap-cap" style="font-size:16px;">-</span>
-            <div class="ds-input-timepicker ds-input-timepicker--populated" style="width:128px;"><div class="ds-input-timepicker__frame"><div class="snap-tp-content"><span class="ds-input-timepicker__label" style="color:#616161;">Время по</span><span class="ds-input-timepicker__label" style="color:#333;">18:00</span></div></div></div>
-          </div>
-          <span class="snap-cap">«Выбор начального и конечного времени диапазона. При клике на текстовое поле ввода времени отк…» (заметка канвы)</span>
-        </div>
-        <div class="snap-col">
-          <span class="snap-cap">Дропдаун «Время с»: 08:00–09:15</span>
-          <div class="ds-timepicker ds-timepicker--time-grid" style="width:196px;">
-            <div class="snap-dd__grid" style="grid-template-columns: repeat(3, 48px);">
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;font-size:14px;"><span class="ds-elements-2__label" style="color:#333;">08:00</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;font-size:14px;"><span class="ds-elements-2__label" style="color:#333;">08:15</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;font-size:14px;"><span class="ds-elements-2__label" style="color:#333;">08:30</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;font-size:14px;"><span class="ds-elements-2__label" style="color:#333;">08:45</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;font-size:14px;"><span class="ds-elements-2__label" style="color:#333;">09:00</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;font-size:14px;"><span class="ds-elements-2__label" style="color:#333;">09:15</span></span>
-            </div>
-          </div>
-        </div>
-        <div class="snap-col">
-          <span class="snap-cap">Дропдаун «Время по»: 17:00–18:15</span>
-          <div class="ds-timepicker ds-timepicker--time-grid" style="width:196px;">
-            <div class="snap-dd__grid" style="grid-template-columns: repeat(3, 48px);">
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;font-size:14px;"><span class="ds-elements-2__label" style="color:#333;">17:00</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;font-size:14px;"><span class="ds-elements-2__label" style="color:#333;">17:15</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;font-size:14px;"><span class="ds-elements-2__label" style="color:#333;">17:30</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;font-size:14px;"><span class="ds-elements-2__label" style="color:#333;">17:45</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;font-size:14px;"><span class="ds-elements-2__label" style="color:#333;">18:00</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;font-size:14px;"><span class="ds-elements-2__label" style="color:#333;">18:15</span></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">4. Шаг интервала · 5. Формат отображения · 6. Прокрутка (Time Line Scroll)</div>
-      <div class="snap-row" style="margin-top: 12px;">
-        <div class="snap-col"><span class="snap-cap">Шаг 15 минут</span>
-          <div class="ds-timepicker ds-timepicker--time-grid" style="width:196px;">
-            <div class="snap-dd__grid" style="grid-template-columns: repeat(3, 48px);">
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">09:00</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">09:15</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">09:30</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">09:45</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">10:00</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">10:15</span></span>
-            </div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Шаг 30 минут / Шаг 1 час</span>
-          <div class="ds-timepicker ds-timepicker--time-grid" style="width:196px;">
-            <div class="snap-dd__grid" style="grid-template-columns: repeat(3, 48px);">
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">09:00</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">09:30</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">10:00</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">10:30</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">11:00</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">11:30</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">09:00</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">10:00</span></span>
-              <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">11:00</span></span>
-            </div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">Форматы: Сетка (Time Grid) · Список (List) · AM/PM</span>
-          <div style="display:flex;gap:12px;align-items:flex-start;">
-            <div class="ds-timepicker ds-timepicker--time-grid" style="width:150px;padding:8px 4px;">
-              <div class="snap-dd__grid" style="grid-template-columns: repeat(1, 130px);">
-                <span class="snap-cap" style="text-align:center;">Сетка (Time Grid) - 24ч</span>
-                <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">09:00</span></span>
-                <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">09:15</span></span>
-                <span class="ds-elements-2 ds-elements-2--default snap-el-s" style="justify-content:center;"><span class="ds-elements-2__label" style="color:#333;">09:30</span></span>
-              </div>
-            </div>
-            <div class="ds-timepicker ds-timepicker--time-grid" style="width:150px;padding:8px 4px;">
-              <div class="snap-dd__grid" style="grid-template-columns: repeat(1, 130px);">
-                <span class="snap-cap" style="text-align:center;">Список (List) - 24ч / AM-PM</span>
-                <span style="display:block;width:130px;height:28px;line-height:28px;text-align:center;font-size:14px;color:#333;">9:00 AM</span>
-                <span style="display:block;width:130px;height:28px;line-height:28px;text-align:center;font-size:14px;color:#333;">9:15 AM</span>
-                <span style="display:block;width:130px;height:28px;line-height:28px;text-align:center;font-size:14px;color:#333;">9:30 AM</span>
+          <div class="snap-tp-drop" id="tp-live-drop" hidden>
+            <div class="ds-timepicker ds-timepicker--time-grid snap-tp-grid">
+              <div class="ds-timepicker__control-panel">
+                <div class="snap-dd__grid">
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s snap-tp-cell" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">07:00</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s snap-tp-cell" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">07:15</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s snap-tp-cell" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">07:30</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s snap-tp-cell" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">07:45</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s snap-tp-cell" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">08:00</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s snap-tp-cell" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">08:15</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s snap-tp-cell" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">08:30</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s snap-tp-cell" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">08:45</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s snap-tp-cell" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">09:00</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s snap-tp-cell" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">09:15</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s snap-tp-cell" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">09:30</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s snap-tp-cell" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">09:45</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s snap-tp-cell" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">10:00</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s snap-tp-cell" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">10:15</span></span>
+              <span class="ds-elements-2 ds-elements-2--default snap-el-s snap-tp-cell" style="justify-content:center;width:100%;"><span class="ds-elements-2__label">10:30</span></span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Time Line Scroll — колонки «Часы» и «Минуты»</span>
-          <div class="snap-tp-line">
-            <div class="snap-tp-line__col"><span class="snap-tp-line__title">Часы</span>
-              <span class="snap-tp-line__val" style="display:block;width:48px;height:28px;line-height:28px;text-align:center;">07</span>
-              <span class="snap-tp-line__val" style="display:block;width:48px;height:28px;line-height:28px;text-align:center;">08</span>
-              <span class="snap-tp-line__val" style="display:block;width:48px;height:28px;line-height:28px;text-align:center;font-weight:500;">09</span>
-              <span class="snap-tp-line__val" style="display:block;width:48px;height:28px;line-height:28px;text-align:center;">10</span>
-              <span class="snap-tp-line__val" style="display:block;width:48px;height:28px;line-height:28px;text-align:center;">11</span>
-              <span class="snap-tp-line__val" style="display:block;width:48px;height:28px;line-height:28px;text-align:center;">12</span>
-            </div>
-            <div class="snap-tp-line__col"><span class="snap-tp-line__title">Минуты</span>
-              <span class="snap-tp-line__val" style="display:block;width:48px;height:28px;line-height:28px;text-align:center;">00</span>
-              <span class="snap-tp-line__val" style="display:block;width:48px;height:28px;line-height:28px;text-align:center;">15</span>
-              <span class="snap-tp-line__val" style="display:block;width:48px;height:28px;line-height:28px;text-align:center;font-weight:500;">30</span>
-              <span class="snap-tp-line__val" style="display:block;width:48px;height:28px;line-height:28px;text-align:center;">45</span>
-              <span class="snap-tp-line__val" style="display:block;width:48px;height:28px;line-height:28px;text-align:center;">00</span>
-              <span class="snap-tp-line__val" style="display:block;width:48px;height:28px;line-height:28px;text-align:center;">15</span>
-            </div>
-          </div>
-          <span class="snap-cap">Поля-примеры: «Выберите время» → «09:30»; «Время» → «08:30 - 09:30».</span>
-        </div>
       </div>
     </div>
-
-    <p class="snap-note">Пометки для ревью: (а) сценарии и тексты — с канвы («1. Дефолтный выбор времени», «2. Выбор времени заблокирован (disable)», «3. Выбор диапазона времени», «4. Шаг интервала», «5. Формат отображения времени», «6. Прокрутка времени (Time Line Scroll)»); (б) дропдауны собраны обвязкой (сетка и колонка из элементов/строк), на канве часть из них — контейнеры Select; (в) в кадрах формата «Список/AM-PM» строки без капсул (текстовые пункты) — на стенде показаны текстом; (г) колонки Time Line — тексты в колонках с выделением выбранных (09/30) полужирным; (д) часть описаний на канве обрезана (текст Body 6) — приведены начала. Журнал №127.</p>
+    <p class="snap-note">Пометки для ревью: (а) живой timepicker — клик по иконке часов открывает список времени, выбор подставляет время в поле, клик вне — закрывает; (б) в компоненте поля ввода нет — значение показывает слот текста (в канве — 2 статичных варианта Empty/Populated, интерактив собирается только здесь, §4); (в) список — та же сетка 3×69, что на канве у Select Time grid. Журнал №127, №168.</p>
   </div>
 </div>
 
@@ -409,6 +269,27 @@
       panels.forEach(function (p) { p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab'); });
     });
   });
+</script>
+
+<script>
+  /* Basic example: живой timepicker — открыть/выбрать/закрыть */
+  (function () {
+    var live = document.getElementById('tp-live');
+    if (!live) return;
+    var btn = document.getElementById('tp-live-btn');
+    var drop = document.getElementById('tp-live-drop');
+    var val = document.getElementById('tp-live-value');
+    btn.addEventListener('click', function () { drop.hidden = !drop.hidden; });
+    drop.addEventListener('click', function (e) {
+      var cell = e.target.closest('.snap-tp-cell');
+      if (!cell) return;
+      val.textContent = cell.textContent.trim();
+      val.classList.remove('snap-tp-placeholder');
+      val.style.color = 'var(--ds-color-text-primary, #333333)';
+      drop.hidden = true;
+    });
+    document.addEventListener('click', function (e) { if (!live.contains(e.target)) drop.hidden = true; });
+  })();
 </script>
 </body>
 </html>

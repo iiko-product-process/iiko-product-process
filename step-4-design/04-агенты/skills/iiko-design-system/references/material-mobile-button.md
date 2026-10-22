@@ -18,7 +18,7 @@ Angular Material?». Отвечать по первоисточникам, а н
 - **Тач-таргет 48 dp** как норма доступности: `https://support.google.com/accessibility/android/answer/7101858`
   — «elements have a width and height of at least 48dp, as described in the Material Design
   Accessibility guidelines».
-- **Внутри проекта**: `iiko-ds-prototypes/compare-button-mob.html` — таблица
+- **Внутри проекта**: прежняя страница сравнения (файла в репозитории нет) — таблица
   `Button_mob / MD3 / iOS` с числами и ссылкой на раздел спеки M3. Читать распаковкой
   JSON-объекта `const data = {…}` (html парсится через `json.JSONDecoder().raw_decode`).
 
@@ -93,7 +93,7 @@ Angular Material?». Отвечать по первоисточникам, а н
 ни в реализации Material Web, ни в Angular Material, ни в HIG; у нас M 36 / S 28 / XS 24 — то есть
 даже наш M ниже дефолта M3 на 40, а S мельче самого мелкого размера M3 (32)».
 
-Числа взяты из выгрузки `DS/_audit/platform/button.json` (собрана субагентом 11.09.2026, с
+Числа взяты из рекомендаций платформ (собраны 11.09.2026, с
 цитатами и ссылками на файлы токенов) — перед использованием перепроверить `curl -sL` по тем же
 путям.
 

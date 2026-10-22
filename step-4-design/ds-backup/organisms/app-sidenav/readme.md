@@ -8,7 +8,7 @@
 нужен, можно и абсолютный):
 
 ```html
-<script src="../DS/connect.js" defer></script>
+<script src="../Design-System/connect.js" defer></script>
 ```
 
 - Макет-источник поведения: Iiko-Web-DS, «Взаимодействие с меню», узел **59160:36140**
@@ -16,25 +16,25 @@
   стрелки наведения; тултип в свёрнутом рейле; белый индикатор открытого раздела).
 - Разметка — классы ДС (`ds-sidenav-*`, `ds-badge`, `ds-divider`, `ds-element-sidenav`),
   размеры/цвета — токены `tokens.css`. Чего в ДС нет — локально в `app-sidenav.css`
-  (каждое место помечено «пробел ДС №N») — номера ведут в журнал `DS/fixes.md`.
+  (каждое место помечено «пробел ДС №N») — номера ведут в журнал `Design-System/fixes.md`.
 - Живая проверка и показ: **`DS/organisms/app-sidenav/demo.html`** (демо стенд: шапка app-header, меню и кнопки состояний).
 
 ## Подключение вручную (если страница не использует connect.js)
 
 ```html
 <!-- ДС: порядок как на существующих страницах (мобильный слой — страница решает сама) -->
-<link rel="stylesheet" href="../DS/components-web/font.css">
-<link rel="stylesheet" href="../DS/components-web/tokens.css">
-<link rel="stylesheet" href="../DS/components-web/styles.css">
-<link rel="stylesheet" href="../DS/components-web/components/index.css">
-<link rel="stylesheet" href="../DS/components-web/fixes.css">
+<link rel="stylesheet" href="../Design-System/components-web/font.css">
+<link rel="stylesheet" href="../Design-System/components-web/tokens.css">
+<link rel="stylesheet" href="../Design-System/components-web/styles.css">
+<link rel="stylesheet" href="../Design-System/components-web/components/index.css">
+<link rel="stylesheet" href="../Design-System/components-web/fixes.css">
 <!-- иконки -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined">
 
 <!-- боковое меню: css + js из дизайн-системы (DS/organisms/app-sidenav), версия общая для всех страниц -->
-<link rel="stylesheet" href="../DS/organisms/app-sidenav/app-sidenav.css?v=15">
-<script src="../DS/organisms/app-sidenav/app-sidenav.js?v=13" defer></script>
+<link rel="stylesheet" href="../Design-System/organisms/app-sidenav/app-sidenav.css?v=16">
+<script src="../Design-System/organisms/app-sidenav/app-sidenav.js?v=15" defer></script>
 ```
 
 Страховка: если какие-то из подключений ДС/иконок забыты — скрипт достроит их сам
@@ -70,7 +70,7 @@
 - Ничего из меню не пересобирать на страницах: ни индикатор, ни стрелку, ни тултип —
   они уже внутри организма.
 - Не стилизовать классы ДС снаружи организма; если чего-то не хватает — правка в
-  `app-sidenav.css` с пометкой «пробел ДС №N» + запись в журнал `DS/fixes.md`.
+  `app-sidenav.css` с пометкой «пробел ДС №N» + запись в журнал `Design-System/fixes.md`.
 - Ширины и состояние — только через `window.AppSidenav` (или кликом), не через свои классы.
 
 ## API (для демо стенда и проверок)
@@ -84,8 +84,33 @@ AppSidenav.isCollapsed(); AppSidenav.openId(); AppSidenav.sections();
 AppSidenav.openDrawer(); AppSidenav.closeDrawer(); AppSidenav.toggleDrawer(); AppSidenav.isDrawerOpen();
 ```
 
+## Расширение меню страницей (прототипы)
+
+Страница может задать свой раздел до инициализации организма (скрипт подключается **до** `connect.js`).
+Раздел с тем же `id` **заменяет** существующий (например, чтобы добавить L2 «Администрированию»),
+иначе добавляется в конец меню:
+
+```js
+window.APP_SIDENAV_SECTION = {
+  id: 'admin', label: 'Администрирование', iconSvg: 'icon-admin.svg',
+  l2: { title: 'Администрирование', items: [
+    { group: true, label: 'Управление киосками', expanded: true, children: [
+      { label: 'Баннеры', href: 'banners-spisok.html', selected: true },
+      { label: 'Группы', href: 'groups.html?state=list' }
+    ] },
+    { label: 'Розничные продажи', arrow: 'down' }
+  ] }
+};
+window.APP_SIDENAV_OPEN = 'admin';   // открыть раздел при старте
+```
+
+- раздел с известным `id` заменяет пункт демо-меню, новый — добавляется в конец; `APP_SIDENAV_OPEN` открывает его при старте;
+- у пунктов L2/L3 поддерживается `href` — клик переходит по ссылке;
+- `arrow: 'down'` — шеврон вниз (у группы/пункта), без значения — вправо;
+- блок ⓘ в шапке L2 выводится только если у раздела задан `l2.info`.
+
 ## Локальные правки вне ДС (нужно докрутить в ДС — потом уберём отсюда)
 
-Полный список (чего нет в ДС, чем закрыто здесь и что сделать в ДС) — в журнале `DS/fixes.md`,
+Полный список (чего нет в ДС, чем закрыто здесь и что сделать в ДС) — в журнале `Design-System/fixes.md`,
 пп. 56–67. В `app-sidenav.css` каждое место помечено «пробел ДС №N» — номер ведёт к пункту
 журнала. Тексты в readme и журнале не дублируются.

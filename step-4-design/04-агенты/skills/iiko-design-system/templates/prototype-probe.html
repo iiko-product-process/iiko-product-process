@@ -1,5 +1,5 @@
-<!-- ШАБЛОН пробы для страниц-прототипов КДС.
-     Как пользоваться: взять нужный прототип (multi-shop.html и т.п.), вставить этот блок
+<!-- ШАБЛОН пробы для страниц-прототипов.
+     Как пользоваться: взять нужную страницу-прототип, вставить этот блок
      перед </body>, заменить CLICKS и ЗАМЕРЫ. Записать пробу как отдельный файл
      (из execute_code/write_file, НЕ через heredoc в terminal) и запустить:
 
@@ -18,7 +18,7 @@
   function click(sel){ var el=document.querySelector(sel); if(el) el.click(); else console.log('нет '+sel); }
   click('#pageTabs [data-vtab="3"]');        /* переключить вкладку варианта */
   // click('[data-v3="arrow"]');              /* подвариант 3.1/3.2 */
-  // click('#panels3 .panel[data-shop="cold"] [data-press="warm"]');  /* нажать блюдо в цехе */
+  // click('.panel [data-press="item"]');    /* нажать элемент в панели */
 })();
 </script>
 
@@ -32,19 +32,18 @@ window.addEventListener('load', function(){ setTimeout(function(){
   function cs(el,p){ return el ? getComputedStyle(el)[p] : '—'; }
   /* строка нужного блюда — по тексту, а не по порядку */
   function rowByText(root, txt){
-    return [].filter.call(document.querySelectorAll(root+' .kds-row, '+root+' .kdsx-row'),
+    return [].filter.call(document.querySelectorAll(root+' .row'),   /* класс строки твоей страницы */
       function(r){ return r.textContent.indexOf(txt)>=0; })[0];
   }
 
   try{
     /* ── ЗАМЕРЫ: геометрия, computed-стили, состояния ── */
-    var row = rowByText('#panels3 .panel[data-shop="cold"]', 'Тёплый салат');
+    var row = rowByText('<селектор контейнера>', '<текст строки>');
     L('строка', row ? '"'+row.className+'" '+rect(row)+' | кант '+cs(row,'boxShadow') : 'не найдена');
-    var btn = document.querySelector('#panels3 .panel[data-shop="cold"] .pbtn');
-    L('кнопка', btn ? '"'+btn.className+'" '+rect(btn)+' | числа '+cs(btn.querySelector('.pbtn__num'),'fontSize')
-      +' | иконок '+btn.querySelectorAll('.material-icons').length : '—');
+    var btn = document.querySelector('<селектор кнопки>');
+    L('кнопка', btn ? '"'+btn.className+'" '+rect(btn) : '—');
     /* интерактив: клик мышью не нужен, .click() достаточно — обработчики на document */
-    var press = document.querySelector('#scrCard [data-press="warm"]');
+    var press = document.querySelector('<селектор нажимаемого>');
     if(press){ press.click(); L('после нажатия', '"'+cs(press,'boxShadow')+'"'); }
     L('переполнение страницы', (document.documentElement.scrollWidth-document.documentElement.clientWidth)+' px');
     L('readyState', document.readyState);

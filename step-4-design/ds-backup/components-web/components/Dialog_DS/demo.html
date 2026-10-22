@@ -6,14 +6,17 @@
 <title>Dialog — демо стенд компонента</title>
 <!--
   Демо стенд компонентов Dialog (страница «Dialog_DS», 52952:1284). Папка: DS/components-web/components/Dialog_DS/.
-  Источник — канва Figma «Iiko Web DS (New)»: наборы «Dialog view» (1: State=Default, 500×364 r12),
-  «Dialog header» (2: Type=Text — заголовок 20/28 + close 24 + описание 16/24 + Divider; Type=Picture — Picture 446×189),
-  «Dialog content» (1: слот 440-ширины блоки + Scroll 204×12), «Dialog footer» (1: Divider + Action 68 с Button),
-  компонент «Picture» (446×189, кроп-слот 173 пунктир) + блок «Примеры» (4785×1650; 16 инстансов + сцена с Backdrop).
-  Тексты сценариев: «Удалить карту?» (Отмена/Удалить), «Ошибка сохранения цен», «Последее обновление 21.08.2022, 11:05:49»
-  (чекбоксы «Обновлять…»), «Импорт», «Часть гостей не добавлена…», список позиций «Водка “Флагман” 40% +0.2 л.» и др.
-  ⚠ Паддинги шапки/контента — обвязка стенда (классы паддингов в диалогах не выгружены); Divider — компонент Divider_DS
-  (ds-divider); на канве есть служебная пометка «слетели хедеры, поправить». Журнал DS/fixes.md №129.
+  Источник — канва Figma «Iiko Web DS (New)»: компоненты «Dialog view» (53531:2453; State=Default 500×364 r12),
+  «Dialog header» (53619:17897 Type=Text 500×93; 59215:16647 Type=Picture 500×200 — слот картинки),
+  «Dialog content» (53531:2416; 500×204 — 3 блока + Scroll), «Dialog footer» (53749:624; 501×69 — Divider + Action 68),
+  компонент «Picture» (58937:3985; 446×189, кроп-слот 173 пунктир). Блок примеров канвы (16 инстансов) на стенде
+  не воспроизводится: Basic example — живой диалог.
+  Тексты набора: «Dialog title», «Подзаголовок», «Content title» ×3, «В блоке контента может быть всё что угодно», «Подробнее».
+  Сборка — классами ДС: ds-dialog-view/-header/-content/-footer (+__label/__icon/__title-container/__description/__action),
+  разделители — ds-divider, кнопки — ds-btn, скролл — ds-scroll, затемнение — ds-backdrop.
+  ⚠ Паддинги/гэпы шапки и контента и выравнивание кнопок подвала в css не выгружены — обвязка стенда на токенах;
+  фон описания шапки в css = цвет текста (артефакт) — снят в fixes.css; Scroll в Figma повёрнут на 90° — поворот обвязкой.
+  Служебная пометка канвы «слетели хедеры, поправить». Журнал DS/fixes.md №129.
 -->
 <link rel="stylesheet" href="../../font.css">
 <link rel="stylesheet" href="../../tokens.css">
@@ -35,204 +38,194 @@
   .snap-sect__title { font-weight: 500; margin: 0 0 12px; }
   .snap-row { display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap; }
   .snap-col { display: flex; flex-direction: column; gap: 10px; }
-  .snap-ex-caption { font-size: 14px; line-height: 28px; color: var(--ds-color-text-primary, #333333); margin: 0; }
-  /* обвязка диалогов: паддинги шапки/контента */
-  .snap-dlg { width: 500px; }
-  .snap-dlg .ds-dialog-view__header, .snap-dlg .ds-dialog-header { width: 100%; }
-  .snap-dlg .ds-dialog-view__content { width: 100%; }
-  .snap-dlg-head { display: flex; flex-direction: column; gap: 4px; padding: 24px 24px 12px; }
-  .snap-dlg-head--compact { padding: 16px 24px; }
-  .snap-dlg-titlerow { display: flex; align-items: flex-start; gap: 8px; }
-  .snap-dlg-title { flex: 1; font-size: 20px; line-height: 28px; font-weight: 500; color: #333333; }
-  .snap-dlg-desc { font-size: 16px; line-height: 24px; color: #616161; }
-  .snap-dlg-close { width: 24px; height: 24px; color: #616161; display: inline-flex; }
-  .snap-dlg-close svg { width: 100%; height: 100%; display: block; }
-  .snap-dlg-divider { height: 1px; background: var(--ds-color-stroke-default, #e0e0e0); }
-  .snap-dlg-content { display: flex; flex-direction: column; gap: 16px; padding: 16px 24px; width: 100%; box-sizing: border-box; }
-  .snap-dlg-block { display: flex; flex-direction: column; }
-  .snap-dlg-block__title { font-size: 16px; line-height: 24px; font-weight: 500; color: #333333; }
-  .snap-dlg-block__text { font-size: 14px; line-height: 20px; color: #616161; }
-  .snap-dlg-footer { display: flex; justify-content: flex-end; gap: 8px; padding: 16px 24px; width: 100%; box-sizing: border-box; }
-  .snap-dlg-scroll { width: 204px; margin: 0 auto; }
-  .snap-dlg-row { font-size: 14px; line-height: 20px; color: #333333; }
-  .snap-dlg-drop { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 120px; border: 1px dashed var(--ds-color-stroke-hover, #9e9e9e); border-radius: 12px; color: #616161; font-size: 14px; line-height: 20px; }
-  .snap-dlg-drop__hint { font-size: 12px; line-height: 16px; color: #616161; }
-  .snap-btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; border: 0; font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer; }
-  .snap-btn--accent { background: var(--ds-color-button-accent-filled-default-background, #448aff); color: #ffffff; }
-  .snap-btn--text { background: none; color: var(--ds-color-button-accent-outlined-default-text-color, #448aff); }
-  /* сцена с Backdrop */
-  .snap-scene { position: relative; width: 720px; height: 420px; background: #f8f9fc; border-radius: 12px; overflow: hidden; }
-  .snap-scene__dim { position: absolute; inset: 0; background: #333333; opacity: .45; }
-  .snap-scene .snap-dlg { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+  .snap-live-hint { margin: 0 0 16px; }
+  /* обвязка диалогов: паддинги/гэпы — токенами ДС (классов в css нет; значения из Figma) */
+  .snap-dlg-head { display: flex; flex-direction: column; gap: var(--ds-dialog-header-gap, 8px); padding: var(--ds-dialog-header-pad-top, 24px) var(--ds-dialog-header-pad-right, 24px) var(--ds-dialog-header-pad-bottom, 8px) var(--ds-dialog-header-pad-left, 24px); }
+  .snap-dlg-head .ds-dialog-header__label { flex: 1 0 0; min-width: 1px; }
+  .snap-dlg-head .ds-dialog-header__icon { color: var(--ds-color-icon-primary, #616161); }
+  .snap-dlg-slot { flex: 1 0 0; min-width: 1px; display: flex; flex-direction: column; gap: var(--ds-dialog-content-gap, 16px); padding: var(--ds-dialog-content-pad-top, 8px) var(--ds-dialog-content-pad-right, 24px) var(--ds-dialog-content-pad-bottom, 8px) var(--ds-dialog-content-pad-left, 24px); }
+  .snap-dlg-block { display: flex; flex-direction: column; gap: var(--ds-dialog-content-gap-text, 8px); width: 100%; }
+  .snap-dlg-text { color: var(--ds-color-dialog-content-text-color, #616161); }
+  .snap-dlg-actions { align-items: flex-end; }
+  /* Basic: живой скролл контента (витрины — статика; нативный скроллбар скрыт, полосу ведёт компонент Scroll) */
+  .snap-dlg-slot--live { max-height: 204px; box-sizing: border-box; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none; }
+  .snap-dlg-slot--live::-webkit-scrollbar { width: 0; height: 0; display: none; }
+  .snap-dlg-scrollrot .ds-scroll__background { position: relative; overflow: hidden; height: var(--ds-size-2x, 8px); flex: none; }
+  .snap-dlg-scrollrot .ds-scroll__knob { position: absolute; top: 0; left: 0; cursor: pointer; touch-action: none; }
+  /* Scroll контента: в Figma инстанс повёрнут на 90° (вертикальная полоса 12×204) — поворот обвязкой */
+  .snap-dlg-scrollcol { width: 12px; flex: none; align-self: stretch; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .snap-dlg-scrollrot { transform: rotate(90deg); width: 204px; flex: none; }
+  .snap-dlg-scrollrot .ds-scroll { width: 100%; }
+  .snap-dlg-scrollrot .ds-scroll__knob { width: 96px; }
+  /* Type=Picture — слот картинки 500×200 (Brand/Neutral/Lightest) */
+  .snap-dlg-picture { width: 500px; height: 200px; background: var(--ds-color-brand-neutral-lightest, #ebebeb); }
+  /* Basic: живой диалог на сцене */
+  .snap-dlg-stage { position: relative; width: 720px; height: 420px; box-sizing: border-box; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fff; }
+  /* затемнение Basic: в Figma у слоя Backdrop прозрачность 15%, в css она не выгружается (журнал №194) — задана обвязкой */
+  .snap-dlg-stage__dim { position: absolute; inset: 0; opacity: .15; }
+  .snap-dlg-stage__dlg { position: absolute; }
+  .snap-dlg-closeic { cursor: pointer; }
 </style>
 </head>
 <body>
 <div class="demo-bar">
   <span class="demo-bar__title">Dialog — демо стенд</span>
-  <span>наборы Figma: Dialog view (1) · Dialog header (2) · Dialog content (1) · Dialog footer (1) · Picture · примеры (16 инстансов + сцена)</span>
+  <span>Figma: Dialog view · Dialog header (Type=Text / Type=Picture) · Dialog content · Dialog footer · Picture; Basic example — живой диалог</span>
 </div>
 <div class="view">
   <div class="ds-tabs" role="tablist" aria-label="Dialog">
     <button class="ds-tab ds-tab--active" role="tab" aria-selected="true" data-vtab="basic">Basic example</button>
     <button class="ds-tab" role="tab" aria-selected="false" data-vtab="dialog-view">Dialog view</button>
     <button class="ds-tab" role="tab" aria-selected="false" data-vtab="dialog-header">Dialog header</button>
+    <button class="ds-tab" role="tab" aria-selected="false" data-vtab="dialog-content">Dialog content</button>
     <button class="ds-tab" role="tab" aria-selected="false" data-vtab="dialog-footer">Dialog footer</button>
     <button class="ds-tab" role="tab" aria-selected="false" data-vtab="picture">Picture</button>
   </div>
 
-  <!-- 2. Dialog view (набор 52952:1284; полный состав: header + content + footer; 500×364 r12) -->
+  <!-- 2. Dialog view (набор 52952:1285; State=Default 53531:2453 — шапка + контент + подвал; 500×364 r12) -->
   <div class="panel" data-vpanel="dialog-view" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Dialog view (полный состав: header + content + footer; 500×364 r12)</div>
+      <div class="snap-cap snap-sect__title">Dialog view — без разделителей (в компоненте divider выключен)</div>
       <div class="snap-row" style="margin-top: 12px;">
-        <div class="ds-dialog-view snap-dlg">
-          <div class="ds-dialog-view__header">
+        <div class="ds-dialog-view">
+          <div class="ds-dialog-header">
             <div class="snap-dlg-head">
-              <div class="snap-dlg-titlerow"><span class="snap-dlg-title">Dialog title</span><span class="snap-dlg-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-24"/></svg></span></div>
-              <span class="snap-dlg-desc">Подзаголовок</span>
+              <div class="ds-dialog-header__title-container">
+                <span class="ds-dialog-header__label">Dialog title</span>
+                <span class="ds-dialog-header__icon"><span class="ds-icon-size ds-icon-size--6x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-24"/></svg></span></span>
+              </div>
+              <span class="ds-dialog-header__description">Подзаголовок</span>
             </div>
-            <div class="snap-dlg-divider"></div>
           </div>
-          <div class="ds-dialog-view__content">
-            <div class="snap-dlg-content">
-              <div class="snap-dlg-block"><span class="snap-dlg-block__title">Content title</span><span class="snap-dlg-block__text">В блоке контента может быть всё что угодно</span></div>
-              <div class="snap-dlg-block"><span class="snap-dlg-block__title">Content title</span><span class="snap-dlg-block__text">В блоке контента может быть всё что угодно</span></div>
-              <div class="snap-dlg-block"><span class="snap-dlg-block__title">Content title</span><span class="snap-dlg-block__text">В блоке контента может быть всё что угодно</span></div>
-              <div class="ds-scroll snap-dlg-scroll"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div>
+          <div class="ds-dialog-content">
+            <div class="snap-dlg-slot">
+              <div class="snap-dlg-block"><span class="ds-dialog-content__label">Content title</span><span class="ds-text-body-s-14-normal-regular snap-dlg-text">В блоке контента может быть всё что угодно</span></div>
+              <div class="snap-dlg-block"><span class="ds-dialog-content__label">Content title</span><span class="ds-text-body-s-14-normal-regular snap-dlg-text">В блоке контента может быть всё что угодно</span></div>
+              <div class="snap-dlg-block"><span class="ds-dialog-content__label">Content title</span><span class="ds-text-body-s-14-normal-regular snap-dlg-text">В блоке контента может быть всё что угодно</span></div>
             </div>
+            <div class="snap-dlg-scrollcol"><div class="snap-dlg-scrollrot"><div class="ds-scroll ds-scroll--first"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div></div></div>
           </div>
           <div class="ds-dialog-view__footer">
-            <div class="snap-dlg-divider"></div>
-            <div class="snap-dlg-footer"><button class="snap-btn snap-btn--accent">Подробнее</button></div>
+            <div class="ds-dialog-view__action snap-dlg-actions">
+              <button type="button" class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Подробнее</span></button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-
+    <p class="snap-note">Пометки для ревью: (а) собрано классами ДС: ds-dialog-view → ds-dialog-header (__title-container/__label/__icon/__description) → ds-dialog-content (слот + Scroll) → ds-dialog-view__footer/__action; разделителей в State=Default нет (в наборе divider=false у шапки и подвала); (б) паддинги шапки (24/24/8) и слота контента (8/24) в css не выгружены — обвязка на токенах (--ds-dialog-header-pad-*, --ds-dialog-content-pad-*); (в) фон описания шапки в css = цвет текста (артефакт) — снят в fixes.css; (г) Scroll — инстанс компонента, в Figma повёрнут на 90° (полоса 12×204, ползунок 96, Position=First) — поворот обвязкой; (д) высота 92+204+68=364 (min-height компонента); крестик в шапке — инстанс Icon size (ds-icon-size--6x; в Figma слой Icon size 24, глиф 14). Журнал №129.</p>
   </div>
 
-  <!-- 3. Dialog header (2 варианта: Type=Text / Type=Picture) -->
+  <!-- 3. Dialog header (53535:1322; Type=Text 53619:17897 500×93; Type=Picture 59215:16647 500×200) -->
   <div class="panel" data-vpanel="dialog-header" role="tabpanel" hidden>
     <div class="snap-sect">
       <div class="snap-row" style="margin-top: 12px;">
-        <div class="snap-col"><span class="snap-cap">Dialog header Type=Text (заголовок + описание + Divider)</span>
-          <div class="ds-dialog-header" style="width:500px;">
+        <div class="snap-col">
+          <div class="ds-dialog-header">
             <div class="snap-dlg-head">
-              <div class="snap-dlg-titlerow"><span class="snap-dlg-title">Dialog title</span><span class="snap-dlg-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-24"/></svg></span></div>
-              <span class="snap-dlg-desc">Подзаголовок</span>
+              <div class="ds-dialog-header__title-container">
+                <span class="ds-dialog-header__label">Dialog title</span>
+                <span class="ds-dialog-header__icon"><span class="ds-icon-size ds-icon-size--6x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-24"/></svg></span></span>
+              </div>
+              <span class="ds-dialog-header__description">Подзаголовок</span>
             </div>
-            <div class="snap-dlg-divider"></div>
+            <div class="ds-divider"></div>
           </div>
+        </div>
+        <div class="snap-col">
+          <div class="snap-dlg-picture"></div>
         </div>
       </div>
     </div>
+    <p class="snap-note">Пометки для ревью: (а) Type=Text: паддинги 24/24/8 и гэп 8 — обвязка на токенах (классов в css нет); разделитель — компонент Divider (ds-divider): у css-классов `__divider` фон белый (артефакт); (б) Type=Picture — по канве вариант показывает только слот картинки 500×200 (Brand/Neutral/Lightest #EBEBEB), заголовок в кадре набора не отрисован; (в) иконка крестика — слот ds-dialog-header__icon → инстанс Icon size (ds-icon-size--6x; в Figma Icon size 24, глиф 14), цвет #616161 (Icon/Primary): в css цвет не задан — обвязка. Журнал №129.</p>
   </div>
 
-  <!-- 4. Dialog footer (Divider + Action 68 + Button) -->
+  <!-- 4. Dialog content (53535:1369; State=Default 53531:2416 — 3 блока + Scroll; 500×204) -->
+  <div class="panel" data-vpanel="dialog-content" role="tabpanel" hidden>
+    <div class="snap-sect">
+      <div class="snap-cap snap-sect__title">Dialog content — слот блоков + Scroll (вертикальная полоса 12)</div>
+      <div class="snap-row" style="margin-top: 12px;">
+        <div class="ds-dialog-content">
+          <div class="snap-dlg-slot">
+            <div class="snap-dlg-block"><span class="ds-dialog-content__label">Content title</span><span class="ds-text-body-s-14-normal-regular snap-dlg-text">В блоке контента может быть всё что угодно</span></div>
+            <div class="snap-dlg-block"><span class="ds-dialog-content__label">Content title</span><span class="ds-text-body-s-14-normal-regular snap-dlg-text">В блоке контента может быть всё что угодно</span></div>
+            <div class="snap-dlg-block"><span class="ds-dialog-content__label">Content title</span><span class="ds-text-body-s-14-normal-regular snap-dlg-text">В блоке контента может быть всё что угодно</span></div>
+          </div>
+          <div class="snap-dlg-scrollcol"><div class="snap-dlg-scrollrot"><div class="ds-scroll ds-scroll--first"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div></div></div>
+        </div>
+      </div>
+    </div>
+    <p class="snap-note">Пометки для ревью: (а) блоки: «Content title» 16/24 medium + текст 14/20 (гэп внутри 8, между блоками 16); (б) паддинги слота (8/24) и гэпы в css не выгружены — обвязка на токенах — --ds-dialog-content-pad-*/-gap/-gap-text; (в) текст — класс типографики styles.css (ds-text-body-s-14-normal-regular) + токен цвета --ds-color-dialog-content-text-color; (г) Scroll в Figma повёрнут на 90° (12×204, ползунок 96) — поворот обвязкой; (д) `.ds-dialog-content` в css собран в строку (ширина 500) — журнал №44 — в сборке со скроллом это ожидаемо. Журнал №129.</p>
+  </div>
+
+  <!-- 5. Dialog footer (53749:638; State=Default 53749:624 — Divider + Action 68; 501×69) -->
   <div class="panel" data-vpanel="dialog-footer" role="tabpanel" hidden>
     <div class="snap-sect">
       <div class="snap-row">
-        <div class="snap-col"><span class="snap-cap">Dialog footer (Divider + Action 68 + Button)</span>
-          <div class="ds-dialog-footer" style="width:500px;">
-            <div class="snap-dlg-divider"></div>
-            <div class="snap-dlg-footer"><button class="snap-btn snap-btn--accent">Подробнее</button></div>
+        <div class="snap-col">
+          <div class="ds-dialog-footer">
+            <div class="ds-divider"></div>
+            <div class="ds-dialog-footer__action snap-dlg-actions">
+              <button type="button" class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Подробнее</span></button>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <p class="snap-note">Пометки для ревью: (а) состав: Divider (1) + Action 68 (паддинг 16/24 из css) + кнопка M «Подробнее» (ds-btn Accent Filled); (б) выравнивание кнопки вправо (в Figma items-end) в css не задано — обвязка; (в) ширина 501 — артборд набора (в составе вида — 500); (г) Divider — компонент (ds-divider): у css-классов `__divider` фон белый (артефакт). Журнал №129.</p>
   </div>
 
-  <!-- 5. Picture (446×189; кроп-слот 173 пунктир) -->
+  <!-- 6. Picture (58937:3985; 446×189 — кроп-слот 173 пунктир) -->
   <div class="panel" data-vpanel="picture" role="tabpanel" hidden>
     <div class="snap-sect">
       <div class="snap-row">
-        <div class="snap-col"><span class="snap-cap">Picture (446×189; кроп-слот 173 пунктир)</span>
+        <div class="snap-col">
           <div class="ds-picture">
             <div class="ds-picture__crop" style="align-items:center;justify-content:center;"><span class="snap-cap">Picture</span></div>
           </div>
         </div>
       </div>
     </div>
-    <p class="snap-note">Пометки для ревью: (а) состав по канве: шапка (Title 20/28 + close 24 + описание 16/24 + Divider 1px #E0E0E0), контент (блоки: Title 16/24 medium + текст 14/20), Scroll 204×12 (bg #FAFAFA, ползунок #D6D6D6); футер (Divider + Action 68: паддинг 16/24, кнопка M); (б) паддинги шапки/контента на канве — обвязка (в css классов паддингов нет): использованы 24 по бокам, шапка 24/12, компакт-шапка 16/24 (высота 60 — как в примерах); (в) Picture — кроп-слот с пунктирной рамкой #9E9E9E на фоне #F8F9FC; (г) служебная пометка канвы «слетели хедеры, поправить» — к дизайну компонента не относится. Журнал №129.</p>
+    <p class="snap-note">Пометки для ревью: (а) Picture — подложка компонента (фон #F8F9FC, паддинг 8, r8) + кроп-слот 173 с пунктирной рамкой #9E9E9E; (б) слот пустой — место под изображение (в продукте сюда ставится картинка); (в) служебная пометка канвы «слетели хедеры, поправить» — к дизайну компонента не относится. Журнал №129.</p>
   </div>
 
-  <!-- 1. Basic example: «Примеры» (4785×1650; 16 инстансов + сцена с Backdrop) -->
+  <!-- 1. Basic example: живой диалог (набор Dialog view State=Default поверх Backdrop; открыт по умолчанию) -->
   <div class="panel" data-vpanel="basic" role="tabpanel">
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Примеры сценариев (тексты дословно из канвы)</div>
-      <div class="snap-row" style="margin-top: 12px;">
-        <div class="snap-col">
-          <p class="snap-ex-caption">Удалить карту?</p>
-          <div class="ds-dialog-view snap-dlg">
-            <div class="ds-dialog-view__header"><div class="ds-dialog-header"><div class="snap-dlg-head snap-dlg-head--compact"><div class="snap-dlg-titlerow"><span class="snap-dlg-title">Удалить карту?</span><span class="snap-dlg-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-24"/></svg></span></div></div></div></div>
-            <div class="ds-dialog-view__footer"><div class="snap-dlg-divider"></div><div class="snap-dlg-footer"><button class="snap-btn snap-btn--text">Отмена</button><button class="snap-btn snap-btn--accent">Удалить</button></div></div>
+      <p class="snap-cap snap-live-hint">Basic example: живой диалог — открывается кнопкой «Открыть диалог», закрывается крестиком, Esc, кнопкой «Подробнее» и кликом по затемнению; контент прокручивается — колесом мыши и перетаскиванием ползунка</p>
+      <div class="snap-dlg-stage" id="dlg-stage">
+        <button type="button" class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" id="dlg-open" hidden><span class="ds-btn__label">Открыть диалог</span></button>
+        <div class="ds-backdrop snap-dlg-stage__dim" id="dlg-dim"></div>
+        <div class="ds-dialog-view snap-dlg-stage__dlg" id="dlg-live" role="dialog" aria-modal="true" aria-label="Dialog title">
+          <div class="ds-dialog-header">
+            <div class="snap-dlg-head">
+              <div class="ds-dialog-header__title-container">
+                <span class="ds-dialog-header__label">Dialog title</span>
+                <span class="ds-dialog-header__icon snap-dlg-closeic" id="dlg-close" role="button" tabindex="0" aria-label="Закрыть"><span class="ds-icon-size ds-icon-size--6x ds-icon-size--state"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-24"/></svg></span></span>
+              </div>
+              <span class="ds-dialog-header__description">Подзаголовок</span>
+            </div>
           </div>
-          <p class="snap-ex-caption" style="margin-top: 10px;">Ошибка сохранения цен</p>
-          <div class="ds-dialog-view snap-dlg">
-            <div class="ds-dialog-view__header"><div class="ds-dialog-header"><div class="snap-dlg-head snap-dlg-head--compact"><div class="snap-dlg-titlerow"><span class="snap-dlg-title">Ошибка сохранения цен</span><span class="snap-dlg-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-24"/></svg></span></div></div><div class="snap-dlg-divider"></div></div></div>
-            <div class="ds-dialog-view__content"><div class="snap-dlg-content">
-              <span class="snap-dlg-row">В продуктовой категории выбрана удалённая…</span>
-              <span class="snap-dlg-row">Удалённые ингредиенты в тех. карте</span>
-              <span class="snap-dlg-row">Технологическая карта не заполнена</span>
-            </div></div>
-            <div class="ds-dialog-view__footer"><div class="snap-dlg-divider"></div><div class="snap-dlg-footer"><button class="snap-btn snap-btn--text">Отмена</button><button class="snap-btn snap-btn--accent">Сохранить</button></div></div>
+          <div class="ds-dialog-content">
+            <div class="snap-dlg-slot snap-dlg-slot--live">
+              <div class="snap-dlg-block"><span class="ds-dialog-content__label">Content title</span><span class="ds-text-body-s-14-normal-regular snap-dlg-text">В блоке контента может быть всё что угодно</span></div>
+              <div class="snap-dlg-block"><span class="ds-dialog-content__label">Content title</span><span class="ds-text-body-s-14-normal-regular snap-dlg-text">В блоке контента может быть всё что угодно</span></div>
+              <div class="snap-dlg-block"><span class="ds-dialog-content__label">Content title</span><span class="ds-text-body-s-14-normal-regular snap-dlg-text">В блоке контента может быть всё что угодно</span></div>
+              <div class="snap-dlg-block"><span class="ds-dialog-content__label">Content title</span><span class="ds-text-body-s-14-normal-regular snap-dlg-text">В блоке контента может быть всё что угодно</span></div>
+              <div class="snap-dlg-block"><span class="ds-dialog-content__label">Content title</span><span class="ds-text-body-s-14-normal-regular snap-dlg-text">В блоке контента может быть всё что угодно</span></div>
+              <div class="snap-dlg-block"><span class="ds-dialog-content__label">Content title</span><span class="ds-text-body-s-14-normal-regular snap-dlg-text">В блоке контента может быть всё что угодно</span></div>
+            </div>
+            <div class="snap-dlg-scrollcol"><div class="snap-dlg-scrollrot"><div class="ds-scroll ds-scroll--first"><div class="ds-scroll__background"><div class="ds-scroll__knob"></div></div></div></div></div>
           </div>
-        </div>
-        <div class="snap-col">
-          <p class="snap-ex-caption">Обновление данных</p>
-          <div class="ds-dialog-view snap-dlg">
-            <div class="ds-dialog-view__header"><div class="ds-dialog-header"><div class="snap-dlg-head snap-dlg-head--compact"><div class="snap-dlg-titlerow"><span class="snap-dlg-title">Последее обновление 21.08.2022, 11:05:49</span><span class="snap-dlg-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-24"/></svg></span></div></div><div class="snap-dlg-divider"></div></div></div>
-            <div class="ds-dialog-view__content"><div class="snap-dlg-content">
-              <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox" checked><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Обновлять названия и описания блюд</span></label>
-              <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Обновлять цены</span></label>
-              <label class="ds-checkbox"><input class="ds-checkbox__input" type="checkbox"><span class="ds-checkbox__box"></span><span class="ds-checkbox__label">Обновлять количество модификаторов</span></label>
-            </div></div>
-            <div class="ds-dialog-view__footer"><div class="snap-dlg-divider"></div><div class="snap-dlg-footer"><button class="snap-btn snap-btn--text">Отмена</button><button class="snap-btn snap-btn--accent">Обновить</button></div></div>
-          </div>
-          <p class="snap-ex-caption" style="margin-top: 10px;">Импорт</p>
-          <div class="ds-dialog-view snap-dlg">
-            <div class="ds-dialog-view__header"><div class="ds-dialog-header"><div class="snap-dlg-head snap-dlg-head--compact"><div class="snap-dlg-titlerow"><span class="snap-dlg-title">Импорт</span><span class="snap-dlg-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-24"/></svg></span></div></div><div class="snap-dlg-divider"></div></div></div>
-            <div class="ds-dialog-view__content"><div class="snap-dlg-content">
-              <div class="snap-dlg-drop"><span>Выберите файл или перетащите сюда</span><span class="snap-dlg-drop__hint">Форматы xlsx, xls, csv до 5 МБ</span></div>
-              <button class="snap-btn snap-btn--text" style="align-self:flex-start;">Скачать шаблон</button>
-            </div></div>
-            <div class="ds-dialog-view__footer"><div class="snap-dlg-divider"></div><div class="snap-dlg-footer"><button class="snap-btn snap-btn--accent">Импортировать</button></div></div>
-          </div>
-        </div>
-        <div class="snap-col">
-          <p class="snap-ex-caption">Часть гостей не добавлена</p>
-          <div class="ds-dialog-view snap-dlg">
-            <div class="ds-dialog-view__header"><div class="ds-dialog-header"><div class="snap-dlg-head snap-dlg-head--compact"><div class="snap-dlg-titlerow"><span class="snap-dlg-title" style="font-size:18px;">Часть гостей не добавлена. Скачайте файл, исправьте ошибки и загрузите</span><span class="snap-dlg-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-24"/></svg></span></div></div><div class="snap-dlg-divider"></div></div></div>
-            <div class="ds-dialog-view__footer"><div class="snap-dlg-divider"></div><div class="snap-dlg-footer"><button class="snap-btn snap-btn--text">Скачать файл</button><button class="snap-btn snap-btn--accent">Загрузить снова</button></div></div>
-          </div>
-          <p class="snap-ex-caption" style="margin-top: 10px;">Список позиций (пример с составным контентом)</p>
-          <div class="ds-dialog-view snap-dlg">
-            <div class="ds-dialog-view__header"><div class="ds-dialog-header"><div class="snap-dlg-head snap-dlg-head--compact"><div class="snap-dlg-titlerow"><span class="snap-dlg-title">Dialog title</span><span class="snap-dlg-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-24"/></svg></span></div></div><div class="snap-dlg-divider"></div></div></div>
-            <div class="ds-dialog-view__content"><div class="snap-dlg-content">
-              <span class="snap-dlg-row">Водка “Флагман” 40% +0.2 л.</span>
-              <span class="snap-dlg-row">Виски ”Jameson” +0.7 л.</span>
-              <span class="snap-dlg-row">Текила “Olmeca Blanco” +0.9 л.</span>
-            </div></div>
-            <div class="ds-dialog-view__footer"><div class="snap-dlg-divider"></div><div class="snap-dlg-footer"><button class="snap-btn snap-btn--text">Отмена</button><button class="snap-btn snap-btn--accent">Создать</button></div></div>
+          <div class="ds-dialog-view__footer">
+            <div class="ds-dialog-view__action snap-dlg-actions">
+              <button type="button" class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled" id="dlg-done"><span class="ds-btn__label">Подробнее</span></button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-
-    <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Сцена из канвы: диалог поверх рабочего стола с Backdrop («Статус изменили на Активную»)</div>
-      <div class="snap-scene" style="margin-top: 12px;">
-        <div class="snap-scene__dim"></div>
-        <div class="ds-dialog-view snap-dlg" style="width:500px;">
-          <div class="ds-dialog-view__header"><div class="ds-dialog-header"><div class="snap-dlg-head snap-dlg-head--compact"><div class="snap-dlg-titlerow"><span class="snap-dlg-title">Статус изменили на Активную</span><span class="snap-dlg-close"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-close-24"/></svg></span></div></div></div></div>
-          <div class="ds-dialog-view__content"><div class="snap-dlg-content"><span class="snap-dlg-block__text">Ранги и условия пересчитаны. Проверьте настройки бонусной программы.</span></div></div>
-          <div class="ds-dialog-view__footer"><div class="snap-dlg-divider"></div><div class="snap-dlg-footer"><button class="snap-btn snap-btn--accent">Понятно</button></div></div>
-        </div>
-      </div>
-      <span class="snap-cap" style="display:block;margin-top:8px;">В канве сцена собрана на полном экране (Sidenav + Content + Sidebar + Backdrop); на стенде — упрощённая подложка с затемнением.</span>
-    </div>
-
-    <p class="snap-note">Пометки для ревью: (а) тексты — с канвы («Удалить карту?», «Ошибка сохранения цен» со строками «В продуктовой категории выбрана удалённая…» (в кадре текст обрезан), «Удалённые ингредиенты в тех. карте», «Технологическая карта не заполнена»; «Последее обновление 21.08.2022, 11:05:49» с чекбоксами; «Импорт»; «Часть гостей не добавлена. Скачайте файл, исправьте ошибки и загрузите»; позиции «Водка “Флагман” 40% +0.2 л.» и др.); (б) в канве 16 инстансов разной высоты (128…718) — на стенде показаны репрезентативные; кадры «Добавить модификаторы» (таблица) и «Создание элемента номенклатуры» (форма) не воспроизводились — состав из чужих компонентов (Table/Input), смотри их стенды; (в) чекбоксы — компонент Checkbox_DS; (г) дропзона «Выберите файл или перетащите сюда» — обвязка (в канве — рамка/иконка). Журнал №129.</p>
+    <p class="snap-note">Пометки для ревью: (а) Basic — живой диалог в составе набора Dialog view (State=Default: шапка + контент + подвал), поверх затемнения — компонент Backdrop (ds-backdrop); прозрачность слоя 15% (как в Figma) в css не выгружается — задана обвязкой (журнал №194); (б) закрывают — крестик (слот ds-dialog-header__icon → инстанс Icon size ds-icon-size--6x; у живого крестика — `--state`: при наведении подложка 32×32 #EBEBEB, при нажатии #E0E0E0, как State=Hover в Figma), Esc, кнопка «Подробнее» или клик по затемнению; «Открыть диалог» возвращает окно (кнопка — обвязка стенда); (в) паддинги/гэпы шапки и контента — обвязка на токенах; скругление корня (12) обрезает содержимое и выравнивание кнопки вправо — в компоненте (fixes.css п. 43); фон описания шапки — артефакт css, снят в fixes.css (п. 31); (г) примеры канвы (16 инстансов: «Удалить карту?», «Ошибка сохранения цен», «Импорт» и др.) на стенде не воспроизводятся — Basic показывает компонент живьём; (д) в Basic всё работает: диалог открывается/закрывается (крестик, Esc, «Подробнее», клик по затемнению), контент прокручивается колесом, ползунок Scroll перетаскивается и синхронизирован. Журнал №129, №202.</p>
   </div>
 </div>
 
@@ -255,6 +248,59 @@
       panels.forEach(function (p) { p.hidden = p.getAttribute('data-vpanel') !== btn.getAttribute('data-vtab'); });
     });
   });
+
+  /* Basic: живой диалог — открыть/закрыть (крестик, Esc, кнопка, клик по затемнению) + рабочий скролл контента */
+  (function () {
+    var stage = document.getElementById('dlg-stage');
+    if (!stage) return;
+    var openBtn = document.getElementById('dlg-open');
+    var dim = document.getElementById('dlg-dim');
+    var dlg = document.getElementById('dlg-live');
+    var closeBtn = document.getElementById('dlg-close');
+    var doneBtn = document.getElementById('dlg-done');
+    function show() { openBtn.hidden = true; dim.hidden = false; dlg.hidden = false; syncKnob(); }
+    function hide() { openBtn.hidden = false; dim.hidden = true; dlg.hidden = true; }
+    openBtn.addEventListener('click', show);
+    closeBtn.addEventListener('click', hide);
+    if (doneBtn) doneBtn.addEventListener('click', hide);
+    dim.addEventListener('click', hide);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !dlg.hidden) hide(); });
+
+    /* Скролл контента: колесо мыши — нативно (overflow-y), ползунок — перетаскивание.
+       В Figma полоса Scroll повёрнута на 90°, поэтому локальный left ползунка = вертикаль на экране. */
+    var slot = dlg.querySelector('.snap-dlg-slot');
+    var knob = dlg.querySelector('.ds-scroll__knob');
+    var track = dlg.querySelector('.ds-scroll__background');
+    if (!slot || !knob || !track) return;
+    function maxScroll() { return Math.max(0, slot.scrollHeight - slot.clientHeight); }
+    function trackRange() { return Math.max(0, track.clientWidth - knob.offsetWidth); }
+    function syncKnob() {
+      var m = maxScroll(), r = trackRange();
+      knob.style.left = (m ? (slot.scrollTop / m) * r : 0) + 'px';
+    }
+    slot.addEventListener('scroll', syncKnob);
+    knob.addEventListener('pointerdown', function (e) {
+      e.preventDefault();
+      var startY = e.clientY;
+      var startLeft = parseFloat(knob.style.left) || 0;
+      try { knob.setPointerCapture(e.pointerId); } catch (err) { /* синтетические события */ }
+      function move(ev) {
+        var r = trackRange(), m = maxScroll();
+        var left = Math.min(r, Math.max(0, startLeft + (ev.clientY - startY)));
+        knob.style.left = left + 'px';
+        slot.scrollTop = r ? (left / r) * m : 0;
+      }
+      function up() {
+        window.removeEventListener('pointermove', move);
+        window.removeEventListener('pointerup', up);
+        window.removeEventListener('pointercancel', up);
+      }
+      window.addEventListener('pointermove', move);
+      window.addEventListener('pointerup', up);
+      window.addEventListener('pointercancel', up);
+    });
+    syncKnob();
+  })();
 </script>
 </body>
 </html>

@@ -17,20 +17,18 @@ probe.js — фрагмент, который сам пишет результа
     window.addEventListener('load', function(){ setTimeout(function(){
       var o=[];
       try{
-        /* состояние можно выставлять НАПРЯМУЮ до paint(): переменные прототипа доступны в window
-           как глобалы (pressed, timeOn, elapsedMin, uiMode, screenVariant) и работают —
-           pressed={warm:['cold']}; timeOn=true; elapsedMin=10; paint();
+        /* состояние можно выставлять НАПРЯМУЮ до перерисовки: переменные прототипа обычно
+           доступны в window как глобалы — присвоить и вызвать его функцию отрисовки.
            клик из пробы иногда не успевает к кадру, поэтому прямой state надёжнее и годится для карточки.
            Видимость вкладки — тоже статикой: перенос класса is-on у [data-vpanel]/[data-vtab].
-           Вариант с готовыми --state/--shot: scripts/probe-page.sh; подробности —
-           references/kds-prototype-verification.md */
+           Вариант с готовыми --state/--shot: scripts/probe-page.sh */
         document.querySelector('[data-vtab="2"]').click();
         var chk=document.querySelector('[data-time-chk]'); if(chk && !chk.checked) chk.click();
         var chip=[].filter.call(document.querySelectorAll('.chip'), function(x){
           return x.textContent.trim()==='20 мин'; })[0];
         if(!chip){ o.push('ЧИП НЕ НАЙДЕН — шаг пропущен, вывод недостоверен'); } else { chip.click(); }
-        o.push('класс строки: '+document.querySelector('.kds-row').className);
-        o.push('shadow: '+getComputedStyle(document.querySelector('.kds-row')).boxShadow);
+        o.push('класс строки: '+document.querySelector('.row').className);   /* подставь свой селектор */
+        o.push('shadow: '+getComputedStyle(document.querySelector('.row')).boxShadow);
         o.push('ошибки JS: '+(err.length? err.join(' | ') : 'нет'));
       }catch(e){ o.push('ОШИБКА: '+e.message); }
       document.getElementById('probe').textContent='START\\n'+o.join('\\n')+'\\nEND';
@@ -46,7 +44,7 @@ probe.js — фрагмент, который сам пишет результа
   * ВСЕГДА печатать в выводе «ошибки JS» (window.onerror) и «переполнение»
     (scrollWidth − clientWidth): без них «всё хорошо» ничего не проверяет;
   * цвета замерять равенством строк — 'совпадает: '+(getComputedStyle(a).color===getComputedStyle(b).color)
-    — и В ОБОИХ местах (панели цехов и скопированный экран живут на разных палитрах --kds-*/--kdsx-*).
+    — и В ОБОИХ местах (копия и страница-хозяин живут на разных палитрах переменных).
 """
 
 import argparse

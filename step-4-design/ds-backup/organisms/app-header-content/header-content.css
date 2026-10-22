@@ -1,0 +1,101 @@
+/* ============================================================
+   header-content - «хедер контента» (шапка раздела) - организм дизайн-системы.
+   Источник: Figma «Iiko Web DS (New)», компонент «Header content» (63308:202539),
+   страница «Header content_ORG». Части - компонентами ДС:
+     · стрелка назад - Icon size (Size=24, Content=Icon; иконка arrow_back);
+     · подпись + заголовок - Text UI (Label up = подпись, List item text = заголовок
+       стилем «Header M (24) / Normal / Medium»);
+     · слот «После заголовка» - Status (Style=Accent, Type=Filled) и/или Text UI
+       (Caption L 12 серым + иконка edit);
+     · поиск - Search (Size=XS, State=Default): круглая кнопка 36;
+     · действия - Button group (Orientation=Horizontally, Margins=Off)
+       из Button (Size=M, Style=Neutral, Type=Filled).
+   Размеры из компонента: высота строки 48; стрелка↔заголовок 16; заголовок↔слот 16;
+   внутри слота 8; поиск↔кнопки 29; между кнопками 8 (Button group/Gap); блок
+   растягивается на всю ширину, действия прижаты вправо (space-between).
+   Переключатели частей - атрибуты на корне .hc (нет атрибута = часть показана,
+   как дефолты компонента): data-hc-arrow / data-hc-subtitle / data-hc-status /
+   data-hc-after / data-hc-search / data-hc-actions = "off" (ставит HeaderContent.set).
+   Иконки - <img> из этой папки (точные SVG из Figma; #616161 = Icon/Primary);
+   src подставляет header-content.js по data-hc-icon (работает с любой страницы).
+   ============================================================ */
+
+.hc {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* левая часть: блок заголовка + слот «После заголовка» (гэп 16 - из компонента) */
+.hc__left { display: flex; align-items: center; gap: 16px; min-width: 0; }
+
+/* правая часть: поиск + действия (гэп 29 - из компонента) */
+.hc__right { display: flex; align-items: center; gap: 29px; flex: none; }
+
+/* блок заголовка - Text UI: стрелка + контент; в компоненте гэп 16 (в наборе Text UI - 8),
+   высота блока 48 (в наборе у Text UI артборд min-height 52 - в хедере не нужен) */
+.hc__title.ds-text-ui { gap: 16px; min-height: 0; }
+
+/* стрелка назад - слот Element left с иконкой Icon size 24 (у иконки своя подложка состояния);
+   центрируется по СТРОКЕ ЗАГОЛОВКА, как и слот «После заголовка» (в Text UI align-items: flex-start,
+   стрелка липла к верху блока): низ стрелки отстоит от низа блока на 4 = (32 − 24) / 2 —
+   центр стрелки = центр строки заголовка при любой высоте блока (требование владельца 15.10:
+   «Тут тоже все выровнить») */
+.hc__back { cursor: pointer; align-self: flex-end; margin-bottom: 4px; }
+
+/* подпись + заголовок: подпись - штатный Label up Text UI (Caption L 12, серый),
+   заголовок - стиль ДС «Header M (24) / Normal / Medium» */
+.hc__title .ds-text-ui__list-item.hc__heading {
+  font-size: var(--ds-font-header-m-24-normal-medium-size);
+  line-height: var(--ds-font-header-m-24-normal-medium-line);
+  letter-spacing: var(--ds-font-header-m-24-normal-medium-spacing);
+  font-weight: var(--ds-font-header-m-24-normal-medium-weight);
+}
+
+/* слот «После заголовка»: статус и доп. текст (гэп 8 - из компонента).
+   Центрирование по СТРОКЕ ЗАГОЛОВКА (24/32), а не по паре «подпись + заголовок»
+   (требование владельца 15.10: «относительно заголовка только, а не заголовка и подзаголовка»):
+   низ слота отстоит от низа блока на 4 = (32 − 24) / 2 — центр слота = центр строки заголовка
+   при любой высоте блока (с подписью 48 и без подписи 32) */
+.hc__after { display: flex; align-items: center; gap: 8px; align-self: flex-end; margin-bottom: 4px; }
+
+/* доп. текст - Text UI: строка Caption L 12 серым (Text/Secondary) + иконка edit;
+   высота по контенту 20 (артбордная min-height 52 не нужна) */
+.hc__addition.ds-text-ui { min-height: 0; align-items: center; }   /* как в узле (Text UI After header — items-center): текст и иконка по центру одной линии */
+.hc__addition .ds-text-ui__list-item {
+  font-size: var(--ds-font-caption-l-12-normal-regular-size);
+  line-height: var(--ds-font-caption-l-12-normal-regular-line);
+  letter-spacing: var(--ds-font-caption-l-12-normal-regular-spacing);
+  font-weight: var(--ds-font-caption-l-12-normal-regular-weight);
+  color: var(--ds-color-text-ui-text-label-color, #616161);
+}
+
+/* поиск - круглая кнопка (Search XS); курсор-рука, как у действия.
+   пробел ДС: у варианта XS фон - свой токен (Default Accent/50, Hover Accent/100) и рамки нет,
+   а в сгенерированном search.css у --xs наследуются фон/рамка размеров M/S и лупа не центрируется -
+   задаём здесь (в клоне репозитория та же правка продублирована в components-web/fixes.css) */
+.hc__search { cursor: pointer; }
+.hc__search.ds-search--xs { background: var(--ds-color-search-default-background-xs, #f0f5ff); border: 0; justify-content: center; }
+.hc__search.ds-search--xs:hover { background: var(--ds-color-search-hover-background-xs, #e8f0ff); border: 0; }
+
+/* действия - Button group ДС, внутри - кнопки Button */
+.hc__actions { flex: none; }
+
+/* переключатели частей: data-hc-*="off" на корне скрывает часть (дефолт - всё включено) */
+.hc[data-hc-arrow="off"] .hc__back,
+.hc[data-hc-status="off"] .hc__status,
+.hc[data-hc-after="off"] .hc__addition,
+.hc[data-hc-search="off"] .hc__search,
+.hc[data-hc-actions="off"] .hc__actions { display: none; }
+
+/* подпись: при выключении СХЛОПЫВАЕТСЯ (место не сохраняется — заголовок встаёт выше,
+   пустого разрыва над ним нет; требование владельца 15.10: «С подписью вообще мало макетов.
+   Обычно просто заголовок идёт») */
+.hc[data-hc-subtitle="off"] .hc__subtitle { display: none; }
+
+/* если в слоте «После заголовка» / в правой части ничего не осталось - схлопываем их целиком
+   (иначе гэпы 16 и 29 оставляли бы пустое место) */
+.hc[data-hc-status="off"][data-hc-after="off"] .hc__after { display: none; }
+.hc__after:not(:has(*)) { display: none; }
+.hc__right:not(:has(*)) { display: none; }

@@ -6,14 +6,16 @@
 
    Скрипт работает от своего расположения, поэтому:
      • страница может лежать где угодно (главное — чтобы из неё был виден путь к DS);
-     • путь можно указывать и абсолютным: <script src="file:///C:/.../DS/connect.js" defer></script>
+     • путь можно указывать и абсолютным: <script src="file:///C:/.../Design-System/connect.js" defer></script>
 
    ЧТО ПОДТЯГИВАЕТСЯ САМО:
      1) стили ДС: components-web/font.css, tokens.css, styles.css, components/index.css, fixes.css;
      2) иконки Material Icons (обычные + Outlined);
-     3) организмы: шапка app-header (с правой панелью app-right-panel — её шторка) и боковое меню app-sidenav (css + js);
+     3) демо-страницу прототипа — одним комплектом: плашка (ds-review: общий заголовок раздела,
+        «Экраны», «Размер»), шапка app-header (с правой панелью app-right-panel — её шторка)
+        и боковое меню app-sidenav (css + js);
      4) структура .panel > .frame — если её нет, создаётся, и содержимое страницы переносится внутрь
-        (шапка и меню встают в неё автоматически).
+        (демо-страница встаёт в неё автоматически).
 
    ФЛАГИ (атрибуты на том же теге script):
      data-no-header         — не подключать шапку;
@@ -59,12 +61,17 @@
     'components-web/fixes.css'
   ];
   if (FLAGS.mobile) CSS.push('components-mobile/modes.css', 'components-mobile/components/index.css');
+  /* Демо-страница — одним комплектом: плашка + шапка + меню (вместо отдельных подключений
+     хедера и сайднава). Отдельно их не подключают — они части демо-страницы. */
   if (FLAGS.header) CSS.push('organisms/app-right-panel/app-right-panel.css?v=2', 'organisms/app-header/app-header.css?v=21');
-  if (FLAGS.sidenav) CSS.push('organisms/app-sidenav/app-sidenav.css?v=15');
+  if (FLAGS.sidenav) CSS.push('organisms/app-sidenav/app-sidenav.css?v=16');
 
   var JS = [];
   if (FLAGS.header) JS.push('organisms/app-right-panel/app-right-panel.js?v=1', 'organisms/app-header/app-header.js?v=20');
-  if (FLAGS.sidenav) JS.push('organisms/app-sidenav/app-sidenav.js?v=13');
+  if (FLAGS.sidenav) JS.push('organisms/app-sidenav/app-sidenav.js?v=15');
+  /* плашка демо-страницы (общий заголовок, «Экраны», «Размер»); css подтягивает сам ds-review.js,
+     реестр экранов — layouts.js рядом со страницей (не обязателен) */
+  JS.push('ds-review.js');
 
   var MOL = [];
   if (FLAGS.molecules) {

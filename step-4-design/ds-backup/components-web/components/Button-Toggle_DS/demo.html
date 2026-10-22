@@ -51,7 +51,7 @@
 <body>
 <div class="demo-bar">
   <span class="demo-bar__title">Button Toggle — демо стенд</span>
-  <span>набор Figma: Button toggle (17039-71554, 12) · примеры (53553-42223, 9 групп) · UX-примеры (61875-1992)</span>
+  <span>Figma: Button toggle (17039-71554, 12) · примеры (53553-42223, 9 групп) · UX-примеры (61875-1992)</span>
 </div>
 <div class="view">
   <div class="ds-tabs" role="tablist" aria-label="Button Toggle">
@@ -62,12 +62,10 @@
   <!-- 2. Button toggle (набор 17039:71554, 12 вариантов) -->
   <div class="panel" data-vpanel="button-toggle" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Button toggle — 12 вариантов (Size × Type × Content); клик переключает выбор</div>
+      <div class="snap-cap snap-sect__title">Button toggle — 12 вариантов; клик переключает выбор</div>
 
-      <div class="snap-h3" style="margin-top: 8px;">Content=Text</div>
-      <div class="snap-grid" style="grid-template-columns: max-content max-content max-content;">
-        <span class="snap-cap"></span><span class="snap-cap">Filled</span><span class="snap-cap">Outlined</span>
-        <span class="snap-cap">M</span>
+      <div class="snap-row" style="margin-top: 8px; gap: 96px; align-items: flex-start;">
+        <div class="snap-col">
         <div class="ds-button-toggle ds-button-toggle--filled ds-button-toggle--text" data-bt="filled">
             <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text snap-seg-sel" data-seg><span class="ds-btn__label">Button</span></button>
             <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
@@ -78,34 +76,6 @@
             <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
             <button class="ds-btn ds-btn--m ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
         </div>
-        <span class="snap-cap">S</span>
-        <div class="ds-button-toggle ds-button-toggle--s ds-button-toggle--filled ds-button-toggle--text" data-bt="filled">
-            <button class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text snap-seg-sel" data-seg><span class="ds-btn__label">Button</span></button>
-            <button class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
-            <button class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
-        </div>
-        <div class="ds-button-toggle ds-button-toggle--s ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
-            <button class="ds-btn ds-btn--s ds-btn--accent ds-btn--filled" data-seg><span class="ds-btn__label">Button</span></button>
-            <button class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
-            <button class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
-        </div>
-        <span class="snap-cap">XS</span>
-        <div class="ds-button-toggle ds-button-toggle--xs ds-button-toggle--filled ds-button-toggle--text" data-bt="filled">
-            <button class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--text snap-seg-sel" data-seg><span class="ds-btn__label">Button</span></button>
-            <button class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
-            <button class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
-        </div>
-        <div class="ds-button-toggle ds-button-toggle--xs ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
-            <button class="ds-btn ds-btn--xs ds-btn--accent ds-btn--filled" data-seg><span class="ds-btn__label">Button</span></button>
-            <button class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
-            <button class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
-        </div>
-      </div>
-
-      <div class="snap-h3">Content=Icon</div>
-      <div class="snap-grid" style="grid-template-columns: max-content max-content max-content;">
-        <span class="snap-cap"></span><span class="snap-cap">Filled</span><span class="snap-cap">Outlined</span>
-        <span class="snap-cap">M</span>
         <div class="ds-button-toggle ds-button-toggle--filled ds-button-toggle--icon" data-bt="filled">
             <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text snap-seg-sel" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
             <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
@@ -116,7 +86,18 @@
             <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
             <button class="ds-btn-icon ds-btn-icon--m ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
         </div>
-        <span class="snap-cap">S</span>
+        </div>
+        <div class="snap-col">
+        <div class="ds-button-toggle ds-button-toggle--s ds-button-toggle--filled ds-button-toggle--text" data-bt="filled">
+            <button class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text snap-seg-sel" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+        </div>
+        <div class="ds-button-toggle ds-button-toggle--s ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
+            <button class="ds-btn ds-btn--s ds-btn--accent ds-btn--filled" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--s ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+        </div>
         <div class="ds-button-toggle ds-button-toggle--s ds-button-toggle--filled ds-button-toggle--icon" data-bt="filled">
             <button class="ds-btn-icon ds-btn-icon--s ds-btn-icon--neutral ds-btn-icon--text snap-seg-sel" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
             <button class="ds-btn-icon ds-btn-icon--s ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
@@ -127,7 +108,18 @@
             <button class="ds-btn-icon ds-btn-icon--s ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
             <button class="ds-btn-icon ds-btn-icon--s ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 20 20" fill="currentColor"><use href="#ic-add"/></svg></span></button>
         </div>
-        <span class="snap-cap">XS</span>
+        </div>
+        <div class="snap-col">
+        <div class="ds-button-toggle ds-button-toggle--xs ds-button-toggle--filled ds-button-toggle--text" data-bt="filled">
+            <button class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--text snap-seg-sel" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+        </div>
+        <div class="ds-button-toggle ds-button-toggle--xs ds-button-toggle--outlined ds-button-toggle--text" data-bt="outlined">
+            <button class="ds-btn ds-btn--xs ds-btn--accent ds-btn--filled" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+            <button class="ds-btn ds-btn--xs ds-btn--neutral ds-btn--text" data-seg><span class="ds-btn__label">Button</span></button>
+        </div>
         <div class="ds-button-toggle ds-button-toggle--xs ds-button-toggle--filled ds-button-toggle--icon" data-bt="filled">
             <button class="ds-btn-icon ds-btn-icon--xs ds-btn-icon--neutral ds-btn-icon--text snap-seg-sel" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></button>
             <button class="ds-btn-icon ds-btn-icon--xs ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></button>
@@ -138,10 +130,11 @@
             <button class="ds-btn-icon ds-btn-icon--xs ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></button>
             <button class="ds-btn-icon ds-btn-icon--xs ds-btn-icon--neutral ds-btn-icon--text" data-seg><span class="ds-btn-icon__icon"><svg viewBox="0 0 16 16" fill="currentColor"><use href="#ic-add-16"/></svg></span></button>
         </div>
+        </div>
       </div>
     </div>
 
-    <p class="snap-note">Пометки для ревью: (а) логика набора зафиксирована с канвы: Type=Filled — фон контейнера и сегментов белый, выбранный сегмент показан АКЦЕНТНЫМ КОНТЕНТОМ (надпись/иконка); Type=Outlined — контейнер с рамкой, выбранный сегмент с акцентной заливкой; в css у `.ds-button-toggle--filled` базовый цвет надписи уже акцентный — уточнить, это ли имелось в виду (решить в ДС); (б) сегменты — реальные Button/Button icon (ds-btn / ds-btn-icon), клик переключает выбор (одиночный); (в) размеры сегментов M 36 / S 28 / XS 24 (у XS иконка 16); (г) у Filled-набора сегменты белые без рамок — фон = контейнер; д) состояния сегментов (hover/press) живые из Button. Журнал №121.</p>
+    <p class="snap-note">Пометки для ревью: (а) витрина = 12 вариантов — раскладка снята по метаданным Figma (узел 17039:71554): три зоны по размерам В РЯД (M | S | XS), в каждой зоне столбиком Filled-Text, Outlined-Text, Filled-Icon, Outlined-Icon; логика зафиксирована с канвы: Type=Filled — фон контейнера и сегментов белый, выбранный сегмент показан АКЦЕНТНЫМ КОНТЕНТОМ (надпись/иконка); Type=Outlined — контейнер с рамкой, выбранный сегмент с акцентной заливкой; в css у `.ds-button-toggle--filled` базовый цвет надписи уже акцентный — уточнить, это ли имелось в виду (решить в ДС); (б) сегменты — реальные Button/Button icon (ds-btn / ds-btn-icon), клик переключает выбор (одиночный); (в) размеры сегментов M 36 / S 28 / XS 24 (у XS иконка 16); (г) у Filled-набора сегменты белые без рамок — фон = контейнер; д) состояния сегментов (hover/press) живые из Button. Журнал №121, №164.</p>
   </div>
 
   <!-- 1. Basic example: «Button toggle (Examples)» (53553:42223) + UX-примеры (61875:1992) -->

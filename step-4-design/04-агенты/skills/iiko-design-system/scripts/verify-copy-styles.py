@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
 """Сверка «оригинал vs копия»: вычисленные стили в headless Chrome.
 
-Задача, под которую написан: экран-прототип (напр. KDS/kds-screen.html) скопирован
-внутрь другой страницы (напр. KDS/multi-shop.html) с переименованием префикса классов
-(`.kds-*` → `.kdsx-*`). Нужно доказать числами, что копия не поехала.
+Задача, под которую написан: экран-прототип скопирован внутрь другой страницы
+с переименованием префикса классов (копия живёт на своём префиксе).
+Нужно доказать числами, что копия не поехала.
 
 Запуск:
   python verify-copy-styles.py \
-      --orig iiko-ds-prototypes/KDS/kds-screen.html \
-      --copy iiko-ds-prototypes/KDS/multi-shop.html \
-      --orig-prefix .kds- --copy-prefix '#scrStage .kdsx-'
+      --orig путь/к/оригиналу.html \
+      --copy путь/к/странице-с-копией.html \
+      --orig-prefix .src- --copy-prefix '#stage .copy-'
 
 Печатает расхождения «узел.свойство | оригинал | копия» и итог.
 Код возврата 1, если есть расхождения, кроме ожидаемых (--expect).
 
 Как читать результат: у копии ожидаемо отличаются те узлы, которые ты сознательно
-добавил/переставил (напр. своя карточка стоит первой — у первой кнопки статуса другой
-цвет; холст ленты шире из-за лишней карточки). Такие расхождения перечисляй в отчёте
+добавил/переставил (напр. сознательно добавленный элемент или другой порядок)
+ Такие расхождения перечисляй в отчёте
 словами, а не прячь.
 """
 import argparse
@@ -29,7 +29,7 @@ import tempfile
 
 CHROME = r"C:/Program Files/Google/Chrome/Application/chrome.exe"
 
-# Узлы экрана KDS/ДС: имя → (суффикс селектора, свойства).
+# Узлы экрана: имя → (суффикс селектора, свойства).
 DEFAULT_SPEC = {
     'card':      ('card',                 ['width', 'borderRadius', 'backgroundColor', 'display']),
     'header':    ('card__header',         ['padding', 'gap']),
@@ -103,8 +103,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--orig', required=True)
     ap.add_argument('--copy', required=True)
-    ap.add_argument('--orig-prefix', default='.kds-')
-    ap.add_argument('--copy-prefix', required=True, help="напр. '#scrStage .kdsx-'")
+    ap.add_argument('--orig-prefix', default='.src-')
+    ap.add_argument('--copy-prefix', required=True, help="напр. '#stage .copy-'")
     ap.add_argument('--chrome', default=CHROME)
     ap.add_argument('--window', default='1600,1000')
     ap.add_argument('--expect', default='', help='через запятую: узлы/свойства, расхождения которых ожидаемы')

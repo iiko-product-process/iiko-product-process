@@ -6,14 +6,14 @@
 <title>Slide toggle — демо стенд компонента</title>
 <!--
   Демо стенд компонента Slide toggle (страница «Slide toggle», 52887:2591). Папка: DS/components-web/components/Slide-Toggle_DS/.
-  Источник — канва «Slide toggle» Figma «Iiko Web DS (New)»: набор «Slide toggle» (52887:2592; 6 вариантов:
+  Источник — канва «Slide toggle» Figma «Iiko Web DS (New)»: компонент «Slide toggle» (52887:2592; 6 вариантов:
   Active=On/Off × State=Default/Hover/Disable; состав варианта — трек 34×20 + подпись «Title»), блок «Slide toggle (Examples)»
   (58203:3452; группы Basic/Only/with icon/support text/error text) и контент-блок «Content block» (58247:1474;
-  два блока Content с реальными текстами). Трек: Off #9E9E9E (hover #757575), On #448AFF (hover #3969D5),
+  два блока Content с реальными текстами) — не воспроизводим (компонент динамический; Basic example = живой тумблер). Трек: Off #9E9E9E (hover #757575), On #448AFF (hover #3969D5),
   Disable #E0E0E0; кружок 16×16 белый; подпись 14/20 #333; support 12/16 #616161 (под текстом с отступом 42px).
   ⚠ В кадре контент-блока есть поле Input 274×48 («Ограничить время для изменений, ч», «11:00», иконка access_time) —
   это поле ДРУГОГО компонента (Form-Field-Input), на стенде не собирается — смотри его стенд.
-  Журнал DS/fixes.md №122.
+  Журнал DS/fixes.md №122, №157, №158.
 -->
 <link rel="stylesheet" href="../../font.css">
 <link rel="stylesheet" href="../../tokens.css">
@@ -40,18 +40,15 @@
   .snap-cell { display: flex; flex-direction: column; gap: 6px; }
   .snap-row { display: flex; gap: 48px; align-items: flex-start; flex-wrap: wrap; }
   .snap-col { display: flex; flex-direction: column; gap: 10px; }
-  .snap-ex-caption { font-size: 14px; line-height: 28px; color: var(--ds-color-text-primary, #333333); margin: 0; }
   /* заморозка Hover-состояний трека (цвета из css компонента) */
   .snap-st-hover .ds-slide-toggle__track { background: var(--ds-color-slide-toggle-deselected-hover-background, #757575); }
   .snap-st-hover .ds-slide-toggle__input:checked + .ds-slide-toggle__track { background: var(--ds-color-slide-toggle-selected-hover-background, #3969d5); }
-  .snap-content { display: flex; flex-direction: column; gap: 20px; width: 720px; box-sizing: border-box; padding: 24px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); border-radius: 16px; }
-  .snap-content__title { font-size: 16px; line-height: 24px; font-weight: 500; color: var(--ds-color-text-primary, #212121); margin: 0; }
 </style>
 </head>
 <body>
 <div class="demo-bar">
   <span class="demo-bar__title">Slide toggle — демо стенд</span>
-  <span>набор Figma: Slide toggle (52887-2592, 6) · примеры (58203-3452) · контент-блок (58247-1474)</span>
+  <span>Figma: Slide toggle (52887-2592, 6) · примеры (58203-3452) · контент-блок (58247-1474)</span>
 </div>
 <div class="view">
   <div class="ds-tabs" role="tablist" aria-label="Slide toggle">
@@ -62,7 +59,7 @@
   <!-- 2. Slide toggle (набор 52887:2592, 6 вариантов) -->
   <div class="panel" data-vpanel="slide-toggle" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Slide toggle — 6 вариантов (Active × State); клик переключает</div>
+      <div class="snap-cap snap-sect__title">Slide toggle — 6 вариантов</div>
       <div class="snap-grid snap-grid--matrix" style="grid-template-columns: max-content max-content max-content;">
         <span class="snap-cap"></span><span class="snap-cap">Off</span><span class="snap-cap">On</span>
         <span class="snap-cap">Default</span>
@@ -76,49 +73,17 @@
         <label class="ds-slide-toggle ds-slide-toggle--disabled"><span class="ds-slide-toggle__row"><input class="ds-slide-toggle__input" type="checkbox" checked disabled><span class="ds-slide-toggle__track"></span><span class="ds-slide-toggle__title">Title</span></span></label>
       </div>
     </div>
-    <p class="snap-note">Пометки для ревью: (а) трек 34×20, радиус 12, кружок 16×16 (внутри 2px), сдвиг 14px — как в css; (б) у Disable оба состояния — фон #E0E0E0 (в css у выбранного свой токен — совпадает по виду); подпись #9E9E9E; (в) hover-цвета заморожены стенд-классом (в компоненте они на :hover); (г) в наборе подпись у всех вариантов — «Title». Журнал №122.</p>
+    <p class="snap-note">Пометки для ревью: (а) трек 34×20, радиус 12, кружок 16×16 (внутри 2px), сдвиг 14px — как в css; (б) у Disable оба состояния — фон #E0E0E0 (в css у выбранного свой токен — совпадает по виду); подпись #9E9E9E; (в) hover-цвета заморожены стенд-классом (в компоненте они на :hover); (г) в компоненте подпись у всех вариантов — «Title». Журнал №122, №157, №158.</p>
   </div>
 
-  <!-- 1. Basic example: «Slide toggle (Examples)» (58203:3452) + контент-блок (58247:1474) -->
+  <!-- 1. Basic example: живой Slide toggle (кадры примеров и контент-блок не воспроизводим — правило §4) -->
   <div class="panel" data-vpanel="basic" role="tabpanel">
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Примеры «Slide toggle (Examples)» (5 групп; кликабельно)</div>
-      <div class="snap-row">
-        <div class="snap-col">
-          <p class="snap-ex-caption">Basic slide toggle</p>
-          <label class="ds-slide-toggle"><span class="ds-slide-toggle__row"><input class="ds-slide-toggle__input" type="checkbox"><span class="ds-slide-toggle__track"></span><span class="ds-slide-toggle__title">Title</span></span></label>
-        </div>
-        <div class="snap-col">
-          <p class="snap-ex-caption">Only slide toggle</p>
-          <label class="ds-slide-toggle"><span class="ds-slide-toggle__row"><input class="ds-slide-toggle__input" type="checkbox"><span class="ds-slide-toggle__track"></span></span></label>
-        </div>
-        <div class="snap-col">
-          <p class="snap-ex-caption">Slide toggle with icon</p>
-          <label class="ds-slide-toggle"><span class="ds-slide-toggle__row"><input class="ds-slide-toggle__input" type="checkbox"><span class="ds-slide-toggle__track"></span><span class="ds-slide-toggle__title">Title</span><span class="ds-slide-toggle__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span></label>
-        </div>
-        <div class="snap-col">
-          <p class="snap-ex-caption">Slide toggle support text</p>
-          <label class="ds-slide-toggle"><span class="ds-slide-toggle__row"><input class="ds-slide-toggle__input" type="checkbox"><span class="ds-slide-toggle__track"></span><span class="ds-slide-toggle__title">Title</span></span><span class="ds-slide-toggle__support">Support text</span></label>
-        </div>
-        <div class="snap-col">
-          <p class="snap-ex-caption">Slide toggle error text</p>
-          <label class="ds-slide-toggle ds-slide-toggle--error"><span class="ds-slide-toggle__row"><input class="ds-slide-toggle__input" type="checkbox"><span class="ds-slide-toggle__track"></span><span class="ds-slide-toggle__title">Title</span></span><span class="ds-slide-toggle__support">Error text</span></label>
-        </div>
-      </div>
+      <p class="snap-cap" style="margin: 0 0 16px;">Basic example — живой Slide toggle: клик переключает</p>
+      <label class="ds-slide-toggle"><span class="ds-slide-toggle__row"><input class="ds-slide-toggle__input" type="checkbox"><span class="ds-slide-toggle__track"></span><span class="ds-slide-toggle__title">Title</span></span></label>
     </div>
 
-    <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Контент-блок из канвы (58247:1474) — тексты дословно; тумблеры живые</div>
-      <div class="snap-content">
-        <p class="snap-content__title">Укажите, что сотрудник может изменять в заказе</p>
-        <label class="ds-slide-toggle ds-slide-toggle--error" style="max-width: 604px;"><span class="ds-slide-toggle__row"><input class="ds-slide-toggle__input" type="checkbox"><span class="ds-slide-toggle__track"></span><span class="ds-slide-toggle__title">Требуется подтверждение</span></span><span class="ds-slide-toggle__support">Включите переключатель</span></label>
-        <label class="ds-slide-toggle" style="max-width: 604px;"><span class="ds-slide-toggle__row"><input class="ds-slide-toggle__input" type="checkbox" checked><span class="ds-slide-toggle__track"></span><span class="ds-slide-toggle__title">Разрешить изменять заказ после отправки поставщику</span><span class="ds-slide-toggle__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span></label>
-        <label class="ds-slide-toggle" style="max-width: 604px;"><span class="ds-slide-toggle__row"><input class="ds-slide-toggle__input" type="checkbox"><span class="ds-slide-toggle__track"></span><span class="ds-slide-toggle__title">Добавлять товары из выбранного списка товаров</span></span><span class="ds-slide-toggle__support" style="max-width: 604px;">Заказ автоматически уходит в ПРК, как только получены все необходимые подтверждения</span></label>
-        <label class="ds-slide-toggle" style="max-width: 604px;"><span class="ds-slide-toggle__row"><input class="ds-slide-toggle__input" type="checkbox"><span class="ds-slide-toggle__track"></span><span class="ds-slide-toggle__title">Стоимость товаров в заказе видна сотруднику ресторана</span></span></label>
-      </div>
-    </div>
-
-    <p class="snap-note">Пометки для ревью: (а) группы примеров и тексты — с канвы; в группе иконка — info (Icon size 20); (б) в контент-блоке у строки «Разрешить изменять заказ…» тумблер включён; у «Требуется подтверждение» красный support («Включите переключатель») — это error-вариант; (в) ⚠ рядом со строкой «Разрешить изменять заказ после отправки поставщику» в кадре стоит поле ввода Input 274×48 («Ограничить время для изменений, ч» / «11:00», иконка access_time) — поле ДРУГОГО компонента, на стенде не собиралось (смотри стенд Form-Field-Input); (г) заголовок блока в кадре — 403×24; фон/рамка блока на канве — прямоугольник 720×300 r16, на стенде — рамка карточки. Журнал №122.</p>
+    <p class="snap-note">Пометки для ревью: (а) живой пример — один тумблер «Title» (клик: Off → On); (б) кадры «Slide toggle (Examples)» (58203:3452, 5 групп: Basic/Only/with icon/support text/error text) и контент-блок (58247:1474) не воспроизводим — компонент динамический (правило §4; поле Input 274×48 в контент-блоке — компонент Form-Field-Input, смотри его стенд); (в) трек 34×20, кружок 16×16, цвета — из css компонента (токены). Журнал №122, №157, №158.</p>
   </div>
 </div>
 

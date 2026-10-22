@@ -38,10 +38,13 @@
   .snap-ex-caption { font-size: 14px; line-height: 28px; color: var(--ds-color-text-primary, #333333); margin: 0; }
   .snap-exp { width: 597px; }
   .snap-exp--narrow { width: 500px; }
+  /* Icon group / Frame 1 — по слоям компонента; цвета иконок и высоту шапки даёт fixes п. 44 */
   .ds-expansion__header:hover { background: var(--ds-color-shapes-hover, #f5f5f5); }
   .ds-expansion--open .ds-expansion__content { display: flex; }
   .ds-expansion__icon svg, .ds-expansion__arrow svg { width: 100%; height: 100%; display: block; }
   .snap-exp-actions { display: inline-flex; gap: 8px; color: var(--ds-color-icon-primary, #616161); }
+  /* Frame 1 из слоёв компонента (597×44): текст + Icon size 20, flex 1, gap 8 (Expansion panel/Collaps/Gap) */
+  .snap-exp-frame { display: flex; flex: 1 0 0; min-width: 0; align-items: center; gap: var(--ds-dialog-header-gap, 8px); }
   .snap-exp-btn { display: inline-flex; align-items: center; padding: 4px 8px; border: 0; border-radius: 8px; background: none; color: var(--ds-color-button-accent-outlined-default-text-color, #448aff); font-family: inherit; font-size: 14px; line-height: 20px; font-weight: 500; cursor: pointer; }
   .snap-exp-row { display: flex; align-items: center; gap: 8px; font-size: 14px; line-height: 20px; }
   .snap-exp-counter { display: inline-flex; align-items: center; justify-content: center; min-width: 19px; height: 18px; padding: 1px 6px; box-sizing: border-box; border-radius: 9999px; background: var(--ds-color-badge-accent-background, #448aff); color: #fff; font-size: 12px; line-height: 16px; }
@@ -51,7 +54,7 @@
 <body>
 <div class="demo-bar">
   <span class="demo-bar__title">Expansion panel — демо стенд</span>
-  <span>наборы Figma: Expansion panel (52937-1328, 12) · Expansion content (2) · Expansion group panel (2) · примеры</span>
+  <span>Figma: Expansion panel (52937-1328, 12) · Expansion content (2) · Expansion group panel (2) · примеры</span>
 </div>
 <div class="view">
   <div class="ds-tabs" role="tablist" aria-label="Expansion panel">
@@ -61,88 +64,132 @@
     <button class="ds-tab" role="tab" aria-selected="false" data-vtab="expansion-group">Expansion group panel</button>
   </div>
 
-  <!-- 2. Expansion panel (набор 52937:1328, 12 вариантов; Variant=Default и Variant=Info) -->
+  <!-- 2. Expansion panel (набор 52937:1328 / канва 52937:1329; 12 вариантов: Default/Info × Off/On × Default/Hover/Press/Disable).
+       Шапка собрана ПО СЛОЯМ Figma: Icon group (arrow + info) → Frame 1 (текст + info) → Icon group (info + arrow);
+       все иконки — инстансы Icon size 20 (ds-icon-size--5x), группы — Icon group (ds-icon-group); State у иконок скрыт (вживую — --state). -->
   <div class="panel" data-vpanel="expansion-panel" role="tabpanel" hidden>
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Expansion panel — Variant=Default: Collaps Off / On × состояния (клик по шапке раскрывает)</div>
+      <div class="snap-cap snap-sect__title">Expansion panel — Default</div>
       <div class="snap-row" style="margin-top: 12px;">
-        <div class="snap-col"><span class="snap-cap">Collaps=Off · Default</span>
-          <div class="ds-expansion snap-exp" data-exp>
+        <div class="snap-col"><div class="ds-expansion snap-exp" data-exp>
             <div class="ds-expansion__header">
-              <span class="ds-expansion__arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span>
-              <span class="ds-expansion__title">Title text</span>
-              <span class="ds-expansion__actions"><span class="ds-expansion__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span>
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="snap-exp-frame"><span class="ds-expansion__title">Title text</span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span></div>
             </div>
             <div class="ds-expansion__content">Это Slot. В блоке контента может быть всё что угодно</div>
           </div>
         </div>
-        <div class="snap-col"><span class="snap-cap">Collaps=On · Default (раскрыта)</span>
-          <div class="ds-expansion ds-expansion--open snap-exp" data-exp>
-            <div class="ds-expansion__header">
-              <span class="ds-expansion__arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span>
-              <span class="ds-expansion__title">Title text</span>
-              <span class="ds-expansion__actions"><span class="ds-expansion__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span>
-            </div>
-            <div class="ds-expansion__content">Это Slot. В блоке контента может быть всё что угодно</div>
-          </div>
-        </div>
-        <div class="snap-col"><span class="snap-cap">State=Hover (заморожен)</span>
-          <div class="ds-expansion snap-exp">
+        <div class="snap-col"><div class="ds-expansion snap-exp">
             <div class="ds-expansion__header" style="background:#f5f5f5;">
-              <span class="ds-expansion__arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span>
-              <span class="ds-expansion__title">Title text</span>
-              <span class="ds-expansion__actions"><span class="ds-expansion__icon"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span>
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="snap-exp-frame"><span class="ds-expansion__title">Title text</span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span></div>
             </div>
           </div>
         </div>
-        <div class="snap-col"><span class="snap-cap">State=Press (заморожен)</span>
-          <div class="ds-expansion snap-exp">
+        <div class="snap-col"><div class="ds-expansion snap-exp">
             <div class="ds-expansion__header" style="background:var(--ds-color-shapes-press,#e0e0e0);">
-              <span class="ds-expansion__arrow"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span>
-              <span class="ds-expansion__title">Title text</span>
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="snap-exp-frame"><span class="ds-expansion__title">Title text</span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span></div>
             </div>
           </div>
         </div>
-        <div class="snap-col"><span class="snap-cap">State=Disable (#F5F5F5, тексты #9E9E9E)</span>
-          <div class="ds-expansion ds-expansion--disabled snap-exp">
+        <div class="snap-col"><div class="ds-expansion ds-expansion--disabled snap-exp">
             <div class="ds-expansion__header">
-              <span class="ds-expansion__arrow" style="color:#9e9e9e;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span>
-              <span class="ds-expansion__title" style="color:#9e9e9e;">Title text</span>
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="snap-exp-frame"><span class="ds-expansion__title">Title text</span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span></div>
             </div>
+          </div>
+        </div>
+        <div class="snap-col"><div class="ds-expansion ds-expansion--open snap-exp" data-exp>
+            <div class="ds-expansion__header">
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="snap-exp-frame"><span class="ds-expansion__title">Title text</span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span></div>
+            </div>
+            <div class="ds-expansion__content">Это Slot. В блоке контента может быть всё что угодно</div>
+          </div>
+        </div>
+        <div class="snap-col"><div class="ds-expansion ds-expansion--disabled ds-expansion--open snap-exp">
+            <div class="ds-expansion__header">
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="snap-exp-frame"><span class="ds-expansion__title">Title text</span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span></div>
+            </div>
+            <div class="ds-expansion__content">Это Slot. В блоке контента может быть всё что угодно</div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="snap-sect">
-      <div class="snap-cap snap-sect__title">Variant=Info (пунктирная акцентная рамка, фон #F5F9FF) — Off / On (живые)</div>
+      <div class="snap-cap snap-sect__title">Expansion panel — Info</div>
       <div class="snap-row" style="margin-top: 12px;">
-        <div class="snap-col"><span class="snap-cap">Info · Off / On (живые)</span>
-          <div class="ds-expansion ds-expansion--info snap-exp" data-exp>
+        <div class="snap-col"><div class="ds-expansion ds-expansion--info snap-exp" data-exp>
             <div class="ds-expansion__header">
-              <span class="ds-expansion__arrow" style="color:#448aff;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span>
-              <span class="ds-expansion__title">Title text</span>
-              <span class="ds-expansion__actions"><span class="ds-expansion__icon" style="color:#448aff;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></span>
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="snap-exp-frame"><span class="ds-expansion__title">Title text</span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span></div>
             </div>
             <div class="ds-expansion__content">Это Slot. В блоке контента может быть всё что угодно</div>
           </div>
-          <div class="ds-expansion ds-expansion--info ds-expansion--open snap-exp" data-exp>
+        </div>
+        <div class="snap-col"><div class="ds-expansion ds-expansion--info snap-exp">
+            <div class="ds-expansion__header" style="background:var(--ds-palette-accent-50,#f0f5ff);">
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="snap-exp-frame"><span class="ds-expansion__title">Title text</span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="snap-col"><div class="ds-expansion ds-expansion--info snap-exp">
+            <div class="ds-expansion__header" style="background:var(--ds-palette-accent-100,#e8f0ff);">
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="snap-exp-frame"><span class="ds-expansion__title">Title text</span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="snap-col"><div class="ds-expansion ds-expansion--info ds-expansion--disabled snap-exp">
             <div class="ds-expansion__header">
-              <span class="ds-expansion__arrow" style="color:#448aff;"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span>
-              <span class="ds-expansion__title">Title text</span>
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="snap-exp-frame"><span class="ds-expansion__title">Title text</span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="snap-col"><div class="ds-expansion ds-expansion--info ds-expansion--open snap-exp" data-exp>
+            <div class="ds-expansion__header">
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="snap-exp-frame"><span class="ds-expansion__title">Title text</span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span><span class="ds-icon-size ds-icon-size--5x ds-icon-size--state"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span></div>
+            </div>
+            <div class="ds-expansion__content">Это Slot. В блоке контента может быть всё что угодно</div>
+          </div>
+        </div>
+        <div class="snap-col"><div class="ds-expansion ds-expansion--info ds-expansion--disabled ds-expansion--open snap-exp">
+            <div class="ds-expansion__header">
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="snap-exp-frame"><span class="ds-expansion__title">Title text</span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span></div>
+              <div class="ds-icon-group"><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-info"/></svg></span><span class="ds-icon-size ds-icon-size--5x"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#ic-kb-down"/></svg></span></div>
             </div>
             <div class="ds-expansion__content">Это Slot. В блоке контента может быть всё что угодно</div>
           </div>
         </div>
       </div>
     </div>
+
+    <p class="snap-note">Пометки для ревью: (а) 12 вариантов по канве 52937:1329: Default/Info × Collaps/Expand Off/On × State Default/Hover/Press/Disable (у On в Figma только Default и Disable); (б) шапка собрана по слоям: Icon group (arrow + info) → Frame 1 (текст + info) → Icon group (info + arrow); иконки — инстансы Icon size 20 (ds-icon-size--5x), группы — Icon group (ds-icon-group; зазор 8 — Icon size/Gap group 2x); (в) у иконок в Figma State 28×28 скрыт — вживую наведению/нажатию соответствует подложка ds-icon-size--state (статические варианты без неё); (г) заголовок — Body S 14/20 Medium, текст «Title text» дословно; (д) контент — Expansion content (Padding off/on=True): pad 16, h52; на On — панель 597×96; (е) фоны — по выгрузке Figma по каждому статусу: Default Off #F8F9FC (Accent/5), On #FFFFFF, Hover #F5F5F5, Press #E0E0E0, Disable #F5F5F5 с рамкой #E0E0E0 (у On Disable — #EBEBEB); Info: #F5F9FF / #F0F5FF (Accent/50) / #E8F0FF (Accent/100) / Disable тоже #F5F9FF с пунктиром #EBEBEB. Заданы в fixes.css п. 44 (пробел №133 закрыт). Журнал №133, №205.</p>
   </div>
 
   <!-- 3. Expansion content — Padding=on (16) / Padding=off (0) -->
   <div class="panel" data-vpanel="expansion-content" role="tabpanel" hidden>
     <div class="snap-sect">
       <div class="snap-row">
-        <div class="snap-col"><span class="snap-cap">Expansion content — Padding=on (16) / Padding=off (0)</span>
+        <div class="snap-col"><span class="snap-cap">Expansion content — с паддингом (16) и без (0)</span>
           <div class="ds-expansion-content" style="width:597px;background:#f8f9fc;border:1px dashed #e0e0e0;">
             <span class="ds-expansion-content__label">Это Slot. В блоке контента может быть всё что угодно (padding on)</span>
           </div>

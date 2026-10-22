@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>page-footer — демо стенд подвала страницы</title>
+<!--
+  Демо стенд ОРГАНИЗМА «page-footer» (подвал страницы и таблицы): все состояния
+  и правила подключения. Отдельный файл организма: правится независимо от стендов других
+  организмов/молекул (может условно повторять то же, что и они, — это нормально).
+  Источник — компонент новой ДС «Table footer» (набор 59207:20759, вариант Type=Default,
+  страница «🟡Table_DS»): белая полоса с тенью 01 dp, разделитель сверху, внутри слот
+  (в наборе — заглушка «В блоке контента может быть всё что угодно»).
+  Наполнение по примерам из макета: 59342:60193 (итоги блоками), 59342:60191 (итоги
+  ячейками + кнопки), 59366:46076 (итоги ячейками + кнопки «Провести»), 14068:114035 и
+  11906:52165 («Номенклатура» — подвал с кнопками страницы).
+  Живой блок стоит внизу кадра-«страницы» (подвал, как на страницах): пресеты ширины
+  меняют ширину кадра; тумблеры повторяют части компонента (Контент, Действия) — убирают
+  левую контентную часть (итоги) или правую с кнопками действий; разделитель — всегда.
+  Конфигурации из макета — в разметке ниже кадра, но скрыты (атрибут hidden;
+  не показываем, не удалять — чтобы показать, убрать hidden).
+  Иконки — SVG из Figma (img в папке), подставляет page-footer.js.
+-->
+<link rel="stylesheet" href="../../components-web/font.css">
+<link rel="stylesheet" href="../../components-web/tokens.css">
+<link rel="stylesheet" href="../../components-web/styles.css">
+<link rel="stylesheet" href="../../components-web/components/index.css">
+<link rel="stylesheet" href="../../components-web/fixes.css">
+<!-- page-footer — подвал: один источник стилей и поведения -->
+<link rel="stylesheet" href="page-footer.css?v=2">
+<script src="page-footer.js?v=2" defer></script>
+<style>
+  /* каркас демо-стенда — как у остальных организмов */
+  html, body { margin: 0; background: #fff; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: var(--ds-color-text-primary); }
+  .demo-bar {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 10px 16px; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0);
+    font-size: 13px;
+  }
+  .demo-bar__title { font-weight: 500; margin-right: 8px; }
+  .demo-bar__btn {
+    height: 28px; padding: 0 12px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0);
+    border-radius: var(--ds-radius-2x, 8px); background: transparent; font: inherit; cursor: pointer;
+  }
+  .demo-bar__btn:hover { background: var(--ds-color-button-neutral-hover, #f5f5f5); }
+  .demo-bar__btn.is-on { background: var(--ds-color-button-neutral-press, #f5f5f5); }
+  .demo-bar__sep { width: 1px; height: 20px; background: var(--ds-color-stroke-default, #e0e0e0); margin: 0 4px; }
+  .demo-bar__state { margin-left: 12px; color: var(--ds-color-text-secondary, #616161); font-variant-numeric: tabular-nums; }
+  .demo-bar__hint { color: var(--ds-color-text-secondary, #616161); }
+  .view { padding: 24px; }
+  /* кадр-«страница»: как у остальных организмов (ширина — пресетами сверху); высота — по содержимому, подвал — внизу кадра */
+  .panel { position: relative; display: flex; flex-direction: column; width: var(--panel-w, 1440px); overflow: hidden; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
+  .frame { flex: 1 1 auto; padding: 24px 32px; box-sizing: border-box; }
+  .frame h1 { font-size: 24px; line-height: 24px; font-weight: 500; margin: 0 0 12px; }
+  .frame p { font-size: 14px; line-height: 20px; max-width: 640px; color: var(--ds-color-text-primary, #333); }
+  .frame ul { font-size: 14px; line-height: 22px; max-width: 640px; padding-left: 20px; }
+  /* конфигурации из макета — ниже кадра, той же ширины */
+  .cfgs { width: var(--panel-w, 1440px); box-sizing: border-box; padding: 0 32px; margin-top: 24px; }
+  .cfgs__title { font-size: 14px; line-height: 20px; color: var(--ds-color-text-secondary, #616161); margin: 0 0 16px; }
+  .demo-block { margin: 0 0 24px; }
+  .demo-block:last-child { margin-bottom: 0; }
+  .cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin: 0 0 12px; }
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <span class="demo-bar__title">Демо стенд page-footer</span>
+  <button class="demo-bar__btn" id="btn-w1440">1440</button>
+  <button class="demo-bar__btn" id="btn-w1000">1000</button>
+  <button class="demo-bar__btn" id="btn-w760">760</button>
+  <button class="demo-bar__btn" id="btn-w360">360</button>
+  <span class="demo-bar__sep"></span>
+  <button class="demo-bar__btn is-on" data-part="content">Контент</button>
+  <button class="demo-bar__btn is-on" data-part="actions">Действия</button>
+  <span class="demo-bar__state" id="demo-state">…</span>
+  <span class="demo-bar__hint">· тумблеры — как части компонента в Figma</span>
+</div>
+<div class="view" id="view">
+
+  <!-- Живой блок — итоги ячейками + кнопки (пример 2, 59342:60191).
+       Стоит внизу кадра-«страницы» — подвал, как на страницах -->
+  <div class="panel" id="panel">
+    <div class="frame">
+      <h1>Кадр страницы (заглушка)</h1>
+      <p>Это демо стенд подвала страницы: внизу кадра — сам блок (подвал с итогами и действиями),
+         выше — заглушка контента. Страница подключает ДС и page-footer — тот же набор, что и страницы-прототипы.</p>
+      <ul>
+        <li>пресеты сверху меняют ширину кадра — блок растягивается по ширине контейнера;</li>
+        <li>тумблеры повторяют части компонента (Контент — левая часть с итогами,
+            Действия — правая с кнопками); дефолт — всё включено;</li>
+        <li>клики в организме не заданы: кнопки — действия страницы. js организма делает
+            только две вещи: подставляет иконки и переключает части —
+            <code>PageFooter.set(блок, { content: false, actions: false })</code> или
+            атрибуты <code>data-pf-*="off"</code> на корне;</li>
+        <li>ячейки итогов — разметка организма на токенах (готового класса для семейства
+            Table / Type=Text sec/over в коде пока нет).</li>
+      </ul>
+    </div>
+    <div class="ds-table-footer pf pf--cells" id="pf-live">
+        <div class="ds-table-footer__divider pf__divider"><div class="ds-divider"></div></div>
+        <div class="ds-table-footer__content pf__content">
+          <div class="pf__totals">
+            <div class="pf__cell"><span class="pf__value">Итого:</span></div>
+            <div class="pf__cell"><span class="pf__cell-head"><span class="pf__label">Цена продажи</span><img data-pf-icon="info" width="16" height="16" alt=""></span><span class="pf__value">280,00 ₽</span></div>
+            <div class="pf__cell"><span class="pf__cell-head"><span class="pf__label">Себестоимость</span><img data-pf-icon="info" width="16" height="16" alt=""></span><span class="pf__value">190,00 ₽</span></div>
+            <div class="pf__cell"><span class="pf__cell-head"><span class="pf__label">Наценка</span><img data-pf-icon="info" width="16" height="16" alt=""></span><span class="pf__value">20%</span></div>
+            <div class="pf__cell"><span class="pf__cell-head"><span class="pf__label">Фуд-кост</span><img data-pf-icon="info" width="16" height="16" alt=""></span><span class="pf__value">50%</span></div>
+            <div class="pf__cell"><span class="pf__label">Брутто</span><span class="pf__value">3,000 кг</span></div>
+            <div class="pf__cell"><span class="pf__label">Нетто</span><span class="pf__value">3,000 кг</span></div>
+            <div class="pf__cell"><span class="pf__label">Выход</span><span class="pf__value">2,000 кг</span></div>
+          </div>
+          <div class="pf__actions">
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--outlined"><span class="ds-btn__label">Отмена</span></button>
+            <button type="button" class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Сохранить</span></button>
+            <button type="button" class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Сохранить и создать новый</span></button>
+          </div>
+        </div>
+      </div>
+  </div>
+
+  <!-- Конфигурации из макета — скрыты (не показываем), не удалять;
+       показать снова — убрать атрибут hidden -->
+  <div class="cfgs" hidden>
+    <p class="cfgs__title">Конфигурации из макета (тексты — из примеров)</p>
+
+    <div class="demo-block">
+      <p class="cap">Как в наборе — пустой слот с заглушкой (Table footer, 59207:20759)</p>
+      <div class="ds-table-footer pf pf--center">
+        <div class="ds-table-footer__divider pf__divider"><div class="ds-divider"></div></div>
+        <div class="ds-table-footer__content pf__content">
+          <span class="pf__text">В блоке контента может быть всё что угодно</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <p class="cap">Итоги блоками — пример 1 (59342:60193): блоки прижаты вправо, гэп 32</p>
+      <div class="ds-table-footer pf pf--end">
+        <div class="ds-table-footer__divider pf__divider"><div class="ds-divider"></div></div>
+        <div class="ds-table-footer__content pf__content">
+          <div class="pf__blocks">
+            <div class="pf__block"><span class="pf__label">Total:</span><span class="pf__text">Purchase invoice</span><span class="pf__value">Incoming invoice</span></div>
+            <div class="pf__block"><span class="pf__label">Amount (incl. VAT)</span><span class="pf__text">£ 100 000</span><span class="pf__value">£ 100 000</span></div>
+            <div class="pf__block"><span class="pf__label">VAT amount</span><span class="pf__text">£ 100 000</span><span class="pf__value pf__value--negative">£ 100 000</span></div>
+            <div class="pf__block"><span class="pf__label">Amount excl. VAT</span><span class="pf__text">£ 100 000</span><span class="pf__value">£ 100 000</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <p class="cap">Итоги ячейками + кнопки — пример 2 (59342:60191)</p>
+      <div class="ds-table-footer pf pf--cells">
+        <div class="ds-table-footer__divider pf__divider"><div class="ds-divider"></div></div>
+        <div class="ds-table-footer__content pf__content">
+          <div class="pf__totals">
+            <div class="pf__cell"><span class="pf__value">Итого:</span></div>
+            <div class="pf__cell"><span class="pf__cell-head"><span class="pf__label">Цена продажи</span><img data-pf-icon="info" width="16" height="16" alt=""></span><span class="pf__value">280,00 ₽</span></div>
+            <div class="pf__cell"><span class="pf__cell-head"><span class="pf__label">Себестоимость</span><img data-pf-icon="info" width="16" height="16" alt=""></span><span class="pf__value">190,00 ₽</span></div>
+            <div class="pf__cell"><span class="pf__cell-head"><span class="pf__label">Наценка</span><img data-pf-icon="info" width="16" height="16" alt=""></span><span class="pf__value">20%</span></div>
+            <div class="pf__cell"><span class="pf__cell-head"><span class="pf__label">Фуд-кост</span><img data-pf-icon="info" width="16" height="16" alt=""></span><span class="pf__value">50%</span></div>
+            <div class="pf__cell"><span class="pf__label">Брутто</span><span class="pf__value">3,000 кг</span></div>
+            <div class="pf__cell"><span class="pf__label">Нетто</span><span class="pf__value">3,000 кг</span></div>
+            <div class="pf__cell"><span class="pf__label">Выход</span><span class="pf__value">2,000 кг</span></div>
+          </div>
+          <div class="pf__actions">
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--outlined"><span class="ds-btn__label">Отмена</span></button>
+            <button type="button" class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Сохранить</span></button>
+            <button type="button" class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Сохранить и создать новый</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <p class="cap">Итоги ячейками + кнопки «Провести» — пример 3 (59366:46076)</p>
+      <div class="ds-table-footer pf pf--cells">
+        <div class="ds-table-footer__divider pf__divider"><div class="ds-divider"></div></div>
+        <div class="ds-table-footer__content pf__content">
+          <div class="pf__totals">
+            <div class="pf__cell"><span class="pf__value">Итого:</span></div>
+            <div class="pf__cell"><span class="pf__label">Кол-во позиций</span><span class="pf__value">3</span></div>
+            <div class="pf__cell"><span class="pf__label">Факт. сумма всего</span><span class="pf__value">80,00 ₽</span></div>
+            <div class="pf__cell"><span class="pf__label">Разница, сумма</span><span class="pf__value">70,00 ₽</span></div>
+            <div class="pf__cell"><span class="pf__label">Излишки</span><span class="pf__value">90,00 ₽</span></div>
+            <div class="pf__cell"><span class="pf__label">Недостача</span><span class="pf__value">20,00 ₽</span></div>
+          </div>
+          <div class="pf__actions">
+            <button type="button" class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Сохранить</span></button>
+            <button type="button" class="ds-btn ds-btn--m ds-btn--positive ds-btn--filled"><span class="ds-btn__label">Провести</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <p class="cap">Только кнопки — подвал страницы/диалога (Номенклатура, 14068:114035)</p>
+      <div class="ds-table-footer pf pf--end">
+        <div class="ds-table-footer__divider pf__divider"><div class="ds-divider"></div></div>
+        <div class="ds-table-footer__content pf__content">
+          <div class="pf__actions">
+            <img data-pf-icon="info-negative" width="24" height="24" alt="">
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--outlined"><span class="ds-btn__label">Отмена</span></button>
+            <button type="button" class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Сохранить</span></button>
+            <button type="button" class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Сохранить и создать новый</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <p class="cap">Итоги + подсказка + кнопки (Номенклатура, 11906:52165)</p>
+      <div class="ds-table-footer pf pf--cells">
+        <div class="ds-table-footer__divider pf__divider"><div class="ds-divider"></div></div>
+        <div class="ds-table-footer__content pf__content">
+          <div class="pf__totals">
+            <div class="pf__cell"><span class="pf__value">Итого:</span></div>
+            <div class="pf__cell"><span class="pf__cell-head"><span class="pf__label">Цена продажи</span><img data-pf-icon="info" width="16" height="16" alt=""></span><span class="pf__value">0,00 ₽</span></div>
+            <div class="pf__cell"><span class="pf__cell-head"><span class="pf__label">Себестоимость</span><img data-pf-icon="info" width="16" height="16" alt=""></span><span class="pf__value">-</span></div>
+            <div class="pf__cell"><span class="pf__cell-head"><span class="pf__label">Наценка</span><img data-pf-icon="info" width="16" height="16" alt=""></span><span class="pf__value">-</span></div>
+            <div class="pf__cell"><span class="pf__cell-head"><span class="pf__label">Фуд-кост</span><img data-pf-icon="info" width="16" height="16" alt=""></span><span class="pf__value">-</span></div>
+            <div class="pf__cell"><span class="pf__label">Брутто</span><span class="pf__value">-</span></div>
+            <div class="pf__cell"><span class="pf__label">Нетто</span><span class="pf__value">-</span></div>
+            <div class="pf__cell"><span class="pf__label">Выход</span><span class="pf__value">-</span></div>
+          </div>
+          <div class="pf__actions">
+            <img data-pf-icon="info-negative" width="24" height="24" alt="">
+            <button type="button" class="ds-btn ds-btn--m ds-btn--neutral ds-btn--outlined"><span class="ds-btn__label">Отмена</span></button>
+            <button type="button" class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Сохранить</span></button>
+            <button type="button" class="ds-btn ds-btn--m ds-btn--accent ds-btn--filled"><span class="ds-btn__label">Сохранить и создать новый</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+<script>
+  window.addEventListener('DOMContentLoaded', function () {
+    var st = document.getElementById('demo-state');
+    var root = document.getElementById('pf-live');
+    var view = document.getElementById('view');
+    var tg = Array.prototype.slice.call(document.querySelectorAll('.demo-bar__btn[data-part]'));
+    function refresh() {
+      var w = document.getElementById('panel').clientWidth;
+      var parts = {}, on = 0;
+      tg.forEach(function (b) {
+        var k = b.getAttribute('data-part');
+        var v = b.classList.contains('is-on');
+        parts[k] = v;
+        if (v) on++;
+      });
+      window.PageFooter.set(root, parts);
+      st.textContent = 'ширина кадра: ' + w + ' px · частей включено: ' + on + ' из ' + tg.length;
+    }
+    tg.forEach(function (b) {
+      b.addEventListener('click', function () { b.classList.toggle('is-on'); refresh(); });
+    });
+    function setW(px) { view.style.setProperty('--panel-w', px + 'px'); refresh(); }
+    document.getElementById('btn-w1440').onclick = function () { setW(1440); };
+    document.getElementById('btn-w1000').onclick = function () { setW(1000); };
+    document.getElementById('btn-w760').onclick = function () { setW(760); };
+    document.getElementById('btn-w360').onclick = function () { setW(360); };
+    refresh();
+  });
+</script>
+</body>
+</html>

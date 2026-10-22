@@ -1,0 +1,219 @@
+/* ============================================================
+   table-card-adaptive — универсальная карточка таблицы (адаптив) — организм ДС.
+   Источник — 4 примера из Figma:
+     · 6400:15954 «Table content mobile» (старая ДС) — товар: заголовок 16/24 + ⋮,
+       серая подпись, иконочная строка (коробка 20 + текст 12), разделитель,
+       3 строки 14/20 «метка → значение»;
+     · 6354:14931 «Purchase invoice mobile» (старая ДС) — накладная: заголовок + ⋯,
+       статус строкой под заголовком, подпись; мини-вариант — иконки 18/24 в паре
+       (гэп 4), между парами 16, строка-иконка в конце;
+     · 8188:18900 «Mobile card» (старая ДС) — инвентаризация: заголовок, подпись-даты
+       + статус справа, две текстовые строки 14/20, разделитель, кнопка на всю ширину;
+     · 6043:38527 «Card view» (новая ДС, Склад_Заказ-товаров) — чекбокс + номер-заголовок
+       (акцент) + статус + кебаб в строке заголовка, подпись, строки 12/16 колонками
+       (метка 100 + значение), разделитель, блок дат (иконка 18 + подпись/значение).
+   Корпус — компонент новой ДС «Card view» (класс .ds-card--custom: паддинг 16, радиус 8;
+   типы .ds-card--filled / --outlined / --shadow — как в примерах: 1–3 с тенью, 4 — Filled).
+   Числа из источников:
+     · между блоками — 12 (примеры 3–4; в примерах 1–2 — 8, страница может задать
+       --tc-gap: 8px);
+     · строки данных: 14/20 #333, паддинг 2 → шаг 24, гэп 4 (примеры 1–2); колоночные —
+       12/16, метка 100 (#616161) + значение (#333), гэп 16, шаг 8 (пример 4);
+     · иконочные строки: «иконка + текст», внутри пары гэп 8 (примеры 1, 3), в мини —
+       4 (пример 2); между парами 16;
+     · блок дат — две равные колонки: иконка 18 + подпись 12/16 #616161 / значение 12/16 #333;
+     · действия — Button ДС (M = 36, r8): на всю ширину (пример 3) или справа (подвал Card view);
+     · разделители — Divider ДС (1px #E0E0E0) по ширине контента.
+   Переключатели (как части компонента): data-tc-check / data-tc-kebab / data-tc-status /
+   data-tc-icons / data-tc-dates / data-tc-actions = "off" на корне .tc — скрывают часть
+   (нет атрибута — часть показана).
+   Сборка «Универсальная карточка» (демо, первый блок) — агрегат всех четырёх примеров.
+   Иконки — <img data-tc-icon="..."> из этой папки: точные SVG из файла иконок ДС
+   (цвет зашит #616161, Icon/Primary), подставляет table-card-adaptive.js.
+   ============================================================ */
+
+/* Корпус: Card view ДС, тип Custom (паддинг 16). Ширину даёт страница. */
+.tc {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Между блоками — 12 (примеры 3–4; у примеров 1–2 — 8: страница может задать --tc-gap) */
+.tc.ds-card {
+  gap: var(--tc-gap, 12px);
+}
+
+/* ── Шапка ───────────────────────────────────────────────────
+   Чекбокс (пример 4: 24; в коде ДС иконка 20) + контейнер
+   «строка заголовка + статус/подпись» (гэп 8). */
+.tc__head { display: flex; align-items: flex-start; gap: 8px; }
+.tc__head-main { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.tc__check { flex: none; }
+
+/* Строка заголовка: заголовок слева, статус + кебаб справа (гэп 16 — пример 4) */
+.tc__title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.tc__head-right { display: inline-flex; align-items: center; gap: 16px; flex: none; }
+.tc__status { flex: none; }
+
+/* Заголовок 16/24 medium (примеры 1–3: #212121 → токен #333; пример 4 — акцент) */
+.tc__title {
+  min-width: 0;
+  font-size: var(--ds-font-body-m-16-normal-medium-size);
+  line-height: var(--ds-font-body-m-16-normal-medium-line);
+  letter-spacing: var(--ds-font-body-m-16-normal-medium-spacing);
+  font-weight: var(--ds-font-body-m-16-normal-medium-weight);
+  color: var(--ds-color-text-primary, #333333);
+}
+.tc__title--accent { color: var(--ds-color-text-accent, #448aff); }
+
+/* Статус отдельной строкой под заголовком (пример 2) */
+.tc__status-row { display: flex; }
+
+/* Строка подписи со статусом справа (пример 3, вариант 1) */
+.tc__caption-row { display: flex; align-items: center; gap: 8px; }
+.tc__caption-row .tc__caption { flex: 1 1 auto; }
+
+/* Подпись 12/16: серая (примеры 1, 4); тёмная — модификатор --primary (примеры 2–3) */
+.tc__caption {
+  padding: 2px 0;
+  font-size: var(--ds-font-caption-l-12-normal-regular-size);
+  line-height: var(--ds-font-caption-l-12-normal-regular-line);
+  letter-spacing: var(--ds-font-caption-l-12-normal-regular-spacing);
+  font-weight: var(--ds-font-caption-l-12-normal-regular-weight);
+  color: var(--ds-color-text-secondary, #616161);
+}
+.tc__caption--primary { color: var(--ds-color-text-primary, #333333); }
+
+/* ── Строки данных (вид A, примеры 1–2) ──────────────────────
+   14/20 #333: метка слева, значение справа; паддинг 2 → шаг 24, гэп 4. */
+.tc__rows { display: flex; flex-direction: column; gap: 4px; }
+.tc__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.tc__row-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 2px 0;
+}
+.tc__row-value {
+  flex: 0 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 8px;
+  padding: 2px 0;
+}
+.tc__row-label,
+.tc__row-value {
+  font-size: var(--ds-font-body-s-14-normal-regular-size);
+  line-height: var(--ds-font-body-s-14-normal-regular-line);
+  letter-spacing: var(--ds-font-body-s-14-normal-regular-spacing);
+  font-weight: var(--ds-font-body-s-14-normal-regular-weight);
+  color: var(--ds-color-text-primary, #333333);
+}
+
+/* Чип в значении (пример 4: «ПРК» — element cell со статусом) */
+.tc__chip { flex: none; }
+
+/* ── Строки данных (вид B, пример 4) ─────────────────────────
+   12/16 колонками: метка 100 серая + значение #333; гэп 16, шаг строк 8. */
+.tc__rows--cols { gap: 8px; }
+.tc__rows--cols .tc__row { gap: 16px; }
+.tc__rows--cols .tc__row-label {
+  flex: none;
+  width: 100px;
+  padding: 0;
+  color: var(--ds-color-text-secondary, #616161);
+}
+.tc__rows--cols .tc__row-value { flex: 1 1 auto; padding: 0; }
+.tc__rows--cols .tc__row-label,
+.tc__rows--cols .tc__row-value {
+  font-size: var(--ds-font-caption-l-12-normal-regular-size);
+  line-height: var(--ds-font-caption-l-12-normal-regular-line);
+  letter-spacing: var(--ds-font-caption-l-12-normal-regular-spacing);
+  font-weight: var(--ds-font-caption-l-12-normal-regular-weight);
+}
+
+/* ── Строки с иконками (примеры 1, 2-мини, 3) ────────────────
+   Пара «иконка + текст»; между парами 16, внутри пары 8 (в мини — 4). */
+.tc__irows { display: flex; flex-direction: column; gap: 4px; }
+.tc__irow { display: flex; align-items: center; gap: 16px; min-height: 24px; }
+.tc__pair { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+.tc__pair--mini { gap: 4px; }
+.tc__irow-end { margin-left: auto; display: inline-flex; align-items: center; flex: none; }
+.tc__pair-text {
+  min-width: 0;
+  font-size: var(--ds-font-body-s-14-normal-regular-size);
+  line-height: var(--ds-font-body-s-14-normal-regular-line);
+  letter-spacing: var(--ds-font-body-s-14-normal-regular-spacing);
+  font-weight: var(--ds-font-body-s-14-normal-regular-weight);
+  color: var(--ds-color-text-primary, #333333);
+}
+/* Пример 1: текст иконочной строки серый 12/16 */
+.tc__pair-text--secondary {
+  font-size: var(--ds-font-caption-l-12-normal-regular-size);
+  line-height: var(--ds-font-caption-l-12-normal-regular-line);
+  letter-spacing: var(--ds-font-caption-l-12-normal-regular-spacing);
+  font-weight: var(--ds-font-caption-l-12-normal-regular-weight);
+  color: var(--ds-color-text-secondary, #616161);
+}
+
+/* ── Текстовые строки (пример 3: две строки 14/20) ─────────── */
+.tc__texts { display: flex; flex-direction: column; }
+.tc__text {
+  padding: 2px 0;
+  font-size: var(--ds-font-body-s-14-normal-regular-size);
+  line-height: var(--ds-font-body-s-14-normal-regular-line);
+  letter-spacing: var(--ds-font-body-s-14-normal-regular-spacing);
+  font-weight: var(--ds-font-body-s-14-normal-regular-weight);
+  color: var(--ds-color-text-primary, #333333);
+}
+
+/* ── Блок дат (пример 4) ─────────────────────────────────────
+   Две равные колонки: иконка 18 + подпись 12/16 #616161 / значение #333. */
+.tc__dates { display: flex; gap: 8px; }
+.tc__date { display: flex; align-items: flex-start; gap: 8px; flex: 1 1 0; min-width: 0; }
+.tc__date-icon { flex: none; display: inline-flex; }
+.tc__date-text { display: flex; flex-direction: column; min-width: 0; }
+.tc__date-label {
+  font-size: var(--ds-font-caption-l-12-normal-regular-size);
+  line-height: var(--ds-font-caption-l-12-normal-regular-line);
+  letter-spacing: var(--ds-font-caption-l-12-normal-regular-spacing);
+  font-weight: var(--ds-font-caption-l-12-normal-regular-weight);
+  color: var(--ds-color-text-secondary, #616161);
+}
+.tc__date-value {
+  font-size: var(--ds-font-caption-l-12-normal-regular-size);
+  line-height: var(--ds-font-caption-l-12-normal-regular-line);
+  letter-spacing: var(--ds-font-caption-l-12-normal-regular-spacing);
+  font-weight: var(--ds-font-caption-l-12-normal-regular-weight);
+  color: var(--ds-color-text-primary, #333333);
+}
+
+/* ── Действия (пример 3 — на всю ширину; подвал Card view — справа) ── */
+.tc__actions { display: flex; align-items: center; gap: 8px; }
+.tc__actions--end { justify-content: flex-end; }
+.tc__actions--full { flex-direction: column; align-items: stretch; }
+.tc__actions--full > .ds-btn { width: 100%; }
+
+/* ── Разделитель (Divider ДС, по ширине контента) ──────────── */
+.tc__divider.ds-divider { display: block; width: 100%; }
+
+/* ── Переключатели частей (как части компонента) ───────────── */
+.tc[data-tc-check="off"] .tc__check,
+.tc[data-tc-kebab="off"] .tc__kebab,
+.tc[data-tc-status="off"] .tc__status,
+.tc[data-tc-icons="off"] .tc__irows,
+.tc[data-tc-icons="off"] .tc__divider--icons,
+.tc[data-tc-dates="off"] .tc__dates,
+.tc[data-tc-dates="off"] .tc__divider--dates,
+.tc[data-tc-actions="off"] .tc__actions,
+.tc[data-tc-actions="off"] .tc__divider--actions { display: none; }

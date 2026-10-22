@@ -10,7 +10,7 @@
   Порядок табов — как в Фигме (слева направо), первым — сборка: 1) Basic example (живое поле + раскрывашка),
   2) Input Datepicker (Empty / Populated — узел 58548-4764), 3) Elements Datepicker (ячейки — узел 58501-4220),
   4) Control Panel Datepicker (Control / Week / Calendar — узел 58501-4052), 5) Datepicker (Day / Year / Month — узел 58509-5439).
-  Табы 2–5 — статичные витрины вариантов, как наборы Figma (интерактив — только в «Сборке»);
+  Табы 2–5 — статичные витрины вариантов, как в Figma (интерактив — только в «Сборке»);
   состояния Hover/Press показаны «замороженно» (классы st-hover/st-press — те же токены, что у :hover/:active).
   Вид — сгенерированный слой ДС + ручной слой ../../fixes.css; разметку и поведение строит datepicker.js.
   Данные — актуальные: текущий месяц и сегодняшняя дата.
@@ -34,6 +34,12 @@
   .panel { width: fit-content; max-width: 1160px; box-sizing: border-box; padding: 32px; border: 1px solid var(--ds-color-stroke-default, #e0e0e0); background: #fff; }
   /* обвязка примеров на стенде (не ДС) */
   .cards { display: flex; gap: 32px; align-items: flex-start; }
+  /* зазоры витрин — из координат Figma */
+  .fields.fields--input { gap: 61px; }                               /* Input Datepicker: y 178 → 287 (48 + 61) */
+  .rows.rows--panel { gap: 0; }                                    /* Control Panel: Control → Week 24; Week → Calendar 28 */
+  .rows--panel > :nth-child(2) { margin-top: 24px; }
+  .rows--panel > :nth-child(3) { margin-top: 28px; }
+  .cards.cards--datepicker { gap: 46px; }                           /* Day / Year / Month: x 67 → 425 → 783 (312 + 46) */
   .card__cap { font-size: 12px; line-height: 16px; color: var(--ds-color-text-secondary, #616161); margin-bottom: 8px; }
   .fields { display: flex; flex-direction: column; align-items: flex-start; gap: 40px; }
   .rows { display: flex; flex-direction: column; gap: 20px; }
@@ -42,14 +48,26 @@
   .demo-w280 { width: 280px; }
   /* витрина Elements — раскладка как в наборе Figma: колонки вариантов × строки состояний */
   .el-band { display: flex; align-items: flex-start; }
-  .el-col { display: flex; flex-direction: column; align-items: center; gap: 22px; }
+  .el-col { display: flex; flex-direction: column; align-items: center; gap: 0; }
+  /* зазоры рядов — из координат Figma (58501:4220): Default 24/24/24; Today и Range 22/22/30; Selected 22/22 */
+  .el-band--cells .el-col > :nth-child(n+2) { margin-top: 22px; }
+  .el-band--cells .el-col:nth-child(1) > :nth-child(n+2) { margin-top: 24px; }
+  .el-band--cells .el-col:nth-child(2) > :nth-child(4),
+  .el-band--cells .el-col:nth-child(4) > :nth-child(4) { margin-top: 30px; }
+  /* Year: 14/22/22; Month: 22/22/14 (как в наборе) */
+  .el-band--lower .el-col > :nth-child(n+2) { margin-top: 22px; }
+  .el-band--lower .el-col:nth-child(-n+3) > :nth-child(2) { margin-top: 14px; }
+  .el-band--lower .el-col:nth-child(4) > :nth-child(4) { margin-top: 14px; }
   .el-band--cells > .el-col { margin-right: 60px; }
   .el-band--cells > .el-col:nth-child(2) { margin-right: 64px; }
   .el-band--cells > .el-col:nth-child(3) { margin-right: 105px; }
   .el-band--cells > .el-col:last-child { margin-right: 0; }
   .el-band--lower { margin-top: 68px; }
-  .el-band--lower .el-col { margin-right: 24px; }
-  .el-band--lower .el-col.el-col--month { margin-left: 54px; margin-right: 0; }
+  /* колонки нижней полосы — из координат: 52→145→240→388 при ширине 70 (зазоры 23 / 25 / 78) */
+  .el-band--lower .el-col { margin-right: 23px; }
+  .el-band--lower .el-col:nth-child(2) { margin-right: 25px; }
+  .el-band--lower .el-col:nth-child(3) { margin-right: 78px; }
+  .el-band--lower .el-col.el-col--month { margin-left: 0; margin-right: 0; }
   /* стенд: «замороженные» состояния Hover/Press для витрин (в ДС это :hover/:active — те же токены) */
   .st-hover.ds-elements--cell.ds-elements--default, .st-hover .ds-elements--cell.ds-elements--default,
   .st-hover.ds-elements--cell.ds-elements--today, .st-hover .ds-elements--cell.ds-elements--today { background: var(--ds-color-elements-datepicker-cell-default-hover-background, #f5f5f5); }
@@ -95,15 +113,9 @@
 
   <!-- 2. Input Datepicker: Empty / Populated (узел 58548-4764) — статичные витрины вариантов (без выпадашки) -->
   <div class="panel" data-vpanel="input" role="tabpanel" hidden>
-    <div class="fields">
-      <div>
-        <div class="card__cap">Empty</div>
-        <div id="inp-empty"></div>
-      </div>
-      <div>
-        <div class="card__cap">Populated</div>
-        <div id="inp-populated"></div>
-      </div>
+    <div class="fields fields--input">
+      <div id="inp-empty"></div>
+      <div id="inp-populated"></div>
     </div>
   </div>
 
@@ -165,9 +177,8 @@
 
   <!-- 4. Control Panel Datepicker: Control / Week / Calendar (узел 58501-4052) -->
   <div class="panel" data-vpanel="panel" role="tabpanel" hidden>
-    <div class="rows">
+    <div class="rows rows--panel">
       <div>
-        <div class="card__cap">Control</div>
         <div class="ds-control-panel ds-control-panel--control">
           <span class="ds-elements ds-elements--month ds-elements--default">
             <span class="ds-control-panel__label">Октябрь 2026</span>
@@ -180,7 +191,6 @@
         </div>
       </div>
       <div>
-        <div class="card__cap">Week</div>
         <div class="ds-control-panel ds-control-panel--week">
           <div class="ds-datepicker__elements">
             <span class="ds-datepicker__label">ПН</span>
@@ -194,7 +204,6 @@
         </div>
       </div>
       <div>
-        <div class="card__cap">Calendar</div>
         <div class="ds-control-panel ds-control-panel--calendar">
           <div id="cp-calendar" class="demo-w280"></div>
         </div>
@@ -204,19 +213,10 @@
 
   <!-- 5. Datepicker: три вида как в узле 58509-5439 (Day / Year / Month) — статичные витрины -->
   <div class="panel" data-vpanel="datepicker" role="tabpanel" hidden>
-    <div class="cards">
-      <div>
-        <div class="card__cap">Day</div>
-        <div id="cal-day"></div>
-      </div>
-      <div>
-        <div class="card__cap">Year</div>
-        <div id="cal-year"></div>
-      </div>
-      <div>
-        <div class="card__cap">Month</div>
-        <div id="cal-month"></div>
-      </div>
+    <div class="cards cards--datepicker">
+      <div id="cal-day"></div>
+      <div id="cal-year"></div>
+      <div id="cal-month"></div>
     </div>
   </div>
 </div>

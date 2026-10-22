@@ -37,14 +37,14 @@
 шапку и боковое меню):
 
 ```html
-<script src="../DS/connect.js" defer></script>
+<script src="../Design-System/connect.js" defer></script>
 ```
 
 Вручную (без подключателя):
 
 ```html
-<link rel="stylesheet" href="../DS/organisms/app-header/app-header.css?v=21">
-<script src="../DS/organisms/app-header/app-header.js?v=20" defer></script>
+<link rel="stylesheet" href="../Design-System/organisms/app-header/app-header.css?v=21">
+<script src="../Design-System/organisms/app-header/app-header.js?v=20" defer></script>
 ```
 
 Нужна структура `.panel > .frame` (как на страницах) — шапка встанет сама; `connect.js` создаёт
@@ -56,12 +56,12 @@
 - Ассеты — локальные SVG в этой папке (глифы из макета «Отчеты»: лупа, помощь, колокол с красной
   точкой, стрелки); глиф магазина — Material Icons Outlined `storefront` (в экспорте Figma ассет
   подменялся: отдавал пустой чекбокс).
-- Правки — только здесь: с пометкой «пробел ДС №N» в коде и записью в журнал `DS/fixes.md`
+- Правки — только здесь: с пометкой «пробел ДС №N» в коде и записью в журнал `Design-System/fixes.md`
   (раздел «app-header», пп. 68–72).
 
 ## Локальные правки вне ДС (нужно докрутить в ДС — потом уберём отсюда)
 
-Полный список — в журнале `DS/fixes.md`, раздел «app-header (шапка приложения — организм)»
+Полный список — в журнале `Design-System/fixes.md`, раздел «app-header (шапка приложения — организм)»
 (пп. 68–72): геометрия из макета, тень 03 dp, нетокенизированные цвета, пороги адаптива,
 скругления подложек. В коде каждое место помечено «пробел ДС №N». Остальные цвета и шрифт —
 на токенах ДС.
