@@ -81,9 +81,9 @@ ul,ol{margin:7px 0;padding-left:22px}li{margin:3px 0}
 <header class="top">
   <div class="brand">iiko web · пользовательские пути</div>
   <h1>Как пользуются iiko web: пути, процессы, обрывы</h1>
-  <div class="meta">01–13.10.2026 · Matomo idSite 1 · 11 631 аккаунтов в базе · выборка 2 500 пользователей / 35 574 визита ·
+  <div class="meta">01–13.10.2026 · Matomo idSite 1 · 11 631 аккаунт в базе · выборка 2 500 пользователей / 35 574 визита ·
   финальная версия 29.10.2026 · отчёт, сырые данные и гипотезы — три отдельных файла</div>
-  <nav class="tabs"><button class="tab active" data-tab="overview">Сводка</button><button class="tab" data-tab="method">Метод и данные</button><button class="tab" data-tab="sections">Разделы</button><button class="tab" data-tab="paths">Пути и процессы</button><button class="tab" data-tab="chains">Цепочки</button><button class="tab" data-tab="links">Связки</button><button class="tab" data-tab="segments">Сегменты</button><button class="tab" data-tab="problems">Обрывы и проблемы</button><button class="tab" data-tab="conclusions">Выводы</button><button class="tab" data-tab="appendix">Словарь и ограничения</button></nav>
+  <nav class="tabs"><button class="tab active" data-tab="overview">Сводка</button><button class="tab" data-tab="method">Метод и данные</button><button class="tab" data-tab="sections">Разделы</button><button class="tab" data-tab="paths">Пути и процессы</button><button class="tab" data-tab="chains">Цепочки</button><button class="tab" data-tab="links">Связки</button><button class="tab" data-tab="segments">Сегменты</button><button class="tab" data-tab="devices">Устройства</button><button class="tab" data-tab="problems">Обрывы и проблемы</button><button class="tab" data-tab="conclusions">Выводы</button><button class="tab" data-tab="appendix">Словарь и ограничения</button></nav>
 </header>
 <main><section class="panel active" id="tab-overview">
 <h2>Сводка: что видно в путях</h2>
@@ -98,6 +98,7 @@ ul,ol{margin:7px 0;padding-left:22px}li{margin:3px 0}
   <div class="kpi "><div class="v">75</div><div class="l">разделов в словаре</div></div>
   <div class="kpi "><div class="v">200 · 6</div><div class="l">цепочек · устойчивых процессов</div></div>
   <div class="kpi red"><div class="v">2 676</div><div class="l">визитов с экраном ошибки</div></div>
+  <div class="kpi blue"><div class="v">42,1%</div><div class="l">визитов с мобильного</div></div>
 </div>
 
 <div class="card hot">
@@ -115,7 +116,7 @@ ul,ol{margin:7px 0;padding-left:22px}li{margin:3px 0}
 </ol>
 </div>
 
-<h3>Восемь наблюдений с числами</h3>
+<h3>Девять наблюдений с числами</h3>
 <div class="grid2">
 <div class="card">
 <span class="badge b-blue">Наблюдение 1</span>
@@ -165,6 +166,13 @@ ul,ol{margin:7px 0;padding-left:22px}li{margin:3px 0}
 <p>2 676 визитов с <span class="mono">/error</span> или <span class="mono">/no-access</span> за 13 дней.
 Крупнейшие источники — дашборд (~1 130) и сводные заказы ЦПУ (~707). Код ошибки скрыт плейсхолдером.</p>
 </div>
+<div class="card">
+<span class="badge b-blue">Наблюдение 9</span>
+<h4>Мобильный — не случайный заход</h4>
+<p>42,1% визитов — с мобильного. У регулярных пользователей мобильный — главное устройство в 32,8% случаев
+против 11,9% у редких; 56,2% регулярных хотя бы раз за период работали с мобильного.
+Самый мобильный раздел — кассовые смены (75,3% визитов), затем закупки (42,0%) и инвентаризация (34,6%).</p>
+</div>
 </div>
 
 <div class="note ok"><b>Что НЕ подтвердилось.</b> Дашборд и кассовые смены выглядят «брошенными» (97,8% и 98,7%),
@@ -186,6 +194,11 @@ ul,ol{margin:7px 0;padding-left:22px}li{margin:3px 0}
 подписан уровень.</p>
 
 <div class="tablewrap"><table class=""><thead><tr><th class="">Уровень</th><th class="">Что это</th><th class="">Охват</th><th class="">Где используется</th></tr></thead><tbody><tr><td class="">Полная база</td><td class="">Все аккаунты и визиты за 13 дней (Matomo Live)</td><td class="">11 631 аккаунтов</td><td class="">Объёмы разделов, связки, сегменты, словарь страниц</td></tr><tr><td class="">Выборка</td><td class="">1 500 редких + 1 000 регулярных пользователей, роботы исключены</td><td class="">2 500 пользователей · 35 574 визитов</td><td class="">Цепочки, обрывы, время на экране, ошибки</td></tr><tr><td class="">Детальные пути</td><td class="">Подвыборка для просмотра конкретных маршрутов</td><td class="">60 пользователей · 7 195 визитов</td><td class="">Лист «Пути_визитов» в сырых данных</td></tr></tbody></table></div>
+
+<div class="note"><b>Устройства.</b> Разрез по устройствам — из Matomo `DevicesDetection` и `deviceType` в визитах.
+«Главное устройство» пользователя = устройство, с которого у него больше всего визитов; «хоть раз с мобильного» —
+доля пользователей, у которых был хотя бы один визит со смартфона или планшета. Планшеты — менее 1%, в тексте
+обычно объединены с мобильными, но в таблицах выведены отдельно.</div>
 
 <h3>Определения</h3>
 <div class="grid3">
@@ -459,11 +472,24 @@ Lift показывает, насколько связка сильнее слу
 У редких — настройка и витрина (внешнее меню 192,3 против 66,5; интеграции 27,3 против 8,7; ЛК 46,9 против 5,2).</p>
 <div class="tablewrap"><table class=""><thead><tr><th class="">Модуль</th><th class="num">Редкие /1000</th><th class="num">Регулярные /1000</th><th class="num">Индекс</th></tr></thead><tbody><tr><td class=""><b>Лицензии приложений</b><div class="mono">app-licensing</div></td><td class="num">1,00</td><td class="num">0,00</td><td class="num"><span class="badge b-green">99,83</span></td></tr><tr><td class=""><b>Настройки касс</b><div class="mono">till-settings</div></td><td class="num">1,00</td><td class="num">0,00</td><td class="num"><span class="badge b-green">99,83</span></td></tr><tr><td class=""><b>Мастер настройки (wizard)</b><div class="mono">wizard</div></td><td class="num">0,70</td><td class="num">0,00</td><td class="num"><span class="badge b-green">66,56</span></td></tr><tr><td class=""><b>Схема зала / отделения</b><div class="mono">schema-editor</div></td><td class="num">3,00</td><td class="num">0,10</td><td class="num"><span class="badge b-green">24,10</span></td></tr><tr><td class=""><b>WEB-KDS (кухонный экран)</b><div class="mono">webkds</div></td><td class="num">3,00</td><td class="num">0,20</td><td class="num"><span class="badge b-green">16,07</span></td></tr><tr><td class=""><b>ABC/XYZ-анализ</b><div class="mono">abc-xyz</div></td><td class="num">1,00</td><td class="num">0,10</td><td class="num"><span class="badge b-green">16,07</span></td></tr><tr><td class=""><b>Маркетплейс iiko</b><div class="mono">marketplace</div></td><td class="num">2,70</td><td class="num">0,20</td><td class="num"><span class="badge b-green">14,28</span></td></tr><tr><td class=""><b>Обмен данными (Exchanger)</b><div class="mono">exchange</div></td><td class="num">1,30</td><td class="num">0,10</td><td class="num"><span class="badge b-green">10,71</span></td></tr><tr><td class=""><b>Личный кабинет / аккаунт ресторана</b><div class="mono">user-account</div></td><td class="num">46,90</td><td class="num">5,20</td><td class="num"><span class="badge b-green">9,10</span></td></tr><tr><td class=""><b>Заготовки (планы производства)</b><div class="mono">prep-plans</div></td><td class="num">1,30</td><td class="num">0,20</td><td class="num"><span class="badge b-green">7,14</span></td></tr><tr><td class=""><b>Экраны гостя (кампании)</b><div class="mono">customer-screen</div></td><td class="num">20,30</td><td class="num">3,90</td><td class="num"><span class="badge b-green">5,19</span></td></tr><tr><td class=""><b>Профиль пользователя</b><div class="mono">user-profile</div></td><td class="num">12,60</td><td class="num">2,70</td><td class="num"><span class="badge b-green">4,63</span></td></tr><tr><td class=""><b>Программа лояльности</b><div class="mono">loyaltysystem</div></td><td class="num">11,30</td><td class="num">3,00</td><td class="num"><span class="badge b-green">3,72</span></td></tr><tr><td class=""><b>Конструктор сайтов / онлайн-заказы</b><div class="mono">site-constructor</div></td><td class="num">9,30</td><td class="num">2,80</td><td class="num"><span class="badge b-green">3,33</span></td></tr><tr><td class=""><b>Журнал событий</b><div class="mono">web-event-log</div></td><td class="num">1,00</td><td class="num">0,30</td><td class="num"><span class="badge b-green">3,21</span></td></tr><tr><td class=""><b>Интеграции / источники заказов</b><div class="mono">integration</div></td><td class="num">27,30</td><td class="num">8,70</td><td class="num"><span class="badge b-green">3,14</span></td></tr><tr><td class=""><b>Внешнее меню</b><div class="mono">external-menu</div></td><td class="num">192,30</td><td class="num">66,50</td><td class="num"><span class="badge b-green">2,89</span></td></tr><tr><td class=""><b>Менеджер закупок</b><div class="mono">purchase-manager</div></td><td class="num">0,30</td><td class="num">0,10</td><td class="num"><span class="badge b-green">2,68</span></td></tr><tr><td class=""><b>Что, если… (симуляции)</b><div class="mono">what-if</div></td><td class="num">0,30</td><td class="num">0,10</td><td class="num"><span class="badge b-green">2,68</span></td></tr><tr><td class=""><b>Настройки</b><div class="mono">configuration</div></td><td class="num">35,30</td><td class="num">14,70</td><td class="num"><span class="badge b-green">2,40</span></td></tr><tr><td class=""><b>Справочники</b><div class="mono">directories</div></td><td class="num">3,30</td><td class="num">1,70</td><td class="num"><span class="badge b-gray">1,91</span></td></tr><tr><td class=""><b>Номенклатура</b><div class="mono">nomenclature</div></td><td class="num">71,90</td><td class="num">38,80</td><td class="num"><span class="badge b-gray">1,85</span></td></tr><tr><td class=""><b>Быстрое меню</b><div class="mono">menu-quick</div></td><td class="num">0,30</td><td class="num">0,20</td><td class="num"><span class="badge b-gray">1,79</span></td></tr><tr><td class=""><b>Навигатор — главный экран приложения</b><div class="mono">navigator</div></td><td class="num">359,10</td><td class="num">202,20</td><td class="num"><span class="badge b-gray">1,78</span></td></tr><tr><td class=""><b>(корень)</b><div class="mono">(корень)</div></td><td class="num">2,70</td><td class="num">1,60</td><td class="num"><span class="badge b-gray">1,65</span></td></tr><tr><td class=""><b>Настройка процессов (workflow)</b><div class="mono">workflow-config</div></td><td class="num">9,30</td><td class="num">5,80</td><td class="num"><span class="badge b-gray">1,60</span></td></tr><tr><td class=""><b>Сотрудники (расписание)</b><div class="mono">employees</div></td><td class="num">13,60</td><td class="num">9,60</td><td class="num"><span class="badge b-gray">1,42</span></td></tr><tr><td class=""><b>Прайс-лист</b><div class="mono">price-list</div></td><td class="num">0,70</td><td class="num">0,50</td><td class="num"><span class="badge b-gray">1,34</span></td></tr><tr><td class=""><b>Прогноз выручки</b><div class="mono">forecast</div></td><td class="num">13,00</td><td class="num">12,60</td><td class="num"><span class="badge b-gray">1,03</span></td></tr><tr><td class=""><b>Импорт данных</b><div class="mono">import-tool</div></td><td class="num">0,30</td><td class="num">0,40</td><td class="num"><span class="badge b-gray">0,77</span></td></tr><tr><td class=""><b>Инвентаризация</b><div class="mono">inventory</div></td><td class="num">34,60</td><td class="num">49,40</td><td class="num"><span class="badge b-gray">0,70</span></td></tr><tr><td class=""><b>Дашборд</b><div class="mono">dashboard</div></td><td class="num">51,20</td><td class="num">77,40</td><td class="num"><span class="badge b-gray">0,66</span></td></tr><tr><td class=""><b>Документы</b><div class="mono">documents</div></td><td class="num">16,60</td><td class="num">40,20</td><td class="num"><span class="badge b-orange">0,41</span></td></tr><tr><td class=""><b>Склад (лайт-режим) — приёмка и входящие заказы</b><div class="mono">lite-stock</div></td><td class="num">5,00</td><td class="num">18,70</td><td class="num"><span class="badge b-orange">0,27</span></td></tr><tr><td class=""><b>Кассовые смены</b><div class="mono">till-shifts</div></td><td class="num">31,90</td><td class="num">141,00</td><td class="num"><span class="badge b-orange">0,23</span></td></tr><tr><td class=""><b>Внутренние курьеры</b><div class="mono">internal-couriers</div></td><td class="num">1,70</td><td class="num">9,10</td><td class="num"><span class="badge b-orange">0,18</span></td></tr><tr><td class=""><b>Закупки / заказы поставщику</b><div class="mono">purchase</div></td><td class="num">9,30</td><td class="num">140,20</td><td class="num"><span class="badge b-orange">0,07</span></td></tr><tr><td class=""><b>Колл-центр (приём заказов)</b><div class="mono">call-center</div></td><td class="num">3,00</td><td class="num">104,60</td><td class="num"><span class="badge b-orange">0,03</span></td></tr><tr><td class=""><b>Карта доставок</b><div class="mono">delivery-map</div></td><td class="num">0,30</td><td class="num">12,60</td><td class="num"><span class="badge b-orange">0,03</span></td></tr><tr><td class=""><b>ЦПУ — сводные заказы (центральное производство)</b><div class="mono">cpu</div></td><td class="num">0,00</td><td class="num">22,90</td><td class="num"><span class="badge b-orange">0,00</span></td></tr><tr><td class=""><b>ЕГАИС</b><div class="mono">egais</div></td><td class="num">0,00</td><td class="num">1,20</td><td class="num"><span class="badge b-orange">0,00</span></td></tr><tr><td class=""><b>Настройки ЭДО</b><div class="mono">edocs-settings</div></td><td class="num">0,00</td><td class="num">0,10</td><td class="num"><span class="badge b-orange">0,00</span></td></tr><tr><td class=""><b>Допустимые расхождения</b><div class="mono">allowed-discrepancies</div></td><td class="num">0,00</td><td class="num">0,10</td><td class="num"><span class="badge b-orange">0,00</span></td></tr></tbody></table></div>
 </section><section class="panel" id="tab-segments">
-<h2>Сегменты: кто эти люди</h2>
+<h2>Сегменты: кто эти люди и с чего они заходят</h2>
 <p class="lead">12 сегментов по главному разделу пользователя; классификация покрывает 11 628 аккаунтов.
-Совпадение правила по агрегатам с фактическим поведением — 81%.</p>
+Совпадение правила по агрегатам с фактическим поведением — 81%. Устройство — по выборке 2 500 пользователей:
+«главное устройство» = с него больше всего визитов; «хоть раз с моб.» — был хотя бы один визит со смартфона или планшета.</p>
 
-<div class="tablewrap"><table class=""><thead><tr><th class="">Сегмент</th><th class="num">Пользователей</th><th class="num">Доля</th><th class="num">Визитов</th><th class="num">Редкие</th><th class="num">Регулярные</th></tr></thead><tbody><tr><td class=""><b>Настройки и администрирование</b></td><td class="num">3 553</td><td class="num">30,6%</td><td class="num">24 379</td><td class="num">2 960</td><td class="num">565</td></tr><tr><td class=""><b>Меню и цены</b></td><td class="num">3 006</td><td class="num">25,9%</td><td class="num">25 721</td><td class="num">2 255</td><td class="num">718</td></tr><tr><td class=""><b>Аналитика</b></td><td class="num">1 394</td><td class="num">12,0%</td><td class="num">27 751</td><td class="num">816</td><td class="num">390</td></tr><tr><td class=""><b>Кассы и смены</b></td><td class="num">961</td><td class="num">8,3%</td><td class="num">31 019</td><td class="num">347</td><td class="num">375</td></tr><tr><td class=""><b>Только вход и профиль</b></td><td class="num">869</td><td class="num">7,5%</td><td class="num">1 918</td><td class="num">842</td><td class="num">22</td></tr><tr><td class=""><b>Склад и инвентаризация</b></td><td class="num">754</td><td class="num">6,5%</td><td class="num">12 270</td><td class="num">498</td><td class="num">240</td></tr><tr><td class=""><b>Витрина и маркетинг</b></td><td class="num">351</td><td class="num">3,0%</td><td class="num">2 159</td><td class="num">284</td><td class="num">66</td></tr><tr><td class=""><b>Закупки</b></td><td class="num">288</td><td class="num">2,5%</td><td class="num">12 602</td><td class="num">89</td><td class="num">182</td></tr><tr><td class=""><b>Приём заказов (колл-центр)</b></td><td class="num">190</td><td class="num">1,6%</td><td class="num">10 147</td><td class="num">37</td><td class="num">132</td></tr><tr><td class=""><b>Документы и маркировка</b></td><td class="num">178</td><td class="num">1,5%</td><td class="num">2 884</td><td class="num">104</td><td class="num">74</td></tr><tr><td class=""><b>Заказы и доставка</b></td><td class="num">45</td><td class="num">0,4%</td><td class="num">3 190</td><td class="num">4</td><td class="num">18</td></tr><tr><td class=""><b>Производство и ЦПУ</b></td><td class="num">39</td><td class="num">0,3%</td><td class="num">2 280</td><td class="num">9</td><td class="num">26</td></tr></tbody></table></div>
+<div class="grid2">
+<div class="card"><h4>Редкие vs регулярные: главное устройство</h4>
+<div class="tablewrap"><table class=""><thead><tr><th class="">Группа</th><th class="num">Пользователей</th><th class="num">Комп %</th><th class="num">Моб %</th><th class="num">Планшет %</th><th class="num">Хоть раз с моб. %</th></tr></thead><tbody><tr><td class="">Редкие</td><td class="num">1 500</td><td class="num">87,6%</td><td class="num">11,9%</td><td class="num">0,5%</td><td class="num">17,3%</td></tr><tr><td class="">Регулярные</td><td class="num">1 000</td><td class="num">66,5%</td><td class="num">32,8%</td><td class="num">0,7%</td><td class="num">56,2%</td></tr></tbody></table></div>
+<p class="small muted">У регулярных мобильный — главное устройство в 2,8 раза чаще, чем у редких
+(32,8% против 11,9%); больше половины регулярных (56,2%) хотя бы раз работали с мобильного.</p></div>
+<div class="card"><h4>Что это значит</h4>
+<p>Мобильный — не случайный заход, а ежедневный инструмент операционных ролей. Инвентаризацию проверять
+на мобильном; закупки, документы, меню и колл-центр — на компе (там сосредоточены обрывы);
+кассы и дашборд — мобильные экраны, но для них метрика обрыва не применяется.
+Подробный разрез по разделам — во вкладке «Устройства».</p></div>
+</div>
+
+<div class="tablewrap"><table class=""><thead><tr><th class="">Сегмент</th><th class="num">Пользователей</th><th class="num">Доля</th><th class="num">Визитов</th><th class="num">Редкие</th><th class="num">Регулярные</th><th class="num">Комп %</th><th class="num">Моб %</th><th class="num">Планшет %</th><th class="num">Хоть раз с моб. %</th></tr></thead><tbody><tr><td class=""><b>Настройки и администрирование</b></td><td class="num">3 553</td><td class="num">30,6%</td><td class="num">24 379</td><td class="num">2 960</td><td class="num">565</td><td class="num">86,9%</td><td class="num">12,6%</td><td class="num">0,4%</td><td class="num">26,0%</td></tr><tr><td class=""><b>Меню и цены</b></td><td class="num">3 006</td><td class="num">25,9%</td><td class="num">25 721</td><td class="num">2 255</td><td class="num">718</td><td class="num">88,1%</td><td class="num">11,8%</td><td class="num">0,2%</td><td class="num">22,7%</td></tr><tr><td class=""><b>Аналитика</b></td><td class="num">1 394</td><td class="num">12,0%</td><td class="num">27 751</td><td class="num">816</td><td class="num">390</td><td class="num">64,5%</td><td class="num">35,1%</td><td class="num">0,3%</td><td class="num">45,7%</td></tr><tr><td class=""><b>Кассы и смены</b></td><td class="num">961</td><td class="num">8,3%</td><td class="num">31 019</td><td class="num">347</td><td class="num">375</td><td class="num">34,8%</td><td class="num">64,7%</td><td class="num">0,5%</td><td class="num">71,0%</td></tr><tr><td class=""><b>Только вход и профиль</b></td><td class="num">869</td><td class="num">7,5%</td><td class="num">1 918</td><td class="num">842</td><td class="num">22</td><td class="num">88,5%</td><td class="num">10,9%</td><td class="num">0,6%</td><td class="num">12,2%</td></tr><tr><td class=""><b>Склад и инвентаризация</b></td><td class="num">754</td><td class="num">6,5%</td><td class="num">12 270</td><td class="num">498</td><td class="num">240</td><td class="num">77,7%</td><td class="num">21,8%</td><td class="num">0,5%</td><td class="num">48,4%</td></tr><tr><td class=""><b>Витрина и маркетинг</b></td><td class="num">351</td><td class="num">3,0%</td><td class="num">2 159</td><td class="num">284</td><td class="num">66</td><td class="num">96,8%</td><td class="num">1,6%</td><td class="num">1,6%</td><td class="num">16,1%</td></tr><tr><td class=""><b>Закупки</b></td><td class="num">288</td><td class="num">2,5%</td><td class="num">12 602</td><td class="num">89</td><td class="num">182</td><td class="num">64,1%</td><td class="num">32,1%</td><td class="num">3,8%</td><td class="num">52,6%</td></tr><tr><td class=""><b>Приём заказов (колл-центр)</b></td><td class="num">190</td><td class="num">1,6%</td><td class="num">10 147</td><td class="num">37</td><td class="num">132</td><td class="num">94,3%</td><td class="num">3,8%</td><td class="num">1,9%</td><td class="num">22,6%</td></tr><tr><td class=""><b>Документы и маркировка</b></td><td class="num">178</td><td class="num">1,5%</td><td class="num">2 884</td><td class="num">104</td><td class="num">74</td><td class="num">85,1%</td><td class="num">12,8%</td><td class="num">2,1%</td><td class="num">27,7%</td></tr><tr><td class=""><b>Заказы и доставка</b></td><td class="num">45</td><td class="num">0,4%</td><td class="num">3 190</td><td class="num">4</td><td class="num">18</td><td class="num">100,0%</td><td class="num">0,0%</td><td class="num">0,0%</td><td class="num">50,0%</td></tr><tr><td class=""><b>Производство и ЦПУ</b></td><td class="num">39</td><td class="num">0,3%</td><td class="num">2 280</td><td class="num">9</td><td class="num">26</td><td class="num">80,0%</td><td class="num">20,0%</td><td class="num">0,0%</td><td class="num">60,0%</td></tr></tbody></table></div>
 
 <h3>Профили</h3>
 <div class="grid3"><div class="card"><h4>Настройки и администрирование <span class="muted small">· 3 553 чел. · 30,6%</span></h4>
@@ -478,6 +504,53 @@ Lift показывает, насколько связка сильнее слу
 и «Меню и цены» (3 006, 25,9%) вместе — больше половины базы, но их активность редкая и настроечная.
 Операционная работа сосредоточена в «Кассах» (961), «Складе» (754), «Закупках» (288),
 «Приёме заказов» (190) и «Доставке» (45).</div>
+</section><section class="panel" id="tab-devices">
+<h2>Устройства: кто с компа, кто с мобильного</h2>
+<p class="lead">Общий разрез — все визиты за 01–13.10.2026. Сегменты, редкие и регулярные — выборка 2 500 пользователей,
+главное устройство = устройство, с которого у человека больше всего визитов. Планшеты — меньше 1%.</p>
+
+<div class="kpis">
+  <div class="kpi hot"><div class="v">57,0%</div><div class="l">визитов с компьютера</div></div>
+  <div class="kpi blue"><div class="v">42,1%</div><div class="l">визитов с мобильного</div></div>
+  <div class="kpi "><div class="v">0,9%</div><div class="l">визитов с планшета</div></div>
+  <div class="kpi green"><div class="v">32,8%</div><div class="l">регулярных: мобильный — главный</div></div>
+  <div class="kpi "><div class="v">11,9%</div><div class="l">редких: мобильный — главный</div></div>
+</div>
+
+<div class="grid2">
+<div class="card"><h4>Общий разрез по визитам</h4>
+<div class="tablewrap"><table class=""><thead><tr><th class="">Устройство</th><th class="num">Визитов</th><th class="num">Доля</th></tr></thead><tbody><tr><td class="">Комп</td><td class="num">94 861</td><td class="num">57,0%</td></tr><tr><td class="">Мобильный</td><td class="num">70 002</td><td class="num">42,1%</td></tr><tr><td class="">Планшет</td><td class="num">1 499</td><td class="num">0,9%</td></tr><tr><td class="">Итого</td><td class="num">166 378</td><td class="num">100,0%</td></tr></tbody></table></div>
+<p class="small muted">Мобильный — 42,1% всех визитов, но у регулярных пользователей он главный в 32,8% случаев
+против 11,9% у редких. Это два разных способа работы, а не «случайный заход с телефона».</p></div>
+<div class="card"><h4>Что это меняет</h4>
+<ul>
+<li><b>Мобильный — ежедневная работа:</b> кассы 75,3%, дашборд 55,8%, закупки 42,0%, инвентаризация 34,6% визитов.</li>
+<li><b>Комп — настройка и документы:</b> внешнее меню 94,6%, интеграции 94,1%, колл-центр 93,3%, документы 80,1%.</li>
+<li><b>Редкие — почти всегда комп</b> (87,6%); мобильный у них — эпизодический заход. Регулярные — наоборот:
+каждый третий в основном с мобильного, больше половины заходят с него хотя бы раз.</li>
+</ul></div>
+</div>
+
+<h3>Где обрывы и с какого устройства проверять</h3>
+<p class="small muted">«Доля обрывов: комп / моб.» — из каких устройств состояли оборванные визиты раздела.
+«Проверять» — где сосредоточена проблема: если большинство обрывов с мобильного, проверять надо на мобильном.</p>
+<div class="tablewrap"><table class=""><thead><tr><th class="">Раздел</th><th class="num">Визитов</th><th class="num">Комп %</th><th class="num">Моб %</th><th class="num">Планшет %</th><th class="num">Оборвано</th><th class="num">Оборвано %</th><th class="num">Доля обрывов: комп</th><th class="num">Доля обрывов: моб.</th><th class="">Проверять</th></tr></thead><tbody><tr><td class=""><b>Внешнее меню</b><div class="mono">external-menu</div></td><td class="num">21 180</td><td class="num">94,6%</td><td class="num">4,9%</td><td class="num">0,4%</td><td class="num">2 693</td><td class="num">71,6%</td><td class="num">95,8%</td><td class="num">3,8%</td><td class="">комп</td></tr><tr><td class=""><b>Инвентаризация</b><div class="mono">inventory</div></td><td class="num">12 269</td><td class="num">63,8%</td><td class="num">34,6%</td><td class="num">1,5%</td><td class="num">1 038</td><td class="num">47,1%</td><td class="num">45,6%</td><td class="num">53,1%</td><td class="">мобильный</td></tr><tr><td class=""><b>Документы</b><div class="mono">documents</div></td><td class="num">7 173</td><td class="num">80,1%</td><td class="num">17,4%</td><td class="num">2,5%</td><td class="num">709</td><td class="num">60,8%</td><td class="num">85,0%</td><td class="num">12,4%</td><td class="">комп</td></tr><tr><td class=""><b>Закупки / заказы поставщику</b><div class="mono">purchase</div></td><td class="num">23 012</td><td class="num">56,1%</td><td class="num">42,0%</td><td class="num">1,9%</td><td class="num">489</td><td class="num">13,2%</td><td class="num">88,3%</td><td class="num">8,8%</td><td class="">комп</td></tr><tr><td class=""><b>Колл-центр (приём заказов)</b><div class="mono">call-center</div></td><td class="num">11 912</td><td class="num">93,3%</td><td class="num">5,4%</td><td class="num">1,3%</td><td class="num">304</td><td class="num">10,4%</td><td class="num">97,0%</td><td class="num">3,0%</td><td class="">комп</td></tr><tr><td class=""><b>Интеграции / источники заказов</b><div class="mono">integration</div></td><td class="num">5 906</td><td class="num">94,1%</td><td class="num">5,7%</td><td class="num">0,2%</td><td class="num">157</td><td class="num">23,2%</td><td class="num">94,9%</td><td class="num">5,1%</td><td class="">комп</td></tr><tr><td class=""><b>Склад (лайт-режим) — приёмка и входящие заказы</b><div class="mono">lite-stock</div></td><td class="num">8 749</td><td class="num">70,1%</td><td class="num">27,4%</td><td class="num">2,5%</td><td class="num">131</td><td class="num">15,2%</td><td class="num">82,4%</td><td class="num">13,0%</td><td class="">комп</td></tr><tr><td class=""><b>Настройка процессов (workflow)</b><div class="mono">workflow-config</div></td><td class="num">2 358</td><td class="num">86,6%</td><td class="num">12,6%</td><td class="num">0,8%</td><td class="num">55</td><td class="num">39,9%</td><td class="num">96,4%</td><td class="num">3,6%</td><td class="">комп</td></tr></tbody></table></div>
+<p class="small muted">Доли устройств — по всем визитам раздела; «Оборвано» и «Оборвано %» — по выборке 2 500 пользователей,
+процент считается от визитов, которые закончились в разделе, а не от всех визитов.
+В таблицу не включены «табло» (кассы, дашборд, ЦПУ, настройки) и разделы с менее чем 20 обрывами:
+для них метрика обрыва не применяется или слишком шумная.</p>
+
+<div class="note warn"><b>Как читать.</b> Если у раздела высокий процент обрывов и большая доля обрывов приходится
+на мобильный — проблема, скорее всего, в мобильном сценарии (размер полей, ввод, навигация). Если обрывы в основном
+на компе — ищите проблему в длинной форме, статусах и потере контекста, а не в адаптивности.</div>
+
+<h3>С какого устройства проверять гипотезы</h3>
+<div class="tablewrap"><table class=""><thead><tr><th class="">Гипотезы</th><th class="">Процесс</th><th class="">Устройство</th><th class="">Почему</th></tr></thead><tbody><tr><td class="">H01 · H02</td><td class="">Сессия и повторный логин</td><td class="">оба</td><td class="">навигатор: 66,2% обрывов комп / 32,6% моб.; доля обрыва 37,6% на компе против 15,7% на моб.</td></tr><tr><td class="">H03 · H04 · H05 · H20</td><td class="">Меню и каналы</td><td class="">комп</td><td class="">95,8% обрывов внешнего меню — с компьютера; доля обрыва почти равна (71,6 / 72,1)</td></tr><tr><td class="">H06 · H07 · H08</td><td class="">Закупки</td><td class="">комп, проверить и моб.</td><td class="">88,3% обрывов — комп; 42,0% визитов с моб., но доля обрыва там ниже (2,7% против 22,1%)</td></tr><tr><td class="">H09 · H10</td><td class="">Инвентаризация</td><td class="">мобильный</td><td class="">53,1% обрывов — моб.; доля обрыва на моб. 55,4% против 39,9% на компе</td></tr><tr><td class="">H11 · H12 · H13</td><td class="">Документы</td><td class="">комп</td><td class="">85,0% обрывов — комп, но доля обрыва почти равна (60,7 / 59,9) — проблема в форме, не в устройстве</td></tr><tr><td class="">H14</td><td class="">Личный кабинет</td><td class="">комп</td><td class="">100% выходов — комп; сам раздел почти не обрывается (0,2%)</td></tr><tr><td class="">H16 · H17</td><td class="">Ошибки: дашборд и ЦПУ</td><td class="">дашборд — оба, ЦПУ — комп</td><td class="">дашборд: 53,2% обрывов комп / 46,5% моб.; ЦПУ: 74,6% комп</td></tr><tr><td class="">H18</td><td class="">Карта курьера</td><td class="">комп</td><td class="">карта доставок — 100% обрывов с компьютера (111 визитов)</td></tr><tr><td class="">H19</td><td class="">Прогноз и заготовки</td><td class="">оба, начинать с компа</td><td class="">41,5% визитов с мобильного, но 81,2% обрывов — комп</td></tr><tr><td class="">H15 · H21 · H22</td><td class="">Данные и трекинг</td><td class="">не применимо</td><td class="">это не пользовательские улучшения</td></tr></tbody></table></div>
+
+<div class="note"><b>Короткий вывод.</b> Мобильный — не «второй экран», а основной для касс, дашборда и части инвентаризации.
+Но обрывы чаще на мобильном только в инвентаризации; в закупках, документах и меню — на компе.
+Проверять нужно на том устройстве, где сосредоточены обрывы: инвентаризация — мобильный,
+закупки и документы — комп. Если проверять всё только на компе, можно не увидеть мобильную ошибку подсчёта.</div>
 </section><section class="panel" id="tab-problems">
 <h2>Обрывы и проблемы</h2>
 <p class="lead">«Успешно» — вернулся к списку; «оборвано» — застрял на рабочем экране. Для «табло» метрика
@@ -497,18 +570,25 @@ Lift показывает, насколько связка сильнее слу
 <p><b>Сигнал.</b> 4 419 визитов с правкой меню; 625 (14,1%) доходят до привязки источника;
 323 из 779 визитов привязки (41,5%) заканчиваются на её экране. 2 070 + 1 904 визита — цикл «меню ↔ редактор».</p>
 <p><b>Гипотезы.</b> Меню не публикуется без ручной привязки, и об этом узнают после правки; экран привязки сложный.</p>
+<p><b>Устройство.</b> 95,8% обрывов внешнего меню — с компьютера; доля обрыва на компе и мобильном почти равна
+(71,6% / 72,1%). Это не мобильная проблема — чинить сам процесс привязки.</p>
 <p><b>Проверить.</b> Воронка «правка → сохранение → привязка»; на каком шаге максимальный отсев; сколько привязок реально нужны.</p></div>
 
 <div class="card"><h4>3. Закупки: правка заказа обрывается <span class="badge b-orange">🟠 средняя</span></h4>
 <p><b>Сигнал.</b> 489 из 3 706 визитов раздела (13,2%) заканчиваются на карточке; из 2 538 визитов с карточкой
 487 (19,2%) не возвращаются к списку. Цикл «список → карточка → список» — 2 175 визитов, 21 527 вхождений.</p>
 <p><b>Гипотезы.</b> Не видно обязательных полей; возврат теряет фильтры и позицию; часть правок — массовые, их делают по одной.</p>
+<p><b>Устройство.</b> 42,0% визитов раздела — с мобильного, но 88,3% обрывов — на компьютере;
+доля обрыва на компе 22,1% против 2,7% на мобильном. Проверять на обоих, начинать с компьютера.</p>
 <p><b>Проверить.</b> Доля правок без сохранения; время на карточке; как часто возвращаются к тому же заказу (нужен id).</p></div>
 
 <div class="card"><h4>4. Инвентаризация: обрыв подсчёта <span class="badge b-orange">🟠 средняя</span></h4>
 <p><b>Сигнал.</b> 1 038 из 2 202 визитов (47,1%) заканчиваются в зонах; 818 из 2 016 визитов с зонами не доходят до списка.
 Цикл «подсчёт ↔ зоны» повторяется 4–5 раз, 1 268 + 1 107 + 786 визитов в топ-цепочках.</p>
 <p><b>Гипотезы.</b> Нет автосохранения прогресса; ввод с телефона неудобен; длинный подсчёт не помещается в один заход.</p>
+<p><b>Устройство.</b> 34,6% визитов раздела — с мобильного, но на мобильном обрыв 55,4%
+против 39,9% на компьютере; 53,1% всех обрывов — мобильные. Это главный мобильный проблемный сценарий:
+проверять на телефоне, не только на компе.</p>
 <p><b>Проверить.</b> Доля подсчётов без финализации; устройство; сколько зон проходят за визит; есть ли сохранение.</p></div>
 
 <div class="card"><h4>5. Документы: накладная без проведения <span class="badge b-red">🔴 средняя</span></h4>
@@ -516,12 +596,17 @@ Lift показывает, насколько связка сильнее слу
 заканчиваются на ней. Медиана на экране — 84 с, p90 — 377 с; 61% замеров дольше 60 с.</p>
 <p><b>Гипотезы.</b> Нужно заполнить склад/поставщика — уходят за этим; статус «проведена/нет» не очевиден;
 нет черновика, поэтому работу откладывают.</p>
+<p><b>Устройство.</b> 80,1% визитов раздела — с компьютера; 85,0% обрывов — тоже комп.
+Но доля обрыва почти равна: 60,7% на компе против 59,9% на мобильном — устройство не причина,
+проблема в самой форме и статусах. Проверять на компе, но не списывать всё на адаптивность.</p>
 <p><b>Проверить.</b> Доля накладных, открытых и не проведённых в том же визите; какие поля не заполнены; где именно ждут.</p></div>
 
 <div class="card"><h4>6. Личный кабинет — тупик <span class="badge b-orange">🟠 средняя</span></h4>
 <p><b>Сигнал.</b> 501 из 502 визитов заканчиваются на <span class="mono">/user-account/main</span>;
 возврат редких через ЛК — 30% против базы 43%; 869 аккаунтов — «только вход и профиль».</p>
-<p><b>Гипотезы.</b> После задачи в ЛК нет перехода в рабочий контур; в ЛК нет задач, возвращающих регулярного пользователя.</p>
+<p><b>Гипотезы.</b> После задачи в ЛК нет перехода в рабочий контур; в ЛК нет задач, которые возвращали бы регулярного.</p>
+<p><b>Устройство.</b> 100% выходов ЛК — с компьютера, но сам раздел почти не обрывается (0,2%).
+Это не устройство, а отсутствие следующего шага.</p>
 <p><b>Проверить.</b> Какая задача доминирует (счёт, подписка, настройки); есть ли переход в рабочие разделы после.</p></div>
 
 <div class="card"><h4>7. Ошибки: сбои загрузки, не битые ссылки <span class="badge b-red">🔴 высокая</span></h4>
@@ -529,18 +614,24 @@ Lift показывает, насколько связка сильнее слу
 В выборке: 656 визитов с ошибкой, 1 282 просмотра экранов ошибки, 54 визита заканчиваются на ошибке,
 138 — начинаются с неё. Топ экранов ошибки в выборке: ЦПУ (381), дашборд (337), настройки (316).</p>
 <p><b>Гипотезы.</b> Рантайм-сбои загрузки данных, а не ссылки; код скрыт, поэтому причину не видно.</p>
+<p><b>Устройство.</b> Дашборд: 53,2% обрывов — комп, 46,5% — моб. (проверять на обоих).
+ЦПУ: 74,6% обрывов — комп (проверять на компе).</p>
 <p><b>Проверить.</b> Собрать код и стек в трекинг; разобрать топ-два раздела; проверить внешние заходы (138).</p></div>
 
 <div class="card"><h4>8. Колл-центр: «заглянул и ушёл» <span class="badge b-yellow">🟡 слабая</span></h4>
 <p><b>Сигнал.</b> 512 из 2 913 визитов (17,6%) — с одним действием; при этом воронка завершается в 89,6%.</p>
 <p><b>Гипотезы.</b> Звонки без заказа (нормальный отсев); оператор ищет гостя/заказ и не находит.</p>
+<p><b>Устройство.</b> 97,0% обрывов — с компьютера; доля обрыва 10,7% на компе против 7,9% на мобильном.
+Проверять на компе; мобильный здесь не причина.</p>
 <p><b>Проверить.</b> Что именно в одиночных визитах: поиск, открытие списка, карточка.</p></div>
 
 <div class="card"><h4>9. Кассы и дашборд — «табло», не проблема <span class="badge b-gray">⚪ факт</span></h4>
 <p><b>Сигнал.</b> Кассы: 98,7% «обрывов» на <span class="mono">/till-shifts/active</span>, 2 734 из 5 377 визитов — с одним действием.
 Дашборд: 97,8% на <span class="mono">/dashboard/dashboard/:id</span>, 1 309 из 3 181 — с одним действием.</p>
 <p><b>Вывод.</b> Это фоновые экраны контроля. Реальную работу касс смотреть в <span class="mono">/till-shifts/guestcheck</span>
-(1 020 обрывов), дашборда — в переходах в операционные разделы (их почти нет).</p></div>
+(1 020 обрывов), дашборда — в переходах в операционные разделы (их почти нет).</p>
+<p><b>Устройство.</b> Кассы — 75,3% визитов с мобильного, дашборд — 55,8%.
+Это самые «мобильные» экраны; если проверять их только на компе, можно не увидеть реальный сценарий.</p></div>
 
 <h3>Ошибки: детали</h3>
 <div class="grid2">
@@ -605,6 +696,26 @@ Lift показывает, насколько связка сильнее слу
 <li><b>Проверить логистику доставки</b> отдельно: сигнал по времени есть, но замеров мало (8–86) — нужен ю-тест или лог.</li>
 </ol>
 
+<h3>7. С какого устройства проверять</h3>
+<p>Мобильный — 42,1% всех визитов, но распределён неравномерно. У регулярных пользователей он главный
+в 32,8% случаев против 11,9% у редких; 56,2% регулярных хотя бы раз работали с мобильного.
+Поэтому проверка «только на компе» пропускает значительную часть операционных сценариев.</p>
+<ul>
+<li><b>Инвентаризация:</b> 34,6% визитов с мобильного, но 53,1% обрывов — мобильные; доля обрыва 55,4% на мобильном
+против 39,9% на компе. Главный мобильный проблемный сценарий — проверять на телефоне.</li>
+<li><b>Закупки:</b> 42,0% визитов с мобильного, но 88,3% обрывов — на компе; доля обрыва 22,1% против 2,7%.
+Проверять на обоих, начинать с компьютера.</li>
+<li><b>Документы:</b> 85,0% обрывов — комп, но доля обрыва почти равна (60,7% / 59,9%) — проблема в форме,
+а не в устройстве; проверять на компе.</li>
+<li><b>Меню и интеграции:</b> 95,8% и 94,9% обрывов — комп; доли обрыва равны — проверять на компе.</li>
+<li><b>Колл-центр:</b> 97,0% обрывов — комп; доля обрыва 10,7% против 7,9% — проверять на компе.</li>
+<li><b>Кассы и дашборд:</b> 75,3% и 55,8% визитов с мобильного — это мобильные экраны; но метрика обрыва
+для них не применима (табло).</li>
+</ul>
+<p><b>Вывод:</b> мобильный — не «второй экран», а основной для касс, дашборда и части инвентаризации.
+Но обрывы чаще на мобильном только в инвентаризации; в закупках и документах — на компе.
+Поэтому проверять нужно на том устройстве, где сосредоточены обрывы, а не там, где больше визитов.</p>
+
 <h3>Кандидаты в задачи (последняя версия бэклога)</h3>
 <div class="tablewrap"><table class=""><thead><tr><th class="">#</th><th class="">Задача</th><th class="">Серьёзность</th><th class="">Доказательство</th><th class="">Гипотезы</th></tr></thead><tbody><tr><td class="">A1</td><td class="">Разобрать коды ошибок при загрузке дашборда и сводных заказов</td><td class="">🔴</td><td class="">2 676 визитов с /error; ~1 130 дашборд, ~707 ЦПУ</td><td class="">H15, H17</td></tr><tr><td class="">A2</td><td class="">Вход на экран ошибки извне: разобрать внешние ссылки</td><td class="">🟠</td><td class="">138 визитов начинаются с ошибки</td><td class="">H16</td></tr><tr><td class="">B1</td><td class="">Свести настройку источника заказов и меню в один сценарий</td><td class="">🟠</td><td class="">41,5% привязок бросают (323/779)</td><td class="">H03</td></tr><tr><td class="">B2</td><td class="">Показать, что без привязки заказы не пойдут</td><td class="">🟡</td><td class="">41,5% привязок бросают</td><td class="">H04</td></tr><tr><td class="">C1</td><td class="">Статус проведения и недостающие поля в списке документов</td><td class="">🟠</td><td class="">60,8% обрывов; медиана 84 с</td><td class="">H11</td></tr><tr><td class="">C2</td><td class="">Автосохранение черновика накладной</td><td class="">🟡</td><td class="">p90 377 с; 61% замеров &gt;60 с</td><td class="">H12</td></tr><tr><td class="">D1</td><td class="">Упростить логистику доставки, шаги 3–4</td><td class="">🟠</td><td class="">медиана 97–118 с, p90 392–661 с (мало замеров)</td><td class="">—</td></tr><tr><td class="">D2</td><td class="">Внутреннее перемещение: ускорить заполнение</td><td class="">🟡</td><td class="">медиана 109 с, 63 из 94 замеров &gt;60 с</td><td class="">—</td></tr><tr><td class="">E1</td><td class="">id объекта + события «сохранено/проведено» в трекинг</td><td class="">🟡</td><td class="">id скрыт :id; воронки косвенные</td><td class="">H21</td></tr><tr><td class="">E2</td><td class="">Сохранять реальный код ошибки в URL</td><td class="">🟡</td><td class="">код скрыт :code</td><td class="">H15</td></tr></tbody></table></div>
 
@@ -641,7 +752,7 @@ Lift показывает, насколько связка сильнее слу
 <h3>Источники</h3>
 <ul class="small">
 <li>Matomo idSite 1 (iiko prod), период 01–13.10.2026; выборка 2 500 пользователей / 35 574 визита.</li>
-<li>Полная база: 11 631 аккаунтов; модули, страницы, связки, сегменты.</li>
+<li>Полная база: 11 631 аккаунт; модули, страницы, связки, сегменты.</li>
 <li>Рабочие файлы: <span class="mono">/opt/data/exports/user_paths_full_2026-10-13/</span>,
 <span class="mono">/opt/data/exports/workflows/</span>, <span class="mono">/opt/data/exports/segments/</span>,
 <span class="mono">/opt/data/exports/localization/</span>.</li>
