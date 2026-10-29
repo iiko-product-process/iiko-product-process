@@ -1,0 +1,303 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Гипотезы улучшений по пользовательским путям · iiko web · 29.10.2026</title>
+<style>
+:root{--bg:#0d1016;--panel:#151922;--line:#2a3140;--text:#e7eaf0;--muted:#96a0b1;--accent:#ff6a00;--blue:#6ea8fe;--green:#4ade80;--red:#f87171;--yellow:#fbbf24}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+.top{position:sticky;top:0;z-index:20;background:rgba(13,16,22,.97);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:13px 28px 10px}
+.brand{color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+h1{font-size:26px;line-height:1.2;margin:4px 0 5px;letter-spacing:-.02em}
+.meta{color:var(--muted);font-size:12.5px;max-width:1200px}
+main{padding:22px 28px 70px;max-width:1400px;margin:0 auto}
+h2{font-size:22px;margin:6px 0 8px}h3{font-size:17px;margin:26px 0 10px}h4{font-size:15px;margin:0 0 4px}
+p{max-width:1100px;margin:8px 0}.lead{color:#c4cddd;max-width:1100px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:16px 0}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 14px}
+.kpi .v{font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.kpi .l{color:var(--muted);font-size:12px;margin-top:3px}
+.kpi.hot .v{color:var(--accent)}.kpi.green .v{color:var(--green)}.kpi.blue .v{color:var(--blue)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0}
+.card.hyp{border-left:3px solid var(--accent)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:1050px){.grid2{grid-template-columns:1fr}}
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:13px}
+.tablewrap{max-height:620px;overflow:auto;border:1px solid var(--line);border-radius:10px;margin:10px 0}
+th,td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:#11151d;color:#cbd5e1;position:sticky;top:0;z-index:2;font-size:12px;font-weight:650}
+tbody tr:hover td{background:#171d28}tr:last-child td{border-bottom:0}
+.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11.5px;color:#b9c3d3;word-break:break-word}
+.badge{display:inline-block;padding:2px 7px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap}
+.b-red{background:#3a1518;color:#fca5a5}.b-orange{background:#3a2410;color:#fdba74}.b-yellow{background:#3a3410;color:#fde68a}
+.b-green{background:#12301f;color:#86efac}.b-blue{background:#14243d;color:#93c5fd}.b-gray{background:#232936;color:#c3cad8}
+.note{background:#121722;border-left:3px solid var(--blue);padding:10px 14px;border-radius:0 9px 9px 0;color:#c7d2e3;margin:13px 0;font-size:13.5px}
+.note.warn{border-left-color:var(--accent)}.note.ok{border-left-color:var(--green)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;align-items:center}
+input,select{background:#11151d;border:1px solid var(--line);color:var(--text);border-radius:8px;padding:8px 10px;font:13px inherit}
+.pill{background:#11151d;border:1px solid var(--line);padding:3px 9px;border-radius:999px;font-size:12px;color:var(--muted)}
+.quote{font-size:14.5px;color:#fff;margin:6px 0 10px;max-width:1050px}
+.ev{background:#10141c;border:1px solid var(--line);border-radius:8px;padding:9px 11px;margin:8px 0;font-size:12.5px;color:#c3cddd}
+.ev ul{margin:2px 0;padding-left:18px}.ev li{margin:2px 0}
+.score{font-size:24px;font-weight:850;color:var(--accent);line-height:1}
+.hmeta{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;margin:2px 0 6px}
+.ice{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:4px}
+.ice b{color:#e7eaf0}.bar{height:6px;background:#232a36;border-radius:3px;overflow:hidden;margin-top:3px;width:110px}
+.bar>i{display:block;height:100%;background:var(--accent)}
+.tag{font-size:11px;color:var(--muted);border:1px solid var(--line);padding:2px 6px;border-radius:6px}
+.metric{background:#0f1a14;border-left:3px solid var(--green);padding:8px 11px;border-radius:0 8px 8px 0;margin:8px 0;font-size:13px}
+.check{background:#1a1510;border-left:3px solid var(--yellow);padding:8px 11px;border-radius:0 8px 8px 0;margin:8px 0;font-size:13px}
+footer{color:var(--muted);font-size:12px;padding:22px 28px;border-top:1px solid var(--line);max-width:1400px;margin:0 auto}
+ul,ol{margin:7px 0;padding-left:22px}li{margin:3px 0}
+@media print{.top{position:static}.tablewrap{max-height:none;overflow:visible}body{background:#fff;color:#111}}
+</style></head><body>
+<header class="top">
+<div class="brand">iiko web · гипотезы по пользовательским путям</div>
+<h1>Что улучшить: 22 гипотезы с отсылкой на пути</h1>
+<div class="meta">01–13.10.2026 · Matomo idSite 1 · выборка 2 500 пользователей / 35 574 визита ·
+версия 29.10.2026 · парный файл — отчёт по пользовательским путям и сырые данные</div>
+</header>
+<main>
+<p class="lead">Гипотезы собраны из одного анализа: каждая опирается на конкретные цепочки экранов, обрывы или связки разделов.
+Формат — «Если …, тогда …, так как …»; метрика — baseline → target; ICE — по анкерам шага 2. Веса целей не применялись (G = 1),
+потому что цели для этого анализа не задавались: балл = I × C × E.</p>
+
+<div class="kpis">
+<div class="kpi hot"><div class="v">22</div><div class="l">гипотез</div></div>
+<div class="kpi blue"><div class="v">18</div><div class="l">продуктовых</div></div>
+<div class="kpi"><div class="v">2</div><div class="l">research</div></div>
+<div class="kpi"><div class="v">2</div><div class="l">данные / трекинг</div></div>
+<div class="kpi green"><div class="v">8</div><div class="l">групп проблем</div></div>
+</div>
+
+<div class="note"><b>Как читать.</b> «Отсылка на путь» — это не иллюстрация, а доказательство: цепочка, экран или связка
+с числами из выборки. Метрика без baseline помечена «уточнить» — такую гипотезу нельзя тащить в спринт без замера.
+C ниже 4 — только research. Балл выше — не «важнее», а «раньше проверить»: I × C × E без весов целей.</div>
+
+<h2>Топ-5 продуктовых гипотез</h2>
+<div class="card hyp">
+<div class="hmeta"><div><span class="tag">H01</span> <b>Продлить рабочую сессию и добавить «запомнить меня»</b></div><div class="score">288</div></div>
+<div class="quote">Если продлить рабочую сессию до 30 дней и добавить «запомнить меня» для рабочих аккаунтов, тогда доля визитов с повторным входом снизится с 34,8% до 25%, так как 1 108 визитов заканчиваются на /navigator/auth/login, а цикл «вход → главная → вход» встречается 987 раз.</div>
+<div class="ev"><b>Отсылка на путь:</b> 12 371 визит выборки (34,8%) начинается с логина.</div>
+<div class="ice"><span>I <b>6</b></span><span>C <b>6</b></span><span>E <b>8</b></span><span class="muted">балл = I×C×E</span></div>
+</div><div class="card hyp">
+<div class="hmeta"><div><span class="tag">H04</span> <b>Статус публикации и привязки в редакторе меню</b></div><div class="score">252</div></div>
+<div class="quote">Если в редакторе меню показывать статус публикации и источник заказов («меню не привязано — заказы не пойдут»), тогда пользователь не будет узнавать об этом после правки, так как 323 из 779 визитов привязки (41,5%) заканчиваются прямо на её экране.</div>
+<div class="ev"><b>Отсылка на путь:</b> 4 419 визитов с правкой меню; только 625 (14,1%) доходят до привязки источника.</div>
+<div class="ice"><span>I <b>6</b></span><span>C <b>6</b></span><span>E <b>7</b></span><span class="muted">балл = I×C×E</span></div>
+</div><div class="card hyp">
+<div class="hmeta"><div><span class="tag">H03</span> <b>Привязка источника внутри сценария меню</b></div><div class="score">210</div></div>
+<div class="quote">Если перенести привязку источника заказов в сценарий правки меню (боковая панель или шаг публикации), тогда доля завершённых привязок вырастет с 58,5% до 75%, так как 625 из 4 419 правок доходят до привязки, а 41,5% начатых бросают.</div>
+<div class="ev"><b>Отсылка на путь:</b> Переходы «меню → интеграции»: 346, «редактор → интеграции»: 311, «меню → интеграции → адаптер»: 295 визитов.</div>
+<div class="ice"><span>I <b>7</b></span><span>C <b>6</b></span><span>E <b>5</b></span><span class="muted">балл = I×C×E</span></div>
+</div><div class="card hyp">
+<div class="hmeta"><div><span class="tag">H09</span> <b>Автосохранение прогресса подсчёта</b></div><div class="score">210</div></div>
+<div class="quote">Если автосохранять прогресс подсчёта и показывать «продолжить с зоны N», тогда доля визитов, заканчивающихся в зонах, снизится с 47,1% до 35%, так как 818 из 2 016 визитов с зонами не доходят до списка, а цикл повторяется 4–5 раз.</div>
+<div class="ev"><b>Отсылка на путь:</b> 1 038 из 2 202 визитов раздела (47,1%) заканчиваются в зонах подсчёта.</div>
+<div class="ice"><span>I <b>7</b></span><span>C <b>6</b></span><span>E <b>5</b></span><span class="muted">балл = I×C×E</span></div>
+</div><div class="card hyp">
+<div class="hmeta"><div><span class="tag">H11</span> <b>Статус проведения и недостающие поля в списке документов</b></div><div class="score">210</div></div>
+<div class="quote">Если показывать статус проведения и недостающие обязательные поля в списке документов, тогда доля визитов с открытием накладной без проведения снизится с 60,8% до 45%, так как 709 из 1 166 визитов раздела обрываются на рабочем экране, а 282 из 894 — на самой накладной.</div>
+<div class="ev"><b>Отсылка на путь:</b> Документы: 709 из 1 166 визитов (60,8%) — обрыв.</div>
+<div class="ice"><span>I <b>7</b></span><span>C <b>6</b></span><span>E <b>5</b></span><span class="muted">балл = I×C×E</span></div>
+</div>
+
+<h2>Все гипотезы</h2>
+<h3>Сводная таблица</h3>
+<div class="tablewrap"><table><thead><tr>
+<th>ID</th><th>Гипотеза</th><th>Группа</th><th>Тип</th><th class="num">I</th><th class="num">C</th><th class="num">E</th><th class="num">Балл</th>
+</tr></thead><tbody><tr><td class="">H21</td><td class="">ID объекта и события сохранения/проведения в трекинге</td><td class="">Данные и трекинг</td><td class=""><span class="badge b-gray">данные</span></td><td class="num">7</td><td class="num">9</td><td class="num">8</td><td class="num"><b>504</b></td></tr><tr><td class="">H15</td><td class="">Реальный код ошибки в URL и заголовке</td><td class="">Данные и трекинг</td><td class=""><span class="badge b-yellow">research</span></td><td class="num">8</td><td class="num">8</td><td class="num">7</td><td class="num"><b>448</b></td></tr><tr><td class="">H22</td><td class="">События на публикацию меню и привязку источника</td><td class="">Данные и трекинг</td><td class=""><span class="badge b-gray">данные</span></td><td class="num">6</td><td class="num">8</td><td class="num">8</td><td class="num"><b>384</b></td></tr><tr><td class="">H01</td><td class="">Продлить рабочую сессию и добавить «запомнить меня»</td><td class="">Сессии</td><td class=""><span class="badge b-blue">продукт</span></td><td class="num">6</td><td class="num">6</td><td class="num">8</td><td class="num"><b>288</b></td></tr><tr><td class="">H04</td><td class="">Статус публикации и привязки в редакторе меню</td><td class="">Меню и каналы</td><td class=""><span class="badge b-blue">продукт</span></td><td class="num">6</td><td class="num">6</td><td class="num">7</td><td class="num"><b>252</b></td></tr><tr><td class="">H03</td><td class="">Привязка источника внутри сценария меню</td><td class="">Меню и каналы</td><td class=""><span class="badge b-blue">продукт</span></td><td class="num">7</td><td class="num">6</td><td class="num">5</td><td class="num"><b>210</b></td></tr><tr><td class="">H09</td><td class="">Автосохранение прогресса подсчёта</td><td class="">Склад и документы</td><td class=""><span class="badge b-blue">продукт</span></td><td class="num">7</td><td class="num">6</td><td class="num">5</td><td class="num"><b>210</b></td></tr><tr><td class="">H11</td><td class="">Статус проведения и недостающие поля в списке документов</td><td class="">Склад и документы</td><td class=""><span class="badge b-blue">продукт</span></td><td class="num">7</td><td class="num">6</td><td class="num">5</td><td class="num"><b>210</b></td></tr><tr><td class="">H06</td><td class="">Обязательные поля и готовность заказа в списке</td><td class="">Закупки</td><td class=""><span class="badge b-blue">продукт</span></td><td class="num">6</td><td class="num">6</td><td class="num">5</td><td class="num"><b>180</b></td></tr><tr><td class="">H07</td><td class="">Сохранять контекст списка при возврате</td><td class="">Закупки</td><td class=""><span class="badge b-blue">продукт</span></td><td class="num">5</td><td class="num">5</td><td class="num">7</td><td class="num"><b>175</b></td></tr><tr><td class="">H16</td><td class="">Экран ошибки с действиями</td><td class="">Ошибки и дашборд</td><td class=""><span class="badge b-blue">продукт</span></td><td class="num">5</td><td class="num">5</td><td class="num">7</td><td class="num"><b>175</b></td></tr><tr><td class="">H17</td><td class="">Retry и health-check для дашборда и ЦПУ</td><td class="">Ошибки и дашборд</td><td class=""><span class="badge b-blue">продукт</span></td><td class="num">7</td><td class="num">5</td><td class="num">5</td><td class="num"><b>175</b></td></tr><tr><td class="">H14</td><td class="">«Продолжить работу» в личном кабинете</td><td class="">Личный кабинет</td><td class=""><span class="badge b-blue">продукт</span></td><td class="num">5</td><td class="num">5</td><td class="num">6</td><td class="num"><b>150</b></td></tr><tr><td class="">H12</td><td class="">Черновик накладной</td><td class="">Склад и документы</td><td class=""><span class="badge b-blue">продукт</span></td><td class="num">5</td><td class="num">5</td><td class="num">5</td><td class="num"><b>125</b></td></tr><tr><td class="">H02</td><td class="">Возврат на исходный экран после логина</td><td class="">Сессии</td><td class=""><span class="badge b-blue">продукт</span></td><td class="num">5</td><td class="num">5</td><td class="num">5</td><td class="num"><b>125</b></td></tr><tr><td class="">H18</td><td class="">Карта курьера из карточки обращения</td><td class="">Связки процессов</td><td class=""><span class="badge b-blue">продукт</span></td><td class="num">5</td><td class="num">5</td><td class="num">5</td><td class="num"><b>125</b></td></tr><tr><td class="">H05</td><td class="">Массовое копирование меню и цен между точками</td><td class="">Меню и каналы</td><td class=""><span class="badge b-blue">продукт</span></td><td class="num">6</td><td class="num">5</td><td class="num">4</td><td class="num"><b>120</b></td></tr><tr><td class="">H13</td><td class="">Массовое проведение документов</td><td class="">Склад и документы</td><td class=""><span class="badge b-blue">продукт</span></td><td class="num">6</td><td class="num">4</td><td class="num">5</td><td class="num"><b>120</b></td></tr><tr><td class="">H19</td><td class="">Прогноз → рекомендуемый план заготовок</td><td class="">Связки процессов</td><td class=""><span class="badge b-blue">продукт</span></td><td class="num">5</td><td class="num">5</td><td class="num">4</td><td class="num"><b>100</b></td></tr><tr><td class="">H08</td><td class="">Массовое редактирование заказов из списка</td><td class="">Закупки</td><td class=""><span class="badge b-blue">продукт</span></td><td class="num">6</td><td class="num">4</td><td class="num">4</td><td class="num"><b>96</b></td></tr><tr><td class="">H20</td><td class="">Единый контур «меню → цены → прайсы»</td><td class="">Меню и каналы</td><td class=""><span class="badge b-blue">продукт</span></td><td class="num">6</td><td class="num">5</td><td class="num">3</td><td class="num"><b>90</b></td></tr><tr><td class="">H10</td><td class="">Мобильный ввод в подсчёте</td><td class="">Склад и документы</td><td class=""><span class="badge b-yellow">research</span></td><td class="num">5</td><td class="num">4</td><td class="num">4</td><td class="num"><b>80</b></td></tr></tbody></table></div>
+
+<h3>Гипотезы по группам</h3>
+<h3 id="g-data">Данные и трекинг <span class="muted small">· 3</span></h3><p class="small muted">Разблокируют измерение; не пользовательские улучшения, но без них остальные гипотезы не проверить.</p><div class="card hyp" data-group="data" data-type="данные">
+<div class="hmeta"><div><span class="tag">H21</span> <span class="badge b-gray">данные</span> <b>ID объекта и события сохранения/проведения в трекинге</b></div><div class="score">504</div></div>
+<div class="quote">Если добавить в трекинг id документа/заказа (Custom Dimension) и события «сохранено / проведено / опубликовано», тогда станет возможно отличать завершённую операцию от брошенной и точно считать воронки, так как сейчас id скрыт плейсхолдером :id, событий нет, а «обрыв» — прокси-метрика.</div>
+<div class="ev"><b>Отсылка на пользовательские пути</b><ul><li>Документы: 709 из 1 166 визитов (60,8%) заканчиваются на рабочем экране — но неизвестно, проведён документ или нет.</li><li>Закупки: 487 из 2 538 визитов с карточкой (19,2%) не возвращаются к списку; сохранили ли правку — неизвестно.</li><li>Ошибки: 2 676 визитов с /error; код скрыт :code, причина недоступна.</li></ul></div>
+<div class="metric"><b>Метрика:</b> Точные воронки завершения: 0% → 100% ключевых операций (накладная, заказ, подсчёт, публикация меню).<br><span class="muted">Источник: Matomo + разработка (CD и события)</span></div>
+<div class="ice"><span>I <b>7</b><div class="bar"><i style="width:70%"></i></div></span><span>C <b>9</b><div class="bar"><i style="width:90%"></i></div></span><span>E <b>8</b><div class="bar"><i style="width:80%"></i></div></span><span class="muted" style="align-self:flex-end">I × C × E = <b style="color:#ff6a00">504</b></span></div>
+<div class="check"><b>Что проверить до запуска:</b> Согласовать 3–5 событий и один CD с разработкой; проверить, что объём трекинга не вырастет больше чем на 10%; не собирать PII.</div>
+</div><div class="card hyp" data-group="data" data-type="research">
+<div class="hmeta"><div><span class="tag">H15</span> <span class="badge b-yellow">research</span> <b>Реальный код ошибки в URL и заголовке</b></div><div class="score">448</div></div>
+<div class="quote">Если сохранять реальный код ошибки в URL /error/:code и в pageTitle, тогда можно будет разобрать причины 2 676 визитов со сбоями, так как сейчас код заменён плейсхолдером :code и видно только раздел (дашборд ~1 130, ЦПУ ~707).</div>
+<div class="ev"><b>Отсылка на пользовательские пути</b><ul><li>ЦПУ: /cpu/error/:code — 381 просмотр в выборке; дашборд — 337; настройки — 316.</li><li>138 визитов начинаются прямо с экрана ошибки; 54 — заканчиваются на нём.</li><li>Ранняя версия отчёта называла 1 282 «визитами»; это просмотры экранов ошибки.</li></ul></div>
+<div class="metric"><b>Метрика:</b> Доля ошибок с известным кодом: 0% → 100%; время диагностики инцидента — baseline уточнить.<br><span class="muted">Источник: Matomo (URL/pageTitle) + логи приложения</span></div>
+<div class="ice"><span>I <b>8</b><div class="bar"><i style="width:80%"></i></div></span><span>C <b>8</b><div class="bar"><i style="width:80%"></i></div></span><span>E <b>7</b><div class="bar"><i style="width:70%"></i></div></span><span class="muted" style="align-self:flex-end">I × C × E = <b style="color:#ff6a00">448</b></span></div>
+<div class="check"><b>Что проверить до запуска:</b> Проверить, что код не содержит персональных данных; договориться о формате кода с разработкой.</div>
+</div><div class="card hyp" data-group="data" data-type="данные">
+<div class="hmeta"><div><span class="tag">H22</span> <span class="badge b-gray">данные</span> <b>События на публикацию меню и привязку источника</b></div><div class="score">384</div></div>
+<div class="quote">Если добавить события «меню опубликовано» и «источник привязан», тогда воронка настройки канала станет измеримой, так как сейчас единственный сигнал — экран привязки, а 41,5% визитов на нём заканчиваются.</div>
+<div class="ev"><b>Отсылка на пользовательские пути</b><ul><li>4 419 правок меню → 625 доходят до привязки → 323 заканчиваются на экране привязки.</li><li>Событий публикации/привязки в Matomo нет.</li></ul></div>
+<div class="metric"><b>Метрика:</b> Доля привязок с подтверждённым завершением: 0% → 100%; точная воронка «правка → публикация → привязка».<br><span class="muted">Источник: Matomo + разработка (события)</span></div>
+<div class="ice"><span>I <b>6</b><div class="bar"><i style="width:60%"></i></div></span><span>C <b>8</b><div class="bar"><i style="width:80%"></i></div></span><span>E <b>8</b><div class="bar"><i style="width:80%"></i></div></span><span class="muted" style="align-self:flex-end">I × C × E = <b style="color:#ff6a00">384</b></span></div>
+<div class="check"><b>Что проверить до запуска:</b> Не дублировать H21; достаточно двух событий, без полного аудита.</div>
+</div><h3 id="g-session">Сессии <span class="muted small">· 2</span></h3><p class="small muted">Повторные логины ломают непрерывные сценарии.</p><div class="card hyp" data-group="session" data-type="продукт">
+<div class="hmeta"><div><span class="tag">H01</span> <span class="badge b-blue">продукт</span> <b>Продлить рабочую сессию и добавить «запомнить меня»</b></div><div class="score">288</div></div>
+<div class="quote">Если продлить рабочую сессию до 30 дней и добавить «запомнить меня» для рабочих аккаунтов, тогда доля визитов с повторным входом снизится с 34,8% до 25%, так как 1 108 визитов заканчиваются на /navigator/auth/login, а цикл «вход → главная → вход» встречается 987 раз.</div>
+<div class="ev"><b>Отсылка на пользовательские пути</b><ul><li>12 371 визит выборки (34,8%) начинается с логина.</li><li>1 108 визитов заканчиваются на /navigator/auth/login — 25,8% выходов навигатора.</li><li>Цепочки «вход → главная → вход» — 987 визитов; «главная → вход → главная» — 837.</li></ul></div>
+<div class="metric"><b>Метрика:</b> Визиты с логином: 12 371 (34,8%) → 8 900 (25%); повторные логины на пользователя в день: baseline уточнить.<br><span class="muted">Источник: Matomo (входы, цепочки), служба безопасности</span></div>
+<div class="ice"><span>I <b>6</b><div class="bar"><i style="width:60%"></i></div></span><span>C <b>6</b><div class="bar"><i style="width:60%"></i></div></span><span>E <b>8</b><div class="bar"><i style="width:80%"></i></div></span><span class="muted" style="align-self:flex-end">I × C × E = <b style="color:#ff6a00">288</b></span></div>
+<div class="check"><b>Что проверить до запуска:</b> Политика безопасности и требования к сессиям; не сломать сервисные/мониторинговые аккаунты.</div>
+</div><div class="card hyp" data-group="session" data-type="продукт">
+<div class="hmeta"><div><span class="tag">H02</span> <span class="badge b-blue">продукт</span> <b>Возврат на исходный экран после логина</b></div><div class="score">125</div></div>
+<div class="quote">Если после повторного входа возвращать пользователя на экран, где сессия истекла, тогда повторный логин не будет ломать сценарий, так как циклы «вход → главная → вход» идут посреди закупок и инвентаризации (987 и 837 визитов).</div>
+<div class="ev"><b>Отсылка на пользовательские пути</b><ul><li>«Закупки → логин → закупки» — 650 визитов; «карточка → список → логин» — 537.</li><li>«Инвентаризация → логин → главная» — 142 визита.</li></ul></div>
+<div class="metric"><b>Метрика:</b> Доля возвратов на исходный экран: 0% → 80%; обрывы на логине: 1 108 → 700.<br><span class="muted">Источник: Matomo (цепочки) + H01</span></div>
+<div class="ice"><span>I <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span>C <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span>E <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span class="muted" style="align-self:flex-end">I × C × E = <b style="color:#ff6a00">125</b></span></div>
+<div class="check"><b>Что проверить до запуска:</b> Безопасность deep link; не возвращать на экран с чужими правами.</div>
+</div><h3 id="g-menu">Меню и каналы <span class="muted small">· 4</span></h3><p class="small muted">Разрез «меню ↔ источник» и контур «меню → цены → прайсы».</p><div class="card hyp" data-group="menu" data-type="продукт">
+<div class="hmeta"><div><span class="tag">H04</span> <span class="badge b-blue">продукт</span> <b>Статус публикации и привязки в редакторе меню</b></div><div class="score">252</div></div>
+<div class="quote">Если в редакторе меню показывать статус публикации и источник заказов («меню не привязано — заказы не пойдут»), тогда пользователь не будет узнавать об этом после правки, так как 323 из 779 визитов привязки (41,5%) заканчиваются прямо на её экране.</div>
+<div class="ev"><b>Отсылка на пользовательские пути</b><ul><li>4 419 визитов с правкой меню; только 625 (14,1%) доходят до привязки источника.</li><li>Из 779 визитов с экраном привязки 323 (41,5%) заканчиваются на нём.</li><li>Внешнее меню ↔ редактор: 2 070 + 1 904 визита, 7 249 вхождений.</li></ul></div>
+<div class="metric"><b>Метрика:</b> Обрывы на экране привязки: 323 → 200 (−38%); доля меню без источника: baseline уточнить.<br><span class="muted">Источник: Matomo (цепочки, обрывы)</span></div>
+<div class="ice"><span>I <b>6</b><div class="bar"><i style="width:60%"></i></div></span><span>C <b>6</b><div class="bar"><i style="width:60%"></i></div></span><span>E <b>7</b><div class="bar"><i style="width:70%"></i></div></span><span class="muted" style="align-self:flex-end">I × C × E = <b style="color:#ff6a00">252</b></span></div>
+<div class="check"><b>Что проверить до запуска:</b> Сколько меню реально живут без источника; не превратить статус в постоянный баннер.</div>
+</div><div class="card hyp" data-group="menu" data-type="продукт">
+<div class="hmeta"><div><span class="tag">H03</span> <span class="badge b-blue">продукт</span> <b>Привязка источника внутри сценария меню</b></div><div class="score">210</div></div>
+<div class="quote">Если перенести привязку источника заказов в сценарий правки меню (боковая панель или шаг публикации), тогда доля завершённых привязок вырастет с 58,5% до 75%, так как 625 из 4 419 правок доходят до привязки, а 41,5% начатых бросают.</div>
+<div class="ev"><b>Отсылка на пользовательские пути</b><ul><li>Переходы «меню → интеграции»: 346, «редактор → интеграции»: 311, «меню → интеграции → адаптер»: 295 визитов.</li><li>Цикл «меню ↔ редактор» — 2 070 + 1 904 визита; правки повторяются 3,5 раза за визит.</li><li>P(меню | интеграции) = 42,7% — почти половина работы в интеграциях идёт с меню.</li></ul></div>
+<div class="metric"><b>Метрика:</b> Завершённые привязки: 58,5% → 75%; доля правок меню, завершённых с привязкой.<br><span class="muted">Источник: Matomo (воронка привязки)</span></div>
+<div class="ice"><span>I <b>7</b><div class="bar"><i style="width:70%"></i></div></span><span>C <b>6</b><div class="bar"><i style="width:60%"></i></div></span><span>E <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span class="muted" style="align-self:flex-end">I × C × E = <b style="color:#ff6a00">210</b></span></div>
+<div class="check"><b>Что проверить до запуска:</b> Не дублировать настройку источника; сохранить глубокие ссылки и права.</div>
+</div><div class="card hyp" data-group="menu" data-type="продукт">
+<div class="hmeta"><div><span class="tag">H05</span> <span class="badge b-blue">продукт</span> <b>Массовое копирование меню и цен между точками</b></div><div class="score">120</div></div>
+<div class="quote">Если добавить массовое копирование меню и цен между точками, тогда цикл «меню ↔ редактор» (2 070 + 1 904 визита, 7 249 вхождений) сократится, так как правки повторяются 3,5 раза за визит.</div>
+<div class="ev"><b>Отсылка на пользовательские пути</b><ul><li>Цикл «меню → редактор → меню» — 2 070 визитов; обратный — 1 904.</li><li>Связка «прайс-лист + быстрое меню» — максимальный lift в продукте 90,4; «номенклатура + прайс-лист» — 640 пользователей, lift 4,4.</li></ul></div>
+<div class="metric"><b>Метрика:</b> Вхождения цикла на визит: 3,5 → 2,5; время на массовую правку — baseline уточнить.<br><span class="muted">Источник: Matomo (цепочки, связки)</span></div>
+<div class="ice"><span>I <b>6</b><div class="bar"><i style="width:60%"></i></div></span><span>C <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span>E <b>4</b><div class="bar"><i style="width:40%"></i></div></span><span class="muted" style="align-self:flex-end">I × C × E = <b style="color:#ff6a00">120</b></span></div>
+<div class="check"><b>Что проверить до запуска:</b> Сценарий копирования и конфликты версий; что делать с локализованными ценами.</div>
+</div><div class="card hyp" data-group="menu" data-type="продукт">
+<div class="hmeta"><div><span class="tag">H20</span> <span class="badge b-blue">продукт</span> <b>Единый контур «меню → цены → прайсы»</b></div><div class="score">90</div></div>
+<div class="quote">Если объединить «номенклатура → прайс-лист → быстрое меню» в один контур, тогда правки цен и меню перестанут требовать переключения разделов, так как lift связки «прайс-лист + быстрое меню» — 90,4, а «номенклатура + прайс-лист» — 640 пользователей.</div>
+<div class="ev"><b>Отсылка на пользовательские пути</b><ul><li>Прайс-лист + быстрое меню: 125 визитов вместе, lift 90,4.</li><li>Номенклатура + прайс-лист: 398 визитов, lift 27,1.</li><li>Быстрое меню + номенклатура: 246 визитов, lift 26,3.</li></ul></div>
+<div class="metric"><b>Метрика:</b> Переходы между тремя разделами на изменение цены: baseline уточнить → −30%; время на изменение цены.<br><span class="muted">Источник: Matomo (связки) + интервью менеджеров меню</span></div>
+<div class="ice"><span>I <b>6</b><div class="bar"><i style="width:60%"></i></div></span><span>C <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span>E <b>3</b><div class="bar"><i style="width:30%"></i></div></span><span class="muted" style="align-self:flex-end">I × C × E = <b style="color:#ff6a00">90</b></span></div>
+<div class="check"><b>Что проверить до запуска:</b> Границы разделов и владельцы; миграция без потери истории цен.</div>
+</div><h3 id="g-purchase">Закупки <span class="muted small">· 3</span></h3><p class="small muted">Работа «от списка»: карточка как инструмент, список как место.</p><div class="card hyp" data-group="purchase" data-type="продукт">
+<div class="hmeta"><div><span class="tag">H06</span> <span class="badge b-blue">продукт</span> <b>Обязательные поля и готовность заказа в списке</b></div><div class="score">180</div></div>
+<div class="quote">Если показывать в списке заказов готовность и незаполненные обязательные поля, тогда доля визитов, заканчивающихся в карточке, снизится с 19,2% до 12%, так как 487 из 2 538 визитов с карточкой не возвращаются к списку.</div>
+<div class="ev"><b>Отсылка на пользовательские пути</b><ul><li>Цикл «список → карточка → список» — 2 175 визитов, 21 527 вхождений.</li><li>Ещё 1 774 визита — повторный вход в карточку после списка.</li><li>489 из 3 706 визитов раздела (13,2%) заканчиваются в карточке.</li></ul></div>
+<div class="metric"><b>Метрика:</b> Визиты с карточкой без возврата: 487 (19,2%) → 300 (12%); доля правок без сохранения — нужен H21.<br><span class="muted">Источник: Matomo (цепочки, обрывы)</span></div>
+<div class="ice"><span>I <b>6</b><div class="bar"><i style="width:60%"></i></div></span><span>C <b>6</b><div class="bar"><i style="width:60%"></i></div></span><span>E <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span class="muted" style="align-self:flex-end">I × C × E = <b style="color:#ff6a00">180</b></span></div>
+<div class="check"><b>Что проверить до запуска:</b> Какие поля действительно обязательны; производительность списка при новых колонках.</div>
+</div><div class="card hyp" data-group="purchase" data-type="продукт">
+<div class="hmeta"><div><span class="tag">H07</span> <span class="badge b-blue">продукт</span> <b>Сохранять контекст списка при возврате</b></div><div class="score">175</div></div>
+<div class="quote">Если сохранять фильтры, скролл и позицию при возврате из карточки, тогда повторные входы в карточку (1 774 визита) сократятся, так как цикл «список → карточка → список» повторяется 21 527 раз.</div>
+<div class="ev"><b>Отсылка на пользовательские пути</b><ul><li>Повторный вход «карточка → список → карточка» — 1 774 визита, 18 468 вхождений.</li><li>Возврат в список — самая частая цепочка продукта: 2 175 визитов.</li></ul></div>
+<div class="metric"><b>Метрика:</b> Вхождения цикла на визит: 9,9 → 7,5; доля возвратов «список потерял контекст» — опрос/ю-тест.<br><span class="muted">Источник: Matomo + ю-тест 5–7 закупщиков</span></div>
+<div class="ice"><span>I <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span>C <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span>E <b>7</b><div class="bar"><i style="width:70%"></i></div></span><span class="muted" style="align-self:flex-end">I × C × E = <b style="color:#ff6a00">175</b></span></div>
+<div class="check"><b>Что проверить до запуска:</b> Техническая стоимость хранения состояния; не ломать deep links и несколько вкладок.</div>
+</div><div class="card hyp" data-group="purchase" data-type="продукт">
+<div class="hmeta"><div><span class="tag">H08</span> <span class="badge b-blue">продукт</span> <b>Массовое редактирование заказов из списка</b></div><div class="score">96</div></div>
+<div class="quote">Если добавить массовое редактирование заказов из списка (даты, статусы, поставщик), тогда число заходов в карточку сократится, так как 1 774 визита — повторный вход в карточку после списка.</div>
+<div class="ev"><b>Отсылка на пользовательские пути</b><ul><li>1 774 визита — «карточка → список → карточка»; 18 468 вхождений.</li><li>Менеджер закупок — «про-режим»: 35,2% его визитов заканчиваются в обычных закупках.</li></ul></div>
+<div class="metric"><b>Метрика:</b> Доля массовых правок: 0% → 20%; число открытий карточки на визит: 9,9 → 7.<br><span class="muted">Источник: Matomo + интервью закупщиков</span></div>
+<div class="ice"><span>I <b>6</b><div class="bar"><i style="width:60%"></i></div></span><span>C <b>4</b><div class="bar"><i style="width:40%"></i></div></span><span>E <b>4</b><div class="bar"><i style="width:40%"></i></div></span><span class="muted" style="align-self:flex-end">I × C × E = <b style="color:#ff6a00">96</b></span></div>
+<div class="check"><b>Что проверить до запуска:</b> Какие поля допустимо менять массово; права и аудит.</div>
+</div><h3 id="g-warehouse">Склад и документы <span class="muted small">· 5</span></h3><p class="small muted">Длинные формы и подсчёт — главные точки потерь.</p><div class="card hyp" data-group="warehouse" data-type="продукт">
+<div class="hmeta"><div><span class="tag">H09</span> <span class="badge b-blue">продукт</span> <b>Автосохранение прогресса подсчёта</b></div><div class="score">210</div></div>
+<div class="quote">Если автосохранять прогресс подсчёта и показывать «продолжить с зоны N», тогда доля визитов, заканчивающихся в зонах, снизится с 47,1% до 35%, так как 818 из 2 016 визитов с зонами не доходят до списка, а цикл повторяется 4–5 раз.</div>
+<div class="ev"><b>Отсылка на пользовательские пути</b><ul><li>1 038 из 2 202 визитов раздела (47,1%) заканчиваются в зонах подсчёта.</li><li>Топ-цепочки: 1 268 + 1 107 + 786 визитов; цикл «подсчёт ↔ зоны» 4–5 раз.</li><li>818 из 2 016 визитов с зонами не доходят до списка.</li></ul></div>
+<div class="metric"><b>Метрика:</b> Обрыв в зонах: 47,1% → 35%; доля подсчётов, возобновлённых с сохранённой зоны: 0% → 60%.<br><span class="muted">Источник: Matomo (обрывы, цепочки)</span></div>
+<div class="ice"><span>I <b>7</b><div class="bar"><i style="width:70%"></i></div></span><span>C <b>6</b><div class="bar"><i style="width:60%"></i></div></span><span>E <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span class="muted" style="align-self:flex-end">I × C × E = <b style="color:#ff6a00">210</b></span></div>
+<div class="check"><b>Что проверить до запуска:</b> Где хранить прогресс; конфликт версий при параллельном подсчёте; офлайн.</div>
+</div><div class="card hyp" data-group="warehouse" data-type="продукт">
+<div class="hmeta"><div><span class="tag">H11</span> <span class="badge b-blue">продукт</span> <b>Статус проведения и недостающие поля в списке документов</b></div><div class="score">210</div></div>
+<div class="quote">Если показывать статус проведения и недостающие обязательные поля в списке документов, тогда доля визитов с открытием накладной без проведения снизится с 60,8% до 45%, так как 709 из 1 166 визитов раздела обрываются на рабочем экране, а 282 из 894 — на самой накладной.</div>
+<div class="ev"><b>Отсылка на пользовательские пути</b><ul><li>Документы: 709 из 1 166 визитов (60,8%) — обрыв.</li><li>Накладная: 282 из 894 визитов (31,5%) заканчиваются на ней; медиана 84 с, p90 377 с.</li><li>Цепочка «Документы → входящая накладная → :id» — 372 визита.</li></ul></div>
+<div class="metric"><b>Метрика:</b> Обрыв документов: 60,8% → 45%; доля накладных, проведённых в том же визите: baseline уточнить → +20%.<br><span class="muted">Источник: Matomo (обрывы, время) + H21 для точного проведения</span></div>
+<div class="ice"><span>I <b>7</b><div class="bar"><i style="width:70%"></i></div></span><span>C <b>6</b><div class="bar"><i style="width:60%"></i></div></span><span>E <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span class="muted" style="align-self:flex-end">I × C × E = <b style="color:#ff6a00">210</b></span></div>
+<div class="check"><b>Что проверить до запуска:</b> Какие поля обязательны и где их брать; не перегрузить список.</div>
+</div><div class="card hyp" data-group="warehouse" data-type="продукт">
+<div class="hmeta"><div><span class="tag">H12</span> <span class="badge b-blue">продукт</span> <b>Черновик накладной</b></div><div class="score">125</div></div>
+<div class="quote">Если автосохранять черновик накладной, тогда прерванная работа не будет теряться, так как 61% замеров на экране дольше 60 с (медиана 84 с, p90 377 с).</div>
+<div class="ev"><b>Отсылка на пользовательские пути</b><ul><li>Накладная: медиана 84 с, p90 377 с, 1 868 замеров; 61% &gt;60 с.</li><li>282 визита заканчиваются на накладной, не возвращаясь к списку.</li></ul></div>
+<div class="metric"><b>Метрика:</b> Доля накладных, завершённых после возврата: baseline уточнить → 50%; p90 времени — −20%.<br><span class="muted">Источник: Matomo (время, обрывы) + H21</span></div>
+<div class="ice"><span>I <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span>C <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span>E <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span class="muted" style="align-self:flex-end">I × C × E = <b style="color:#ff6a00">125</b></span></div>
+<div class="check"><b>Что проверить до запуска:</b> Где хранить черновик; конфликт с проведением и блокировками.</div>
+</div><div class="card hyp" data-group="warehouse" data-type="продукт">
+<div class="hmeta"><div><span class="tag">H13</span> <span class="badge b-blue">продукт</span> <b>Массовое проведение документов</b></div><div class="score">120</div></div>
+<div class="quote">Если добавить массовое проведение документов с подсветкой проблемных, тогда доля визитов, где документы открывают по одному, снизится, так как 709 из 1 166 визитов обрываются на рабочем экране.</div>
+<div class="ev"><b>Отсылка на пользовательские пути</b><ul><li>Цепочки «список → накладная → :id» — 372 и 347 визитов; «:id → список → :id» — 279.</li><li>60,8% визитов раздела заканчиваются на рабочем экране.</li></ul></div>
+<div class="metric"><b>Метрика:</b> Документов на визит: baseline уточнить → +30%; обрыв: 60,8% → 50%.<br><span class="muted">Источник: Matomo + интервью бухгалтерии</span></div>
+<div class="ice"><span>I <b>6</b><div class="bar"><i style="width:60%"></i></div></span><span>C <b>4</b><div class="bar"><i style="width:40%"></i></div></span><span>E <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span class="muted" style="align-self:flex-end">I × C × E = <b style="color:#ff6a00">120</b></span></div>
+<div class="check"><b>Что проверить до запуска:</b> Ошибки проведения и права; что делать с частично проведёнными.</div>
+</div><div class="card hyp" data-group="warehouse" data-type="research">
+<div class="hmeta"><div><span class="tag">H10</span> <span class="badge b-yellow">research</span> <b>Мобильный ввод в подсчёте</b></div><div class="score">80</div></div>
+<div class="quote">Если сделать мобильный ввод в подсчёте (крупные поля, сканер, поиск по артикулу), тогда скорость подсчёта вырастет, так как цикл «подсчёт ↔ зоны» повторяется 4–5 раз, но данных об устройстве нет — гипотеза требует проверки.</div>
+<div class="ev"><b>Отсылка на пользовательские пути</b><ul><li>2 016 визитов с зонами, 818 обрывов; 47,1% раздела.</li><li>В Matomo нет разреза по устройству для этого сценария — baseline уточнить.</li></ul></div>
+<div class="metric"><b>Метрика:</b> Время на позицию: baseline уточнить → −25%; доля подсчётов с телефона: baseline уточнить.<br><span class="muted">Источник: Интервью 5–7 кладовщиков + device dimension в Matomo</span></div>
+<div class="ice"><span>I <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span>C <b>4</b><div class="bar"><i style="width:40%"></i></div></span><span>E <b>4</b><div class="bar"><i style="width:40%"></i></div></span><span class="muted" style="align-self:flex-end">I × C × E = <b style="color:#ff6a00">80</b></span></div>
+<div class="check"><b>Что проверить до запуска:</b> Сначала замерить устройство и время на позицию; не начинать с разработки.</div>
+</div><h3 id="g-lk">Личный кабинет <span class="muted small">· 1</span></h3><p class="small muted">Тупик без следующего шага.</p><div class="card hyp" data-group="lk" data-type="продукт">
+<div class="hmeta"><div><span class="tag">H14</span> <span class="badge b-blue">продукт</span> <b>«Продолжить работу» в личном кабинете</b></div><div class="score">150</div></div>
+<div class="quote">Если добавить в личный кабинет блок «продолжить работу» с последними разделами и незавершёнными действиями, тогда возврат редких через ЛК вырастет с 30% до 38%, так как 501 из 502 визитов заканчиваются на хабе.</div>
+<div class="ev"><b>Отсылка на пользовательские пути</b><ul><li>501 из 502 визитов раздела заканчиваются на /user-account/main.</li><li>Возврат редких через ЛК — 30% против базы 43%; 869 аккаунтов — «только вход и профиль».</li></ul></div>
+<div class="metric"><b>Метрика:</b> Возврат редких через ЛК: 30% → 38%; переходы из ЛК в рабочие разделы: baseline уточнить.<br><span class="muted">Источник: Matomo (возвраты, сегменты) + H21</span></div>
+<div class="ice"><span>I <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span>C <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span>E <b>6</b><div class="bar"><i style="width:60%"></i></div></span><span class="muted" style="align-self:flex-end">I × C × E = <b style="color:#ff6a00">150</b></span></div>
+<div class="check"><b>Что проверить до запуска:</b> Что считать «незавершённым» без событий; не дублировать навигатор.</div>
+</div><h3 id="g-errors">Ошибки и дашборд <span class="muted small">· 2</span></h3><p class="small muted">Сбои загрузки и восстановление после них.</p><div class="card hyp" data-group="errors" data-type="продукт">
+<div class="hmeta"><div><span class="tag">H16</span> <span class="badge b-blue">продукт</span> <b>Экран ошибки с действиями</b></div><div class="score">175</div></div>
+<div class="quote">Если на экране ошибки показывать «повторить», «вернуться к списку» и понятное объяснение, тогда 138 визитов, начинающихся с ошибки, перестанут быть тупиком, так как сейчас экран — конечная точка, а 54 визита на нём и заканчиваются.</div>
+<div class="ev"><b>Отсылка на пользовательские пути</b><ul><li>138 визитов начинаются на экране ошибки; 54 — заканчиваются на нём.</li><li>656 визитов выборки содержат экран ошибки; 1 282 просмотра.</li></ul></div>
+<div class="metric"><b>Метрика:</b> Доля восстановлений с экрана ошибки: 0% → 40%; визиты, заканчивающиеся на ошибке: 54 → 30.<br><span class="muted">Источник: Matomo + H15 (коды ошибок)</span></div>
+<div class="ice"><span>I <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span>C <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span>E <b>7</b><div class="bar"><i style="width:70%"></i></div></span><span class="muted" style="align-self:flex-end">I × C × E = <b style="color:#ff6a00">175</b></span></div>
+<div class="check"><b>Что проверить до запуска:</b> Какие ошибки восстановимы; не маскировать сбой «повторите».</div>
+</div><div class="card hyp" data-group="errors" data-type="продукт">
+<div class="hmeta"><div><span class="tag">H17</span> <span class="badge b-blue">продукт</span> <b>Retry и health-check для дашборда и ЦПУ</b></div><div class="score">175</div></div>
+<div class="quote">Если добавить автоматический retry и health-check для дашборда и ЦПУ, тогда число визитов с ошибкой в этих разделах снизится на 30%, так как на них приходится ~1 837 из 2 676 визитов с ошибкой.</div>
+<div class="ev"><b>Отсылка на пользовательские пути</b><ul><li>Экран перед ошибкой: дашборд ~1 130, ЦПУ ~707, настройки ~182, курьеры ~139.</li><li>Всего 2 676 визитов с /error или /no-access за 13 дней.</li></ul></div>
+<div class="metric"><b>Метрика:</b> Визиты с ошибкой: 2 676 → 1 900 (−30%); доля успешных загрузок дашборда/ЦПУ.<br><span class="muted">Источник: Matomo + мониторинг приложения; зависит от H15</span></div>
+<div class="ice"><span>I <b>7</b><div class="bar"><i style="width:70%"></i></div></span><span>C <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span>E <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span class="muted" style="align-self:flex-end">I × C × E = <b style="color:#ff6a00">175</b></span></div>
+<div class="check"><b>Что проверить до запуска:</b> Сначала узнать код ошибки (H15), иначе эффект не измерить; не ретраить ошибки прав.</div>
+</div><h3 id="g-links">Связки процессов <span class="muted small">· 2</span></h3><p class="small muted">Один процесс в двух разделах.</p><div class="card hyp" data-group="links" data-type="продукт">
+<div class="hmeta"><div><span class="tag">H18</span> <span class="badge b-blue">продукт</span> <b>Карта курьера из карточки обращения</b></div><div class="score">125</div></div>
+<div class="quote">Если открывать карту курьера прямо из карточки обращения, тогда оператор не будет уходить в отдельный раздел, так как колл-центр и карта встречаются в одном визите 362 раза, а lift связи — 14,3.</div>
+<div class="ev"><b>Отсылка на пользовательские пути</b><ul><li>Колл-центр + карта доставок: 362 визита вместе; P(колл-центр | карта) = 11,7%.</li><li>104 общих пользователя, lift 14,3.</li></ul></div>
+<div class="metric"><b>Метрика:</b> Доля обращений с просмотром карты: 11,7% → 25%; переходы «колл-центр → карта».<br><span class="muted">Источник: Matomo (связки) + интервью операторов</span></div>
+<div class="ice"><span>I <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span>C <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span>E <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span class="muted" style="align-self:flex-end">I × C × E = <b style="color:#ff6a00">125</b></span></div>
+<div class="check"><b>Что проверить до запуска:</b> Производительность карты и права; не блокировать карточку заказа.</div>
+</div><div class="card hyp" data-group="links" data-type="продукт">
+<div class="hmeta"><div><span class="tag">H19</span> <span class="badge b-blue">продукт</span> <b>Прогноз → рекомендуемый план заготовок</b></div><div class="score">100</div></div>
+<div class="quote">Если связать прогноз выручки с рекомендуемым планом заготовок, тогда пользователь не будет переключаться между разделами, так как 398 визитов идут вместе, а P(прогноз | заготовки) = 20,4%.</div>
+<div class="ev"><b>Отсылка на пользовательские пути</b><ul><li>Прогноз + заготовки: 398 визитов вместе; P(заготовки | прогноз) = 3,7%, P(прогноз | заготовки) = 20,4%.</li><li>Закупки + заготовки: 408 визитов вместе, lift 9,1.</li></ul></div>
+<div class="metric"><b>Метрика:</b> Доля заготовок, созданных из прогноза: 0% → 30%; переходы «прогноз → заготовки».<br><span class="muted">Источник: Matomo + интервью технологов</span></div>
+<div class="ice"><span>I <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span>C <b>5</b><div class="bar"><i style="width:50%"></i></div></span><span>E <b>4</b><div class="bar"><i style="width:40%"></i></div></span><span class="muted" style="align-self:flex-end">I × C × E = <b style="color:#ff6a00">100</b></span></div>
+<div class="check"><b>Что проверить до запуска:</b> Алгоритм рекомендаций и доверие к прогнозу; не автоматизировать решение без подтверждения.</div>
+</div>
+
+<h2>Что дальше</h2>
+<div class="grid2">
+<div class="card"><h4>Взять в шаг 3 (PB Story) сейчас</h4>
+<ul>
+<li><b>H01</b> — сессия: 1 108 обрывов на логине, дешёвая проверка.</li>
+<li><b>H04 + H03</b> — меню и источник: 41,5% бросают привязку.</li>
+<li><b>H11 + H12</b> — документы: 60,8% обрывов и p90 377 с.</li>
+<li><b>H09</b> — инвентаризация: 47,1% обрывов, цикл 4–5 раз.</li>
+</ul></div>
+<div class="card"><h4>Сначала research</h4>
+<ul>
+<li><b>H15</b> — коды ошибок: без них H16/H17 не измерить.</li>
+<li><b>H10</b> — мобильный ввод: нет данных об устройстве.</li>
+<li><b>H07</b> — контекст списка: нужен ю-тест, эффект не доказан.</li>
+</ul></div>
+<div class="card"><h4>Данные и трекинг (не продукт)</h4>
+<ul>
+<li><b>H21</b> — id объекта + события: разблокирует точные воронки.</li>
+<li><b>H22</b> — события публикации меню и привязки источника.</li>
+<li>Без H21 метрики H06, H11, H12, H14 остаются косвенными.</li>
+</ul></div>
+<div class="card"><h4>Чего в списке нет</h4>
+<ul>
+<li>Гипотез по колл-центру: процесс завершается в 89,6% — чинить нечего этой метрикой.</li>
+<li>Гипотез по кассам и дашборду как «брошенным»: это табло.</li>
+<li>Гипотез по логистике доставки: сигнал по времени есть, но 8–86 замеров — мало для решения.</li>
+</ul></div>
+</div>
+
+<div class="note warn"><b>Ограничение.</b> Все гипотезы — из наблюдательного анализа, не из эксперимента.
+«Обрыв» — прокси: визит закончился на рабочем экране, а не на списке. Для разделов-«табло» метрика не применяется.
+Перед запуском каждой гипотезы нужен явный baseline и способ проверки (A/B, ю-тест, лог).</div>
+</main>
+<footer>Собрано Hermes по данным Matomo idSite 1 за 01–13.10.2026. Парные файлы: «Отчёт по пользовательским путям»
+(HTML) и «Сырые данные» (XLSX, 16 листов).</footer>
+</body></html>

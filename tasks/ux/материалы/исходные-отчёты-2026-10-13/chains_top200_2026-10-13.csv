@@ -1,0 +1,201 @@
+﻿chain;chain_ru;visits_with_chain;share_of_visits_%;occurrences
+/purchase/order-list-v2 → /purchase/order/edit/:id → /purchase/order-list-v2;Закупки / заказы поставщику → список заказов → заказ → редактирование → ‹id› → список заказов;2175;6.11;21527
+/external-menu/external-menu → /external-menu/edit-external-menu/:externalMenuId → /external-menu/external-menu;Внешнее меню → редактирование меню → ‹externalMenuId› → Внешнее меню;2070;5.82;7249
+/call-center/order/customer → /call-center/order/address → /call-center/order/content/menu;Колл-центр (приём заказов) → заказ → гость → заказ → адрес → заказ → состав → меню;2015;5.66;16879
+/call-center/order/content/menu → /call-center/order/payment → /call-center;Колл-центр (приём заказов) → заказ → состав → меню → заказ → оплата → Колл-центр (приём заказов);1968;5.53;18099
+/external-menu/edit-external-menu/:externalMenuId → /external-menu/external-menu → /external-menu/edit-external-menu/:externalMenuId;Внешнее меню → редактирование меню → ‹externalMenuId› → Внешнее меню → редактирование меню → ‹externalMenuId›;1904;5.35;6624
+/call-center/order/address → /call-center/order/content/menu → /call-center/order/payment;Колл-центр (приём заказов) → заказ → адрес → заказ → состав → меню → заказ → оплата;1857;5.22;16079
+/purchase/order/edit/:id → /purchase/order-list-v2 → /purchase/order/edit/:id;Закупки / заказы поставщику → заказ → редактирование → ‹id› → список заказов → заказ → редактирование → ‹id›;1774;4.99;18468
+/call-center → /call-center/order/customer → /call-center/order/address;Колл-центр (приём заказов) → заказ → гость → заказ → адрес;1626;4.57;15244
+/call-center/order/payment → /call-center → /call-center/order/customer;Колл-центр (приём заказов) → заказ → оплата → Колл-центр (приём заказов) → заказ → гость;1301;3.66;12286
+/inventory/list → /inventory/count/:id/zones → /inventory/count/:id/zones/:id;Инвентаризация → список → подсчёт → ‹id› → зоны → подсчёт → ‹id› → зоны → ‹id›;1268;3.56;3951
+/inventory/count/:id/zones → /inventory/count/:id/zones/:id → /inventory/count/:id/zones;Инвентаризация → подсчёт → ‹id› → зоны → подсчёт → ‹id› → зоны → ‹id› → подсчёт → ‹id› → зоны;1107;3.11;5347
+/navigator/home → /external-menu/external-menu → /external-menu/edit-external-menu/:externalMenuId;Навигатор — главная страница → главная → Внешнее меню → редактирование меню → ‹externalMenuId›;1021;2.87;1185
+/navigator/auth/login → /navigator/home → /navigator/auth/login;Навигатор — главная страница → авторизация → вход → главная → авторизация → вход;987;2.77;1330
+/navigator/auth/login → /navigator/home → /external-menu/external-menu;Навигатор — главная страница → авторизация → вход → главная → Внешнее меню;978;2.75;1076
+/navigator/home → /navigator/auth/login → /navigator/home;Навигатор — главная страница → главная → авторизация → вход → главная;837;2.35;1172
+/inventory/count/:id/zones/:id → /inventory/count/:id/zones → /inventory/list;Инвентаризация → подсчёт → ‹id› → зоны → ‹id› → подсчёт → ‹id› → зоны → список;786;2.21;1843
+/navigator/auth/login → /navigator/home → /till-shifts/active;Навигатор — главная страница → авторизация → вход → главная → Кассовые смены → активные;743;2.09;808
+/navigator/auth/login → /user-profile → /purchase/order-list-v2;Навигатор — главная страница → авторизация → вход → Профиль пользователя → Закупки / заказы поставщику → список заказов;741;2.08;1496
+/inventory/count/:id/zones → /inventory/list → /inventory/count/:id/zones;Инвентаризация → подсчёт → ‹id› → зоны → список → подсчёт → ‹id› → зоны;733;2.06;2177
+/call-center → /call-center/order/customer → /call-center;Колл-центр (приём заказов) → заказ → гость → Колл-центр (приём заказов);702;1.97;2189
+/integration/integration/list → /integration/integration/:adapterCode/edit/:id → /integration/integration/:adapterCode/edit/:id/external-menu;Интеграции / источники заказов → список → ‹adapterCode› → редактирование → ‹id› → ‹adapterCode› → редактирование → ‹id› → меню;694;1.95;1296
+/navigator/auth/login → /user-profile → /navigator/home;Навигатор — главная страница → авторизация → вход → Профиль пользователя → Навигатор — главная страница → главная;677;1.9;786
+/call-center/order/address → /call-center/order/content/menu → /call-center/order/address;Колл-центр (приём заказов) → заказ → адрес → заказ → состав → меню → заказ → адрес;675;1.9;2561
+/call-center/order/customer → /call-center → /call-center/order/customer;Колл-центр (приём заказов) → заказ → гость → Колл-центр (приём заказов) → заказ → гость;669;1.88;1983
+/call-center/order/content/menu → /call-center/order/address → /call-center/order/content/menu;Колл-центр (приём заказов) → заказ → состав → меню → заказ → адрес → заказ → состав → меню;660;1.86;2617
+/purchase/order-list-v2 → /navigator/auth/login → /purchase/order-list-v2;Закупки / заказы поставщику → список заказов → Навигатор — главная страница → авторизация → вход → Закупки / заказы поставщику → список заказов;650;1.83;1957
+/call-center → /call-center/order/content/menu → /call-center/order/payment;Колл-центр (приём заказов) → заказ → состав → меню → заказ → оплата;649;1.82;2793
+/call-center/order/content/menu → /call-center/order/payment → /call-center/order/content/menu;Колл-центр (приём заказов) → заказ → состав → меню → заказ → оплата → заказ → состав → меню;647;1.82;2272
+/call-center/order/payment → /call-center/order/content/menu → /call-center/order/payment;Колл-центр (приём заказов) → заказ → оплата → заказ → состав → меню → заказ → оплата;566;1.59;1855
+/call-center/order/payment → /call-center → /call-center/order/content/menu;Колл-центр (приём заказов) → заказ → оплата → Колл-центр (приём заказов) → заказ → состав → меню;565;1.59;2124
+/inventory/count/:id/zones/:id → /inventory/count/:id/zones → /inventory/count/:id/zones/:id;Инвентаризация → подсчёт → ‹id› → зоны → ‹id› → подсчёт → ‹id› → зоны → подсчёт → ‹id› → зоны → ‹id›;561;1.58;3010
+/navigator/auth/login → /navigator/home → /dashboard/dashboard/:id;Навигатор — главная страница → авторизация → вход → главная → Дашборд → ‹id›;555;1.56;603
+/call-center/order/address → /call-center → /call-center/order/customer;Колл-центр (приём заказов) → заказ → адрес → Колл-центр (приём заказов) → заказ → гость;550;1.55;1582
+/call-center/order/payment → /call-center → /call-center/order/address;Колл-центр (приём заказов) → заказ → оплата → Колл-центр (приём заказов) → заказ → адрес;544;1.53;3829
+/purchase/order/edit/:id → /purchase/order-list-v2 → /navigator/auth/login;Закупки / заказы поставщику → заказ → редактирование → ‹id› → список заказов → Навигатор — главная страница → авторизация → вход;537;1.51;1012
+/navigator/auth/login → /purchase/order-list-v2 → /purchase/order/edit/:id;Навигатор — главная страница → авторизация → вход → Закупки / заказы поставщику → список заказов → заказ → редактирование → ‹id›;528;1.48;900
+/call-center/order/address → /call-center/order/content/menu → /call-center;Колл-центр (приём заказов) → заказ → адрес → заказ → состав → меню → Колл-центр (приём заказов);526;1.48;1191
+/till-shifts/active → /till-shifts/guestcheck → /till-shifts/active;Кассовые смены → активные → чеки гостей → активные;513;1.44;2019
+/inventory/list → /inventory/count/:id/zones → /inventory/list;Инвентаризация → список → подсчёт → ‹id› → зоны → список;512;1.44;1235
+/call-center → /call-center/order/address → /call-center;Колл-центр (приём заказов) → заказ → адрес → Колл-центр (приём заказов);509;1.43;2337
+/call-center/order/customer → /call-center/order/address → /call-center;Колл-центр (приём заказов) → заказ → гость → заказ → адрес → Колл-центр (приём заказов);491;1.38;1072
+/purchase/order-list-v2 → /navigator/auth/login → /user-profile;Закупки / заказы поставщику → список заказов → Навигатор — главная страница → авторизация → вход → Профиль пользователя;483;1.36;1046
+/navigator/auth/login → /navigator/home → /nomenclature/list;Навигатор — главная страница → авторизация → вход → главная → Номенклатура → список;471;1.32;540
+/call-center/order/content/menu → /call-center → /call-center/order/customer;Колл-центр (приём заказов) → заказ → состав → меню → Колл-центр (приём заказов) → заказ → гость;461;1.3;933
+/till-shifts/guestcheck → /till-shifts/active → /till-shifts/guestcheck;Кассовые смены → чеки гостей → активные → чеки гостей;445;1.25;1827
+/cpu/consolidated-order → /cpu/consolidated-order/:orderId/accepting-orders → /cpu/consolidated-order/:orderId/confirmation;ЦПУ — сводные заказы (центральное производство) → сводный заказ → сводный заказ → ‹orderId› → приём заказов → сводный заказ → ‹orderId› → подтверждение;412;1.16;938
+/call-center/order/address → /call-center/order/customer → /call-center/order/address;Колл-центр (приём заказов) → заказ → адрес → заказ → гость → заказ → адрес;408;1.15;899
+/navigator/auth/login → /navigator/home → /purchase/order-list-v2;Навигатор — главная страница → авторизация → вход → главная → Закупки / заказы поставщику → список заказов;386;1.09;632
+/navigator/auth/login → /user-profile → /external-menu/external-menu;Навигатор — главная страница → авторизация → вход → Профиль пользователя → Внешнее меню;378;1.06;400
+/call-center/order/customer → /call-center/order/address → /call-center/order/customer;Колл-центр (приём заказов) → заказ → гость → заказ → адрес → заказ → гость;374;1.05;806
+/documents/documents → /documents/documents/incoming_invoice → /documents/documents/incoming_invoice/:id;Документы → входящая накладная → входящая накладная → ‹id›;372;1.05;1006
+/navigator/auth/login → /purchase/order-list-v2 → /navigator/auth/login;Навигатор — главная страница → авторизация → вход → Закупки / заказы поставщику → список заказов → Навигатор — главная страница → авторизация → вход;368;1.03;1164
+/user-profile → /external-menu/external-menu → /external-menu/edit-external-menu/:externalMenuId;Профиль пользователя → Внешнее меню → редактирование меню → ‹externalMenuId›;363;1.02;391
+/call-center/order/address → /call-center → /call-center/order/content/menu;Колл-центр (приём заказов) → заказ → адрес → Колл-центр (приём заказов) → заказ → состав → меню;363;1.02;1252
+/purchase/order-list-v2 → /purchase/order/edit/:id → /navigator/auth/login;Закупки / заказы поставщику → список заказов → заказ → редактирование → ‹id› → Навигатор — главная страница → авторизация → вход;360;1.01;715
+/documents/documents → /documents/documents/incoming_invoice/:id → /documents/documents;Документы → входящая накладная → ‹id› → Документы;347;0.98;2001
+/external-menu/external-menu → /external-menu/edit-external-menu/:externalMenuId → /integration/integration/list;Внешнее меню → редактирование меню → ‹externalMenuId› → Интеграции / источники заказов → список;346;0.97;423
+/call-center/order/content/menu → /call-center/order/payment → /call-center/order/address;Колл-центр (приём заказов) → заказ → состав → меню → заказ → оплата → заказ → адрес;345;0.97;961
+/call-center/order/address → /call-center/order/content/menu → /call-center/order/customer;Колл-центр (приём заказов) → заказ → адрес → заказ → состав → меню → заказ → гость;344;0.97;971
+/call-center/order/content/menu → /call-center/order/customer → /call-center/order/address;Колл-центр (приём заказов) → заказ → состав → меню → заказ → гость → заказ → адрес;327;0.92;923
+/cpu/consolidated-order/:orderId/confirmation → /cpu/consolidated-order/:orderId/provision → /cpu/consolidated-order/:orderId/shipment;ЦПУ — сводные заказы (центральное производство) → сводный заказ → ‹orderId› → подтверждение → сводный заказ → ‹orderId› → обеспечение → сводный заказ → ‹orderId› → отгрузка;327;0.92;772
+/purchase/order-list-v2 → /inventory/list → /inventory/count/:id/zones;Закупки / заказы поставщику → список заказов → Инвентаризация → список → подсчёт → ‹id› → зоны;322;0.91;604
+/navigator/auth/login → /navigator/home → /inventory/list;Навигатор — главная страница → авторизация → вход → главная → Инвентаризация → список;319;0.9;360
+/user-profile → /purchase/order-list-v2 → /purchase/order/edit/:id;Профиль пользователя → Закупки / заказы поставщику → список заказов → заказ → редактирование → ‹id›;318;0.89;661
+/external-menu/edit-external-menu/:externalMenuId → /integration/integration/list → /integration/integration/:adapterCode/edit/:id;Внешнее меню → редактирование меню → ‹externalMenuId› → Интеграции / источники заказов → список → ‹adapterCode› → редактирование → ‹id›;311;0.87;380
+/call-center → /call-center/order/address → /call-center/order/content/menu;Колл-центр (приём заказов) → заказ → адрес → заказ → состав → меню;310;0.87;2631
+/external-menu/external-menu → /integration/integration/list → /integration/integration/:adapterCode/edit/:id;Внешнее меню → Интеграции / источники заказов → список → ‹adapterCode› → редактирование → ‹id›;295;0.83;342
+/purchase/order-list-v2 → /navigator/auth/login → /navigator/home;Закупки / заказы поставщику → список заказов → Навигатор — главная страница → авторизация → вход → главная;294;0.83;472
+/call-center/order/payment → /call-center/order/address → /call-center/order/content/menu;Колл-центр (приём заказов) → заказ → оплата → заказ → адрес → заказ → состав → меню;287;0.81;747
+/documents/documents/incoming_invoice/:id → /documents/documents → /documents/documents/incoming_invoice/:id;Документы → входящая накладная → ‹id› → Документы → входящая накладная → ‹id›;279;0.78;1649
+/call-center/order/address → /call-center/order/payment → /call-center;Колл-центр (приём заказов) → заказ → адрес → заказ → оплата → Колл-центр (приём заказов);275;0.77;690
+/navigator/home → /purchase/order-list-v2 → /purchase/order/edit/:id;Навигатор — главная страница → главная → Закупки / заказы поставщику → список заказов → заказ → редактирование → ‹id›;273;0.77;382
+/call-center → /call-center/order/payment → /call-center;Колл-центр (приём заказов) → заказ → оплата → Колл-центр (приём заказов);271;0.76;880
+/call-center/order/address → /call-center/order/content/menu → /call-center/order/content/discounts;Колл-центр (приём заказов) → заказ → адрес → заказ → состав → меню → заказ → состав → скидки;269;0.76;977
+/purchase/order-list-v2 → /cpu/consolidated-order → /cpu/consolidated-order/:orderId/accepting-orders;Закупки / заказы поставщику → список заказов → ЦПУ — сводные заказы (центральное производство) → сводный заказ → сводный заказ → ‹orderId› → приём заказов;267;0.75;362
+/call-center/order/content/menu → /call-center/order/content/discounts → /call-center/order/payment;Колл-центр (приём заказов) → заказ → состав → меню → заказ → состав → скидки → заказ → оплата;264;0.74;1084
+/navigator/auth/login → /navigator/home → /user-account/main;Навигатор — главная страница → авторизация → вход → главная → Личный кабинет / аккаунт ресторана → основное;256;0.72;278
+/cpu/consolidated-order → /cpu/consolidated-order/:orderId/accepting-orders → /cpu/consolidated-order;ЦПУ — сводные заказы (центральное производство) → сводный заказ → сводный заказ → ‹orderId› → приём заказов → сводный заказ;255;0.72;720
+/call-center/order/address → /call-center/order/content/menu → /call-center/order/content/history;Колл-центр (приём заказов) → заказ → адрес → заказ → состав → меню → заказ → состав → история;253;0.71;643
+/inventory/count/:id/zones → /inventory/count/:id/zones/:id → /inventory/list;Инвентаризация → подсчёт → ‹id› → зоны → подсчёт → ‹id› → зоны → ‹id› → список;252;0.71;835
+/external-menu/edit-external-menu/:externalMenuId → /external-menu/external-menu → /integration/integration/list;Внешнее меню → редактирование меню → ‹externalMenuId› → Внешнее меню → Интеграции / источники заказов → список;252;0.71;291
+/documents/documents/incoming_invoice → /documents/documents/incoming_invoice/:id → /documents/documents;Документы → входящая накладная → входящая накладная → ‹id› → Документы;249;0.7;788
+/cpu/consolidated-order/:orderId/accepting-orders → /cpu/consolidated-order/:orderId/confirmation → /cpu/consolidated-order/:orderId/provision;ЦПУ — сводные заказы (центральное производство) → сводный заказ → ‹orderId› → приём заказов → сводный заказ → ‹orderId› → подтверждение → сводный заказ → ‹orderId› → обеспечение;249;0.7;502
+/call-center/order/content/discounts → /call-center/order/payment → /call-center;Колл-центр (приём заказов) → заказ → состав → скидки → заказ → оплата → Колл-центр (приём заказов);243;0.68;944
+/call-center/order/payment → /call-center → /call-center/order/payment;Колл-центр (приём заказов) → заказ → оплата → Колл-центр (приём заказов) → заказ → оплата;241;0.68;680
+/navigator/auth/login → /forecast → /purchase/order-list-v2;Навигатор — главная страница → авторизация → вход → Прогноз выручки → Закупки / заказы поставщику → список заказов;235;0.66;808
+/documents/documents/incoming_invoice/:id → /documents/documents → /documents/documents/incoming_invoice;Документы → входящая накладная → ‹id› → Документы → входящая накладная;232;0.65;797
+/integration/integration/:adapterCode/edit/:id → /integration/integration/:adapterCode/edit/:id/external-menu → /integration/integration/list;Интеграции / источники заказов → ‹adapterCode› → редактирование → ‹id› → ‹adapterCode› → редактирование → ‹id› → меню → список;231;0.65;571
+/cpu/consolidated-order/:orderId/provision → /cpu/consolidated-order/:orderId/shipment → /cpu/consolidated-order/:orderId/restaurant-confirmation;ЦПУ — сводные заказы (центральное производство) → сводный заказ → ‹orderId› → обеспечение → сводный заказ → ‹orderId› → отгрузка → сводный заказ → ‹orderId› → подтверждение ресторана;229;0.64;474
+/integration/integration/list → /external-menu/external-menu → /external-menu/edit-external-menu/:externalMenuId;Интеграции / источники заказов → список → Внешнее меню → редактирование меню → ‹externalMenuId›;223;0.63;256
+/call-center/order/content/menu → /call-center/order/payment → /call-center/order/customer;Колл-центр (приём заказов) → заказ → состав → меню → заказ → оплата → заказ → гость;221;0.62;409
+/call-center/order/payment → /call-center/order/content/menu → /call-center/order/address;Колл-центр (приём заказов) → заказ → оплата → заказ → состав → меню → заказ → адрес;220;0.62;500
+/call-center/order/address → /call-center → /call-center/order/address;Колл-центр (приём заказов) → заказ → адрес → Колл-центр (приём заказов) → заказ → адрес;219;0.62;745
+/call-center/order/customer → /call-center → /call-center/order/address;Колл-центр (приём заказов) → заказ → гость → Колл-центр (приём заказов) → заказ → адрес;217;0.61;377
+/external-menu/external-menu → /external-menu/edit-external-menu/:externalMenuId → /navigator/auth/login;Внешнее меню → редактирование меню → ‹externalMenuId› → Навигатор — главная страница → авторизация → вход;216;0.61;244
+/forecast → /purchase/order-list-v2 → /purchase/order/edit/:id;Прогноз выручки → Закупки / заказы поставщику → список заказов → заказ → редактирование → ‹id›;216;0.61;436
+/inventory/count/:id/zones/:id → /inventory/list → /inventory/count/:id/zones;Инвентаризация → подсчёт → ‹id› → зоны → ‹id› → список → подсчёт → ‹id› → зоны;216;0.61;716
+/integration/integration/:adapterCode/edit/:id/external-menu → /external-menu/external-menu → /external-menu/edit-external-menu/:externalMenuId;Интеграции / источники заказов → ‹adapterCode› → редактирование → ‹id› → меню → Внешнее меню → редактирование меню → ‹externalMenuId›;214;0.6;262
+/inventory/count/:id/zones/:id → /inventory/count/:id/zones → /inventory/list/:id;Инвентаризация → подсчёт → ‹id› → зоны → ‹id› → подсчёт → ‹id› → зоны → список → ‹id›;207;0.58;279
+/navigator/auth/login → /navigator/home → /documents/documents;Навигатор — главная страница → авторизация → вход → главная → Документы;206;0.58;235
+/navigator/auth/login → /user-profile → /navigator/auth/login;Навигатор — главная страница → авторизация → вход → Профиль пользователя → Навигатор — главная страница → авторизация → вход;206;0.58;288
+/documents/documents → /documents/documents/writeoff_document → /documents/documents/writeoff_document/:id;Документы → списание → списание → ‹id›;204;0.57;856
+/call-center/order/content/menu → /call-center/order/address → /call-center/order/customer;Колл-центр (приём заказов) → заказ → состав → меню → заказ → адрес → заказ → гость;204;0.57;307
+/workflow-config/inventory/list → /workflow-config/inventory/main-settings → /workflow-config/inventory/list;Настройка процессов (workflow) → inventory → список → inventory → main-settings → inventory → список;203;0.57;569
+/navigator/auth/login → /user-profile → /inventory/list;Навигатор — главная страница → авторизация → вход → Профиль пользователя → Инвентаризация → список;201;0.57;231
+/navigator/home → /dashboard/dashboard → /dashboard/olap;Навигатор — главная страница → главная → Дашборд → OLAP-отчёт;201;0.57;228
+/navigator/auth/login → /navigator/home → /dashboard/olap;Навигатор — главная страница → авторизация → вход → главная → Дашборд → OLAP-отчёт;200;0.56;236
+/call-center/order/content/menu → /call-center/order/address → /call-center/order/payment;Колл-центр (приём заказов) → заказ → состав → меню → заказ → адрес → заказ → оплата;198;0.56;465
+/navigator/auth/login → /user-profile → /forecast;Навигатор — главная страница → авторизация → вход → Профиль пользователя → Прогноз выручки;196;0.55;526
+/purchase/order-list-v2 → /inventory/list → /purchase/order-list-v2;Закупки / заказы поставщику → список заказов → Инвентаризация → список → Закупки / заказы поставщику → список заказов;195;0.55;392
+/call-center/order/payment → /call-center/order/customer → /call-center/order/address;Колл-центр (приём заказов) → заказ → оплата → заказ → гость → заказ → адрес;194;0.55;328
+/navigator/auth/login → /navigator/home → /dashboard/dashboard;Навигатор — главная страница → авторизация → вход → главная → Дашборд;193;0.54;206
+/lite-stock/incoming-orders/list → /lite-stock/incoming-orders/order/:id → /lite-stock/incoming-orders/list;Склад (лайт-режим) — приёмка и входящие заказы → incoming-orders → список → incoming-orders → заказ → ‹id› → incoming-orders → список;190;0.53;1600
+/cpu/consolidated-order/:orderId/accepting-orders → /cpu/consolidated-order → /cpu/consolidated-order/:orderId/accepting-orders;ЦПУ — сводные заказы (центральное производство) → сводный заказ → ‹orderId› → приём заказов → сводный заказ → сводный заказ → ‹orderId› → приём заказов;190;0.53;519
+/integration/integration/:adapterCode/edit/:id → /integration/integration/:adapterCode/edit/:id/external-menu → /external-menu/external-menu;Интеграции / источники заказов → ‹adapterCode› → редактирование → ‹id› → ‹adapterCode› → редактирование → ‹id› → меню → Внешнее меню;189;0.53;234
+/call-center → /call-center/order/content/menu → /call-center;Колл-центр (приём заказов) → заказ → состав → меню → Колл-центр (приём заказов);189;0.53;300
+/navigator/home → /dashboard/olap → /dashboard/olap/:preset-id;Навигатор — главная страница → главная → Дашборд → OLAP-отчёт → OLAP-отчёт → ‹preset-id›;181;0.51;230
+/navigator/auth/login → /navigator/home → /forecast;Навигатор — главная страница → авторизация → вход → главная → Прогноз выручки;180;0.51;192
+/inventory/list → /inventory/list/:id → /inventory/list;Инвентаризация → список → список → ‹id› → список;180;0.51;493
+/user-profile → /purchase/order-list-v2 → /navigator/auth/login;Профиль пользователя → Закупки / заказы поставщику → список заказов → Навигатор — главная страница → авторизация → вход;180;0.51;375
+/till-shifts/guestcheck → /dashboard/dashboard/:id → /till-shifts/guestcheck;Кассовые смены → чеки гостей → Дашборд → ‹id› → Кассовые смены → чеки гостей;178;0.5;342
+/purchase/order/edit/:id → /navigator/auth/login → /purchase/order-list-v2;Закупки / заказы поставщику → заказ → редактирование → ‹id› → Навигатор — главная страница → авторизация → вход → Закупки / заказы поставщику → список заказов;175;0.49;336
+/call-center/order/payment → /call-center/order/content/menu → /call-center;Колл-центр (приём заказов) → заказ → оплата → заказ → состав → меню → Колл-центр (приём заказов);174;0.49;333
+/call-center/order/address → /call-center/order/content/menu → /call-center/order/content/promotions;Колл-центр (приём заказов) → заказ → адрес → заказ → состав → меню → заказ → состав → акции;171;0.48;524
+/purchase/order/edit/:id → /navigator/auth/login → /user-profile;Закупки / заказы поставщику → заказ → редактирование → ‹id› → Навигатор — главная страница → авторизация → вход → Профиль пользователя;171;0.48;260
+/call-center/order/address → /call-center/order/customer → /call-center;Колл-центр (приём заказов) → заказ → адрес → заказ → гость → Колл-центр (приём заказов);170;0.48;241
+/cpu/consolidated-order/:orderId/shipment → /cpu/consolidated-order/:orderId/restaurant-confirmation → /cpu/consolidated-order;ЦПУ — сводные заказы (центральное производство) → сводный заказ → ‹orderId› → отгрузка → сводный заказ → ‹orderId› → подтверждение ресторана → сводный заказ;170;0.48;418
+/navigator/home → /inventory/list → /inventory/count/:id/zones;Навигатор — главная страница → главная → Инвентаризация → список → подсчёт → ‹id› → зоны;169;0.48;197
+/integration/integration/:adapterCode/edit/:id/external-menu → /integration/integration/list → /integration/integration/:adapterCode/edit/:id;Интеграции / источники заказов → ‹adapterCode› → редактирование → ‹id› → меню → список → ‹adapterCode› → редактирование → ‹id›;169;0.48;420
+/navigator/auth/login → /purchase/order-list-v2 → /inventory/list;Навигатор — главная страница → авторизация → вход → Закупки / заказы поставщику → список заказов → Инвентаризация → список;168;0.47;254
+/call-center/order/content/menu → /call-center → /call-center/order/payment;Колл-центр (приём заказов) → заказ → состав → меню → Колл-центр (приём заказов) → заказ → оплата;168;0.47;364
+/navigator/auth/login → /user-profile → /user-account/main;Навигатор — главная страница → авторизация → вход → Профиль пользователя → Личный кабинет / аккаунт ресторана → основное;167;0.47;175
+/navigator/auth/login → /navigator/home → /integration/integration/list;Навигатор — главная страница → авторизация → вход → главная → Интеграции / источники заказов → список;167;0.47;170
+/documents/documents/writeoff_document → /documents/documents/writeoff_document/:id → /documents/documents;Документы → списание → списание → ‹id› → Документы;167;0.47;768
+/lite-stock/incoming-orders/order/:id → /lite-stock/incoming-orders/list → /lite-stock/incoming-orders/order/:id;Склад (лайт-режим) — приёмка и входящие заказы → incoming-orders → заказ → ‹id› → incoming-orders → список → incoming-orders → заказ → ‹id›;167;0.47;1435
+/cpu/consolidated-order/:orderId/restaurant-confirmation → /cpu/consolidated-order/:orderId/end → /cpu/consolidated-order;ЦПУ — сводные заказы (центральное производство) → сводный заказ → ‹orderId› → подтверждение ресторана → сводный заказ → ‹orderId› → end → сводный заказ;167;0.47;597
+/inventory/list → /purchase/order-list-v2 → /purchase/order/edit/:id;Инвентаризация → список → Закупки / заказы поставщику → список заказов → заказ → редактирование → ‹id›;166;0.47;357
+/configuration/purchase/template → /configuration/purchase/template/edit/:id → /configuration/purchase/template;Настройки → purchase → шаблон → purchase → шаблон → редактирование → ‹id› → purchase → шаблон;165;0.46;403
+/dashboard/olap → /dashboard/olap/:preset-id → /dashboard/olap;Дашборд → OLAP-отчёт → OLAP-отчёт → ‹preset-id› → OLAP-отчёт;165;0.46;366
+/navigator/auth/login → /inventory/list → /inventory/count/:id/zones;Навигатор — главная страница → авторизация → вход → Инвентаризация → список → подсчёт → ‹id› → зоны;165;0.46;330
+/till-shifts/active → /dashboard/dashboard/:id → /till-shifts/active;Кассовые смены → активные → Дашборд → ‹id› → Кассовые смены → активные;165;0.46;228
+/external-menu/edit-external-menu/:externalMenuId → /navigator/auth/login → /navigator/home;Внешнее меню → редактирование меню → ‹externalMenuId› → Навигатор — главная страница → авторизация → вход → главная;164;0.46;183
+/call-center/order/payment → /call-center → /navigator/auth/login;Колл-центр (приём заказов) → заказ → оплата → Колл-центр (приём заказов) → Навигатор — главная страница → авторизация → вход;163;0.46;216
+/call-center/order/customer → /call-center → /call-center/order/content/menu;Колл-центр (приём заказов) → заказ → гость → Колл-центр (приём заказов) → заказ → состав → меню;163;0.46;213
+/user-profile → /navigator/auth/login → /user-profile;Профиль пользователя → Навигатор — главная страница → авторизация → вход → Профиль пользователя;162;0.46;236
+/navigator/auth/login → /navigator/home → /lite-stock/stock;Навигатор — главная страница → авторизация → вход → главная → Склад (лайт-режим) — приёмка и входящие заказы → stock;161;0.45;177
+/integration/integration/:adapterCode/edit/:id → /integration/integration/:adapterCode/edit/:id/external-menu → /integration/integration/:adapterCode/edit/:id;Интеграции / источники заказов → ‹adapterCode› → редактирование → ‹id› → ‹adapterCode› → редактирование → ‹id› → меню → ‹adapterCode› → редактирование → ‹id›;159;0.45;218
+/navigator/auth/login → /purchase/order-list-v2 → /cpu/consolidated-order;Навигатор — главная страница → авторизация → вход → Закупки / заказы поставщику → список заказов → ЦПУ — сводные заказы (центральное производство) → сводный заказ;159;0.45;192
+/inventory/count/:id/zones → /inventory/list → /inventory/list/:id;Инвентаризация → подсчёт → ‹id› → зоны → список → список → ‹id›;158;0.44;226
+/call-center/order/content/menu → /call-center → /call-center/order/address;Колл-центр (приём заказов) → заказ → состав → меню → Колл-центр (приём заказов) → заказ → адрес;157;0.44;262
+/cpu/consolidated-order/:orderId/provision → /cpu/consolidated-order/:orderId/shipment → /;ЦПУ — сводные заказы (центральное производство) → сводный заказ → ‹orderId› → обеспечение → сводный заказ → ‹orderId› → отгрузка → —;157;0.44;370
+/till-shifts/active → /till-shifts/edit/:tableId → /till-shifts/active;Кассовые смены → активные → редактирование → ‹tableId› → активные;156;0.44;583
+/call-center/order/content/menu → /call-center/order/content/history → /call-center/order/content/menu;Колл-центр (приём заказов) → заказ → состав → меню → заказ → состав → история → заказ → состав → меню;155;0.44;407
+/call-center → /navigator/auth/login → /navigator/home;Колл-центр (приём заказов) → Навигатор — главная страница → авторизация → вход → главная;154;0.43;230
+/call-center → /navigator/auth/login → /user-profile;Колл-центр (приём заказов) → Навигатор — главная страница → авторизация → вход → Профиль пользователя;153;0.43;290
+/purchase/order/edit/:id → /purchase/order-list-v2 → /inventory/list;Закупки / заказы поставщику → заказ → редактирование → ‹id› → список заказов → Инвентаризация → список;152;0.43;281
+/call-center/order/address → /call-center/order/payment → /call-center/order/content/menu;Колл-центр (приём заказов) → заказ → адрес → заказ → оплата → заказ → состав → меню;152;0.43;317
+/cpu/consolidated-order/:orderId/accepting-orders → /cpu/consolidated-order/:orderId/confirmation → /;ЦПУ — сводные заказы (центральное производство) → сводный заказ → ‹orderId› → приём заказов → сводный заказ → ‹orderId› → подтверждение → —;151;0.42;358
+/purchase/order-list-v2 → /lite-stock/stock → /purchase/order-list-v2;Закупки / заказы поставщику → список заказов → Склад (лайт-режим) — приёмка и входящие заказы → stock → Закупки / заказы поставщику → список заказов;150;0.42;471
+/call-center/order/customer → /call-center/order/address → /call-center/order/payment;Колл-центр (приём заказов) → заказ → гость → заказ → адрес → заказ → оплата;150;0.42;259
+/inventory/list/:id → /inventory/list → /inventory/count/:id/zones;Инвентаризация → список → ‹id› → список → подсчёт → ‹id› → зоны;149;0.42;278
+/purchase/order-list-v2 → /navigator/auth/login → /forecast;Закупки / заказы поставщику → список заказов → Навигатор — главная страница → авторизация → вход → Прогноз выручки;148;0.42;660
+/inventory/count/:id/zones → /inventory/list/:id → /inventory/list;Инвентаризация → подсчёт → ‹id› → зоны → список → ‹id› → список;147;0.41;213
+/dashboard/olap/:preset-id → /dashboard/olap → /dashboard/olap/:preset-id;Дашборд → OLAP-отчёт → ‹preset-id› → OLAP-отчёт → OLAP-отчёт → ‹preset-id›;144;0.4;315
+/navigator/auth/login → /user-profile → /call-center;Навигатор — главная страница → авторизация → вход → Профиль пользователя → Колл-центр (приём заказов);144;0.4;293
+/inventory/count/:id/zones → /inventory/count/:id/zones/:id → /purchase/order-list-v2;Инвентаризация → подсчёт → ‹id› → зоны → подсчёт → ‹id› → зоны → ‹id› → Закупки / заказы поставщику → список заказов;143;0.4;268
+/inventory/count/:id/zones → /inventory/count/:id/zones/:id → /navigator/auth/login;Инвентаризация → подсчёт → ‹id› → зоны → подсчёт → ‹id› → зоны → ‹id› → Навигатор — главная страница → авторизация → вход;142;0.4;256
+/navigator/auth/login → /navigator/home → /till-shifts/guestcheck;Навигатор — главная страница → авторизация → вход → главная → Кассовые смены → чеки гостей;141;0.4;155
+/dashboard/dashboard/:id → /till-shifts/guestcheck → /dashboard/dashboard/:id;Дашборд → ‹id› → Кассовые смены → чеки гостей → Дашборд → ‹id›;141;0.4;275
+/documents/documents/writeoff_document/:id → /documents/documents → /documents/documents/writeoff_document;Документы → списание → ‹id› → Документы → списание;140;0.39;704
+/inventory/count/:id/zones → /inventory/list → /purchase/order-list-v2;Инвентаризация → подсчёт → ‹id› → зоны → список → Закупки / заказы поставщику → список заказов;140;0.39;179
+/till-shifts/guestcheck → /till-shifts/active → /dashboard/dashboard/:id;Кассовые смены → чеки гостей → активные → Дашборд → ‹id›;139;0.39;220
+/lite-stock/stock → /purchase/order-list-v2 → /purchase/order/edit/:id;Склад (лайт-режим) — приёмка и входящие заказы → stock → Закупки / заказы поставщику → список заказов → заказ → редактирование → ‹id›;137;0.39;354
+/configuration/purchase/template/edit/:id → /configuration/purchase/template → /configuration/purchase/template/edit/:id;Настройки → purchase → шаблон → редактирование → ‹id› → purchase → шаблон → purchase → шаблон → редактирование → ‹id›;136;0.38;329
+/inventory/list/:id → /inventory/list → /inventory/list/:id;Инвентаризация → список → ‹id› → список → список → ‹id›;136;0.38;387
+/inventory/list → /purchase/order-list-v2 → /inventory/list;Инвентаризация → список → Закупки / заказы поставщику → список заказов → Инвентаризация → список;134;0.38;241
+/call-center/order/address → /call-center/order/customer → /call-center/order/content/menu;Колл-центр (приём заказов) → заказ → адрес → заказ → гость → заказ → состав → меню;134;0.38;209
+/call-center/order/customer → /call-center/order/payment → /call-center;Колл-центр (приём заказов) → заказ → гость → заказ → оплата → Колл-центр (приём заказов);134;0.38;194
+/lite-stock/incoming-orders/list → /purchase/order-list-v2 → /purchase/order/edit/:id;Склад (лайт-режим) — приёмка и входящие заказы → incoming-orders → список → Закупки / заказы поставщику → список заказов → заказ → редактирование → ‹id›;133;0.37;421
+/nomenclature/list → /navigator/auth/login → /navigator/home;Номенклатура → список → Навигатор — главная страница → авторизация → вход → главная;133;0.37;173
+/dashboard/dashboard/:id → /till-shifts/active → /till-shifts/guestcheck;Дашборд → ‹id› → Кассовые смены → активные → чеки гостей;131;0.37;170
+/documents/documents → /documents/documents/writeoff_document/:id → /documents/documents;Документы → списание → ‹id› → Документы;131;0.37;676
+/till-shifts/active → /navigator/auth/login → /navigator/home;Кассовые смены → активные → Навигатор — главная страница → авторизация → вход → главная;131;0.37;153
+/call-center/order/content/menu → /call-center/order/address → /call-center;Колл-центр (приём заказов) → заказ → состав → меню → заказ → адрес → Колл-центр (приём заказов);131;0.37;197
+/dashboard/olap → /dashboard/olap/:preset-id → /dashboard/dashboard/:id;Дашборд → OLAP-отчёт → OLAP-отчёт → ‹preset-id› → ‹id›;128;0.36;148
+/site-constructor/sites → /site-constructor/sites/edit/:id/main → /site-constructor/sites/edit/:id/outlets;Конструктор сайтов / онлайн-заказы → сайты → сайты → редактирование → ‹id› → основное → сайты → редактирование → ‹id› → точки;127;0.36;248
+/user-profile → /inventory/list → /inventory/count/:id/zones;Профиль пользователя → Инвентаризация → список → подсчёт → ‹id› → зоны;126;0.35;147
+/navigator/home → /navigator/auth/login → /user-profile;Навигатор — главная страница → главная → авторизация → вход → Профиль пользователя;126;0.35;152
+/purchase/order/edit/:id → /purchase/order-list-v2 → /cpu/consolidated-order;Закупки / заказы поставщику → заказ → редактирование → ‹id› → список заказов → ЦПУ — сводные заказы (центральное производство) → сводный заказ;126;0.35;174
+/till-shifts/active → /till-shifts/guestcheck → /dashboard/dashboard/:id;Кассовые смены → активные → чеки гостей → Дашборд → ‹id›;125;0.35;149
+/dashboard/dashboard/:id → /dashboard/olap → /dashboard/olap/:preset-id;Дашборд → ‹id› → OLAP-отчёт → OLAP-отчёт → ‹preset-id›;125;0.35;156
+/cpu/consolidated-order → /cpu/consolidated-order/:orderId/shipment → /cpu/consolidated-order/:orderId/restaurant-confirmation;ЦПУ — сводные заказы (центральное производство) → сводный заказ → сводный заказ → ‹orderId› → отгрузка → сводный заказ → ‹orderId› → подтверждение ресторана;125;0.35;350
+/cpu/consolidated-order → /cpu/consolidated-order/:orderId/restaurant-confirmation → /cpu/consolidated-order;ЦПУ — сводные заказы (центральное производство) → сводный заказ → сводный заказ → ‹orderId› → подтверждение ресторана → сводный заказ;125;0.35;459
+/cpu/consolidated-order → /cpu/error/:code → /cpu/consolidated-order;ЦПУ — сводные заказы (центральное производство) → сводный заказ → ошибка → ‹code› → сводный заказ;125;0.35;255
+/call-center/order/content/history → /call-center/order/content/menu → /call-center/order/payment;Колл-центр (приём заказов) → заказ → состав → история → заказ → состав → меню → заказ → оплата;124;0.35;236
+/purchase/order-list-v2 → /lite-stock/incoming-orders/list → /purchase/order-list-v2;Закупки / заказы поставщику → список заказов → Склад (лайт-режим) — приёмка и входящие заказы → incoming-orders → список → Закупки / заказы поставщику → список заказов;124;0.35;329
+/cpu/consolidated-order/:orderId/restaurant-confirmation → /cpu/consolidated-order → /cpu/consolidated-order/:orderId/restaurant-confirmation;ЦПУ — сводные заказы (центральное производство) → сводный заказ → ‹orderId› → подтверждение ресторана → сводный заказ → сводный заказ → ‹orderId› → подтверждение ресторана;124;0.35;399
+/call-center/order/content/menu → /call-center/order/content/promotions → /call-center/order/content/menu;Колл-центр (приём заказов) → заказ → состав → меню → заказ → состав → акции → заказ → состав → меню;124;0.35;327
+/call-center/order/content/menu → /call-center/order/content/discounts → /call-center/order/content/menu;Колл-центр (приём заказов) → заказ → состав → меню → заказ → состав → скидки → заказ → состав → меню;123;0.35;338
+/call-center/order/customer → /call-center/order/content/menu → /call-center/order/payment;Колл-центр (приём заказов) → заказ → гость → заказ → состав → меню → заказ → оплата;122;0.34;162
