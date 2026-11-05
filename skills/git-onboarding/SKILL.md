@@ -245,7 +245,7 @@ curl -s -o /dev/null -w '%{http_code}\n' -H "Authorization: Bearer $JIRA_TOKEN" 
 | Сформулировать проблему, собрать данные и конкурентов | `problem-formulation`, `data-analysis`, `competitor-analysis` | 1 |
 | Гипотезы и приоритизация | `iiko-hypotheses` | 2 |
 | Оформить Epic/Story в Jira | `pb-task-writer` | 3 |
-| Собрать прототип на дизайн-системе | гайд `step-4-design/` (папки `01-начало` … `07-архив`) + `ux-writing-iiko` | 4 |
+| Собрать прототип на дизайн-системе | гайд `design/` (папки `01-начало` … `07-архив`) + `ux-writing-iiko` | 4 |
 | Написать спеку (PRD) | `spec-writing` | 5 |
 | Статусы разработки и актуализация описаний | `jira-task-digest`, `requirement-actualization` | 6 |
 

@@ -81,7 +81,7 @@ curl -sS -X POST \
 
 ```markdown
 ## Что меняется
-- `step-2-hypotheses/skills/<имя>/SKILL.md` — новый скилл: <одна строка>
+- `hypotheses/skills/<имя>/SKILL.md` — новый скилл: <одна строка>
 - `INDEX.md` — строка реестра, версия 1.0.0
 
 ## Зачем
