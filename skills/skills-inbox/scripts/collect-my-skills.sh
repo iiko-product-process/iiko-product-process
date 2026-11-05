@@ -8,7 +8,8 @@
 #   collect-my-skills.sh [--home PATH] [--manifest FILE] [--author NAME]
 #                        [--out DIR | --telegram]
 #                        [--dry-run]
-#   env: TG_TOKEN, TG_CHAT, TG_PROXY (например socks5h://proxy:1080)
+#   env: TG_TOKEN, TG_CHAT, TG_THREAD (id темы в группе, необязательно),
+#        TG_PROXY (например socks5h://proxy:1080), TG_API (подмена адреса API — для тестов)
 #
 # По умолчанию: --home $HERMES_HOME (или ~/.hermes), --out ~/skill-reports
 # Формат манифеста канона: TSV "name<TAB>sha1<TAB>version" (как .canon-sync-state.tsv).
@@ -155,12 +156,13 @@ case "$MODE" in
   telegram)
     : "${TG_TOKEN:?нужен TG_TOKEN}"; : "${TG_CHAT:?нужен TG_CHAT}"
     proxy_args=(); [ -n "${TG_PROXY:-}" ] && proxy_args=(--proxy "$TG_PROXY")
+    thread_args=(); [ -n "${TG_THREAD:-}" ] && thread_args=(-F "message_thread_id=$TG_THREAD")
     caption="Скиллы $AUTHOR, $DATE: новых $new, изменённых $changed, внимание $attention"
     if curl -sS "${proxy_args[@]}" --max-time 120 \
-        -F "chat_id=$TG_CHAT" -F "caption=$caption" \
+        -F "chat_id=$TG_CHAT" -F "caption=$caption" "${thread_args[@]}" \
         -F "document=@$ARCHIVE" \
-        "https://api.telegram.org/bot$TG_TOKEN/sendDocument" -o "$WORK/tg.json"; then
-      if grep -q '"ok":true' "$WORK/tg.json"; then
+        "${TG_API:-https://api.telegram.org}/bot$TG_TOKEN/sendDocument" -o "$WORK/tg.json"; then
+      if grep -qE '"ok"[[:space:]]*:[[:space:]]*true' "$WORK/tg.json"; then
         echo "collect-my-skills: отправлено $count_to_send скиллов в Telegram ($caption)"
       else
         echo "collect-my-skills: Telegram ответил ошибкой: $(head -c 200 "$WORK/tg.json")"; exit 1
