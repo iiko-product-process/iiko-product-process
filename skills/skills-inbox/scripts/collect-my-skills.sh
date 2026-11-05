@@ -140,7 +140,7 @@ ARCHIVE="$WORK/skills-$AUTHOR-$DATE.tar.gz"
 tar -czf "$ARCHIVE" -C "$WORK" "skills-$AUTHOR-$DATE"
 
 if [ "$DRY" = 1 ]; then
-  echo "collect-my-skills (dry-run): отправлено было бы $count_to_send из $total"
+  echo "collect-my-skills (dry-run): новых $new, изменённых $changed, внимание $attention, идентичных $identical — отправил бы $count_to_send из $total"
   echo "  архив: $ARCHIVE"
   echo "  состав:"; tar -tzf "$ARCHIVE" | head -20
   exit 0
