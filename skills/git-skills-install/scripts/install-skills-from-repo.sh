@@ -30,9 +30,9 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-[ -d "$HOME_DIR/skills" ] || HOME_DIR="$HOME"
 SKILLS_ROOT="$HOME_DIR/skills"
-[ -d "$SKILLS_ROOT" ] || { echo "install-skills: не найден каталог скиллов ($SKILLS_ROOT)"; exit 1; }
+# на новой машине каталога скиллов ещё нет — создаём, а не подменяем HOME молча
+mkdir -p "$SKILLS_ROOT" || { echo "install-skills: не удалось создать $SKILLS_ROOT"; exit 1; }
 
 STATE="$HOME_DIR/.repo-skills-manifest.tsv"
 STATE_HEADER="#dirhash-v2"
