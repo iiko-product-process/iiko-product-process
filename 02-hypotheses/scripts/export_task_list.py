@@ -2,7 +2,7 @@
 """Экспорт списка гипотез из прототипа в читаемый markdown-дубль внутри папки задачи.
 
 Использование:
-    python3 scripts/export_task_list.py <list_id> tasks/<слаг>/02-гипотезы/список-гипотез.md
+    python3 scripts/export_task_list.py <list_id> Задачи/<слаг>/02-гипотезы/список-гипотез.md
 
   - <list_id> без префикса пути: например problema-proekt-produkty
   - относительный путь вывода разрешается от корня репозитория iiko-product-process

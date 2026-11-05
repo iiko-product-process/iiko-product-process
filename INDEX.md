@@ -26,9 +26,9 @@
 | spec-writing | Шаг 5 | `05-specification/skill/SKILL.md` | Спецификация (PRD) к разработке: вопросы, гейты, формат PRD. |
 | jira-task-digest | Шаг 6 | `06-development/skills/jira-task-digest/SKILL.md` | Use when нужен статус разработки по задаче Jira: выгрузка семьи задач эпика/стори, статусы и изменения. |
 | requirement-actualization | Шаг 6 | `06-development/skills/requirement-actualization/SKILL.md` | Use when требования поменялись в разработке: правка данных, пути пользователя или техрешения в Story. |
-| task-workspace | Сквозной | `skills/task-workspace/SKILL.md` | Use when нужна папка задачи («tasks/»): старт задачи, артефакты, история работ. |
-| share-to-common | Сквозной | `skills/share-to-common/SKILL.md` | Use when просит поделиться наработкой со всеми («в общую папку», «чтобы видели все»): собрать предложение и отправить PR. |
+| task-workspace | Сквозной | `skills/task-workspace/SKILL.md` | Use when нужна папка задачи в Hermes wiki («Задачи/»): старт задачи, артефакты, история работ. |
+| share-to-common | Сквозной | `skills/share-to-common/SKILL.md` | Use when просит поделиться наработкой со всеми («в общую папку», «чтобы видели все»): собрать предложение и передать админу. |
 | mirror-skill-to-repo | Сквозной | `skills/mirror-skill-to-repo/SKILL.md` | Use when появился новый скилл или навык: предложить скопировать его в папку репозитория. |
-| git-onboarding | Сквозной | `skills/git-onboarding/SKILL.md` | Use when сотрудник подключается к репозиторию процесса: форк, клон, правила для Гермеса, MCP, первые задачи. |
+| git-onboarding | Сквозной | `skills/git-onboarding/SKILL.md` | Use when сотрудник подключается к репозиторию процесса: клон, правила для Гермеса, MCP, первые задачи. |
 | skills-inbox | Сквозной | `skills/skills-inbox/SKILL.md` | Use when нужно собрать новые скиллы сотрудников и прислать дайджест админу — без git у сотрудников. |
 | git-skills-install | Сквозной | `skills/git-skills-install/SKILL.md` | Use when папка процесса подключена или обновлена: поставить все скиллы из репозитория в Hermes. |
