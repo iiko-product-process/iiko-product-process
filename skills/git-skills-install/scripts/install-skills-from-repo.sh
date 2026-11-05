@@ -36,7 +36,7 @@ SKILLS_ROOT="$HOME_DIR/skills"
 
 STATE="$HOME_DIR/.repo-skills-manifest.tsv"
 TARGET="$SKILLS_ROOT/$CATEGORY"
-mkdir -p "$TARGET"
+[ "$DRY" = 0 ] && mkdir -p "$TARGET"
 echo "install-skills: репозиторий $REPO -> $TARGET"
 
 LIST="$(mktemp)"; RAW="$(mktemp)"; WIN="$(mktemp)"; NEW="$(mktemp)"
