@@ -3,7 +3,7 @@
 
 Рабочая папка в контейнере (`/opt/data/tasks/<KEY>-<слаг>`) — временная: там идёт работа.
 Источник правды — `artifacts/<слаг>/` в вики. Скрипт копирует артефакты из рабочей папки
-в папку задачи репозитория по правилам раскладки, не перезаписывая расхождения молча.
+в папку задачи по правилам раскладки, не перезаписывая расхождения молча.
 
     python3 sync-task.py --from /opt/data/tasks/PB-7105-nacenka-v-prikazah \
                          --task <клон>/artifacts/pb-7105-price-orders --dry-run
@@ -23,7 +23,7 @@ import sys
 from datetime import date
 from pathlib import Path
 
-# Правила раскладки: префикс в рабочей папке → путь внутри папки задачи репозитория.
+# Правила раскладки: префикс в рабочей папке → путь внутри папки задачи (вики).
 # Порядок важен: длинные префиксы проверяются раньше.
 RULES: list[tuple[str, str]] = [
     ("confluence/", "01-проблема/исследования/confluence/"),
@@ -69,7 +69,7 @@ def journal_row(count: int, new: int, folder: str) -> str:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Синхронизация рабочей папки задачи в репозиторий")
+    ap = argparse.ArgumentParser(description="Синхронизация рабочей папки задачи в папку задачи вики")
     ap.add_argument("--from", dest="src", required=True, help="рабочая папка задачи")
     ap.add_argument("--task", required=True, help="папка задачи в репозитории (artifacts/<слаг>)")
     ap.add_argument("--dry-run", action="store_true", help="только показать план")
