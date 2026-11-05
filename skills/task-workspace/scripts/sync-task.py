@@ -2,11 +2,11 @@
 """Синхронизация рабочей папки задачи в репозиторий (ветка personal).
 
 Рабочая папка в контейнере (`/opt/data/tasks/<KEY>-<слаг>`) — временная: там идёт работа.
-Источник правды — `Задачи/<слаг>/` в репозитории. Скрипт копирует артефакты из рабочей папки
+Источник правды — `artifacts/<слаг>/` в репозитории. Скрипт копирует артефакты из рабочей папки
 в папку задачи репозитория по правилам раскладки, не перезаписывая расхождения молча.
 
     python3 sync-task.py --from /opt/data/tasks/PB-7105-nacenka-v-prikazah \
-                         --task <клон>/Задачи/pb-7105-price-orders --dry-run
+                         --task <клон>/artifacts/pb-7105-price-orders --dry-run
     python3 sync-task.py --from … --task … --journal
 
 Коды возврата: 0 — синхронизировано, 2 — есть конфликты (файл уже лежит с другим содержимым),
@@ -71,7 +71,7 @@ def journal_row(count: int, new: int, folder: str) -> str:
 def main() -> int:
     ap = argparse.ArgumentParser(description="Синхронизация рабочей папки задачи в репозиторий")
     ap.add_argument("--from", dest="src", required=True, help="рабочая папка задачи")
-    ap.add_argument("--task", required=True, help="папка задачи в репозитории (Задачи/<слаг>)")
+    ap.add_argument("--task", required=True, help="папка задачи в репозитории (artifacts/<слаг>)")
     ap.add_argument("--dry-run", action="store_true", help="только показать план")
     ap.add_argument("--overwrite", action="store_true", help="перезаписывать расходящиеся файлы")
     ap.add_argument("--journal", action="store_true", help="дописать строку в журнал задачи")

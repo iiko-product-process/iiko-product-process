@@ -4,7 +4,7 @@
 [iiko-product-process](https://github.com/iiko-product-process/iiko-product-process). Каждая строка — один скилл.
 Добавить скилл = PR в этот репозиторий + строка в этом реестре (правка `INDEX.md` обязательна).
 
-Всего скиллов: **24**
+Всего скиллов: **38**
 
 | Скилл | Шаг | Путь | Описание |
 |---|---|---|---|
@@ -26,9 +26,23 @@
 | spec-writing | Шаг 5 | `05-specification/skill/SKILL.md` | Спецификация (PRD) к разработке: вопросы, гейты, формат PRD. |
 | jira-task-digest | Шаг 6 | `06-development/skills/jira-task-digest/SKILL.md` | Use when нужен статус разработки по задаче Jira: выгрузка семьи задач эпика/стори, статусы и изменения. |
 | requirement-actualization | Шаг 6 | `06-development/skills/requirement-actualization/SKILL.md` | Use when требования поменялись в разработке: правка данных, пути пользователя или техрешения в Story. |
-| task-workspace | Сквозной | `skills/task-workspace/SKILL.md` | Use when нужна папка задачи в Hermes wiki («Задачи/»): старт задачи, артефакты, история работ. |
+| task-workspace | Сквозной | `skills/task-workspace/SKILL.md` | Use when нужна папка задачи в Hermes wiki («artifacts/»): старт задачи, артефакты, история работ. |
 | share-to-common | Сквозной | `skills/share-to-common/SKILL.md` | Use when просит поделиться наработкой со всеми («в общую папку», «чтобы видели все»): собрать предложение и передать админу. |
 | mirror-skill-to-repo | Сквозной | `skills/mirror-skill-to-repo/SKILL.md` | Use when появился новый скилл или навык: предложить скопировать его в папку репозитория. |
 | git-onboarding | Сквозной | `skills/git-onboarding/SKILL.md` | Use when сотрудник подключается к репозиторию процесса: клон, правила для Гермеса, MCP, первые задачи. |
 | skills-inbox | Сквозной | `skills/skills-inbox/SKILL.md` | Use when нужно собрать новые скиллы сотрудников и прислать дайджест админу — без git у сотрудников. |
 | git-skills-install | Сквозной | `skills/git-skills-install/SKILL.md` | Use when папка процесса подключена или обновлена: поставить все скиллы из репозитория в Hermes. |
+| pyrus | Шаг 1 | `01-research-problem/skills/pyrus/SKILL.md` | Use when нужны обращения из Pyrus: формы, реестры, жалобы клиентов. |
+| pyrus-api-direct | Шаг 1 | `01-research-problem/skills/pyrus-api-direct/SKILL.md` | Use when Pyrus нужен по REST без MCP: токен, формы, реестры. |
+| matomo-web-analytics | Шаг 1 | `01-research-problem/skills/matomo-web-analytics/SKILL.md` | Use when нужна веб-аналитика iiko web в Matomo: разметка, воронки, отчёты. |
+| matomo-weekly-report | Шаг 1 | `01-research-problem/skills/matomo-weekly-report/SKILL.md` | Use when нужен недельный отчёт iiko web (WoW + день-к-дню). |
+| matomo-daily-report | Шаг 1 | `01-research-problem/skills/matomo-daily-report/SKILL.md` | Use when нужен дневной отчёт по страницам за вчера. |
+| matomo-user-paths | Шаг 1 | `01-research-problem/skills/matomo-user-paths/SKILL.md` | Use when анализируем пути и сегменты пользователей в Matomo. |
+| device-segmentation | Шаг 1 | `01-research-problem/skills/device-segmentation/SKILL.md` | Use when сравниваем мобильные и десктопные сценарии, ищем обрывы. |
+| session-continuity-analysis | Шаг 1 | `01-research-problem/skills/session-continuity-analysis/SKILL.md` | Use when разбираем возвраты после логаута и непрерывность сессии. |
+| teams-meeting-pipeline | Сквозной | `skills/teams-meeting-pipeline/SKILL.md` | Use when нужны итоги встреч Teams: транскрипт, сводка, решения. |
+| meeting-transcript-summaries | Сквозной | `skills/meeting-transcript-summaries/SKILL.md` | Use when из транскрипта встречи нужны итоги и план действий. |
+| notes-inbox | Сквозной | `skills/notes-inbox/SKILL.md` | Use when сотрудник присылает заметку или файл — сохранить в вики. |
+| notes-search | Сквозной | `skills/notes-search/SKILL.md` | Use when нужно быстро найти заметку или артефакт в вики. |
+| notes-vault-setup | Сквозной | `skills/notes-vault-setup/SKILL.md` | Use when нужно развернуть Hermes wiki (хранилище заметок). |
+| hermes-wiki | Сквозной | `skills/hermes-wiki/SKILL.md` | Use when нужно хранилище артефактов: Hermes wiki, папки задач, заметки по шагам. |

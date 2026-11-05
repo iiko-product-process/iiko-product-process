@@ -4,7 +4,7 @@
 
 Запуск:
     python3 jira_task_digest.py PB-7986
-    python3 jira_task_digest.py https://jira.iiko.ru/browse/PB-7986 --days 14 --out ../Задачи/<слаг>/06-реализация
+    python3 jira_task_digest.py https://jira.iiko.ru/browse/PB-7986 --days 14 --out ../artifacts/<слаг>/06-реализация
     python3 jira_task_digest.py PB-8063 --no-changelog
 
 Что делает:
@@ -474,7 +474,7 @@ def main():
     ap.add_argument("--stuck-days", type=int, default=14, help="порог «нет движения», дней (по умолчанию 14)")
     ap.add_argument("--max-children", type=int, default=500, help="лимит задач (по умолчанию 500)")
     ap.add_argument("--workers", type=int, default=8, help="параллельных запросов changelog (по умолчанию 8)")
-    ap.add_argument("--out", help="папка для снапшота и markdown (обычно Задачи/<слаг>/06-реализация)")
+    ap.add_argument("--out", help="папка для снапшота и markdown (обычно artifacts/<слаг>/06-реализация)")
     ap.add_argument("--no-changelog", action="store_true", help="без истории изменений (быстро)")
     ap.add_argument("--json-only", action="store_true", help="только JSON, без markdown")
     ap.add_argument("--all-changes", action="store_true", help="показывать и служебные изменения (связи и пр.)")
@@ -528,7 +528,7 @@ def main():
         print()
         print(digest)
         if not args.out:
-            print("\nАртефакты по задаче складываются в её папку — Задачи/<слаг>/06-реализация/ "
+            print("\nАртефакты по задаче складываются в её папку — artifacts/<слаг>/06-реализация/ "
                   "(укажи путь флагом --out).")
 
 
