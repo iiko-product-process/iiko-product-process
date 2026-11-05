@@ -1,7 +1,7 @@
 ---
 name: git-skills-install
 description: "Use when папка процесса подключена или обновлена: поставить все скиллы из репозитория в Hermes."
-version: 1.0.0
+version: 1.0.1
 created: 2026-10-19
 tags: [скиллы, установка, репозиторий, онбординг, iiko]
 triggers:
@@ -32,7 +32,8 @@ triggers:
    папку `_inbox/`;
 3. копирует каждый скилл в `$HERMES_HOME/skills/productivity/<имя>/` целиком — со всеми
    `references/`, `templates/`, `scripts/`;
-4. пишет манифест `$HERMES_HOME/.repo-skills-manifest.tsv` (`name`, `sha1`, `version`, путь в репозитории);
+4. сравнивает **каталог целиком** (SKILL.md + `references/`, `templates/`, `scripts/`) и пишет манифест
+   `$HERMES_HOME/.repo-skills-manifest.tsv` (`name`, отпечаток каталога, `version`, путь в репозитории);
 5. **не перезаписывает** скилл, который правили руками после установки — такой попадает в отчёт
    как «пропуск»; `--force` перезаписывает всё.
 

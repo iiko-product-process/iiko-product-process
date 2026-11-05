@@ -35,6 +35,13 @@ SKILLS_ROOT="$HOME_DIR/skills"
 [ -d "$SKILLS_ROOT" ] || { echo "install-skills: не найден каталог скиллов ($SKILLS_ROOT)"; exit 1; }
 
 STATE="$HOME_DIR/.repo-skills-manifest.tsv"
+STATE_HEADER="#dirhash-v2"
+
+# отпечаток каталога целиком: важен не только SKILL.md, но и references/templates/scripts
+dir_sha() {
+  find "$1" -type f -print0 2>/dev/null | sort -z | xargs -0 -r sha1sum 2>/dev/null \
+    | awk '{print $1}' | sha1sum | cut -d' ' -f1
+}
 TARGET="$SKILLS_ROOT/$CATEGORY"
 [ "$DRY" = 0 ] && mkdir -p "$TARGET"
 echo "install-skills: репозиторий $REPO -> $TARGET"
@@ -66,19 +73,22 @@ while IFS= read -r f; do
   fi
 done < "$LIST"
 
+printf '%s\n' "$STATE_HEADER" > "$NEW"
 installed=0; updated=0; same=0; skipped=0; flat=0
 while IFS=$'\t' read -r name f; do
   [ -n "$name" ] || continue
   ver=$(sed -n 's/^version:[[:space:]]*//p' "$f" | head -1 | tr -d '\r')
-  sha=$(sha1sum "$f" | cut -d' ' -f1)
   src_dir=$(dirname "$f")
   dst_dir="$TARGET/$name"
   dst="$dst_dir/SKILL.md"
+  flat_src=0; [ "$(basename "$f")" = "SKILL.md" ] || flat_src=1
+  if [ "$flat_src" = 1 ]; then sha=$(sha1sum "$f" | cut -d' ' -f1); else sha=$(dir_sha "$src_dir"); fi
 
   if [ -f "$dst" ]; then
-    cur=$(sha1sum "$dst" | cut -d' ' -f1)
+    if [ "$flat_src" = 1 ]; then cur=$(sha1sum "$dst" | cut -d' ' -f1); else cur=$(dir_sha "$dst_dir"); fi
     [ "$cur" = "$sha" ] && { same=$((same+1)); printf '%s\t%s\t%s\t%s\n' "$name" "$sha" "${ver:-}" "${f#$REPO/}" >> "$NEW"; continue; }
     prev=$(awk -F'\t' -v n="$name" '$1==n{print $2}' "$STATE" 2>/dev/null | head -1)
+    grep -qx "$STATE_HEADER" "$STATE" 2>/dev/null || prev=""   # старый формат манифеста — без защиты от перезаписи
     if [ "$FORCE" = 0 ] && [ -n "$prev" ] && [ "$prev" != "$cur" ]; then
       echo "  пропуск: $name — локальная копия правилась руками"; skipped=$((skipped+1)); continue
     fi
@@ -88,7 +98,7 @@ while IFS=$'\t' read -r name f; do
   fi
 
   if [ "$DRY" = 0 ]; then
-    mkdir -p "$dst_dir"
+    rm -rf "$dst_dir"; mkdir -p "$dst_dir"
     if [ "$(basename "$f")" = "SKILL.md" ]; then cp -r "$src_dir/." "$dst_dir/"; else cp "$f" "$dst"; flat=$((flat+1)); fi
   fi
   echo "  $action: $name (${ver:-без версии})"
