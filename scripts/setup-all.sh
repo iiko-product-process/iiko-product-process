@@ -82,7 +82,7 @@ cat > "$HOME_DIR/scripts/skills-collect-weekly.sh" <<EOF
 # skills-collect-weekly.sh — еженедельный сбор наработок сотрудника (создано setup-all.sh).
 out=\$(bash "$REPO/skills/skills-inbox/scripts/collect-my-skills.sh" --home "$HOME_DIR" --author "\$(whoami)" --manifest "$HOME_DIR/canon-skills-manifest.tsv" --out "$HOME_DIR/skill-reports" 2>&1) || rc=\$?
 case "\$out" in
-  *"нечего"*|*"0 файл"*|*"0 скилл"*) exit 0 ;;   # нечего отправлять — молчим
+  *"нечего"*|*"0 файл"*|*"0 скилл"*|*"скиллов нет"*) exit 0 ;;   # нечего отправлять — молчим
 esac
 [ -n "\${rc:-}" ] && { echo "\$out"; exit "\$rc"; }
 echo "\$out"
