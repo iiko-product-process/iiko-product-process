@@ -13,7 +13,7 @@ set -uo pipefail
 
 REPO="${IIKO_REPO:-$HOME/iiko-product-process}"
 HOME_DIR="${HERMES_HOME:-$HOME/.hermes}"
-WIKI="${IIKO_WIKI_ROOT:-$HOME_DIR/notes}"
+WIKI="${IIKO_WIKI_ROOT:-}"
 DRY=0
 
 while [ $# -gt 0 ]; do
@@ -26,6 +26,9 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
+
+# --home меняет и путь вики по умолчанию, поэтому вычисляем после разбора флагов
+[ -n "$WIKI" ] || WIKI="$HOME_DIR/notes"
 
 DRYARG=""; [ "$DRY" = 1 ] && DRYARG="--dry-run"
 ENV_FILE="$HOME_DIR/.env"
