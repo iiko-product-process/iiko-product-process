@@ -4,7 +4,7 @@
 [iiko-product-process](https://github.com/iiko-product-process/iiko-product-process). Каждая строка — один скилл.
 Добавить скилл = PR в этот репозиторий + строка в этом реестре (правка `INDEX.md` обязательна).
 
-Всего скиллов: **38**
+Всего скиллов: **39**
 
 | Скилл | Шаг | Путь | Описание |
 |---|---|---|---|
@@ -46,3 +46,4 @@
 | notes-search | Сквозной | `skills/notes-search/SKILL.md` | Use when нужно быстро найти заметку или артефакт в вики. |
 | notes-vault-setup | Сквозной | `skills/notes-vault-setup/SKILL.md` | Use when нужно развернуть Hermes wiki (хранилище заметок). |
 | hermes-wiki | Сквозной | `skills/hermes-wiki/SKILL.md` | Use when нужно хранилище артефактов: Hermes wiki, папки задач, заметки по шагам. |
+| process-setup | Сквозной | `skills/process-setup/SKILL.md` | Use when продакт первый раз настраивает Гермеса под процесс: клон, скиллы, вики, обновления, MCP. |
