@@ -1,7 +1,7 @@
 ---
 name: skills-inbox
 description: "Use when нужно собрать новые скиллы сотрудников и прислать дайджест админу — без git у сотрудников."
-version: 1.0.1
+version: 1.0.2
 created: 2026-10-19
 tags: [скиллы, команда, дайджест, cron, telegram, iiko]
 triggers:
@@ -28,6 +28,7 @@ triggers:
 |---|---|---|
 | `collect-my-skills.sh` | у сотрудника | сравнивает `$HERMES_HOME/skills` с манифестом канона, пакует новые/изменённые в `skills-<автор>-<дата>.tar.gz`, отправляет в папку или Telegram |
 | `skills-digest.sh` | у админа | распаковывает все архивы, дедуплицирует одинаковые скиллы по sha1, считает ±строк от канона, собирает `digest-<дата>.md` |
+| `digest-and-send.sh` | у админа (cron) | обёртка: дайджест + отправка файлом в Telegram; пустой инбокс — тишина |
 
 ## Роли и что требуется
 
@@ -129,8 +130,17 @@ skills-digest.sh --inbox /mnt/skills-inbox \
 Дедупликация: одинаковый скилл (совпадение sha1) от трёх человек — одна строка, авторы через запятую.
 Идентичные канону не показываются вообще.
 
-Cron у админа: `30 18 * * 5`, режим `no_agent`, скрипт `skills-digest.sh`, доставка в Telegram
-(у админа канал уже настроен) или файл в общую папку.
+Cron у админа: `30 18 * * 5`, режим `no_agent`. Удобнее ставить не `skills-digest.sh`, а обёртку
+`scripts/digest-and-send.sh`: она собирает дайджест и сама отправляет его файлом в Telegram-группу сбора,
+а при пустом инбоксе молчит.
+
+```bash
+TG_PROXY=socks5h://proxy:1080 bash scripts/digest-and-send.sh \
+  --inbox /mnt/skills-inbox --canon-repo /opt/data/iiko-product-office-skills \
+  --token-file /opt/data/tg-skills-token --chat-file /opt/data/tg-skills-token.chat
+```
+
+Файл `tg-skills-token.chat` — две строки: `chat_id` и (если есть) `message_thread_id`.
 
 ## Безопасность
 
