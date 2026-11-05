@@ -32,6 +32,10 @@ if [ ! -d "$REPO/.git" ]; then
   git clone -q "$url" "$REPO" || { echo "update-design: клон не удался"; exit 1; }
 fi
 
+# у сотрудника remote называется origin; в служебном клоне админа — canon
+REMOTE=origin
+git -C "$REPO" remote | grep -qx origin || { git -C "$REPO" remote | grep -qx canon && REMOTE=canon; }
+
 before="$(git -C "$REPO" rev-parse --short HEAD 2>/dev/null || echo none)"
 
 if [ -n "$(git -C "$REPO" status --porcelain 04-design)" ]; then
@@ -40,14 +44,14 @@ if [ -n "$(git -C "$REPO" status --porcelain 04-design)" ]; then
 fi
 
 if [ "$DRY" = 1 ]; then
-  git -C "$REPO" fetch -q origin || { echo "update-design: fetch не удался"; exit 1; }
-  behind=$(git -C "$REPO" rev-list --count "HEAD..origin/main" 2>/dev/null || echo 0)
+  git -C "$REPO" fetch -q "$REMOTE" || { echo "update-design: fetch не удался"; exit 1; }
+  behind=$(git -C "$REPO" rev-list --count "HEAD..$REMOTE/main" 2>/dev/null || echo 0)
   echo "update-design (dry-run): отстаём на $behind коммит(ов)"
   exit 0
 fi
 
-git -C "$REPO" fetch -q origin || { echo "update-design: fetch не удался (сеть/токен)"; exit 1; }
-git -C "$REPO" merge --ff-only origin/main >/dev/null 2>&1 || {
+git -C "$REPO" fetch -q "$REMOTE" || { echo "update-design: fetch не удался (сеть/токен)"; exit 1; }
+git -C "$REPO" merge --ff-only "$REMOTE/main" >/dev/null 2>&1 || {
   echo "update-design: обновление невозможно (локальные коммиты или расхождение)"; exit 1; }
 
 after="$(git -C "$REPO" rev-parse --short HEAD)"
