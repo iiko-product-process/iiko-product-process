@@ -67,7 +67,7 @@ TOKEN="${GITHUB_TOKEN:-${GITHUB:-}}"
 4. Дописать строку — без кавычек и без пробелов вокруг `=`:
 
 ```dotenv
-GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
+GITHUB_TOKEN=<ваш-токен>
 ```
 
    Если в файле уже есть другие ключи (`CONFLUENCE_TOKEN`, `MATRA…`), **дописывать в конец**, не
