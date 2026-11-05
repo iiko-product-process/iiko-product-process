@@ -4,7 +4,7 @@
 # Запускается по cron раз в неделю. Если архивов нет — молчит (ничего не отправляет).
 #
 # usage: digest-and-send.sh [--inbox DIR] [--canon-repo PATH] [--token-file FILE] [--chat-file FILE]
-# env: TG_PROXY
+# env: TG_PROXY, TG_API (подмена адреса API — для тестов)
 set -uo pipefail
 
 INBOX="${INBOX:-/opt/data/skills-inbox}"
@@ -50,11 +50,11 @@ curl -sS "${proxy_args[@]}" --max-time 120 \
   -F "chat_id=$CHAT" "${thread_args[@]}" \
   -F "caption=Дайджест скиллов сотрудников, $(date +%F)" \
   -F "document=@$OUT" \
-  "https://api.telegram.org/bot$TOKEN/sendDocument" -o /tmp/digest-send.json || {
+  "${TG_API:-https://api.telegram.org}/bot$TOKEN/sendDocument" -o "${TMP_JSON:-/tmp/digest-send.json}" || {
     echo "digest-and-send: не удалось отправить (сеть/прокси)"; exit 1; }
 
-if grep -qE '"ok"[[:space:]]*:[[:space:]]*true' /tmp/digest-send.json; then
+if grep -qE '"ok"[[:space:]]*:[[:space:]]*true' "${TMP_JSON:-/tmp/digest-send.json}"; then
   echo "digest-and-send: дайджест отправлен ($count архивов) -> $OUT"
 else
-  echo "digest-and-send: Telegram ответил ошибкой: $(head -c 200 /tmp/digest-send.json)"; exit 1
+  echo "digest-and-send: Telegram ответил ошибкой: $(head -c 200 "${TMP_JSON:-/tmp/digest-send.json}")"; exit 1
 fi
