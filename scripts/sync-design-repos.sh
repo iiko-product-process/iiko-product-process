@@ -35,6 +35,8 @@ clone_or_update() {  # $1 = имя репозитория
     git -C "$dir" fetch -q origin || return 1
     git -C "$dir" reset -q --hard origin/main || return 1
   else
+    # остался мусор от прошлого запуска (каталог без .git) — иначе clone не сможет создать папку
+    [ -e "$dir" ] && [ ! -d "$dir/.git" ] && rm -rf "$dir"
     local url="https://github.com/iiko-DS/$name.git"
     [ -n "$TOKEN" ] && url="https://x-access-token:$TOKEN@github.com/iiko-DS/$name.git"
     git clone -q --depth 1 "$url" "$dir" || return 1
