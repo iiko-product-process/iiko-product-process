@@ -31,8 +31,14 @@ while [ $# -gt 0 ]; do
 done
 
 SKILLS_ROOT="$HOME_DIR/skills"
-# на новой машине каталога скиллов ещё нет — создаём, а не подменяем HOME молча
-mkdir -p "$SKILLS_ROOT" || { echo "install-skills: не удалось создать $SKILLS_ROOT"; exit 1; }
+# на новой машине каталога скиллов ещё нет: в dry-run ничего не создаём, в обычном режиме — создаём
+if [ ! -d "$SKILLS_ROOT" ]; then
+  if [ "$DRY" = 1 ]; then
+    echo "install-skills (dry-run): каталога скиллов ещё нет — будут установлены все"
+  else
+    mkdir -p "$SKILLS_ROOT" || { echo "install-skills: не удалось создать $SKILLS_ROOT"; exit 1; }
+  fi
+fi
 
 STATE="$HOME_DIR/.repo-skills-manifest.tsv"
 STATE_HEADER="#dirhash-v2"

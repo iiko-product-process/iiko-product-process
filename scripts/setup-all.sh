@@ -64,20 +64,27 @@ fi
 echo "== 2. скиллы"
 bash "$REPO/skills/git-skills-install/scripts/install-skills-from-repo.sh" --home "$HOME_DIR" $DRYARG | tail -1
 # манифест канона: по нему сборщик отличает свои наработки от поставленных скиллов
-bash "$REPO/scripts/make-skills-manifest.sh" --repo "$REPO" > "$HOME_DIR/canon-skills-manifest.tsv"
-echo "манифест: $(wc -l < "$HOME_DIR/canon-skills-manifest.tsv") скиллов"
+if [ "$DRY" = 0 ]; then
+  bash "$REPO/scripts/make-skills-manifest.sh" --repo "$REPO" > "$HOME_DIR/canon-skills-manifest.tsv"
+  echo "манифест: $(wc -l < "$HOME_DIR/canon-skills-manifest.tsv") скиллов"
+fi
 
 echo "== 3. хранилище артефактов"
 if [ -d "$WIKI/artifacts" ]; then
   echo "вики уже есть: $WIKI"
+elif [ "$DRY" = 1 ]; then
+  echo "будет создана: $WIKI (artifacts/)"
 else
   bash "$REPO/skills/hermes-wiki/scripts/wiki-init.sh" "$WIKI" >/dev/null && echo "создана: $WIKI (artifacts/)"
 fi
 
 echo "== 4. джобы"
-bash "$REPO/scripts/setup-design-cron.sh" --repo "$REPO" --home "$HOME_DIR" >/dev/null
-mkdir -p "$HOME_DIR/scripts"
-cat > "$HOME_DIR/scripts/skills-collect-weekly.sh" <<EOF
+if [ "$DRY" = 1 ]; then
+  echo "будут созданы обёртки: design-update-weekly.sh, skills-collect-weekly.sh"
+else
+  bash "$REPO/scripts/setup-design-cron.sh" --repo "$REPO" --home "$HOME_DIR" >/dev/null
+  mkdir -p "$HOME_DIR/scripts"
+  cat > "$HOME_DIR/scripts/skills-collect-weekly.sh" <<EOF
 #!/usr/bin/env bash
 # skills-collect-weekly.sh — еженедельный сбор наработок сотрудника (создано setup-all.sh).
 out=\$(bash "$REPO/skills/skills-inbox/scripts/collect-my-skills.sh" --home "$HOME_DIR" --author "\$(whoami)" --manifest "$HOME_DIR/canon-skills-manifest.tsv" --out "$HOME_DIR/skill-reports" 2>&1) || rc=\$?
@@ -87,8 +94,9 @@ esac
 [ -n "\${rc:-}" ] && { echo "\$out"; exit "\$rc"; }
 echo "\$out"
 EOF
-chmod +x "$HOME_DIR/scripts/skills-collect-weekly.sh"
-echo "обёртки: design-update-weekly.sh, skills-collect-weekly.sh"
+  chmod +x "$HOME_DIR/scripts/skills-collect-weekly.sh"
+  echo "обёртки: design-update-weekly.sh, skills-collect-weekly.sh"
+fi
 
 if [ "$DRY" = 0 ]; then
   echo "== 5. проверка"
