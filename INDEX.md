@@ -20,8 +20,8 @@
 | research-summary | Шаг 1 | `01-research-problem/skills/research-summary/SKILL.md` | Use when подводим итог исследования: выводы по целям + рекомендации. |
 | iiko-hypotheses | Шаг 2 | `02-hypotheses/skill/SKILL.md` | Use when нужны гипотезы по проблеме или в общий список (Шаг 2 iiko): собрать и открыть в прототипе. |
 | pb-task-writer | Шаг 3 | `03-story/skill/SKILL.md` | Use when нужны продуктовые требования или задача в Jira PB (шаг 3): интервью, Epic/Story. |
-| iiko-design-system | Шаг 4 | `04-design/04-агенты/skills/iiko-design-system/SKILL.md` | Use when working in iiko DS repos: tokens, mobile modes. |
-| iiko-ds-components | Шаг 4 | `04-design/04-агенты/skills/iiko-ds-components/SKILL.md` | Use when editing iiko DS components (CSS, tokens, modes). |
+| iiko-design-system | Шаг 4 | `04-design/Prototype-Guide/prototyping-guide/04-агенты/skills/iiko-design-system/SKILL.md` | Use when working in iiko DS repos: tokens, mobile modes. |
+| iiko-ds-components | Шаг 4 | `04-design/Prototype-Guide/prototyping-guide/04-агенты/skills/iiko-ds-components/SKILL.md` | Use when editing iiko DS components (CSS, tokens, modes). |
 | ux-writing-iiko | Шаг 4 | `04-design/skills/ux-writing-iiko.md` | Use when generating an iikoWeb prototype (always), writing or reviewing UX-тексты (RU). |
 | spec-writing | Шаг 5 | `05-specification/skill/SKILL.md` | Спецификация (PRD) к разработке: вопросы, гейты, формат PRD. |
 | jira-task-digest | Шаг 6 | `06-development/skills/jira-task-digest/SKILL.md` | Use when нужен статус разработки по задаче Jira: выгрузка семьи задач эпика/стори, статусы и изменения. |

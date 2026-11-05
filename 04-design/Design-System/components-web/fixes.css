@@ -1,0 +1,870 @@
+/* ============================================================
+   components-web/fixes.css — ручной слой правок поверх генерации ДС.
+   НЕ генерируется из Фигмы: обновления (токены / компоненты / шрифты)
+   этот файл не перезаписывают — правки не теряются, сколько бы раз
+   ни обновляли ДС.
+   Подключать ПОСЛЕДНИМ — после styles.css и components/index.css
+   (см. страницы в Prototypes; сгенерированные файлы не правим).
+   Сюда — только исправления артефактов генератора. Что чинить в самом
+   конвертере — components-web/generator-rules.md; находки — review-notes.md.
+   Значения — токенами var(--token) (fallback = текущее значение): правки токенов
+   в Фигме → выгрузка в git применяются к компонентам сразу. Хардкод — только там,
+   где токена нет (помечаем в комментарии; журнал — DS/fixes.md).
+   ============================================================ */
+
+/* 1. Status: подпись не берёт цвет варианта — в сгенерированном status.css
+   у .ds-status__label жёстко прописан нейтральный цвет (в Фигме — вариант-токен).
+   review-notes п. 25. */
+.ds-status .ds-status__label{color:inherit}
+
+/* 2. Кадры полей теряют box-sizing — при height: 48px и паддингах 12×2 кадр
+   фактически 74px. review-notes п. 22. */
+.ds-input-number__frame,.ds-input-datepicker__frame{box-sizing:border-box}
+
+/* 3. Sidenav: подпись пункта/шапки не берёт цвет варианта — у `.ds-sidenav-item__label`
+   жёстко прописан l3-цвет (#333), у `__header__label` — l2-цвет: на тёмном L1 не читается
+   (тот же артефакт генератора, что у Status, п. 1). review-notes п. 42. */
+.ds-sidenav-item--l1 .ds-sidenav-item__label,
+.ds-sidenav-header--l1 .ds-sidenav-header__label{color:inherit}
+
+/* 4. Snackbar --light: подпись не берёт цвет варианта — у `.ds-snackbar__label` жёстко
+   прописан цвет тёмного варианта (#ffffff): текст белым по белому. review-notes п. 43. */
+.ds-snackbar--light .ds-snackbar__label{color:inherit}
+
+/* 5. Chips: у `.ds-chips__close` нет `width` и центрирования содержимого (в Фигме — кадр 20×20
+   с иконкой по центру), у него и у `.ds-chips__add` жёстко прописан `background: #ffffff`
+   (не токен) — на `--filled`-чипсах крестик рисуется белым квадратом. review-notes п. 51. */
+.ds-chips__close{width:var(--ds-size-5x);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:none;color:var(--ds-color-chips-icon-color);cursor:pointer}
+.ds-chips__add{background:none;align-items:center}
+
+/* 6. Chips + Material Icons (страницы прототипов): глиф по умолчанию 24px вылезает из кадра
+   20×20 — прижимаем глифы крестика и левой иконки к размеру кадра (для svg-иконок ДС безвредно). */
+.ds-chips__close.material-icons,.ds-chips__icon .material-icons{font-size:var(--ds-size-5x);line-height:var(--ds-size-5x)}
+
+/* 7. Компоненты с display из генератора (.ds-status/.ds-banner/.ds-chips/.ds-card и др.)
+   перебивают атрибут [hidden] (класс сильнее UA-правила) — скрытые элементы продолжали
+   показываться (чипы в шапке карточки, скрытая карточка «Требует внимания» и т.п.).
+   Возвращаем семантику hidden глобально. */
+[hidden]{display:none !important}
+
+/* 8. Timepicker: у выбранного элемента (.ds-elements-2--selected) не задан фон —
+   в макетах выбранное значение подсвечено accent-filled, а текст у варианта белый:
+   без фона выбор не виден вовсе. review-notes п. 53. */
+/* (№168): фон Selected даёт капсула __date (elements.css — accent), а корневой фон из п.8 рисовал
+   прямоугольник 74×40 ПОВЕРХ капсулы (углы не скруглялись — в Figma капсула r9999). Снят. */
+.ds-elements-2--selected { background: none; }
+/* №168: у кадра поля (Input Timepicker) в выгрузке нет box-sizing — рамка считалась 276×74
+   вместо 250×48 канвы (та же болезнь, что у Textarea, п.34; у Input «__frame» border-box есть). */
+.ds-input-timepicker__frame { box-sizing: border-box; }
+
+/* 9. Datepicker: у выбранной ячейки не подключены токены фона, и подпись перекрашивает текст.
+   Токены в tokens.css есть (--ds-color-elements-datepicker-cell-selected-*), но elements.css
+   их не использует; вдобавок .ds-elements__label красит цифру в text-primary — белый текст
+   ячейки (text-inversive) не работает. Журнал: DS/fixes.md №75. */
+.ds-elements--cell.ds-elements--selected{background:var(--ds-color-elements-datepicker-cell-selected-default-background,#448aff)}
+.ds-elements--cell.ds-elements--selected:hover{background:var(--ds-color-elements-datepicker-cell-selected-hover-background,#2c62d6)}
+.ds-elements--cell.ds-elements--selected .ds-elements__label{color:inherit}
+
+/* 10. Datepicker: композиция разметки календаря (наши правила поверх ДС-классов) —
+   строка недели: ячейки 40×40 как в Figma (Type=Week 58539:5474; в генерации подпись
+   без высоты — строка схлопывалась до 20px вместо 44), панель на всю ширину (у Control
+   не было space-between), разделитель под днями недели (в генерации нет ширины — схлопывался),
+   панель дней с паддингами 4px, строки сеток (дни / год / месяц), выключенные ячейки
+   (в Figma opacity .38 — в генерации не было; правило общее — нужно и в наборах примеров),
+   курсоры. Центрирование содержимого ячеек — НА УРОВНЕ КОМПОНЕНТА (не только внутри
+   .ds-datepicker): витрины используют те же ячейки вне сборки, и цифра должна стоять
+   по центру круга одинаково везде (в генерации у column-вариантов нет justify). */
+.ds-datepicker__elements{width:100%;gap:0;padding:var(--ds-size-0-5x,2px) 0}
+.ds-datepicker__label{flex:none;width:var(--ds-size-10x);height:var(--ds-size-10x);display:flex;align-items:center;justify-content:center}
+.ds-datepicker__control-panel{width:100%;gap:0;justify-content:space-between}
+.ds-control-panel--control{justify-content:space-between}
+.ds-datepicker__divider{width:100%;height:var(--ds-size-0-25x,1px);flex:none;background:var(--ds-color-stroke-default,#e0e0e0)}
+.ds-datepicker__days{width:100%;padding:var(--ds-size-1x) 0;display:flex;flex-direction:column;align-items:center}
+.ds-datepicker__week-6{height:auto;width:100%;padding:var(--ds-size-0-5x,2px) 0;align-items:center;justify-content:space-between}
+.ds-elements--cell{justify-content:center}
+.ds-elements--year,.ds-elements--month{align-items:center}
+.ds-datepicker .ds-elements--cell{cursor:pointer}
+.ds-elements--disabled{opacity:.38}
+.ds-elements--disabled .ds-elements__label{color:inherit}
+.ds-datepicker [data-cal-head]{cursor:pointer}
+.ds-datepicker .ds-control-panel__button-icon{cursor:pointer}
+.ds-datepicker--static [data-cal-head],
+.ds-datepicker--static .ds-elements--cell,
+.ds-datepicker--static .ds-control-panel__button-icon{cursor:default}
+.ds-datepicker .material-icons{font-size:var(--ds-size-5x)}
+.ds-datepicker .ds-elements__range-highlight-start,
+.ds-datepicker .ds-elements__range-highlight-end,
+.ds-datepicker .ds-elements__range-highlight-middle{flex:none}
+
+/* 11. Datepicker (вид «год»; месяцы в сетке — инстанс ТОГО ЖЕ компонента «Type=Year» с текстом-
+   месяцем — подтверждено свойствами узла «Type=Year, Year=Октябрь», Hug 98×40 = пад 16/16 +
+   текст 16/24, без иконки, поэтому месяцы рендерятся классами --year): у выбранной ячейки
+   фон не подключён (в elements.css только белый цвет текста; не подключены и hover/press —
+   токены в ДС есть), а .ds-elements__label перекрашивает текст — тот же артефакт, что №9/№75.
+   У иконки-шеврона элемента месяца (витрина, Type=Month) — цвет icon-primary / disable. */
+.ds-elements--year.ds-elements--selected{
+  background:var(--ds-color-button-accent-filled-default-background,#448aff);
+  flex-direction:row;align-items:center;justify-content:center;
+}
+.ds-elements--year.ds-elements--selected{padding:var(--ds-size-2x) var(--ds-size-4x)}
+.ds-elements--year.ds-elements--selected:hover{background:var(--ds-color-elements-datepicker-year-selected-hover-background,#3969d5)}
+.ds-elements--year.ds-elements--selected:active{background:var(--ds-color-elements-datepicker-year-selected-press-background,#2651b5)}
+.ds-elements--year.ds-elements--selected .ds-elements__label{color:inherit}
+.ds-elements--month .ds-control-panel__icon{color:var(--ds-color-elements-datepicker-month-icon-color,#616161)}
+.ds-elements--month.ds-elements--disabled .ds-control-panel__icon{color:var(--ds-color-elements-datepicker-month-default-disable-icon-color,#9e9e9e)}
+
+/* 12. Input Datepicker (сборка «поле + календарь»): в сгенерированном слое нет ни выпадашки
+   (позиция/тень), ни float-модели лейбла из примеров Figma «Datepicker (Examples)»
+   (узел 58987-16573): в покое лейбл «Выберите дату» — Body M 16/24 и стоит в строке ввода;
+   при фокусе ПОЛЯ ВВОДА всплывает наверх (Caption L 12/16, акцентный — красит input.css),
+   а формат «ДД.ММ.ГГГГ» виден только при вводе; фокус на иконке (календарь открыт) —
+   рамка и иконка акцентные, а лейбл остаётся в строке (примеры «Focus», «По меню календарь»).
+   Тень — «Shadows/08 dp» из макета панели (в токенах ДС нет — пробел №69, как в app-header.css).
+   Разметку сборки строит datepicker.js (mountInput). Двухстрочное состояние (лейбл всплыл /
+   есть значение) НЕ подгоняем: у поля ДС паддинги 12/12 (токены) + align-items:center —
+   контент (лейбл 16 + текст 24) центрируется сам и даёт ровно положение из Figma
+   (лейбл 4..20, текст 20..44, иконка 14..34 — код узла 52775:17750). Иконка — 20px
+   («Icon size/Size 5x»). Журнал: DS/fixes.md №80-86. */
+.ds-input-datepicker{position:relative}
+.ds-input-datepicker .ds-input__icon{cursor:pointer}
+.ds-input-datepicker--static .ds-input__icon{cursor:default}
+.ds-input-datepicker .ds-input__icon:focus{color:var(--ds-color-icon-accent,#448aff);outline:none}
+.ds-input-datepicker__frame{position:relative}
+/* лейбл «в строке» центруем ПО ФРЕЙМУ, а не по обёртке: обёртка включает support-текст ошибки,
+   из-за чего top:50% уезжал вниз на половину высоты подписи (текст прилипал к низу поля) */
+.ds-input-datepicker .ds-input__frame{position:relative}
+.ds-input-datepicker--empty:not(:has(.ds-input__field:focus)) .ds-input__label{position:absolute;left:calc(var(--ds-form-field-m-size-pad-input-left,12px) + var(--ds-form-field-border-size,1px));top:50%;transform:translateY(-50%);font-size:var(--ds-typography-font-size-4x);line-height:var(--ds-font-body-m-16-normal-regular-line,24px);color:var(--ds-color-text-secondary,#616161);pointer-events:none}   /* пад+бордер — токенами ДС */
+.ds-input-datepicker--empty:not(:has(.ds-input__field:focus)) .ds-input__field::placeholder{color:transparent}
+.ds-input-datepicker .ds-input__icon .material-icons{font-size:var(--ds-size-5x);line-height:var(--ds-size-5x)}
+.ds-input-datepicker__dropdown{position:absolute;top:calc(100% + var(--ds-size-1x,4px));left:0;z-index:20}
+.ds-input-datepicker__dropdown .ds-datepicker{background:var(--ds-color-brand-neutral-default,#fff);box-shadow:0 8px 10px 1px rgba(158,158,158,.14),0 3px 14px 3px rgba(158,158,158,.12),0 5px 5px 0 rgba(158,158,158,.2)}   /* тень — «Shadows/08 dp» макета: токена в ДС нет (№69) */
+
+/* 13. Sidenav (демо-стенд Sidenav_DS/demo.html): недостающее в сгенерированном слое собрано на токенах ДС
+   (те же приёмы, что в организме app-sidenav; журнал №56–59, 63, 88). Значения — по рендерам наборов Figma:
+   L1 hover #36474e / selected #4b626d + белый индикатор 4×44; точка #14b456 (x32/y8 в блоке 52);
+   строка L2 — ряд 40 с падом 16; ховер control #36474e на контенте; разделители: control #36474e, подвал #e0e0e0 (линия 1×16). */
+/* №57: свёрнутый пункт L1 — у подписи/иконки нет цвета (наследуют тёмный страницы) */
+.ds-sidenav-item--l1.ds-sidenav-item--collapsed { color: var(--ds-color-sidenav-item-l1-text-color, #ffffff); }
+/* №57: точка-бейдж свёрнутого пункта — позиции в css нет (в Figma 32/8 в блоке 52 → right 12/top 8) */
+.ds-sidenav-item { position: relative; }
+.ds-sidenav-item--collapsed .ds-badge--point { position: absolute; top: var(--ds-size-2x, 8px); right: var(--ds-size-3x, 12px); }
+/* №56: строка L2 — в css колонка и паддинги от L3; в Figma ряд: пад 16, гэп 8, подпись medium
+   (высота 40 — число из набора: токена нет; контент 18 центрируется сам) */
+.ds-sidenav-item--l2.ds-sidenav-item--expanded { flex-direction: row; align-items: center; height: 40px; padding: 0 var(--ds-sidenav-item-l2-pad-right, 16px) 0 var(--ds-sidenav-item-l2-pad-left, 16px); gap: var(--ds-sidenav-item-l2-gap-content, 8px); }
+.ds-sidenav-item--l2 .ds-sidenav-item__label { font-weight: var(--ds-sidenav-item-l2-text-weight, 500); }
+/* №88: у стрелки-элемента в пункте L2 цвет не задан (наследует тёмный текст); в Figma — серый Icon/Primary.
+   Селектор покрывает оба вида: svg (ДС/стенд) и глиф-шрифт (организм app-sidenav) */
+.ds-sidenav-item--l2 svg,
+.ds-sidenav-item--l2 .material-icons { color: var(--ds-color-icon-primary, #616161); }
+/* №88: иконки шапок — в css цвет не задан: крестик L1 белый (как лого), иконки L2 — серые icon-primary */
+.ds-sidenav-header--l1.ds-sidenav-header--expanded .ds-sidenav-header__icon { color: var(--ds-color-icon-inversive, #ffffff); }
+.ds-sidenav-header--l2 .ds-sidenav-header__icon { color: var(--ds-color-icon-primary, #616161); }
+/* №88: у «Element sidenav / Collaps icon» цвет шеврона в css не задан — тёмный на тёмном квадрате;
+   в Figma белый (Icon/Inversive); слот иконки в сгенерированном css не центрируется (в Figma x2 y2) */
+.ds-element-sidenav--collaps-icon {
+  color: var(--ds-color-icon-inversive, #ffffff);
+  align-items: center;
+  justify-content: center;
+}
+/* №59/88: разделители рисовались белым блоком — control на токен, подвал L2 — линия Divider (ширина 1 — как Size=M) */
+.ds-sidenav-control__divider { background: var(--ds-color-sidenav-control-divider, #36474e); }
+.ds-sidenav-footer__divider { width: 1px; background: var(--ds-color-divider-solid-default-color, #e0e0e0); }
+/* №88: у подвала L1 в выгрузке остаются паддинги/гэп L2 — в Figma их нет; разделитель подвала L1 — contrast-3/900
+   (как у control), а выгрузка даёт белый Divider */
+.ds-sidenav-footer--l1 { padding: 0; gap: 0; }
+.ds-sidenav-footer--l1 .ds-divider { background: var(--ds-color-sidenav-control-divider, #36474e); }
+/* №88: у View в выгрузке нет фона root'а вариантов и прижатия подвала вниз — в Figma sidebar/l1, sidebar/l2 + space-between */
+.ds-sidenav-view--l1 { background: var(--ds-color-sidenav-sidebar-l1-background, #263136); justify-content: space-between; }
+.ds-sidenav-view--l2 { background: var(--ds-color-sidenav-sidebar-l2-background, #ffffff); box-shadow: var(--ds-shadow-sl); justify-content: space-between; }
+/* №88: у Text UI выгрузка вешает background на сами тексты (label up/down, list item) и белый фон на слоты
+   element-left/right — текст не видно, у чекбокса белая плашка; в Figma ни того, ни другого нет */
+.ds-text-ui__label-up,
+.ds-text-ui__list-item,
+.ds-text-ui__label-down,
+.ds-text-ui__element-left,
+.ds-text-ui__element-right { background: none; }
+/* №103: Text UI — по Figma корень items-start (слоты и контент по верхнему краю; выгрузка растягивала слоты,
+   а правую иконку ещё и центрировала), цвет иконок слотов в css не задан (в Figma ассеты #616161 = Icon/primary) */
+.ds-text-ui { align-items: flex-start; }
+.ds-text-ui__icon,
+.ds-text-ui .ds-icon-size { color: var(--ds-color-icon-primary, #616161); }
+/* №88: ховер/пресс control — фон на корне перекрыт фоном __content; красим контент (значения — токены состояний) */
+.ds-sidenav-control--expanded:hover .ds-sidenav-control__content,
+.ds-sidenav-control--collapsed:hover .ds-sidenav-control__content { background: var(--ds-color-sidenav-control-background-hover, #36474e); }
+.ds-sidenav-control--expanded:active .ds-sidenav-control__content,
+.ds-sidenav-control--collapsed:active .ds-sidenav-control__content { background: var(--ds-color-sidenav-control-background-press, #36474e); }
+/* №63: аватар Element sidenav — в css колонка «подпись под картинкой», в Figma инициалы внутри круга;
+   круг аватара 20 (в css для иконки 16) */
+.ds-element-sidenav--avatar { position: relative; padding: 0; gap: 0; }
+.ds-element-sidenav--avatar .ds-element-sidenav__icon { width: var(--ds-size-5x); height: var(--ds-size-5x); }
+.ds-element-sidenav--avatar .ds-element-sidenav__label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+
+/* 14. Icon size (демо-стенд Icon-Size_DS/demo.html): сам контейнер «Icon size» конвейер не выгружает —
+   в Icon-Size_DS только arrow/icon-group/state, поэтому контейнер собран вручную на токенах ДС (журнал №89).
+   ГЛОБАЛЬНОЕ ПРАВИЛО (№99, решение 02.10): все иконки в сборках рисуются этим контейнером (размер по месту).
+   Модификатор --state (hover/press подложка — BOOL State из Фигмы) ставится ТОЛЬКО иконкам-ТРИГГЕРАМ:
+   у которых клик по самой иконке запускает действие (пример заказчика: 📅 в шапке открывает датапикер).
+   НЕ ставится: иконкам внутри кнопок и подобных (действие принадлежит родителю), индикаторам
+   (стрелки селектов, групп, раскрытия), декору без действия (ⓘ-информеры, лупа, иконки пунктов меню).
+   Размеры вариантов 16/20/24/32/36/40 = токены --ds-icon-size-size-4x/5x/6x/8x/9x/10x; контейнер
+   центрирует контент и задаёт ему кадр (svg/img 100%, глиф = размер контейнера — без этого глиф
+   Material Icons 24px вылезает из кадров 16/20; тот же класс дефекта, что пп. 6/10/12).
+   Подложка состояния (BOOL State): круглая, размер = размер иконки + 8 (16→24 … 40→48 — по инстансам
+   State у вариантов Icon size); цвета — Figma-переменные «Icon size/Background hover» #ebebeb и
+   «Icon size/Background press» #e0e0e0, в tokens.css их ПОКА НЕТ (хардкод, журнал №89).
+   Глифы в слотах семьи (icon group / arrow) тоже прижаты к кадру. */
+.ds-icon-size { position: relative; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; box-sizing: border-box; }
+.ds-icon-size--4x { width: var(--ds-icon-size-size-4x, 16px); height: var(--ds-icon-size-size-4x, 16px); font-size: var(--ds-icon-size-size-4x, 16px); }
+.ds-icon-size--5x { width: var(--ds-icon-size-size-5x, 20px); height: var(--ds-icon-size-size-5x, 20px); font-size: var(--ds-icon-size-size-5x, 20px); }
+.ds-icon-size--6x { width: var(--ds-icon-size-size-6x, 24px); height: var(--ds-icon-size-size-6x, 24px); font-size: var(--ds-icon-size-size-6x, 24px); }
+.ds-icon-size--8x { width: var(--ds-icon-size-size-8x, 32px); height: var(--ds-icon-size-size-8x, 32px); font-size: var(--ds-icon-size-size-8x, 32px); }
+.ds-icon-size--9x { width: var(--ds-icon-size-size-9x, 36px); height: var(--ds-icon-size-size-9x, 36px); font-size: var(--ds-icon-size-size-9x, 36px); }
+.ds-icon-size--10x { width: var(--ds-icon-size-size-10x, 40px); height: var(--ds-icon-size-size-10x, 40px); font-size: var(--ds-icon-size-size-10x, 40px); }
+.ds-icon-size svg, .ds-icon-size img { width: 100%; height: 100%; display: block; }
+.ds-icon-size .material-icons { font-size: inherit; line-height: 1; }
+.ds-icon-size > * { position: relative; }   /* контент — выше подложки состояния (::before абсолютный, иначе красит глиф) */
+.ds-icon-size--state::before { content: ''; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: calc(100% + var(--ds-size-2x, 8px)); height: calc(100% + var(--ds-size-2x, 8px)); border-radius: var(--ds-size-circular, 9999px); }
+.ds-icon-size--state:hover::before { background: #ebebeb; }   /* «Icon size/Background hover» — токена нет (№89) */
+.ds-icon-size--state:active::before { background: #e0e0e0; }  /* «Icon size/Background press» — токена нет (№89) */
+.ds-icon-group__icon .material-icons { font-size: var(--ds-size-5x); line-height: var(--ds-size-5x); }
+.ds-arrow__icon .material-icons { font-size: var(--ds-size-6x); line-height: var(--ds-size-6x); }
+
+/* 15. Select (демо-стенд Select_DS/demo.html): обойдены известные пробелы выгрузки — журнал №31, 34–37, 91.
+   Значения — токенами ДС; поведение/состояния — по компонентам Figma канвы «Select_DS»
+   (Select (Сontainer) 57735:17612, Select item 57735:17872, Select form 57862:17226).
+   Поле select-формы — ИНСТАНС ИНПУТА (в Figma внутри вариантов лежит инстанс «Input» 52670:7573,
+   стрелка — его слот Element right): каркас/пады/скругление/контент берутся из input.css, здесь —
+   пробелы инпута по Figma (XS-underline, текст M Empty, стрелка Error, глиф 20) и корень формы. */
+/* №34: контейнер жёстко 240 × min-height 406 — в примерах высота по контенту */
+.ds-select-container { min-height: 0; }
+/* №35: пункт жёстко 258, контент не тянется — в контейнере пункт по ширине, значение прижимается вправо */
+.ds-select-container .ds-select-item { width: 100%; }
+.ds-select-item__content { flex: 1 1 auto; min-width: 0; }
+/* Пункт: иконки Element left/right — по ВЕРХУ (в Figma y=8, на линии «Label up»), а не по центру */
+.ds-select-item--false { align-items: flex-start; }
+/* Панель кнопок контейнера: в Figma h44 (border-box) и кнопки прижаты ВПРАВО (justify-end, узел 57740:21300) */
+.ds-select-container__button-group { justify-content: flex-end; box-sizing: border-box; }
+/* Инпут XS — underline-поле (узлы 60868:18771…18785): только нижняя граница, фон прозрачный во всех состояниях */
+.ds-input--xs .ds-input__frame { border-width: 0 0 var(--ds-form-field-border-size, 1px) 0; background: none; }
+.ds-input--xs .ds-input__frame:hover { background: none; }
+.ds-input--xs.ds-input--disabled .ds-input__frame { background: none; border-color: var(--ds-color-form-field-filled-default-border-color, #e0e0e0); }
+/* Инпут M Empty: текст «Label» — цвета лейбла #616161 (в css поле красится в #333); в Error остаётся #616161 (узел 57862:17564) */
+.ds-input--m.ds-input--empty:not(.ds-input--disabled) .ds-input__field { color: var(--ds-color-form-field-input-label-text-color, #616161); }
+/* Инпут Error: краснеет иконка правого слота (Element right — в разметке последняя в кадре), левая остаётся
+   иконочной (узлы 57862:17564, 60868:18783, 57783:46957: слева серая ⓘ, справа красная) */
+.ds-input--error .ds-input__icon:last-child { color: var(--ds-color-form-field-filled-error-icon-color-error, #ff5252); }
+/* Глиф Material Icons в слоте поля — 20px (глиф иначе 24 и вылезает из контейнера 20) */
+.ds-input__icon .material-icons { font-size: var(--ds-size-5x); line-height: var(--ds-size-5x); }
+/* №31: select-форма красит на :hover корень (фон #f5f5f5 + ПРЯМОУГОЛЬНАЯ рамка 1px #9e9e9e — у корня radius 0) —
+   оба отключены: в Figma ховер живёт в кадре инпута (ds-input__frame: фон + скруглённая граница) */
+.ds-select-form--empty:hover { background: none; border: 0; }
+/* №136: тот же дефект №31 у остальных форм: :hover красит КОРЕНЬ (фон #f5f5f5 + прямоугольная рамка 1px #9e9e9e
+   при radius 0 у корня) — при наведении появляется квадратная рамка. Отключено у корня (как у select); в Figma
+   ховер живёт в кадре (__frame / __input-frame: фон + скруглённая граница) — в css форм его нет (пробел ДС) */
+.ds-autocomplete-form--empty:hover { background: none; border: 0; }
+.ds-chips-input:hover { background: none; border: 0; }
+.ds-input-number--empty:hover { background: none; border: 0; }
+.ds-textarea--empty:hover { background: none; border: 0; }
+/* №136 (доп., 20.10): у корня `.ds-autocomplete-form` в выгрузке белая заливка (в Figma слой скрыт) —
+   белый прямоугольник поверх подложки/состояний — снята; поле рисует кадр инпута */
+.ds-autocomplete-form { background: none; }
+/* №136 (прод.): живой ховер поля — в КАДРЕ, те же значения, что уже применялись в стендах
+   (заморозки .snap-ta--hover / .snap-ci--hover / .snap-in--hover и st-hover у Form-Field-Input / Select) */
+.ds-autocomplete-form__input-frame:hover { background: var(--ds-color-form-field-filled-hover-input-background-hover, #f5f5f5); border-color: var(--ds-color-form-field-filled-hover-border-color, #9e9e9e); }
+.ds-chips-input__frame:hover { background: var(--ds-color-form-field-filled-hover-input-background-hover, #f5f5f5); border-color: var(--ds-color-form-field-filled-hover-border-color, #9e9e9e); }
+.ds-input-number__frame:hover { background: var(--ds-color-form-field-filled-hover-input-background-hover, #f5f5f5); border-color: var(--ds-color-form-field-filled-hover-border-color, #9e9e9e); }
+.ds-textarea__input-frame:hover { background: var(--ds-color-form-field-filled-hover-input-background-hover, #f5f5f5); border-color: var(--ds-color-form-field-filled-hover-border-color, #9e9e9e); }
+/* №36: состояния пункта Selected / Back selected / Error / Disable в css не реализованы — собраны по Figma
+   (токены select-item * уже есть в tokens.css) */
+.ds-select-item--selected .ds-select-item__element-left,
+.ds-select-item--selected .ds-select-item__element-right { color: var(--ds-color-select-item-selected-icon-color, #448aff); }
+.ds-select-item--back-selected { background: var(--ds-color-select-item-selected-back-selected, #f5f9ff); }
+.ds-select-item--back-selected .ds-select-item__element-left,
+.ds-select-item--back-selected .ds-select-item__element-right { color: var(--ds-color-select-item-selected-icon-color, #448aff); }
+.ds-select-item--error { color: var(--ds-color-select-item-negative-text-color, #ff5252); }
+.ds-select-item--error .ds-select-item__element-left,
+.ds-select-item--error .ds-select-item__element-right { color: var(--ds-color-select-item-negative-icon-color, #ff5252); }
+.ds-select-item--disabled .ds-select-item__element-left,
+.ds-select-item--disabled .ds-select-item__element-right { color: var(--ds-color-select-item-disable-icon-color, #9e9e9e); }
+.ds-select-item--error .ds-select-item__label-up, .ds-select-item--error .ds-select-item__label-down { color: inherit; }
+.ds-select-item--disabled .ds-select-item__label-up, .ds-select-item--disabled .ds-select-item__label-down { color: inherit; }
+/* №37: служебные слоты пункта красили себя белым фоном, а подписи — фоном в цвет текста (артефакт генератора) */
+.ds-select-item__element-left, .ds-select-item__element-right { background: none; }
+.ds-select-item__label-up, .ds-select-item__label-down, .ds-select-item__subtitle { background: none; }
+/* Артефакт: __label пункта — это ОСНОВНОЙ текст (в Figma Body S 14/20 #333), в css у него стили «Label up» */
+.ds-select-item__label { font-size: var(--ds-font-body-s-14-normal-regular-size); line-height: var(--ds-font-body-s-14-normal-regular-line); letter-spacing: var(--ds-font-body-s-14-normal-regular-spacing); font-weight: var(--ds-font-body-s-14-normal-regular-weight); color: var(--ds-color-select-item-text-color, #333333); }
+/* Глифы/иконки в слотах пункта и element select — 20 (кадр слота 20; иначе 24 вылезает);
+   чекбоксы пункта — точные svg-пути из Figma (скруглённая версия, №91) */
+.ds-select-item__element-left .material-icons, .ds-select-item__element-right .material-icons,
+.ds-element-select__icon .material-icons { font-size: var(--ds-size-5x); line-height: var(--ds-size-5x); }
+.ds-select-item__element-left svg, .ds-select-item__element-right svg,
+.ds-element-select__icon svg { width: var(--ds-size-5x); height: var(--ds-size-5x); display: block; }
+/* element select: слот Icon size / Checkbox / Radio по Figma 20 (в css — 24) */
+.ds-element-select--icon-size .ds-element-select__icon,
+.ds-element-select--checkbox .ds-element-select__icon,
+.ds-element-select--radio-button .ds-element-select__icon { width: var(--ds-size-5x); height: var(--ds-size-5x); }
+/* картинка-плейсхолдер в слоте element select (Content=Image size) — 24, как в Figma */
+.ds-element-select__image-size { width: var(--ds-size-6x); }
+/* Search S (слот контейнера): в css у --s остался текст Body M 16/24 (высота 42) — по Figma 14/20 и 36;
+   у __text фон = цвет текста (артефакт генератора — плашка) */
+.ds-search--s { height: var(--ds-size-9x, 36px); box-sizing: border-box; }
+.ds-search--s .ds-search__text, .ds-search--s .ds-search__label { font-size: var(--ds-font-body-s-14-normal-regular-size); line-height: var(--ds-font-body-s-14-normal-regular-line); letter-spacing: var(--ds-font-body-s-14-normal-regular-spacing); font-weight: var(--ds-font-body-s-14-normal-regular-weight); }
+.ds-search__text { background: none; }
+/* иконки Search (слоты Icon size): в css цвет не задан → любые глифы рендерились чёрными (#000);
+   по Figma Icon/Primary #616161, в Disable — Icon/Disable #9e9e9e */
+.ds-search .ds-icon-size { color: var(--ds-color-icon-primary, #616161); }
+.ds-search--disabled .ds-icon-size { color: var(--ds-color-icon-disable, #9e9e9e); }
+/* текст Search в Disable: в css у __label свой цвет (Text/Placeholder #d6d6d6) и он не наследует
+   серый Disable из корня — по Figma (Disable M/S) текст #9e9e9e, как и иконка */
+.ds-search--disabled .ds-search__label,
+.ds-search:disabled .ds-search__label { color: var(--ds-color-search-disable-text-color, #9e9e9e); }
+/* в css .ds-search__label — текстовый слой; у живого <input> оставались нативные рамка/обводка/фон/паддинги.
+   Один сброс на все страницы (вместо локальных классов .dishes-input/.g-search-input): текст ввода #333 */
+input.ds-search__label { flex: 1 1 auto; min-width: 0; width: 100%; margin: 0; padding: 0; border: 0; outline: 0; box-shadow: none; background: transparent; font-family: inherit; color: var(--ds-color-text-primary, #333333); }
+input.ds-search__label::placeholder { color: var(--ds-color-search-focus-text-color, #d6d6d6); opacity: 1; }
+/* 259. Search — крестик очистки значения при вводе (20.10.2026, требование владельца:
+   «У поиска везде при вводе значений тоже должен быть крестик сброса значений»).
+   Живёт в слоте компонента `.ds-search__right-icon`, иконка — Icon size (S/XS 20, M 24),
+   цвет — как у иконки поиска; показ/скрытие и очистку делает ds-patterns.js (initSearchClear). */
+.ds-search__clear { flex: none; display: inline-flex; align-items: center; justify-content: center; width: var(--ds-size-5x, 20px); height: var(--ds-size-5x, 20px); padding: 0; border: 0; border-radius: var(--ds-size-circular, 50%); background: none; color: var(--ds-color-icon-primary, #616161); cursor: pointer; }
+.ds-search--m .ds-search__clear { width: var(--ds-size-6x, 24px); height: var(--ds-size-6x, 24px); }
+.ds-search__clear[hidden] { display: none !important; }
+/* в css нет состояния Focus (был только Hover #9e9e9e) — по Figma рамка акцентная; XS/Disable не трогаем */
+.ds-search:not(.ds-search--xs):not(.ds-search--disabled):focus-within { border: 1px solid var(--ds-color-search-focus-border-color, #448aff); }
+/* стрелки семейства arrow select — как у Arrow: глиф прижат к кадру 24 */
+.ds-arrow-select__icon .material-icons { font-size: var(--ds-size-6x); line-height: var(--ds-size-6x); }
+/* слоты пункта (element left/right): белая заливка — артефакт выгрузки (слой в Figma прозрачный);
+   на живых фонах даёт белые плашки вокруг чекбокса/иконки — снята (как element-cell, п. 41; журнал №200) */
+.ds-select-item__element-left, .ds-select-item__element-right { background: none; }
+
+/* 16. Form field input (стенд Form-Field-Input_DS/demo.html; базовый компонент — лежит внутри Select form,
+   Datepicker и др.). Журнал №92. XS-underline, текст M Empty и глиф 20 — в п. 15; здесь — плейсхолдеры Empty
+   и фокуса (узлы 57783:46979 — Empty-текст цвета лейбла #616161; 52775:17750 — в фокусе плейсхолдер #d6d6d6) */
+.ds-input--m.ds-input--empty .ds-input__field::placeholder { color: var(--ds-color-form-field-input-label-text-color, #616161); }
+.ds-input--m.ds-input--empty .ds-input__field:focus::placeholder { color: var(--ds-color-form-field-filled-focus-input-text-placeholder-color, #d6d6d6); }
+
+/* 17. Button (стенд Button_DS/demo.html; журнал №93). Тень заливных кнопок: в Figma у всех Filled-вариантов
+   тень «Shadows/01 dp Sl» (2 слоя); в сгенерированном css тени нет ни у одной кнопки, в токенах теней нет
+   вовсе (класс №69) — значения из макета; у Disable/Loading тени нет, как в макете.
+   Иконки слотов: цвет в css не задан — нейтральная серия в Figma #616161 (при тексте #333), у тёмных заливок
+   белые, у цветных контуров/текста — цвет стиля (наследуется от текста); кадр иконки 20 (M/S) и 16 (XS) — для svg. */
+.ds-btn--filled:not(:disabled):not(.ds-btn--disabled) {
+  box-shadow: 0 2px 2px 0 rgba(33, 33, 33, .04), 0 0 4px 0 rgba(33, 33, 33, .12);
+}
+.ds-btn--neutral .ds-btn__icon { color: var(--ds-color-text-secondary, #616161); }
+.ds-btn__icon svg { fill: currentColor; display: block; }
+.ds-btn--m .ds-btn__icon svg, .ds-btn--s .ds-btn__icon svg { width: var(--ds-button-m-size-icon-size, 20px); height: var(--ds-button-m-size-icon-size, 20px); }
+.ds-btn--xs .ds-btn__icon svg { width: var(--ds-button-xs-size-icon-size, 16px); height: var(--ds-button-xs-size-icon-size, 16px); }
+
+/* 18. List (стенд List_DS/demo.html; журнал №94). Артефакты генератора и состояния, которых нет в css.
+   (а) тексты и слоты красили себя фоном (в цвет текста / белым) — как у Select item (№37) и Text UI (№88) — снято;
+   (б) состояния Selected / Back selected / Link / Negative в css не реализованы (токены list-item * есть) —
+       собраны по узлам: цвет иконок в слотах по состояниям (Default/Hover/Press/Link #616161, Negative #ff5252,
+       Selected / Back selected #448aff, Disable #9e9e9e); (в) иконки слотов — 20px, currentColor и по верхнему
+       краю строки (y=8, на линии «Label up», как у Select item — узлы State=Default/Selected/Negative); (г) divider
+       контейнера: в css белый (№38) — стенд больше не использует контейнерный класс: divider — компонент Divider
+       (.ds-divider--m; цвет #E0E0E0 из токена);
+   (д) глифы Material Icons в слотах Element — 20px (иначе 24). */
+.ds-list-item__label-up, .ds-list-item__text, .ds-list-item__label-down,
+.ds-list-item__element-left, .ds-list-item__element-right { background: none; }
+.ds-list-item__element-left, .ds-list-item__element-right { color: var(--ds-color-list-item-icon-color, #616161); align-items: flex-start; }   /* слоты по верхнему краю (y=8, линия «Label up»), как в Figma */
+.ds-list-item__content { flex: 1 1 auto; min-width: 0; }   /* правый слот (ⓘ) прижат к правому краю (x=222 — от края 16), как в узле */
+.ds-list-item__element-left svg, .ds-list-item__element-right svg { width: var(--ds-size-5x); height: var(--ds-size-5x); display: block; fill: currentColor; }
+.ds-list-item--negative .ds-list-item__label-up, .ds-list-item--negative .ds-list-item__label-down { color: var(--ds-color-list-item-negative-label-text-color, #ff5252); }
+.ds-list-item--negative .ds-list-item__text { color: var(--ds-color-list-item-negative-text-color, #ff5252); }
+.ds-list-item--negative .ds-list-item__element-left, .ds-list-item--negative .ds-list-item__element-right { color: var(--ds-color-list-item-negative-icon-color, #ff5252); }
+.ds-list-item--selected .ds-list-item__element-left, .ds-list-item--selected .ds-list-item__element-right { color: var(--ds-color-list-item-selected-icon-color, #448aff); }
+.ds-list-item--link .ds-list-item__text { color: var(--ds-color-list-item-link-text-color, #448aff); }
+.ds-list-item--back-selected { background: var(--ds-color-list-item-selected-back-selected, #f5f9ff); }
+.ds-list-item--back-selected .ds-list-item__element-left, .ds-list-item--back-selected .ds-list-item__element-right { color: var(--ds-color-list-item-selected-icon-color, #448aff); }
+.ds-list-item--disabled .ds-list-item__label-up, .ds-list-item--disabled .ds-list-item__label-down { color: var(--ds-color-list-item-disable-label-text-color, #9e9e9e); }
+.ds-list-item--disabled .ds-list-item__text { color: var(--ds-color-list-item-disable-text-color, #9e9e9e); }
+.ds-list-item--disabled .ds-list-item__element-left, .ds-list-item--disabled .ds-list-item__element-right { color: var(--ds-color-list-item-disable-icon-color, #9e9e9e); }
+.ds-list-container__item { justify-content: space-between; }
+.ds-element--icon-size .ds-element__icon { width: var(--ds-size-5x); height: var(--ds-size-5x); }
+.ds-element--checkbox svg, .ds-element--radio-button svg { width: var(--ds-size-5x); height: var(--ds-size-5x); display: block; fill: currentColor; }
+.ds-element--checkbox .material-icons, .ds-element--radio-button .material-icons { font-size: var(--ds-size-5x); line-height: var(--ds-size-5x); }
+
+/* 19. Scroll (стенд List_DS/demo.html; журнал №95). Артефакт генератора: ползунок выгружен с padding 10px —
+   высота 8 + паддинги 20 → визуально 28px толщиной, подложка растягивается следом; по узлам Scroll
+   (Background 200×8, Knob 96×8, r8) толщина полосы — 8 (--ds-size-2x). Паддинг снят: ползунок и подложка — 8px.
+   Ширина .ds-scroll (184; у инстанса в контейнере List 204 = высоте области) и длина ползунка (96) в css
+   не выражены — собрано в стенде (обвязка). */
+.ds-scroll__knob { padding: 0; }
+
+/* 20. Divider (все стенды; журнал №96): ховер не существует — у реального компонента Divider (53556:7964, страница
+   Divider_DS) один вариант Type=Solid (одно состояние); синий #448AFF приходит из старого набора 58320:441
+   (16 вариантов, State=Hover/Selected и т.д.). Ховер возвращает цвет своего варианта; для разделителей
+   с заданным цветом (Sidenav) — защита. */
+.ds-divider:hover { background: var(--ds-color-divider-solid-default-color, #e0e0e0); }
+.ds-sidenav-control__divider:hover { background: var(--ds-color-sidenav-control-divider, #36474e); }
+.ds-sidenav-footer--l1 .ds-divider:hover { background: var(--ds-color-sidenav-control-divider, #36474e); }
+
+/* 21. Card (стенд Card_DS/demo.html; журнал №104). Выгрузка card-view.css отстала от текущей Figma:
+   шапка низ 4→8, контент 16→12/16 (и гэпа между заголовком и текстом нет вовсе), подвал верх 4→8,
+   Custom 16→12/16. Спец-токены Card в выгрузке частично устарели: Pad left/right = 24, Header/Pad top = 24,
+   Content/Pad top|bottom = 8, Footer/Pad top = 16 (в макете — 16/16/12/8) — не используем; в правках общие
+   токены space-4x/3x/2x (16/12/8) и актуальные Card/Header/Pad bottom (8) и Card/Content/Gap (8). */
+.ds-card__header { padding: var(--ds-space-4x, 16px) var(--ds-space-4x, 16px) var(--ds-card-header-pad-bottom, 8px); }
+.ds-card__content { padding: var(--ds-space-3x, 12px) var(--ds-space-4x, 16px); gap: var(--ds-card-content-gap, 8px); }
+.ds-card__footer__action { padding: var(--ds-space-2x, 8px) var(--ds-space-4x, 16px) var(--ds-space-4x, 16px); }
+.ds-card--custom { padding: var(--ds-space-3x, 12px) var(--ds-space-4x, 16px); }
+/* у подписей шапки нет сброса margin: UA-отступы <p> (16+16 на каждую) раздували шапку 116→180;
+   в макете строки 24 без отступов (зазор задаёт gap 8) */
+.ds-card__label-up, .ds-card__label-down { margin: 0; }
+
+/* 22. Table (канва «🟡Table_DS»; демо-стенд Table_DS/demo.html; журнал №1, №109, дополнено 13.10.2026 — №169–№174).
+   Полосы строк в выгрузке свёрстаны колонкой (table-header-row.css / table-content-row.css:
+   flex-direction: column), у подъячейки 2 уровня — то же в .ds-table-2-lvl__header-row; в Figma полоса —
+   горизонтальный ряд ячеек (в вариантах 6×81, слоты Header/Content), строку из ячеек не собрать
+   (журнал №4) — развёртка возвращена.
+   Шапка: фон рисуют и полоса, и ячейка (фон дважды — журнал №1); в сборке владелец фона — полоса,
+   ячейка в полосе прозрачна; ВНЕ полосы (витрина «Table header cell») ячейка носит свою заливку из css
+   (Default #f0f5ff / Hover #f8f9fc / Disable #f0f5ff) — сброс фона ограничен контекстом полос (№169:
+   прежний сброс на класс ячейки гасил и одиночную ячейку витрины). Рамка снята везде — в Figma обводка
+   ячейки невидима, швы — журнал №1. У полосы не было clip — прямоугольные ячейки перекрывали скругление 8 —
+   добавлен overflow: hidden.
+   Содержимое ячейки — по слоям Figma: инстансы Element cell → Text UI (сборка цепочкой их классов);
+   у .ds-text-ui в ячейке гасится артбордный min-height 52 (в Figma инстанс 20) — пробел ДС №171;
+   цвет Disable-подписи — токен Text UI/Disable/Text color (в text-ui.css подпись держит явный цвет,
+   состояние до неё не доходит) — пробел ДС №170.
+   Состояния строк Zebra/Selected и ячеек Link/Focus/Edit/Error в css не реализованы (токены table-* в
+   tokens.css есть) — собраны по значениям узлов: Link — Accent (как Text UI/Link), Focus/Edit — Stroke/Accent,
+   Error — Stroke/Negative. Zebra/Selected — фон строки (Table surfase).
+   Границы состояний ячеек — inset-тенью, а не border: border в border-box съедал 2px контента,
+   текст переносился в две строки, ячейка 58 вместо 36 (№174; в Figma обводка содержимое не сдвигает). */
+.ds-table-header-row, .ds-table-content-row, .ds-table-2-lvl__header-row { flex-direction: row; }
+.ds-table-header-row { overflow: hidden; }
+/* фон снимаем только в контексте полосы; вне полосы ячейка носит свою заливку (№169) */
+.ds-table-header-row .ds-table-header-cell,
+.ds-table-2-lvl__header-row .ds-table-header-cell { background: none; }
+.ds-table-header-cell { border: none; }
+/* Разделители между ячейками шапки: в Figma на стыках — Divider 1×20 #E0E0E0 (компонент «Table header row»,
+   узел 62819:83782); выгрузка их потеряла (вместо них — бордер по кругу, вырезан выше — №1). Линия — псевдо-
+   элементом на стыке: layout не трогает, переезжает с ячейкой при смене порядка/скрытии колонок (№183). */
+.ds-table-header-row .ds-table-header-cell { position: relative; }
+.ds-table-header-row .ds-table-header-cell + .ds-table-header-cell::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: var(--ds-size-5x, 20px);
+  background: var(--ds-color-divider-solid-default-color, #e0e0e0);
+  pointer-events: none;
+}
+/* в Figma у полос граница только снизу (strokeBottomWeight = Stroke/0,25x) — выгрузка рисует рамку
+   по периметру (верх/бока лишние — швы; журнал №173) */
+.ds-table-header-row, .ds-table-content-row { border: none; border-bottom: 1px solid var(--ds-color-stroke-default, #e0e0e0); }
+.ds-table-header-cell .ds-text-ui,
+.ds-table-content-cell .ds-text-ui { min-height: 0; } /* пробел ДС №171 (артбордная высота 52) */
+.ds-table-header-cell--disabled .ds-text-ui__list-item,
+.ds-table-content-cell--disabled .ds-text-ui__list-item { color: var(--ds-color-text-ui-disable-text-color, #9e9e9e); } /* пробел ДС №170 */
+.ds-table-content-row--zebra { background: var(--ds-color-table-row-content-zebra-background, #f5f5f5); }
+/* Выбранная строка — Accent/5 (2 версия, утв. владельцем 16.10; отличие от ДС: Selected = #EBEBEB — осознано; журнал №175, №195) */
+.ds-table-content-row--selected { background: var(--ds-palette-accent-5, #f8f9fc); }
+.ds-table-content-cell--link .ds-text-ui__list-item { color: var(--ds-color-text-ui-link-text-color, #448aff); } /* журнал №3 (Link в css не реализован) */
+/* рамка состояния — inset-тень, а не border: в Figma обводка не сдвигает содержимое, а border
+   в border-box съедал 2px — текст «Cell value» переносился в две строки, ячейка 58 вместо 36 (№174) */
+.ds-table-content-cell--focus { border: none; box-shadow: inset 0 0 0 var(--ds-table-cell-content-focus-border-size, 1px) var(--ds-color-table-cell-content-focus-border-color, #448aff); }
+.ds-table-content-cell--edit { border: none; box-shadow: inset 0 0 0 var(--ds-table-cell-content-edit-border-size, 1px) var(--ds-color-table-cell-content-edit-border-color, #448aff); }
+/* 42. Table — механика ячеек контента (2 версия; утв. владельцем 16.10 как ОСНОВНАЯ — «распространить на все,
+   где таблица используется»; журнал №175, №195). Два НЕЗАВИСИМЫХ наведения: СТРОКА — единым тоном
+   Table/Hover #F5F5F5 (подсветка строки целиком), ЯЧЕЙКА — своё состояние: фон Neutral/100 #EBEBEB без рамок
+   у ДЕЙСТВЕННЫХ ячеек (редактируемые, ссылки, живые контролы). 16.10 вечер «по строчке» снимало и подсветку
+   ячейки — 22.10 по команде владельца «Верни» ховер ячейки возвращён: это разные состояния (журнал №197,
+   продолжение). Ошибка — красным текстом Text/Negative без рамки (было — рамкой #FF5252); нередактируемая
+   ячейка (--readonly) — без наведения; клик по ссылке/контролу в ячейке не даёт ячейке рамку;
+   фокус/правка — синяя рамка (правила --focus/--edit выше, без изменений). */
+.ds-table-content-cell--error { border: none; box-shadow: none; }
+.ds-table-content-cell--error .ds-text-ui__list-item { color: var(--ds-color-text-negative, #ff5252); }
+/* наведение ЯЧЕЙКИ — фон #EBEBEB у действенных ячеек (возвращено 22.10.2026, журнал №197-продолжение);
+   у недейственных (.ds-table-content-cell--readonly / стендовый алиас .snap-readonly-cell) реакции нет.
+   Бордер выгрузки (.ds-table-content-cell:hover — рамка #9E9E9E) гасим и при фокусе внутри: после клика фокус
+   остаётся в контроле/ячейке, и старая ховер-рамка возвращалась (журнал №197) */
+.ds-table-content-cell:hover { border: none; }
+.ds-table-content-cell:not(.ds-table-content-cell--readonly):not(.snap-readonly-cell):hover:not(:focus):not(:focus-within) { box-shadow: none; background: var(--ds-palette-neutral-100, #ebebeb); }
+.ds-table-content-cell--readonly:hover,
+.snap-readonly-cell:hover { border: none; box-shadow: none; background: transparent; } /* snap-* — стендовый алиас (заменяется на --readonly при следующем проходе стенда) */
+.ds-table-content-cell { outline: none; }
+.ds-table-content-cell:focus,
+.ds-table-content-cell:focus-within,
+.ds-table-content-cell--editing { box-shadow: inset 0 0 0 var(--ds-table-cell-content-focus-border-size, 1px) var(--ds-color-table-cell-content-focus-border-color, #448aff); }
+.ds-table-content-cell:has(> .ds-table-content-cell__element):focus,
+.ds-table-content-cell:has(> .ds-table-content-cell__element):focus-within { box-shadow: none; } /* у ячеек с компонентами фокус живёт в контролах */
+.ds-table-content-cell--editing { cursor: text; }
+.ds-table-content-cell--link { cursor: pointer; } /* ссылка — действенная ячейка: ховер и курсор остаются */
+
+/* 23. Banners (стенд Banners_DS/demo.html; журнал №113, обновлено 07.10.2026). Пробелы/артефакты выгрузки:
+   1) Style=Tip в css отсутствует (в наборе 54367:2566 вариант есть): по узлам 60725:61423/61428 фон —
+   токен Banners/Accent/Background tip (--ds-color-banners-accent-background-tip; #F5F9FF), граница —
+   Banners/Border dash size × Banners/Border color (dashed; браузерный пунктир аппроксимирует
+   Figma-паттерн [2,2]); текст Tip — Caption L 12/16 (Banners/Text size tip);
+   2) у Neutral в css рамка 1px цветом Banners/Border color (Stroke/Accent) — артефакт генератора:
+   в Figma обводки нет (вес привязан к Banners/Border dash size, цвет обводки задан только у Tip) — снята;
+   3) выравнивание содержимого — по верхнему краю: в Figma items-start у H-строки и Container вертикального,
+   в css было center;
+   4) кнопки вертикального баннера прижаты вправо: в Figma justify-end, в css не задано. */
+.ds-banner--tip { background: var(--ds-color-banners-accent-background-tip, #f5f9ff);
+  border: var(--ds-banners-border-dash-size, 1px) dashed var(--ds-color-banners-border-color, #448aff); }
+.ds-banner--tip .ds-banner__text { font-size: var(--ds-banners-text-size-tip, 12px); line-height: var(--ds-typography-caption-line-height-l, 16px); }
+.ds-banner--neutral { border: 0; }
+.ds-banner--horizontal { align-items: flex-start; }
+.ds-banner__row { align-items: flex-start; }
+.ds-banner--vertical .ds-banner__buttons { justify-content: flex-end; }
+
+/* 24. Chips (стенд Chips_DS/demo.html; журнал №112). У текста чипа (`.ds-chips__chip-text`) в выгрузке
+   фон задан токеном цвета текста — текст рисуется тёмной плашкой (тот же класс артефакта, что у Select item
+   №37, Text UI №88, List №94). Снято. */
+.ds-chips__chip-text { background: none; }
+
+/* 25. Scroll (канва «Scroll_DS»; демо-стенд Scroll_DS/demo.html; журнал №117). По узлам набора 53615:15339:
+   Size=M — полоса 180×8 в кадре 184×12 (пад 2), ползунок 96×8; Size=S — кадр 64×8, полоса 60×4, ползунок 24×4;
+   ховер: фон-подложка #EBEBEB и ползунок #9E9E9E, у S фон не темнеет (переменная «Scroll/Background» = #ffffff00 —
+   прозрачный; в css на оба размера одна переменная фона #FAFAFA). В css: `--s` задан шириной 8px (ошибка
+   выгрузки: 8 — это высота полосы, ширина S — 64), у ползунка нет ховер-цвета, а ховер красил корень
+   (прямоугольник без радиуса вокруг полосы — в Figma меняется сама подложка-трек). Длина ползунка (96/24) —
+   артворк набора, в контексте позиция/длина зависит от прокрутки (обвязка/JS) — в css не задаём. */
+.ds-scroll--s { width: 64px; }
+.ds-scroll--s .ds-scroll__background { background: transparent; }
+.ds-scroll--s .ds-scroll__knob { height: 4px; }
+.ds-scroll--first:hover, .ds-scroll--middle:hover, .ds-scroll--last:hover { background: none; }
+.ds-scroll--first:hover .ds-scroll__background, .ds-scroll--middle:hover .ds-scroll__background, .ds-scroll--last:hover .ds-scroll__background { background: var(--ds-color-scroll-hover-background, #ebebeb); }
+.ds-scroll--s:hover .ds-scroll__background { background: transparent; }
+.ds-scroll:hover .ds-scroll__knob { background: var(--ds-color-scroll-hover-knob-color, #9e9e9e); }
+
+/* 25а. Scroll ВЕРТИКАЛЬНЫЙ инстанс (`ds-scroll--v`) — как нарисован на стендах Menu (Container)
+   и Select (Basic example): полоса 12 (Size/3x; с паддингом 2 компонента → дорожка 8 во всю высоту,
+   #FAFAFA, ховер #EBEBEB из п. 25), ползунок 8 (Size/2x) #D6D6D6 (ховер #9E9E9E из п. 25).
+   Длину и позицию ползунка в контексте считает обвязка (ds-patterns.js) — как на стендах. */
+.ds-scroll--v { width: var(--ds-size-3x, 12px); }
+.ds-scroll--v .ds-scroll__background { flex: 1 1 auto; width: 100%; }
+.ds-scroll--v .ds-scroll__knob { width: var(--ds-size-2x, 8px); height: var(--ds-size-6x, 24px); }
+
+/* 26. Status (канва «Status_DS»; демо-стенд Status_DS/demo.html; журнал №116). Артефакты выгрузки (тот же класс,
+   что у Select item №37, Text UI №88, Chips №24): служебные слои красят себя фоном — `.ds-status__info` белым,
+   `.ds-status__content` фоном в цвет текста; в Figma подложек нет. Плюс `.ds-status__label` и `.ds-status__content`
+   жёстко красились нейтральным токеном — пер-стилевые цвета (акцент/позитив/…) не доходили до подписи; в Figma
+   цвет подписи = цвет стиля (корень статуса уже несёт пер-стилевой color). Иконки слота — Icon/Primary
+   (#616161) во всех стилях, как в наборе. */
+.ds-status__info { background: none; }
+.ds-status__content { background: none; color: inherit; }
+.ds-status__label { color: inherit; }
+
+/* 27. Logo (стенд Logo_DS/demo.html; журнал №118). У корня/вектора в выгрузке стоят ФОНЫ АРТБОРДОВ:
+   белый у iiko (`.ds-logo-iiko`, `__vector`) и тёмно-синий #00062b у syrve (`__vector`). В вариантах набора
+   заливок нет (fill invisible), лого-глифы несут собственные цвета: белый бокс iiko виден при использовании
+   на тёмном фоне, а #00062b делает тёмные глифы syrve Main невидимыми (прямоугольник вместо словомарки).
+   Снято. */
+.ds-logo-iiko, .ds-logo-iiko__vector, .ds-logo-syrve, .ds-logo-syrve__vector { background: none; }
+
+/* 28. Checkbox/Radio label (демо-стенды Checkbox_DS и Radio-Button_DS; журнал №119, №120).
+   (а) Цвета иконок в лейблах: в выгрузке у `.ds-checkbox-label__icon` / `.ds-radio-button-label__icon`
+   нет пер-вариантных цветов (в Figma: normal-selected/inderterminate — Accent, error — Negative,
+   disable-selected — нейтральный) — иконки наследовали серый цвет текста.
+   (б) У Radio текст лежит на классе-артефакте `.ds-radio-button-label__цвет-и-палитра` (имя из текста
+   слоя — тoт же артефакт генератора, что №24/37/88) с протекающим фоном = цветом текста — снято.
+   (в) У Radio error-support в выгрузке потомковый селектор (`.ds-radio--error .ds-radio__support`),
+   а в разметке support — сиблинг (как у checkbox) — добавлен сиблинг-селектор. */
+.ds-checkbox-label--normal.ds-checkbox-label--selected .ds-checkbox-label__icon,
+.ds-checkbox-label--normal.ds-checkbox-label--inderterminate .ds-checkbox-label__icon { color: var(--ds-color-checkbox-normal-selected-icon-color, #448aff); }
+.ds-checkbox-label--error .ds-checkbox-label__icon { color: var(--ds-color-checkbox-error-deselected-icon-color, #ff5252); }
+.ds-checkbox-label--disable.ds-checkbox-label--selected .ds-checkbox-label__icon { color: var(--ds-color-checkbox-disable-selected-icon-color, #9e9e9e); }
+.ds-radio-button-label--normal.ds-radio-button-label--selected .ds-radio-button-label__icon { color: var(--ds-color-radio-button-label-normal-selected-icon-color, #448aff); }
+.ds-radio-button-label--error .ds-radio-button-label__icon { color: var(--ds-color-radio-button-label-error-icon-color, #ff5252); }
+.ds-radio-button-label--disable.ds-radio-button-label--selected .ds-radio-button-label__icon { color: var(--ds-color-radio-button-label-disable-selected-icon-color, #9e9e9e); }
+.ds-radio-button-label__цвет-и-палитра { background: none; }
+.ds-radio--error ~ .ds-radio__support { color: var(--ds-color-text-negative, #ff5252); }
+/* (г) support-текст лейблов: тот же артефакт «фон = цвет текста» (`.ds-*-label__support-text`),
+   плюс цвета по вариантам (в Figma: Normal #616161, Error #FF5252, Disable #9E9E9E — в css был только серый). */
+.ds-checkbox-label__support-text, .ds-radio-button-label__support-text { background: none; }
+.ds-checkbox-label--error .ds-checkbox-label__support-text, .ds-radio-button-label--error .ds-radio-button-label__support-text { color: var(--ds-color-text-negative, #ff5252); }
+.ds-checkbox-label--disable .ds-checkbox-label__support-text, .ds-radio-button-label--disable .ds-radio-button-label__support-text { color: var(--ds-paint-text-disable, #9e9e9e); }
+
+/* 29. Input number / Textarea / Chips Input (демо-стенды батча C; журнал №124–126). Пробелы выгрузки:
+   (а) у support-текста «Input number_but icon» фон = цвет текста (тот же артефакт, что п. 24) — снят;
+   (б) у `.ds-input-number__label` / `.ds-textarea__label` жёсткий #333 — цвета состояний Empty/Disable
+   (токены форм-поля) не доходили до значения; добавлены inherit-правила для этих состояний. */
+.ds-input-number-but-icon__support-text { background: none; }
+.ds-input-number--disabled .ds-input-number__label { color: inherit; }
+.ds-input-number--empty .ds-input-number__label { color: inherit; }
+.ds-textarea--disabled .ds-textarea__label { color: inherit; }
+.ds-textarea--empty .ds-textarea__label { color: inherit; }
+
+/* 30. Hint footer/header (демо-стенд Hint-Tooltip_DS; журнал №132, №258). У `.ds-hint-footer__цвет-и-палитра`
+   и `.ds-hint-header__title` в css фон = цвет текста (артефакт генератора — белая плашка поверх белого текста). */
+.ds-hint-footer__цвет-и-палитра { background: none; }
+.ds-hint-header__title { background: none; }
+/* Цвета 5 стилей Hint header — по SVG-ассетам Figma (Neutral — white, Primary — #448AFF,
+   Secondary — #14B456, Warning — #EA7806, Error — #FF5252); в css у всех один цвет. */
+.ds-hint-header--neutral .ds-hint-header__icon--style { color: var(--ds-color-hint-header-neutral-icon-color, #ffffff); }
+.ds-hint-header--primary .ds-hint-header__icon--style { color: var(--ds-color-hint-header-accent-icon-color, #448aff); }
+.ds-hint-header--secondary .ds-hint-header__icon--style { color: var(--ds-color-hint-header-positive-icon-color, #14b456); }
+.ds-hint-header--warning .ds-hint-header__icon--style { color: var(--ds-color-hint-header-warning-icon-color, #ea7806); }
+.ds-hint-header--error .ds-hint-header__icon--style { color: var(--ds-color-hint-header-negative-icon-color, #ff5252); }
+
+/* 31. Dialog (демо-стенд Dialog_DS/demo.html; журнал №129). У описания шапки (`.ds-dialog-header__description`)
+   в выгрузке фон задан тем же токеном, что и цвет текста (#616161) — текст рисуется тёмной плашкой
+   (тот же артефакт генератора, что у support-текстов п. 28–30). В наборе (53619:17897) подложки нет. Снято.
+   У Action подвала (`__action` в view и footer) height: 68px задан без box-sizing: border-box (у родителя
+   он есть, но не наследуется): с паддингами 16/24 полоса раздувается 68→100 (в Figma 68 — полная высота) — приведено к border-box.
+   У кроп-слота Picture (`.ds-picture__crop`) height: 173px тоже без border-box — рамка 1px dashed давала 175
+   (в наборе 58937:3985 кроп 173 — полная высота) — приведено к border-box. */
+.ds-dialog-header__description { background: none; }
+.ds-dialog-view__action, .ds-dialog-footer__action { box-sizing: border-box; }
+.ds-picture__crop { box-sizing: border-box; }
+
+/* 32. Badge (демо-стенд Badge_DS/demo.html; журнал №137). В Figma у счётчика трекинг «Letter spacing/S» 0.5px
+   (и в наборе 54428:187, и в примерах); в badge.css letter-spacing отсутствует — добавлен на токене шрифта.
+   Прочее по стенду (легаси-бейджи 20×20 в примерах, min-height Text UI) — в журнале №137.
+   Там же: у заливных Button icon в Figma тень «Shadows/01 dp Sl» (как у Button, п. 17), в css её не было — добавлена. */
+.ds-badge { letter-spacing: var(--ds-font-caption-l-12-normal-medium-spacing, 0.5px); }
+.ds-btn-icon--filled:not(:disabled):not(.ds-btn-icon--disabled) {
+  box-shadow: 0 2px 2px 0 rgba(33, 33, 33, .04), 0 0 4px 0 rgba(33, 33, 33, .12);
+}
+
+/* 33. Autocomplete form (демо-стенд Autocomplete_DS/demo.html; журнал №138). Состояния из Figma
+   (57759:28983): выгрузка покрывает Empty/Default и часть ховера; focus/error/disable-рамки, подпись-
+   над-полем 12/16, значение 16/24, цвет иконки поля — добавлены по узлам вариантов; значения — токены.
+   Error: подпись-над-полем красная, подпись-плейсхолдер Empty остаётся #616161 (узел 58107:8243);
+   Disable: фон/рамка/текст — токены disable; иконка слота Element right в фокусе — Icon/Primary #616161. */
+.ds-autocomplete-form__label-up { font-size: var(--ds-font-caption-l-12-normal-regular-size); line-height: var(--ds-font-caption-l-12-normal-regular-line); letter-spacing: var(--ds-font-caption-l-12-normal-regular-spacing); font-weight: var(--ds-font-caption-l-12-normal-regular-weight); color: var(--ds-color-form-field-filled-default-label-text-color, #616161); }
+.ds-autocomplete-form__value { font-size: var(--ds-font-body-m-16-normal-regular-size); line-height: var(--ds-font-body-m-16-normal-regular-line); letter-spacing: var(--ds-font-body-m-16-normal-regular-spacing); font-weight: var(--ds-font-body-m-16-normal-regular-weight); color: var(--ds-color-form-field-filled-default-input-text-color, #333333); }
+.ds-autocomplete-form:focus-within .ds-autocomplete-form__input-frame { border-color: var(--ds-color-form-field-filled-focus-border-color, #448aff); }
+.ds-autocomplete-form:focus-within .ds-autocomplete-form__label-up { color: var(--ds-color-form-field-filled-focus-label-text-color, #448aff); }
+.ds-autocomplete-form:focus-within .ds-autocomplete-form__value { color: var(--ds-color-form-field-filled-focus-input-text-color, #333333); }
+.ds-autocomplete-form--error .ds-autocomplete-form__input-frame { border-color: var(--ds-color-form-field-filled-error-border-color, #ff5252); }
+.ds-autocomplete-form--error .ds-autocomplete-form__label-up { color: var(--ds-color-form-field-filled-error-label-text-color, #ff5252); }
+.ds-autocomplete-form--error .ds-autocomplete-form__value { color: var(--ds-color-form-field-filled-error-input-text-color, #333333); }
+.ds-autocomplete-form--disabled .ds-autocomplete-form__input-frame { background: var(--ds-color-form-field-filled-disable-input-background, #f5f5f5); border-color: var(--ds-color-form-field-filled-disable-border-color, #ebebeb); }
+.ds-autocomplete-form--disabled .ds-autocomplete-form__label,
+.ds-autocomplete-form--disabled .ds-autocomplete-form__label-up,
+.ds-autocomplete-form--disabled .ds-autocomplete-form__value { color: var(--ds-color-form-field-filled-disable-input-text-color, #9e9e9e); }
+.ds-autocomplete-form__icon { color: var(--ds-color-form-field-filled-focus-icon-color-default, #616161); }
+
+/* 34. Textarea (стенд Textarea_DS/demo.html; журнал №125, №166). №166: у кадра поля (Input Frame)
+   в выгрузке нет box-sizing — размеры считаются от контента: рамка выходит 276×94 вместо 250×76 канвы
+   (кадр варианта 114 вместо 96; шаг набора съезжает 130 вместо 132). У Input «__frame» border-box есть
+   (Form-Field-Input) — здесь пропущен. Ставим border-box. */
+.ds-textarea__input-frame { box-sizing: border-box; }
+
+/* 35. Datepicker (стенд Datepicker_DS/demo.html; журнал №167). ⚑ №167: у Control Panel дублировались паддинги —
+   корневые классы вариантов Week/Calendar добавляли свой паддинг к контейнерам, внутри которых уже есть
+   паддинги/высота канвы: Week выходил 48 вместо 44 (2+40+2 в Figma), Calendar — 236 вместо 228 (4+5×44+4).
+   Корневой паддинг 4/4 нужен только варианту Control (элемент y4 в кадре 48). Снято у Week/Calendar. */
+.ds-control-panel--week { padding: 0; }
+.ds-control-panel--calendar { padding: 0; }
+/* 36. Elements Timepicker (стенд Timepicker_DS/demo.html; журнал №168). Артефакт генератора: у метки
+   `.ds-elements-2__label` цвет жёстко белый (Text/Inversive), а тёмный задан на корне default-варианта —
+   метка его не наследует: текст Default/Disable-элементов не виден (белое по белому). В Figma (58982:9594)
+   текст #333333 (Default) и #9E9E9E (Disable). */
+.ds-elements-2--default .ds-elements-2__label { color: var(--ds-color-text-primary, #333333); }
+.ds-elements-2--default.ds-elements-2--disabled .ds-elements-2__label { color: var(--ds-color-text-disable, #9e9e9e); }
+/* 37. Search (стенд Search_DS/demo.html; журнал №145, №151, №189). Сверка с Figma 15.10.2026: у вариантов XS
+   выгрузка не содержит фон варианта (в узлах 54947:6401 / 54948:3218 / 54948:3223 — `search/default/background-xs`
+   #F0F5FF, ховер `…/hover/background-xs` #E8F0FF, disable — общий #EBEBEB), а рамка приходит от базы M/S
+   (#E0E0E0); в Figma у XS рамки нет ни в одном состоянии, раскладка варианта — justify-center
+   (иконка по центру — в css тоже потерян). Фикс ручного слоя: */
+.ds-search--xs { background: var(--ds-color-search-default-background-xs, #f0f5ff); border: 0; justify-content: center; }
+.ds-search--xs:hover { background: var(--ds-color-search-hover-background-xs, #e8f0ff); border: 0; }
+
+/* 38. Checkbox (стенд Checkbox_DS/demo.html; журнал №33, №160, №187). В компоненте Figma (53806:5694)
+   состояния Hover/Press несут подложку State 28×28 (круг) под иконкой 20×20; в css выгрузки её нет
+   (у radio класс `.ds-radio__state` объявлен, но без фона). Подложка — `::after` у `.ds-checkbox__box`:
+   box — контейнер, лейбл — контекст наложения (z-index:0), поэтому подложка с z-index:-1 уходит ПОД
+   иконку-фон. Цвета — компонентные токены семейства Checkbox (…/Hover, …/Press, Background).
+   У Disable подложки нет. */
+.ds-checkbox { position: relative; z-index: 0; }
+.ds-checkbox__box { position: relative; }
+.ds-checkbox__box::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--ds-size-7x, 28px);
+  height: var(--ds-size-7x, 28px);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background-color: transparent;
+  transition: background-color 0.15s ease;
+  pointer-events: none;
+  z-index: -1;
+}
+/* Hover */
+.ds-checkbox:hover .ds-checkbox__box::after { background-color: var(--ds-color-checkbox-normal-deselected-hover-background, #ebebeb); }
+.ds-checkbox:hover .ds-checkbox__input:checked ~ .ds-checkbox__box::after { background-color: var(--ds-color-checkbox-normal-selected-hover-background, #e8f0ff); }
+.ds-checkbox:hover .ds-checkbox__input:indeterminate ~ .ds-checkbox__box::after { background-color: var(--ds-color-checkbox-normal-inderterminate-hover-background, #e8f0ff); }
+.ds-checkbox--error:hover .ds-checkbox__box::after,
+.ds-checkbox--error:hover .ds-checkbox__input:checked ~ .ds-checkbox__box::after,
+.ds-checkbox--error:hover .ds-checkbox__input:indeterminate ~ .ds-checkbox__box::after { background-color: var(--ds-color-checkbox-error-deselected-hover-background, #ffe5e5); }
+/* Press */
+.ds-checkbox:active .ds-checkbox__box::after { background-color: var(--ds-color-checkbox-normal-deselected-press-background, #e0e0e0); }
+.ds-checkbox:active .ds-checkbox__input:checked ~ .ds-checkbox__box::after { background-color: var(--ds-color-checkbox-normal-selected-press-background, #ccdfff); }
+.ds-checkbox:active .ds-checkbox__input:indeterminate ~ .ds-checkbox__box::after { background-color: var(--ds-color-checkbox-normal-inderterminate-press-background, #ccdfff); }
+.ds-checkbox--error:active .ds-checkbox__box::after,
+.ds-checkbox--error:active .ds-checkbox__input:checked ~ .ds-checkbox__box::after,
+.ds-checkbox--error:active .ds-checkbox__input:indeterminate ~ .ds-checkbox__box::after { background-color: var(--ds-color-checkbox-error-deselected-press-background, #ffcccc); }
+/* Disable — подложки нет */
+.ds-checkbox--disabled .ds-checkbox__box::after { display: none; }
+
+/* 39. Menu (демо-стенд Menu_DS/demo.html; журнал №131, №188). Сверка с Figma 15.10.2026 (канва 54163:6699,
+   контейнер 55613:135, подвал 57846:6973, пункт 56090:1476, элемент 56090:1611):
+   (а) контейнер: min-height 418 — артбордная высота варианта 240×410 — снята (высота по контенту);
+   (б) подвал (Button group): в Figma высота по контенту (8+28+8 = 44 при кнопках S) и кнопки прижаты ВПРАВО
+   (justify-end); в css было height:52 (в content-box давало 68) и прижатие влево;
+   (в) Title menu: Roboto Medium 500, #333; в css `.ds-menu-container__label` — regular и цвет плейсхолдера поиска #d6d6d6;
+   (г) пункт: width 258 — артбордная (в контейнере тянется — 100%), min-height 68 — артбордная
+   (однострочный пункт 36, двойной 68 — высота по контенту);
+   (д) поле Search в контейнере — по ширине контейнера (общее правило ширины);
+   (е) артефакты генератора: у `__label-up/__text/__label-down` фон равен цвету текста (плашки), белые заливки
+   слотов `__element-left/right`, `__content` и у `.ds-arrow-menu` — сняты;
+   (ж) Disable-пункт: подписи не наследуют #9E9E9E (цвет стоит на корне) — добавлены;
+   (з) элемент Icon size (Element menu) — контейнер 20 (был 24; инстанс «Icon size» 5x);
+   (и) Indicator (Element menu) — цвет Icon/Accent (#448AFF);
+   (к) слоты пункта (Element left/right): в Figma прижаты к ВЕРХУ строки (на линии Label up; вариант 56090:1522),
+   в css `__element-left` — stretch, `__element-right` — center — чекбокс и иконка вставали по центру строки. */
+.ds-menu-container { min-height: 0; }
+.ds-menu-container__button-group { height: auto; justify-content: flex-end; }
+.ds-menu-container__label { font-weight: var(--ds-typography-font-weight-medium, 500); color: var(--ds-color-menu-item-text-color, #333333); }
+.ds-menu-container__search > .ds-search { width: 100%; }
+.ds-menu-container__content { flex: 1 1 auto; min-width: 0; }
+.ds-menu-item { width: 100%; min-height: 0; }
+.ds-menu-item__content { flex: 1 1 auto; min-width: 0; }
+.ds-menu-item__element-left { align-items: flex-start; }
+.ds-menu-item__element-right { align-items: flex-start; }
+.ds-menu-item__label-up, .ds-menu-item__text, .ds-menu-item__label-down { background: none; }
+.ds-menu-item__element-left, .ds-menu-item__content, .ds-menu-item__element-right,
+.ds-menu-container__element-left, .ds-menu-container__content, .ds-menu-container__element-right, .ds-menu-container__divider { background: none; }
+.ds-menu-item--disabled .ds-menu-item__label,
+.ds-menu-item--disabled .ds-menu-item__label-up,
+.ds-menu-item--disabled .ds-menu-item__text,
+.ds-menu-item--disabled .ds-menu-item__label-down { color: var(--ds-color-menu-item-disable-label-text-color, #9e9e9e); }
+.ds-element-menu__icon { width: var(--ds-size-5x); height: var(--ds-size-5x); }
+.ds-element-menu--indicator { color: var(--ds-color-icon-accent, #448aff); }
+.ds-arrow-menu, .ds-arrow-menu__drop-down { background: none; }
+
+/* 40. Chips (демо-стенд Chips_DS/demo.html; журнал №112, №144, №190). Сверка с Figma 15.10.2026 (компонент
+   17168:83542, 18 вариантов): (а) у S-чипа css оставляет M-размеры — высота 32 (в компоненте 24) и текст
+   Body S 14/20 (в компоненте Caption L 12/16; токен `--ds-chips-s-size-text-size` в css не используется),
+   крестик/слоты 20 (в компоненте Icon size 16, у M — 20; фикс п. 5 ниже); (б) Disable: css красит только
+   корень — у подписи (`__label`/`__chip-text`) и контейнера глифа (`__icon`) цвет свой, поэтому текст и иконки
+   остаются #333/#616161 (в Figma — Chips/Disable/Text color и Icon color = #9E9E9E; токены в ДС есть — css их
+   не использует); (в) Focus у Outlined: рамка #448AFF (chips-outlined-focus-border-color) в css не выгружена —
+   `:focus-visible` красит только фон. */
+.ds-chips--s { height: var(--ds-size-6x); }
+.ds-chips--s .ds-chips__label,
+.ds-chips--s .ds-chips__chip-text {
+  font-size: var(--ds-font-caption-l-12-normal-regular-size);
+  line-height: var(--ds-font-caption-l-12-normal-regular-line);
+  letter-spacing: var(--ds-font-caption-l-12-normal-regular-spacing);
+}
+.ds-chips--s .ds-chips__close { width: var(--ds-size-4x); height: var(--ds-size-4x); }
+.ds-chips--s .ds-chips__add { height: var(--ds-size-4x); }
+.ds-chips--outlined:focus-visible { border-color: var(--ds-color-chips-outlined-focus-border-color, #448aff); }
+.ds-chips--disabled .ds-chips__label,
+.ds-chips--disabled .ds-chips__chip-text,
+.ds-chips:disabled .ds-chips__label,
+.ds-chips:disabled .ds-chips__chip-text { color: var(--ds-color-chips-disable-text-color, #9e9e9e); }
+.ds-chips--disabled .ds-chips__icon,
+.ds-chips:disabled .ds-chips__icon { color: var(--ds-color-chips-disable-icon-color, #9e9e9e); }
+
+/* 41. Element cell / Elementare cell (Table_DS; журнал №191, №179; указание владельца 16.10.2026:
+   «Никакого фона и заливки у группы не должно быть. И у всех остальных групп компонентов тоже»).
+   Служебные ячейки-варианты (слоты Element cell) в выгрузке красили себя фоном #ffffff — артефакт
+   генерации (тот же класс, что у слотов Menu, п. 39; ср. №179 — в Figma слой скрыт). На строках и
+   подложках белые плашки оборачивали компонент — в т.ч. групповые: Chips group (ячейки «Меню»/«Место
+   расположения» прототипа «Киоски · Баннеры»), Icon group. Ячейка — чистая раскладка: фон/цвет даёт
+   строка или окружающий контейнер. Снято у всех вариантов; затронуты оба файла Table_DS —
+   element-cell.css и его дубль elementare-cell.css (там нет только --cell-input). Обвязка стенда
+   Table (.snap-live--v2 .ds-element-cell--*) стала излишней — не тронута. */
+.ds-element-cell__info,
+.ds-element-cell--icon-size,
+.ds-element-cell--icon-group,
+.ds-element-cell--button,
+.ds-element-cell--button-icon,
+.ds-element-cell--status,
+.ds-element-cell--input-number,
+.ds-element-cell--checkbox,
+.ds-element-cell--slide-toggle,
+.ds-element-cell--chips,
+.ds-element-cell--cell-input,
+.ds-elementare-cell__info,
+.ds-elementare-cell--icon-size,
+.ds-elementare-cell--icon-group,
+.ds-elementare-cell--button,
+.ds-elementare-cell--button-icon,
+.ds-elementare-cell--status,
+.ds-elementare-cell--input-number,
+.ds-elementare-cell--checkbox,
+.ds-elementare-cell--slide-toggle,
+.ds-elementare-cell--chips { background: none; }
+
+/* 43. Dialog — сверка стенда с Figma 19.10.2026 (канва 52952:1284; журнал №201).
+   (а) Скругление корня: в Figma у Dialog view радиус 12 (переменная Dialog/Border radius) и содержимое
+   обрезается по скруглению; в css у `.ds-dialog-view` border-radius есть, но overflow отсутствует —
+   белые шапка и подвал (у них r=0) перекрывали углы, диалог выглядел квадратным (поверх затемнения
+   особенно заметно). Добавлен overflow: hidden.
+   (б) Action подвала (вид и footer): в Figma выравнивание по правому краю (align MAX), в css flex-колонка
+   без align — кнопка смотрела влево. Выравнивание добавлено в компонент (обвязка стендов больше не нужна).
+   Паддинги шапки (24/24/8/24, gap 8) по-прежнему в обвязке: в выгрузку не попали, перенос в компонент
+   дал бы двойные отступы там, где обвязка уже задана (журнал №129, прототип «Баннеры и группы»).
+   Паддинги слота контента (8/24, gap 16/8) — тоже обвязка: класса слота в css нет. */
+.ds-dialog-view { overflow: hidden; }
+.ds-dialog-view__action,
+.ds-dialog-footer__action { align-items: flex-end; }
+
+/* 44. Expansion panel — по слоям Figma (канва 52937:1329; журнал №205).
+   (б) Фоны — по выгрузке вариантов (каждый статус свой): Default Off #F8F9FC (Accent/5), On — #FFFFFF;
+   Hover — Shapes/Hover #F5F5F5, Press — Shapes/Press #E0E0E0, Disable — Surface/Disable #F5F5F5 (рамка
+   Default Off Disable #E0E0E0, у On — #EBEBEB); Info Off #F5F9FF (Accent/10), Hover #F0F5FF (Accent/50),
+   Press #E8F0FF (Accent/100), Disable — тоже #F5F9FF с рамкой #EBEBEB.
+   (в) Иконки шапки — инстансы Icon size 20 с цветом Icon/Primary (#616161): у `.ds-icon-size`
+   своего цвета нет, он наследовал цвет шапки (#333) — цвет задан токеном. Для Variant=Info — Icon/Accent,
+   у Disable — Icon/Disable (#9E9E9E; правила ниже перекрывают Info).
+   (г) У `.ds-expansion--disabled` цвет заголовка был #333 (своя переменная) — в Figma Text/Disable.
+   (д) Рамка панели (border 1px) занимала место в раскладке: шапка 44 давала панель 46, а контент
+   внутри был на 2px уже (в Figma stroke рисуется поверх и в раскладке не участвует). Рамка переведена
+   на inset-тень (Default/Disable), у Info — пунктир через outline (тоже без влияния на размеры):
+   закрытая панель — 44, открытая — 96 (44 + контент 52), внутренняя ширина — 597. */
+
+.ds-expansion .ds-icon-size { color: var(--ds-color-icon-primary, #616161); }
+.ds-expansion--info:not(.ds-expansion--disabled) .ds-icon-size { color: var(--ds-color-icon-accent, #448aff); }
+.ds-expansion--disabled .ds-icon-size { color: var(--ds-color-icon-disable, #9e9e9e); }
+.ds-expansion--disabled .ds-expansion__title { color: var(--ds-color-text-disable, #9e9e9e); }
+.ds-expansion {
+  border: none;
+  box-shadow: inset 0 0 0 1px var(--ds-color-stroke-default);
+  background: var(--ds-color-brand-accent-super-lightest, #f8f9fc);   /* Default Off — #F8F9FC */
+}
+.ds-expansion--open { background: var(--ds-color-surface-default, #ffffff); }   /* On — #FFFFFF */
+.ds-expansion--info { background: var(--ds-palette-accent-10, #f5f9ff); }
+.ds-expansion--info.ds-expansion--open { background: var(--ds-palette-accent-10, #f5f9ff); }
+
+/* 45. Tabs — счётчик в табе равен шрифту рядом (правило владельца 19.10.2026:
+   «Каунтер равняется шрифту рядом с которым находится! … Это ко всему относится, если ты ставишь
+   свой каунтер, а не компонент бейдж»; Figma — счётчик Body M 16/24 Medium, как подпись, журнал №142).
+   В css у `.ds-tab__counter` стоял font-size 12 (Font Size/3x) — счётчик выглядел мельче подписи таба.
+   Теперь кегль, вес и интерлиньяж наследуются от таба (Lvl1 — 16/24 medium, Lvl2 — 14/20 regular),
+   цвета остаются токенами компонента. ВАЖНО: правило только для СВОИХ текстовых счётчиков —
+   компонент Badge (`.ds-badge--counter`) остаётся по своим размерам. */
+.ds-tab__counter {
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+.ds-expansion--disabled { background: var(--ds-color-surface-disable, #f5f5f5); box-shadow: inset 0 0 0 1px var(--ds-color-stroke-default); }
+.ds-expansion--disabled.ds-expansion--open { background: var(--ds-color-surface-default, #ffffff); box-shadow: inset 0 0 0 1px var(--ds-color-stroke-disable); }
+.ds-expansion--info.ds-expansion--disabled { background: var(--ds-palette-accent-10, #f5f9ff); }
+.ds-expansion--info.ds-expansion--disabled.ds-expansion--open { background: var(--ds-palette-accent-10, #f5f9ff); }
+.ds-expansion--info.ds-expansion--open,
+.ds-expansion--info.ds-expansion--disabled,
+.ds-expansion--info.ds-expansion--disabled.ds-expansion--open { box-shadow: none; }
+.ds-expansion--info .ds-expansion__header:hover { background: var(--ds-palette-accent-50, #f0f5ff); }
+.ds-expansion--info .ds-expansion__header:active { background: var(--ds-palette-accent-100, #e8f0ff); }
+.ds-expansion--info {
+  box-shadow: none;
+  outline: 1px dashed var(--ds-color-stroke-accent);
+  outline-offset: -1px;
+}
+.ds-expansion--info.ds-expansion--disabled { outline-color: var(--ds-color-stroke-disable, #ebebeb); }
