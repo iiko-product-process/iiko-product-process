@@ -1,0 +1,34 @@
+# Шаблоны имён процессных скиллов (регистр не важен, подстрока/префикс).
+# Используются сборщиком, чтобы отличить наработки по процессу от чужих скиллов:
+# процессные уходят содержимым, остальные — только строкой в инвентаре.
+iiko
+pb-
+prd
+spec
+problem
+hypothes
+research
+interview
+job-
+market
+competitor
+benchmark
+task-
+hermes
+share
+mirror
+process
+design
+ds-
+ux-
+jira
+pyrus
+matomo
+meeting
+notes
+skills-inbox
+feature
+jtbd
+dogfood
+live-prototype
+prototype-
