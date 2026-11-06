@@ -73,7 +73,7 @@ source: telegram
 
 1. **Раскладка по категории**: `python3 $HERMES_HOME/ARTIFACTS/.index/notes_classify.py`
    (класс. по frontmatter kind/category/topic; сам создаёт подпапки и перекладывает файл).
-2. Пересборка индекса: `python3 $HERMES_HOME/ARTIFACTS/.index/notes_index.py` (FTS5 + index.md) — он же автоматически коммитит и пушит.
+2. Пересборка индекса: `python3 $HERMES_HOME/ARTIFACTS/.index/notes_index.py` (FTS5 + index.md) — он же обновляет индекс.
 3. Ответь КОРОТКО, одной строкой:
    `✅ Заметка: «{title}» · {category}/{topic?} · {путь}` (и пару слов, если что-то не удалось распознать).
 

@@ -32,11 +32,11 @@ ok=0; bad=0
 say_ok(){ printf 'OK   %s\n' "$*"; ok=$((ok+1)); }
 say_bad(){ printf 'НЕТ  %s\n' "$*"; bad=$((bad+1)); }
 
-# 1. клон
+# 1. папка процесса
 if [ -d "$REPO/.git" ]; then
-  say_ok "клон репозитория: $REPO ($(git -C "$REPO" log -1 --format='%h %ad' --date=short 2>/dev/null))"
+  say_ok "папка процесса: $REPO ($(git -C "$REPO" log -1 --format='%h %ad' --date=short 2>/dev/null))"
 else
-  say_bad "клон репозитория: $REPO — не найден (клонируйте или укажите --repo)"
+  say_bad "папка процесса: $REPO — не найдена (подключите или укажите --repo)"
 fi
 
 # 2. токен

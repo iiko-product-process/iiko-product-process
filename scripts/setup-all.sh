@@ -2,7 +2,7 @@
 # setup-all.sh — подключить папку процесса и настроить все джобы одной командой.
 #
 # Делает по порядку и безопасно повторно:
-#   1) клонирует репозиторий (если клона нет) или обновляет его через git pull;
+#   1) получает папку процесса (если её нет) или обновляет её;
 #   2) ставит все скиллы процесса в Hermes;
 #   3) создаёт хранилище артефактов (Hermes wiki → ARTIFACTS/);
 #   4) ставит обёртки для двух еженедельных задач;
@@ -29,7 +29,7 @@ while [ $# -gt 0 ]; do
 done
 
 # --home меняет и путь вики по умолчанию, поэтому вычисляем после разбора флагов
-[ -n "$ARTIFACTS" ] || ARTIFACTS="$REPO/ARTIFACTS"   # всё в одной папке: <клон процесса>/ARTIFACTS
+[ -n "$ARTIFACTS" ] || ARTIFACTS="$REPO/ARTIFACTS"   # всё в одной папке: <папка процесса>/ARTIFACTS
 
 DRYARG=""; [ "$DRY" = 1 ] && DRYARG="--dry-run"
 ENV_FILE="$HOME_DIR/.env"
@@ -44,7 +44,7 @@ if [ -d "$REPO/.git" ]; then
         && echo "обновлён: $(git -C "$REPO" log -1 --format='%h %ad' --date=short)" \
         || echo "клон есть, обновить не удалось — проверьте доступ"
     else
-      echo "клон есть: $REPO (dry-run, не обновляю)"
+      echo "папка процесса есть: $REPO (dry-run, не обновляю)"
     fi
   else
     echo "в рабочей копии есть локальные изменения — обновление пропущено"
@@ -54,9 +54,9 @@ else
   url="https://github.com/iiko-product-process/iiko-product-process.git"
   [ -n "$TOKEN" ] && url="https://x-access-token:$TOKEN@github.com/iiko-product-process/iiko-product-process.git"
   if [ "$DRY" = 0 ]; then
-    git clone -q "$url" "$REPO" && echo "склонирован: $REPO" || { echo "клон не удался — проверьте доступ/токен"; exit 1; }
+    git clone -q "$url" "$REPO" && echo "папка процесса получена: $REPO" || { echo "клон не удался — проверьте доступ/токен"; exit 1; }
   else
-    echo "будет склонирован: $REPO"
+    echo "будет получена папка процесса: $REPO"
   fi
 fi
 

@@ -55,8 +55,6 @@ if [ -d "$REPO/.git" ]; then
         python3 02-hypotheses/scripts/aggregate.py >/dev/null 2>&1 || true
         git add 02-hypotheses/data >/dev/null 2>&1 || true
         git commit -q -m "Правки списков гипотез из прототипа ($(date '+%d.%m.%Y %H:%M'))" >/dev/null 2>&1 || true
-        if ! git push -q origin main >/dev/null 2>&1; then
-            echo "Правки списков закоммичены локально, но пуш в remote не прошёл — проверь доступ к репозиторию (токен/права)."
-        fi
+        echo "Правки списков сохранены локально; публикует администратор."
     fi
 fi

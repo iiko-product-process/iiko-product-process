@@ -73,7 +73,7 @@ python3 server/serve.py --port 8330 --auth hypo:пароль       # с HTTP Bas
 | `GET /?list=<id>` | отдаёт прототип со встроенным списком |
 | `GET /api/lists` | оглавление списков |
 | `GET /api/lists/<id>` | список целиком |
-| `PUT /api/lists/<id>` | сохранить список: пишет `data/lists/<id>.json`, пересобирает сводный файл, коммитит и пушит |
+| `PUT /api/lists/<id>` | сохранить список: пишет `data/lists/<id>.json`, пересобирает сводный файл, сохраняет изменения |
 | `POST /api/lists` | создать список: `{"title": "...", "problem": "..."}` |
 | `POST /api/ask` | запрос к Hermes: `{"list": "<id>", "text": "<запрос>", "mode": "ask\|task"}` → `{task}` (202), статус — `GET /api/ask/<task>`; один запрос за раз, таймаут 15 мин. `ask` — кнопка «Спросить Hermes» (дополнить список), `task` — кнопка «Создать задачу» (одна задача Jira по отмеченным гипотезам) |
 | `GET /api/ask/<task>` | статус запроса: `running` / `done` / `error` / `timeout` и `message` (последняя строка ответа агента) |

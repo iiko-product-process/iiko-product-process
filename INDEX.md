@@ -2,9 +2,9 @@
 
 Эталонный список всех скиллов и наработок репозитория
 [iiko-product-process](https://github.com/iiko-product-process/iiko-product-process). Каждая строка — один скилл.
-Добавить скилл = PR в этот репозиторий + строка в этом реестре (правка `INDEX.md` обязательна).
+Добавить скилл = предложение администратору + строка в этом реестре (правка `INDEX.md` обязательна).
 
-Всего скиллов: **39**
+Всего скиллов: **37**
 
 | Скилл | Шаг | Путь | Описание |
 |---|---|---|---|
@@ -29,7 +29,6 @@
 | task-workspace | Сквозной | `skills/task-workspace/SKILL.md` | Use when нужна папка задачи в ARTIFACTS: старт задачи, артефакты, история работ. |
 | share-to-common | Сквозной | `skills/share-to-common/SKILL.md` | Use when просит поделиться наработкой со всеми («в общую папку», «чтобы видели все»): собрать предложение и передать админу. |
 | mirror-skill-to-repo | Сквозной | `skills/mirror-skill-to-repo/SKILL.md` | Use when появился новый скилл или навык: предложить скопировать его в папку репозитория. |
-| git-onboarding | Сквозной | `skills/git-onboarding/SKILL.md` | Use when сотрудник подключается к репозиторию процесса: клон, правила для Гермеса, MCP, первые задачи. |
 | skills-inbox | Сквозной | `skills/skills-inbox/SKILL.md` | Use when нужно собрать новые скиллы сотрудников и отправить их в Telegram — без git у сотрудников. |
 | git-skills-install | Сквозной | `skills/git-skills-install/SKILL.md` | Use when папка процесса подключена или обновлена: поставить все скиллы из репозитория в Hermes. |
 | pyrus | Шаг 1 | `01-research-problem/skills/pyrus/SKILL.md` | Use when нужны обращения из Pyrus: формы, реестры, жалобы клиентов. |
@@ -44,6 +43,5 @@
 | meeting-transcript-summaries | Сквозной | `skills/meeting-transcript-summaries/SKILL.md` | Use when из транскрипта встречи нужны итоги и план действий. |
 | notes-inbox | Сквозной | `skills/notes-inbox/SKILL.md` | Use when сотрудник присылает заметку или файл — сохранить в вики. |
 | notes-search | Сквозной | `skills/notes-search/SKILL.md` | Use when нужно быстро найти заметку или артефакт в вики. |
-| notes-vault-setup | Сквозной | `skills/notes-vault-setup/SKILL.md` | Use when нужно развернуть Hermes wiki (хранилище заметок). |
 | hermes-wiki | Сквозной | `skills/hermes-wiki/SKILL.md` | Use when нужно хранилище артефактов: ARTIFACTS, папки задач по шагам. |
-| process-setup | Сквозной | `skills/process-setup/SKILL.md` | Use when продакт первый раз настраивает Гермеса под процесс: клон, скиллы, вики, обновления, MCP. |
+| process-setup | Сквозной | `skills/process-setup/SKILL.md` | Use when продакт первый раз настраивает Гермеса под процесс: папка, скиллы, ARTIFACTS, джобы, MCP. |

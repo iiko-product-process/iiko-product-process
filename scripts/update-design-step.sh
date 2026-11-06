@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # update-design-step.sh — обновление шага 4 у сотрудника (раз в неделю, воскресенье).
 #
-# Что делает: обновляет клон репозитория процесса до свежего main и переустанавливает скиллы,
-# чтобы в понедельник были актуальные дизайн-система и компоненты. Форков и пуша нет.
+# Что делает: обновляет папку процесса до свежей версии и переустанавливает скиллы,
+# чтобы в понедельник были актуальные дизайн-система и компоненты.
 # Если обновлений не было — молчит (пустой вывод удобен для cron).
 #
 # usage: update-design-step.sh [--repo PATH] [--dry-run]
@@ -26,11 +26,11 @@ ENV_FILE="${HERMES_HOME:-$HOME/.hermes}/.env"
 [ -f "$ENV_FILE" ] && TOKEN="$(grep -m1 -E '^GITHUB(_TOKEN)?=' "$ENV_FILE" 2>/dev/null | cut -d= -f2- | tr -d '"'"'"' \r')"
 
 if [ ! -d "$REPO/.git" ]; then
-  echo "update-design: клона нет, клонирую в $REPO"
+  echo "update-design: папки процесса нет, получаю в $REPO"
   mkdir -p "$(dirname "$REPO")"
   url="https://github.com/iiko-product-process/iiko-product-process.git"
   [ -n "$TOKEN" ] && url="https://x-access-token:$TOKEN@github.com/iiko-product-process/iiko-product-process.git"
-  git clone -q "$url" "$REPO" || { echo "update-design: клон не удался"; exit 1; }
+  git clone -q "$url" "$REPO" || { echo "update-design: получить папку не удалось"; exit 1; }
 fi
 
 # у сотрудника remote называется origin; в служебном клоне админа — canon

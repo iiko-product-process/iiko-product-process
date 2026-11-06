@@ -44,7 +44,7 @@ triggers:
 
 ```bash
 python3 skills/task-workspace/scripts/sync-task.py \
-  --from /opt/data/tasks/PB-7105-nacenka-v-prikazah \
+  --from ~/iiko_process/ARTIFACTS/pb-7105-nacenka-v-prikazah \
   --task "<wiki>/ARTIFACTS/pb-7105-price-orders" --dry-run     # сначала план
 # без --dry-run копирует; --journal дописывает строку в журнал задачи
 ```
@@ -129,7 +129,7 @@ python3 skills/task-workspace/scripts/sync-task.py \
 (`install-skills-from-repo.sh`); ручные правки в установленной копии при обновлении не затираются,
 но и в канон не попадают — правку предлагают администратору.
 
-1. Клон репозитория есть локально и скиллы установлены — подключение описано в `git-onboarding` и `git-skills-install`.
+1. Папка процесса подключена в Hermes и скиллы установлены — подключение описано в `process-setup` и `git-skills-install`.
 2. В Hermes скилл подключается из клона (симлинк на каталог скилла) или читается по пути из
    клона; копия файла — нет.
-3. `version` в frontmatter поднимается при каждой правке, изменения — через PR.
+3. `version` в frontmatter поднимается при каждой правке, изменения — предложением администратору.

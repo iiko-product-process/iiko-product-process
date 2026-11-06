@@ -14,11 +14,11 @@ triggers:
 # Git skills install — все скиллы репозитория в Hermes одной командой
 
 Репозиторий процесса содержит десятки скиллов, разложенных по папкам шагов. Гермес видит только те,
-что лежат в `$HERMES_HOME/skills/`. Этот скилл закрывает разрыв: после клонирования или `git pull`
+что лежат в `$HERMES_HOME/skills/`. Этот скилл закрывает разрыв: после подключения или обновления папки процесса
 все скиллы из репозитория устанавливаются в Hermes, и дальше он подтягивает их сам.
 
 **Когда использовать:** сотрудник подключил папку из Git, обновил репозиторий (`git pull`), или
-пользователь говорит «скиллы не видны», «поставь скиллы из репозитория», «настрой всё после клона».
+пользователь говорит «скиллы не видны», «поставь скиллы из репозитория», «настрой всё после обновления папки».
 **Когда не использовать:** в репозитории появился один новый скилл и его надо предложить в общий
 слой — это `mirror-skill-to-repo` + `share-to-common`; или нужно обновить только один скилл.
 
@@ -40,14 +40,12 @@ triggers:
 ## Порядок действий
 
 ```bash
-# 1. клон (если ещё нет)
-git clone https://github.com/iiko-product-process/iiko-product-process.git ~/iiko_process
 
 # 2. посмотреть, что будет установлено
-bash ~/iiko_process/skills/git-skills-install/scripts/install-skills-from-repo.sh --dry-run
+bash <папка процесса>/skills/git-skills-install/scripts/install-skills-from-repo.sh --dry-run
 
 # 3. установить
-bash ~/iiko_process/skills/git-skills-install/scripts/install-skills-from-repo.sh
+bash <папка процесса>/skills/git-skills-install/scripts/install-skills-from-repo.sh
 ```
 
 Ожидаемый вывод в конце: `install-skills: всего N | установлено … | обновлено … | без изменений … | пропущено 0`.
@@ -74,7 +72,7 @@ bash ~/iiko_process/skills/git-skills-install/scripts/install-skills-from-repo.s
 1. В корне репозитория есть `.hermes.md` — правила проекта подхватываются автоматически.
 2. Скиллы установлены (шаг выше), `skills_list` показывает имена из `INDEX.md`.
 3. Артефакты складываются в `ARTIFACTS/<слаг>/`, а не в папки шагов — это проверяется по факту первой задачи.
-4. `git remote -v` показывает `origin` → канон; форков и PR в процессе нет.
+4. `git remote -v` показывает папку процесса; никаких действий в GitHub со стороны сотрудника нет.
 
 ## Типовые проблемы
 
