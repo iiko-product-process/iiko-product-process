@@ -129,7 +129,9 @@ while IFS= read -r f; do
   # содержимое — только процессные и только отличные от канона
   if [ "$status" = "new" ] || [ "$status" = "changed" ] || [ "$status" = "attention" ]; then
     mkdir -p "$PKG/skills/$name"
-    ( cd "$dir" && find . -type f -size -5120k -print0 2>/dev/null | while IFS= read -r -d '' x; do
+    ( cd "$dir" && find . -type f -size -5120k \
+        ! -path '*/__pycache__/*' ! -name '*.pyc' ! -path '*/.git/*' ! -path '*/node_modules/*' -print0 2>/dev/null \
+      | while IFS= read -r -d '' x; do
         mkdir -p "$PKG/skills/$name/$(dirname "$x")"; cp "$x" "$PKG/skills/$name/$x"; done )
   fi
 done < "$WORK/list.txt"
