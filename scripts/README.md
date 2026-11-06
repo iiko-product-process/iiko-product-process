@@ -29,7 +29,7 @@ bash scripts/update-design-step.sh --dry-run    # отстаём на N комм
 ```
 
 Cron (Hermes): расписание `0 9 * * 0`, режим без агента, скрипт `<репозиторий>/scripts/update-design-step.sh`.
-Если клона нет, скрипт создаст его сам (`~/iiko-product-process`), взяв токен из `$HERMES_HOME/.env`.
+Если клона нет, скрипт создаст его сам (`~/iiko_process`), взяв токен из `$HERMES_HOME/.env`.
 
 ## Если что-то не так
 

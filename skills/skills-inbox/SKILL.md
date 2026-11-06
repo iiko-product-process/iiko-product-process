@@ -33,7 +33,7 @@ triggers:
 ## Настройка: одна команда
 
 ```bash
-bash ~/iiko-product-process/scripts/setup-all.sh --repo ~/iiko-product-process
+bash ~/iiko_process/scripts/setup-all.sh --repo ~/iiko_process
 ```
 
 Что появляется:
@@ -50,7 +50,7 @@ bash ~/iiko-product-process/scripts/setup-all.sh --repo ~/iiko-product-process
 TSV `name<TAB>sha1<TAB>version`. Обновляется при каждом `setup-all.sh` (и вручную):
 
 ```bash
-bash ~/iiko-product-process/scripts/make-skills-manifest.sh --repo ~/iiko-product-process \
+bash ~/iiko_process/scripts/make-skills-manifest.sh --repo ~/iiko_process \
   > "$HERMES_HOME/canon-skills-manifest.tsv"
 ```
 

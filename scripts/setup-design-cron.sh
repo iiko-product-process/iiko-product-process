@@ -8,7 +8,7 @@
 # usage: setup-design-cron.sh [--repo PATH] [--home PATH] [--check]
 set -uo pipefail
 
-REPO="${IIKO_REPO:-$HOME/iiko-product-process}"
+REPO="${IIKO_REPO:-$HOME/iiko_process}"
 HOME_DIR="${HERMES_HOME:-$HOME/.hermes}"
 CHECK=0
 

@@ -41,13 +41,13 @@ triggers:
 
 ```bash
 # 1. клон (если ещё нет)
-git clone https://github.com/iiko-product-process/iiko-product-process.git ~/iiko-product-process
+git clone https://github.com/iiko-product-process/iiko-product-process.git ~/iiko_process
 
 # 2. посмотреть, что будет установлено
-bash ~/iiko-product-process/skills/git-skills-install/scripts/install-skills-from-repo.sh --dry-run
+bash ~/iiko_process/skills/git-skills-install/scripts/install-skills-from-repo.sh --dry-run
 
 # 3. установить
-bash ~/iiko-product-process/skills/git-skills-install/scripts/install-skills-from-repo.sh
+bash ~/iiko_process/skills/git-skills-install/scripts/install-skills-from-repo.sh
 ```
 
 Ожидаемый вывод в конце: `install-skills: всего N | установлено … | обновлено … | без изменений … | пропущено 0`.

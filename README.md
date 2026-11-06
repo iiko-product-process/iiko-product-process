@@ -32,7 +32,7 @@
 | Место | Что лежит | Кто меняет |
 |---|---|---|
 | Репозиторий, ветка `main` | скиллы шагов (`01-research-problem/`, `02-hypotheses/`, …), `skills/`, `INDEX.md`, правила | администратор процесса |
-| **ARTIFACTS** — отдельная папка в дереве (не внутри `notes/`) | все артефакты задач: `ARTIFACTS/<слаг>/` — карточка проблемы, гипотезы, Story, PRD, прототипы, транскрипты, встречи, журнал | сотрудник |
+| **ARTIFACTS** — внутри папки процесса (`<клон>/ARTIFACTS`, в `.gitignore`) | все артефакты задач: `ARTIFACTS/<слаг>/` — карточка проблемы, гипотезы, Story, PRD, прототипы, транскрипты, встречи, журнал | сотрудник |
 
 Сотрудник читает репозиторий и обновляет его через `git pull`; вся работа по задачам — в вики.
 
@@ -41,8 +41,8 @@
 Одна команда делает всё: клон, скиллы, вики, обёртки задач и проверка.
 
 ```bash
-git clone https://github.com/iiko-product-process/iiko-product-process.git ~/iiko-product-process
-bash ~/iiko-product-process/scripts/setup-all.sh --repo ~/iiko-product-process
+git clone https://github.com/iiko-product-process/iiko-product-process.git ~/iiko_process
+bash ~/iiko_process/scripts/setup-all.sh --repo ~/iiko_process
 ```
 
 Флаги: `--repo PATH`, `--home PATH`, `--artifacts PATH`, `--dry-run` (только показать, что будет сделано).

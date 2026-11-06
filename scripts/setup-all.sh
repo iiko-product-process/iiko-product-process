@@ -11,7 +11,8 @@
 # usage: setup-all.sh [--repo PATH] [--home PATH] [--artifacts PATH] [--dry-run]
 set -uo pipefail
 
-REPO="${IIKO_REPO:-$HOME/iiko-product-process}"
+REPO="${IIKO_REPO:-$HOME/iiko_process}"
+[ -d "$REPO/.git" ] || { [ -d "$HOME/iiko_process/.git" ] && [ -z "${IIKO_REPO:-}" ] && REPO="$HOME/iiko_process"; }
 HOME_DIR="${HERMES_HOME:-$HOME/.hermes}"
 ARTIFACTS="${IIKO_ARTIFACTS:-}"
 DRY=0
@@ -28,7 +29,7 @@ while [ $# -gt 0 ]; do
 done
 
 # --home меняет и путь вики по умолчанию, поэтому вычисляем после разбора флагов
-[ -n "$ARTIFACTS" ] || ARTIFACTS="$HOME_DIR/ARTIFACTS"
+[ -n "$ARTIFACTS" ] || ARTIFACTS="$REPO/ARTIFACTS"   # всё в одной папке: <клон процесса>/ARTIFACTS
 
 DRYARG=""; [ "$DRY" = 1 ] && DRYARG="--dry-run"
 ENV_FILE="$HOME_DIR/.env"

@@ -8,7 +8,8 @@
 # usage: update-design-step.sh [--repo PATH] [--dry-run]
 set -uo pipefail
 
-REPO="${IIKO_REPO:-$HOME/iiko-product-process}"
+REPO="${IIKO_REPO:-$HOME/iiko_process}"
+[ -d "$REPO/.git" ] || { [ -d "$HOME/iiko_process/.git" ] && [ -z "${IIKO_REPO:-}" ] && REPO="$HOME/iiko_process"; }
 DRY=0
 
 while [ $# -gt 0 ]; do

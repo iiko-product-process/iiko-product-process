@@ -24,14 +24,14 @@ triggers:
 
 ## Где лежит ARTIFACTS
 
-`ARTIFACTS` — отдельная папка в дереве, **не внутри notes/** (notes — только заметки):
+`ARTIFACTS` живёт **внутри папки процесса** — в том клоне, с которым работает сотрудник:
 
-1. `IIKO_ARTIFACTS`, если задан;
-2. `~/.hermes/iiko-artifacts-root` (путь сохраняется при первой настройке);
-3. `$HERMES_HOME/ARTIFACTS` или `~/ARTIFACTS` — если папка уже есть;
-4. иначе — **спросить пользователя**, где хранить, и сохранить выбор в `~/.hermes/iiko-artifacts-root`.
+1. `IIKO_ARTIFACTS`, если задан (для тех, кто держит хранилище отдельно);
+2. `<клон процесса>/ARTIFACTS` — **по умолчанию**: `~/iiko_process/ARTIFACTS`;
+3. `$HERMES_HOME/ARTIFACTS` или `~/ARTIFACTS` — только если папка осталась от прежней настройки.
 
-Путь по умолчанию не прошивается: у каждого своя машина.
+Папка добавлена в `.gitignore` репозитория: артефакты никогда не попадают в git, но лежат рядом
+со скиллами. Сотрудник открывает в Hermes одну папку — `~/iiko_process` — и работает только в ней.
 
 ## Структура
 
@@ -50,8 +50,8 @@ triggers:
 Создать каркас одной командой:
 
 ```bash
-bash scripts/wiki-init.sh "$IIKO_ARTIFACTS"                       # index.md, _шаблон
-bash scripts/wiki-init.sh "$IIKO_ARTIFACTS" --task pb-7105-nacenka  # ещё и новая задача
+bash scripts/wiki-init.sh "$REPO/ARTIFACTS"                       # index.md, _шаблон
+bash scripts/wiki-init.sh "$REPO/ARTIFACTS" --task pb-7105-nacenka  # ещё и новая задача
 ```
 
 ## Правила

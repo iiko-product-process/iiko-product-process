@@ -44,8 +44,8 @@ curl -s -o /dev/null -w '%{http_code}\n' \
 ### 2. Клонировать репозиторий
 
 ```bash
-git clone https://github.com/iiko-product-process/iiko-product-process.git ~/iiko-product-process
-cd ~/iiko-product-process && git pull
+git clone https://github.com/iiko-product-process/iiko-product-process.git ~/iiko_process
+cd ~/iiko_process && git pull
 ```
 
 Форков и пул-реквестов нет: репозиторий только читаем, обновления вносит администратор.
@@ -53,8 +53,8 @@ cd ~/iiko-product-process && git pull
 ### 3. Поставить скиллы в Hermes
 
 ```bash
-bash ~/iiko-product-process/skills/git-skills-install/scripts/install-skills-from-repo.sh --dry-run
-bash ~/iiko-product-process/skills/git-skills-install/scripts/install-skills-from-repo.sh
+bash ~/iiko_process/skills/git-skills-install/scripts/install-skills-from-repo.sh --dry-run
+bash ~/iiko_process/skills/git-skills-install/scripts/install-skills-from-repo.sh
 ```
 
 Ожидаемо: `всего 38 | установлено … | пропущено 0`. После этого Гермес знает шаги и умеет ими
@@ -63,21 +63,21 @@ bash ~/iiko-product-process/skills/git-skills-install/scripts/install-skills-fro
 ### 4. Создать хранилище артефактов (Hermes wiki)
 
 ```bash
-bash ~/iiko-product-process/skills/hermes-wiki/scripts/wiki-init.sh "$HOME/ARTIFACTS"
+bash ~/iiko_process/skills/hermes-wiki/scripts/wiki-init.sh "$HOME/iiko_process/ARTIFACTS"
 ```
 
-Появятся `~/ARTIFACTS/_шаблон` и `index.md` — отдельная папка в дереве, не внутри `notes`. Все артефакты задач — в `ARTIFACTS/<слаг>/`
+Появятся `~/iiko_process/ARTIFACTS/_шаблон` и `index.md` — внутри папки процесса, рядом со скиллами. Все артефакты задач — в `ARTIFACTS/<слаг>/`
 (карточка, журнал, `01-проблема … 07-пилот`, `встречи/`, `материалы/`). В репозиторий артефакты не кладём.
 
 ### 5. Включить автообновление шага 4
 
 ```bash
-bash ~/iiko-product-process/scripts/setup-design-cron.sh --repo ~/iiko-product-process
+bash ~/iiko_process/scripts/setup-design-cron.sh --repo ~/iiko_process
 ```
 
 Скрипт ставит обёртку и печатает параметры cron. Создать задачу: расписание `0 6 * * 0`
 (воскресенье, 09:00 МСК), режим **без агента**, скрипт `design-update-weekly.sh`.
-Проверка: `bash ~/iiko-product-process/scripts/update-design-step.sh --dry-run`.
+Проверка: `bash ~/iiko_process/scripts/update-design-step.sh --dry-run`.
 
 ### 6. Подключить MCP — по одному, по мере надобности
 
@@ -94,7 +94,7 @@ bash ~/iiko-product-process/scripts/setup-design-cron.sh --repo ~/iiko-product-p
 ### 7. Проверить, что всё сошлось
 
 ```bash
-bash ~/iiko-product-process/scripts/check-setup.sh --repo ~/iiko-product-process
+bash ~/iiko_process/scripts/check-setup.sh --repo ~/iiko_process
 ```
 
 Чек-лист: клон, токен, скиллы (38/38), вики, обновление шага 4, MCP. Если есть строки «НЕТ» —
@@ -116,7 +116,7 @@ bash ~/iiko-product-process/scripts/check-setup.sh --repo ~/iiko-product-process
 ## Первая настоящая задача
 
 ```bash
-bash ~/iiko-product-process/skills/hermes-wiki/scripts/wiki-init.sh "$HOME/ARTIFACTS" --task <слаг-задачи>
+bash ~/iiko_process/skills/hermes-wiki/scripts/wiki-init.sh "$HOME/iiko_process/ARTIFACTS" --task <слаг-задачи>
 ```
 
 Дальше — как обычно: шаг 1 (проблема) → 2 (гипотезы) → 3 (Story) → 4 (прототип) → 5 (PRD) → 6 (разработка).

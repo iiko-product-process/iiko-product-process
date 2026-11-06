@@ -6,7 +6,8 @@
 # usage: check-setup.sh [--repo PATH] [--home PATH] [--artifacts PATH]
 set -uo pipefail
 
-REPO="${IIKO_REPO:-$HOME/iiko-product-process}"
+REPO="${IIKO_REPO:-$HOME/iiko_process}"
+[ -d "$REPO/.git" ] || { [ -d "$HOME/iiko_process/.git" ] && [ -z "${IIKO_REPO:-}" ] && REPO="$HOME/iiko_process"; }
 HOME_DIR="${HERMES_HOME:-$HOME/.hermes}"
 ARTIFACTS="${IIKO_ARTIFACTS:-}"
 
@@ -22,6 +23,7 @@ done
 
 if [ -z "$ARTIFACTS" ]; then
   if [ -f "$HOME_DIR/iiko-artifacts-root" ]; then ARTIFACTS="$(cat "$HOME_DIR/iiko-artifacts-root")"
+  elif [ -d "$REPO/ARTIFACTS" ]; then ARTIFACTS="$REPO/ARTIFACTS"
   elif [ -d "$HOME_DIR/ARTIFACTS" ]; then ARTIFACTS="$HOME_DIR/ARTIFACTS"
   elif [ -d "$HOME/ARTIFACTS" ]; then ARTIFACTS="$HOME/ARTIFACTS"; fi
 fi
@@ -64,6 +66,15 @@ if [ -n "$ARTIFACTS" ] && [ -d "$ARTIFACTS/_шаблон" ]; then
   say_ok "ARTIFACTS: $ARTIFACTS (_шаблон на месте)"
 else
   say_bad "ARTIFACTS: папка не найдена — запустите wiki-init.sh"
+fi
+
+# 4b. ARTIFACTS не должна быть в git
+if [ -n "$ARTIFACTS" ] && [ -d "$ARTIFACTS" ] && [ -d "$REPO/.git" ]; then
+  if [ -n "$(git -C "$REPO" ls-files -- ARTIFACTS 2>/dev/null | head -1)" ]; then
+    say_bad "ARTIFACTS попала в git — уберите из индекса (git rm -r --cached ARTIFACTS)"
+  else
+    say_ok "ARTIFACTS не в git (.gitignore)"
+  fi
 fi
 
 # 5. автообновление шага 4
