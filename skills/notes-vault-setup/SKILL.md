@@ -15,7 +15,7 @@ metadata:
 
 ## Что получится в итоге
 
-1. **Vault** `$HERMES_HOME/notes` (по умолчанию `$HERMES_HOME/notes`) — `.md`-заметки в Obsidian-совместимом формате, одновременно git-репозиторий.
+1. **Vault** `$HERMES_HOME/ARTIFACTS` (по умолчанию `$HERMES_HOME/ARTIFACTS`) — `.md`-заметки в Obsidian-совместимом формате, одновременно git-репозиторий.
 2. **Скрипты** в `notes/.index/`:
    - `notes_classify.py` — раскладывает заметки по папкам `Категория/Тема/` на основе frontmatter;
    - `notes_index.py` — пересборка FTS5-индекса + `index.md` (оглавление) + авто-коммит и авто-push в GitHub;
@@ -40,7 +40,7 @@ metadata:
 - Аккаунт GitHub (для приватного репозитория) + Mac с установленным Obsidian.
 - Опционально: Telegram-топик «📝 Заметки» в рабочей группе, куда бот принимает заметки.
 
-Дальше `$V` = `$HERMES_HOME/notes`.
+Дальше `$V` = `$HERMES_HOME/ARTIFACTS`.
 
 ## 1. Скелет vault
 
@@ -281,7 +281,7 @@ metadata:
 ## Порядок (от дешёвого к дорогому)
 
 0. **Синк с Mac**: `git -C $V pull --ff-only` (тихо; ошибки игнорируй — например, нет сети).
-1. **Оглавление**: `$HERMES_HOME/notes/index.md` — одна строка на заметку (дата, название, kind, теги).
+1. **Оглавление**: `$HERMES_HOME/ARTIFACTS/index.md` — одна строка на заметку (дата, название, kind, теги).
 2. **FTS5-поиск**: `python3 $V/.index/notes_search.py "<запрос>" [лимит]`
    - слова (AND по умолчанию), `OR`, `"фраза"`, поля `title:слово`, `kind:договорённость`, `tags:…`;
    - если «индекс не найден» — сначала `python3 $V/.index/notes_index.py`.
@@ -345,7 +345,7 @@ platforms: [linux, macos, windows]
 import json, os, re, shutil, subprocess
 from datetime import datetime
 
-ROOT = "$HERMES_HOME/notes"
+ROOT = "$HERMES_HOME/ARTIFACTS"
 FM_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.S)
 
 # категория по kind (если category не задан явно)
@@ -429,7 +429,7 @@ if __name__ == "__main__":
 import json, os, re, sqlite3, subprocess, sys
 from datetime import datetime
 
-ROOT = "$HERMES_HOME/notes"
+ROOT = "$HERMES_HOME/ARTIFACTS"
 DB = os.path.join(ROOT, ".index", "notes.db")
 INDEX_MD = os.path.join(ROOT, "index.md")
 
@@ -534,7 +534,7 @@ if __name__ == "__main__":
 """
 import os, sqlite3, sys
 
-DB = "$HERMES_HOME/notes/.index/notes.db"
+DB = "$HERMES_HOME/ARTIFACTS/.index/notes.db"
 
 def main():
     if len(sys.argv) < 2 or sys.argv[1] in ("-h", "--help"):

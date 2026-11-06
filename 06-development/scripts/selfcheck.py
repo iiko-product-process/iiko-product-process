@@ -248,12 +248,12 @@ def main():
     for sk in ("jira-task-digest", "requirement-actualization"):
         path = os.path.join(step6, "skills", sk, "SKILL.md")
         text = open(path, encoding="utf-8").read() if os.path.exists(path) else ""
-        check("скилл %s: правило раскладки в папку задачи" % sk, "artifacts/<слаг>/06-реализация/" in text)
+        check("скилл %s: правило раскладки в папку задачи" % sk, "ARTIFACTS/<слаг>/06-реализация/" in text)
     readme = open(os.path.join(step6, "README.md"), encoding="utf-8").read()
     check("README шага: раздел про раскладку артефактов", "Куда складываются артефакты шага" in readme)
     check("скрипты напоминают, куда складывать артефакты",
-          "artifacts/<слаг>/06-реализация/" in open(DIGEST, encoding="utf-8").read()
-          and "artifacts/<слаг>/06-реализация/" in open(MATERIAL, encoding="utf-8").read())
+          "ARTIFACTS/<слаг>/06-реализация/" in open(DIGEST, encoding="utf-8").read()
+          and "ARTIFACTS/<слаг>/06-реализация/" in open(MATERIAL, encoding="utf-8").read())
 
     print("\nИТОГ: %d PASS, %d FAIL" % (len(OK), len(FAIL)))
     if FAIL:

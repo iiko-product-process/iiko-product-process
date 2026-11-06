@@ -4,23 +4,23 @@
 # Делает по порядку и безопасно повторно:
 #   1) клонирует репозиторий (если клона нет) или обновляет его через git pull;
 #   2) ставит все скиллы процесса в Hermes;
-#   3) создаёт хранилище артефактов (Hermes wiki → artifacts/);
+#   3) создаёт хранилище артефактов (Hermes wiki → ARTIFACTS/);
 #   4) ставит обёртки для двух еженедельных задач;
 #   5) печатает параметры cron-задач и итоговый чек-лист.
 #
-# usage: setup-all.sh [--repo PATH] [--home PATH] [--wiki PATH] [--dry-run]
+# usage: setup-all.sh [--repo PATH] [--home PATH] [--artifacts PATH] [--dry-run]
 set -uo pipefail
 
 REPO="${IIKO_REPO:-$HOME/iiko-product-process}"
 HOME_DIR="${HERMES_HOME:-$HOME/.hermes}"
-WIKI="${IIKO_WIKI_ROOT:-}"
+ARTIFACTS="${IIKO_ARTIFACTS:-}"
 DRY=0
 
 while [ $# -gt 0 ]; do
   case "$1" in
     --repo) REPO="${2:?}"; shift ;;
     --home) HOME_DIR="${2:?}"; shift ;;
-    --wiki) WIKI="${2:?}"; shift ;;
+    --artifacts|--wiki) ARTIFACTS="${2:?}"; shift ;;
     --dry-run) DRY=1 ;;
     *) echo "неизвестный аргумент: $1" >&2; exit 2 ;;
   esac
@@ -28,7 +28,7 @@ while [ $# -gt 0 ]; do
 done
 
 # --home меняет и путь вики по умолчанию, поэтому вычисляем после разбора флагов
-[ -n "$WIKI" ] || WIKI="$HOME_DIR/notes"
+[ -n "$ARTIFACTS" ] || ARTIFACTS="$HOME_DIR/ARTIFACTS"
 
 DRYARG=""; [ "$DRY" = 1 ] && DRYARG="--dry-run"
 ENV_FILE="$HOME_DIR/.env"
@@ -73,12 +73,12 @@ if [ "$DRY" = 0 ]; then
 fi
 
 echo "== 3. хранилище артефактов"
-if [ -d "$WIKI/artifacts" ]; then
-  echo "вики уже есть: $WIKI"
+if [ -d "$ARTIFACTS/_шаблон" ]; then
+  echo "ARTIFACTS уже есть: $ARTIFACTS"
 elif [ "$DRY" = 1 ]; then
-  echo "будет создана: $WIKI (artifacts/)"
+  echo "будет создана: $ARTIFACTS (_шаблон)"
 else
-  bash "$REPO/skills/hermes-wiki/scripts/wiki-init.sh" "$WIKI" >/dev/null && echo "создана: $WIKI (artifacts/)"
+  bash "$REPO/skills/hermes-wiki/scripts/wiki-init.sh" "$ARTIFACTS" >/dev/null && echo "создана: $ARTIFACTS"
 fi
 
 echo "== 4. джобы"
@@ -103,7 +103,7 @@ fi
 
 if [ "$DRY" = 0 ]; then
   echo "== 5. проверка"
-  bash "$REPO/scripts/check-setup.sh" --repo "$REPO" --home "$HOME_DIR" --wiki "$WIKI" | tail -8
+  bash "$REPO/scripts/check-setup.sh" --repo "$REPO" --home "$HOME_DIR" --artifacts "$ARTIFACTS" | tail -8
 fi
 
 cat <<'EOF'

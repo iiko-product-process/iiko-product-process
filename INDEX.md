@@ -26,7 +26,7 @@
 | spec-writing | Шаг 5 | `05-specification/skill/SKILL.md` | Спецификация (PRD) к разработке: вопросы, гейты, формат PRD. |
 | jira-task-digest | Шаг 6 | `06-development/skills/jira-task-digest/SKILL.md` | Use when нужен статус разработки по задаче Jira: выгрузка семьи задач эпика/стори, статусы и изменения. |
 | requirement-actualization | Шаг 6 | `06-development/skills/requirement-actualization/SKILL.md` | Use when требования поменялись в разработке: правка данных, пути пользователя или техрешения в Story. |
-| task-workspace | Сквозной | `skills/task-workspace/SKILL.md` | Use when нужна папка задачи в Hermes wiki («artifacts/»): старт задачи, артефакты, история работ. |
+| task-workspace | Сквозной | `skills/task-workspace/SKILL.md` | Use when нужна папка задачи в ARTIFACTS: старт задачи, артефакты, история работ. |
 | share-to-common | Сквозной | `skills/share-to-common/SKILL.md` | Use when просит поделиться наработкой со всеми («в общую папку», «чтобы видели все»): собрать предложение и передать админу. |
 | mirror-skill-to-repo | Сквозной | `skills/mirror-skill-to-repo/SKILL.md` | Use when появился новый скилл или навык: предложить скопировать его в папку репозитория. |
 | git-onboarding | Сквозной | `skills/git-onboarding/SKILL.md` | Use when сотрудник подключается к репозиторию процесса: клон, правила для Гермеса, MCP, первые задачи. |
@@ -45,5 +45,5 @@
 | notes-inbox | Сквозной | `skills/notes-inbox/SKILL.md` | Use when сотрудник присылает заметку или файл — сохранить в вики. |
 | notes-search | Сквозной | `skills/notes-search/SKILL.md` | Use when нужно быстро найти заметку или артефакт в вики. |
 | notes-vault-setup | Сквозной | `skills/notes-vault-setup/SKILL.md` | Use when нужно развернуть Hermes wiki (хранилище заметок). |
-| hermes-wiki | Сквозной | `skills/hermes-wiki/SKILL.md` | Use when нужно хранилище артефактов: Hermes wiki, папки задач, заметки по шагам. |
+| hermes-wiki | Сквозной | `skills/hermes-wiki/SKILL.md` | Use when нужно хранилище артефактов: ARTIFACTS, папки задач по шагам. |
 | process-setup | Сквозной | `skills/process-setup/SKILL.md` | Use when продакт первый раз настраивает Гермеса под процесс: клон, скиллы, вики, обновления, MCP. |

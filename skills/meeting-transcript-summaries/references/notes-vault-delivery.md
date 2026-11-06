@@ -1,4 +1,4 @@
-# Доставка итогов в репозиторий заметок ($HERMES_HOME/notes)
+# Доставка итогов в репозиторий заметок ($HERMES_HOME/ARTIFACTS)
 
 Проверено на сохрани рабочей заметки «итоги встречи» (14.09.2026). Vault-репозиторий — источник истины на сервере,
 скрипт индексации сам коммитит и пушит. Общая механика приёма заметок живёт в навыке `notes-inbox` (user-owned,
@@ -6,7 +6,7 @@
 
 ## Что где лежит
 
-- Корень vault: `$HERMES_HOME/notes`, это git-репозиторий с remote вида `https://x-access-token:<GITHUB_TOKEN>@github.com/…`
+- Корень vault: `$HERMES_HOME/ARTIFACTS`, это git-репозиторий с remote вида `https://x-access-token:<GITHUB_TOKEN>@github.com/…`
   (токен — в `$HERMES_HOME/.env`, тот же, что для других gh-операций).
 - `.gitignore`: `/raw/` и `/.index/` → **оригиналы вложений и индекс-БД живут только локально** и в GitHub не уходят.
   Ссылка `raw/…` в заметке — ссылка на локальный файл, не на remote.
@@ -18,16 +18,16 @@
 ## Порядок (2 команды)
 
 1. `write_file` заметки куда угодно внутри vault (например в корень) — папку создаст скрипт раскладки, вручную папки не строить.
-2. `python3 $HERMES_HOME/notes/.index/notes_classify.py` — читает frontmatter `kind/category/topic`, кладёт файл
+2. `python3 $HERMES_HOME/ARTIFACTS/.index/notes_classify.py` — читает frontmatter `kind/category/topic`, кладёт файл
    в `Категория/Тема/`, для отслеживаемых файлов делает `git mv` (история сохраняется). Печатает `перемещено заметок: N`.
-3. `python3 $HERMES_HOME/notes/.index/notes_index.py` — пересобирает FTS5 (`.index/notes.db`), `index.md`,
+3. `python3 $HERMES_HOME/ARTIFACTS/.index/notes_index.py` — пересобирает FTS5 (`.index/notes.db`), `index.md`,
    затем `git add -A` + `commit -m "notes: авто-индекс"` + `push`. Вывод сообщает только об ошибках/отсутствии изменений,
    поэтому **успешный пуш выглядит как тишина** — проверяй отдельно.
 
 ## Проверка, что заметка реально ушла в remote
 
 ```
-cd $HERMES_HOME/notes && git status -sb          # не должно быть "ahead" относительно origin/main
+cd $HERMES_HOME/ARTIFACTS && git status -sb          # не должно быть "ahead" относительно origin/main
 git -c core.quotePath=false ls-tree -r --name-only origin/main | grep 2026-09-14
 ```
 

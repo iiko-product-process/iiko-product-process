@@ -4,7 +4,7 @@
 
 Запуск:
     python3 jira_requirement_material.py PB-7938
-    python3 jira_requirement_material.py PB-7938 --days 30 --comments 10 --out ../artifacts/<слаг>/06-реализация
+    python3 jira_requirement_material.py PB-7938 --days 30 --comments 10 --out ../ARTIFACTS/<слаг>/06-реализация
     python3 jira_requirement_material.py PB-7938 --sources PB-7026,PB-7359
 
 Что делает:
@@ -173,7 +173,7 @@ def main():
     ap.add_argument("--edits", type=int, default=3, help="сколько последних правок описания показывать по источнику")
     ap.add_argument("--sources", default="", help="дополнительные ключи-источники через запятую")
     ap.add_argument("--max-text", type=int, default=6000, help="лимит символов на один текст (по умолчанию 6000)")
-    ap.add_argument("--out", help="папка для материала (обычно artifacts/<слаг>/06-реализация)")
+    ap.add_argument("--out", help="папка для материала (обычно ARTIFACTS/<слаг>/06-реализация)")
     args = ap.parse_args()
 
     if not TOKEN:
@@ -286,7 +286,7 @@ def main():
     print(material)
 
     if not args.out:
-        print("Артефакты по задаче складываются в её папку — artifacts/<слаг>/06-реализация/ "
+        print("Артефакты по задаче складываются в её папку — ARTIFACTS/<слаг>/06-реализация/ "
               "(укажи путь флагом --out).")
 
 

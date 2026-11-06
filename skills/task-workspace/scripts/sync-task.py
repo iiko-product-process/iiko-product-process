@@ -2,11 +2,11 @@
 """Синхронизация рабочей папки задачи в хранилище артефактов (Hermes wiki).
 
 Рабочая папка в контейнере (`/opt/data/tasks/<KEY>-<слаг>`) — временная: там идёт работа.
-Источник правды — `artifacts/<слаг>/` в вики. Скрипт копирует артефакты из рабочей папки
+Источник правды — `ARTIFACTS/<слаг>/` в вики. Скрипт копирует артефакты из рабочей папки
 в папку задачи по правилам раскладки, не перезаписывая расхождения молча.
 
     python3 sync-task.py --from /opt/data/tasks/PB-7105-nacenka-v-prikazah \
-                         --task <клон>/artifacts/pb-7105-price-orders --dry-run
+                         --task <клон>/ARTIFACTS/pb-7105-price-orders --dry-run
     python3 sync-task.py --from … --task … --journal
 
 Коды возврата: 0 — синхронизировано, 2 — есть конфликты (файл уже лежит с другим содержимым),
@@ -30,7 +30,7 @@ RULES: list[tuple[str, str]] = [
     ("prototypes/", "04-дизайн/prototypes/"),
     ("references/", "04-дизайн/references/"),
     ("исследования/", "01-проблема/исследования/"),
-    ("artifacts/", "материалы/artifacts/"),
+    ("ARTIFACTS/", "материалы/ARTIFACTS/"),
     ("материалы/", "материалы/"),
     ("встречи/", "встречи/"),
     ("context.md", "01-проблема/context.md"),
@@ -71,7 +71,7 @@ def journal_row(count: int, new: int, folder: str) -> str:
 def main() -> int:
     ap = argparse.ArgumentParser(description="Синхронизация рабочей папки задачи в папку задачи вики")
     ap.add_argument("--from", dest="src", required=True, help="рабочая папка задачи")
-    ap.add_argument("--task", required=True, help="папка задачи в репозитории (artifacts/<слаг>)")
+    ap.add_argument("--task", required=True, help="папка задачи в репозитории (ARTIFACTS/<слаг>)")
     ap.add_argument("--dry-run", action="store_true", help="только показать план")
     ap.add_argument("--overwrite", action="store_true", help="перезаписывать расходящиеся файлы")
     ap.add_argument("--journal", action="store_true", help="дописать строку в журнал задачи")

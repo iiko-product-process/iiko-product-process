@@ -12,7 +12,7 @@ metadata:
 # Входящие заметки → Markdown-база
 
 Пользователь кидает в топик «Заметки» (или просит сохранить заметку/договорённость/транскрибацию) текст или файл.
-Задача: конвертировать в аккуратный .md и сохранить в базу **$HERMES_HOME/notes/** (Obsidian-совместимая, корень = vault).
+Задача: конвертировать в аккуратный .md и сохранить в базу **$HERMES_HOME/ARTIFACTS/** (Obsidian-совместимая, корень = vault).
 
 ## Формат файла
 
@@ -71,9 +71,9 @@ source: telegram
 
 ## После сохранения
 
-1. **Раскладка по категории**: `python3 $HERMES_HOME/notes/.index/notes_classify.py`
+1. **Раскладка по категории**: `python3 $HERMES_HOME/ARTIFACTS/.index/notes_classify.py`
    (класс. по frontmatter kind/category/topic; сам создаёт подпапки и перекладывает файл).
-2. Пересборка индекса: `python3 $HERMES_HOME/notes/.index/notes_index.py` (FTS5 + index.md) — он же автоматически коммитит и пушит.
+2. Пересборка индекса: `python3 $HERMES_HOME/ARTIFACTS/.index/notes_index.py` (FTS5 + index.md) — он же автоматически коммитит и пушит.
 3. Ответь КОРОТКО, одной строкой:
    `✅ Заметка: «{title}» · {category}/{topic?} · {путь}` (и пару слов, если что-то не удалось распознать).
 

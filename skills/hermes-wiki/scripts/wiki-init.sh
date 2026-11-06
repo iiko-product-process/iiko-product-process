@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
-# wiki-init.sh — создать/дополнить Hermes wiki: корень, artifacts/, шаблон задачи.
+# wiki-init.sh — создать/дополнить хранилище артефактов (ARTIFACTS) и шаблон задачи.
+#
+# ARTIFACTS — отдельная папка в дереве, не внутри notes/:
+#   ~/.hermes/ARTIFACTS (по умолчанию) или путь из IIKO_ARTIFACTS.
 #
 # usage:
-#   wiki-init.sh <путь-вики>                  # index.md, artifacts/, artifacts/_шаблон
-#   wiki-init.sh <путь-вики> --task <слаг>    # ещё и новая задача из шаблона
-#   wiki-init.sh <путь-вики> --dry-run        # только показать план
+#   wiki-init.sh <путь-ARTIFACTS>                 # index.md, _шаблон
+#   wiki-init.sh <путь-ARTIFACTS> --task <слаг>   # ещё и новая задача из шаблона
+#   wiki-init.sh <путь-ARTIFACTS> --dry-run       # только показать план
 set -uo pipefail
 
-WIKI="${1:?укажите путь к вики}"; shift || true
+ROOT="${1:?укажите путь к ARTIFACTS}"; shift || true
 TASK=""; DRY=0
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -60,15 +63,15 @@ EOF
 }
 
 if [ "$DRY" = 1 ]; then
-  echo "wiki-init (dry-run): $WIKI"
-  echo "  создать: artifacts/, artifacts/_шаблон, index.md (если нет)"
-  [ -n "$TASK" ] && echo "  создать задачу: artifacts/$TASK"
+  echo "wiki-init (dry-run): $ROOT"
+  echo "  создать: _шаблон, index.md (если нет)"
+  [ -n "$TASK" ] && echo "  создать задачу: $TASK"
   exit 0
 fi
 
-mkdir -p "$WIKI/artifacts"
-[ -f "$WIKI/index.md" ] || cat > "$WIKI/index.md" <<'EOF'
-# Hermes wiki
+mkdir -p "$ROOT"
+[ -f "$ROOT/index.md" ] || cat > "$ROOT/index.md" <<'EOF'
+# ARTIFACTS
 
 Артефакты задач процесса iiko. Репозиторий хранит скиллы, здесь — работа по задачам.
 
@@ -76,12 +79,12 @@ mkdir -p "$WIKI/artifacts"
 |---|---|---|---|
 EOF
 
-make_task "$WIKI/artifacts/_шаблон" "_шаблон"
-echo "wiki-init: готово — $WIKI (artifacts/, _шаблон)"
+make_task "$ROOT/_шаблон" "_шаблон"
+echo "wiki-init: готово — $ROOT (_шаблон, index.md)"
 
 if [ -n "$TASK" ]; then
-  make_task "$WIKI/artifacts/$TASK" "$TASK"
-  grep -q "artifacts/$TASK" "$WIKI/index.md" || \
-    printf '| [%s](artifacts/%s/README.md) | в работе | 01-проблема |  |\n' "$TASK" "$TASK" >> "$WIKI/index.md"
-  echo "wiki-init: создана задача artifacts/$TASK"
+  make_task "$ROOT/$TASK" "$TASK"
+  grep -q "$TASK" "$ROOT/index.md" || \
+    printf '| [%s](%s/README.md) | в работе | 01-проблема |  |\n' "$TASK" "$TASK" >> "$ROOT/index.md"
+  echo "wiki-init: создана задача $ROOT/$TASK"
 fi

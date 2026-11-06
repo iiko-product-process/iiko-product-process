@@ -3,27 +3,27 @@
 #
 # Ничего не меняет: только смотрит и печатает чек-лист. Код 1 — если что-то критичное не настроено.
 #
-# usage: check-setup.sh [--repo PATH] [--home PATH] [--wiki PATH]
+# usage: check-setup.sh [--repo PATH] [--home PATH] [--artifacts PATH]
 set -uo pipefail
 
 REPO="${IIKO_REPO:-$HOME/iiko-product-process}"
 HOME_DIR="${HERMES_HOME:-$HOME/.hermes}"
-WIKI="${IIKO_WIKI_ROOT:-}"
+ARTIFACTS="${IIKO_ARTIFACTS:-}"
 
 while [ $# -gt 0 ]; do
   case "$1" in
     --repo) REPO="${2:?}"; shift ;;
     --home) HOME_DIR="${2:?}"; shift ;;
-    --wiki) WIKI="${2:?}"; shift ;;
+    --artifacts|--artifacts) ARTIFACTS="${2:?}"; shift ;;
     *) echo "неизвестный аргумент: $1" >&2; exit 2 ;;
   esac
   shift
 done
 
-if [ -z "$WIKI" ]; then
-  if [ -f "$HOME_DIR/iiko-wiki-root" ]; then WIKI="$(cat "$HOME_DIR/iiko-wiki-root")"
-  elif [ -d "$HOME_DIR/notes" ]; then WIKI="$HOME_DIR/notes"
-  elif [ -d "$HOME/notes" ]; then WIKI="$HOME/notes"; fi
+if [ -z "$ARTIFACTS" ]; then
+  if [ -f "$HOME_DIR/iiko-artifacts-root" ]; then ARTIFACTS="$(cat "$HOME_DIR/iiko-artifacts-root")"
+  elif [ -d "$HOME_DIR/ARTIFACTS" ]; then ARTIFACTS="$HOME_DIR/ARTIFACTS"
+  elif [ -d "$HOME/ARTIFACTS" ]; then ARTIFACTS="$HOME/ARTIFACTS"; fi
 fi
 
 ok=0; bad=0
@@ -59,11 +59,11 @@ else
   say_bad "скиллы: нет INDEX.md или каталога скиллов"
 fi
 
-# 4. вики и папка артефактов
-if [ -n "$WIKI" ] && [ -d "$WIKI/artifacts" ]; then
-  say_ok "вики: $WIKI (artifacts/ на месте)"
+# 4. ARTIFACTS — отдельная папка в дереве
+if [ -n "$ARTIFACTS" ] && [ -d "$ARTIFACTS/_шаблон" ]; then
+  say_ok "ARTIFACTS: $ARTIFACTS (_шаблон на месте)"
 else
-  say_bad "вики: artifacts/ не найдена — запустите wiki-init.sh"
+  say_bad "ARTIFACTS: папка не найдена — запустите wiki-init.sh"
 fi
 
 # 5. автообновление шага 4

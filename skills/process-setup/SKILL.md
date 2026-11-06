@@ -63,10 +63,10 @@ bash ~/iiko-product-process/skills/git-skills-install/scripts/install-skills-fro
 ### 4. Создать хранилище артефактов (Hermes wiki)
 
 ```bash
-bash ~/iiko-product-process/skills/hermes-wiki/scripts/wiki-init.sh "$HOME/notes"
+bash ~/iiko-product-process/skills/hermes-wiki/scripts/wiki-init.sh "$HOME/ARTIFACTS"
 ```
 
-Появятся `notes/artifacts/_шаблон` и `index.md`. Все артефакты задач — в `artifacts/<слаг>/`
+Появятся `~/ARTIFACTS/_шаблон` и `index.md` — отдельная папка в дереве, не внутри `notes`. Все артефакты задач — в `ARTIFACTS/<слаг>/`
 (карточка, журнал, `01-проблема … 07-пилот`, `встречи/`, `материалы/`). В репозиторий артефакты не кладём.
 
 ### 5. Включить автообновление шага 4
@@ -116,11 +116,11 @@ bash ~/iiko-product-process/scripts/check-setup.sh --repo ~/iiko-product-process
 ## Первая настоящая задача
 
 ```bash
-bash ~/iiko-product-process/skills/hermes-wiki/scripts/wiki-init.sh "$HOME/notes" --task <слаг-задачи>
+bash ~/iiko-product-process/skills/hermes-wiki/scripts/wiki-init.sh "$HOME/ARTIFACTS" --task <слаг-задачи>
 ```
 
 Дальше — как обычно: шаг 1 (проблема) → 2 (гипотезы) → 3 (Story) → 4 (прототип) → 5 (PRD) → 6 (разработка).
-Правила: артефакты в `artifacts/<слаг>/`, решения принимает человек, в Jira пишем только после
+Правила: артефакты в `ARTIFACTS/<слаг>/`, решения принимает человек, в Jira пишем только после
 подтверждения, каждая созданная задача помечается label `Hermes`.
 
 ## Типовые проблемы
@@ -139,5 +139,5 @@ bash ~/iiko-product-process/skills/hermes-wiki/scripts/wiki-init.sh "$HOME/notes
 > Настройка готова: репозиторий склонирован, 38 скиллов установлены, вики создана, обновление шага 4
 > стоит на воскресенье. MCP: ‹что подключено / что отложено›.
 > Начинаем так: приносишь сигнал (жалоба, метрика, запрос бизнеса) — я помогу сформулировать проблему
-> и провести её по шагам. Артефакты складываю в `artifacts/<слаг>/`.
+> и провести её по шагам. Артефакты складываю в `ARTIFACTS/<слаг>/`.
 > С чего начнём: ‹проблема / гипотезы по готовой проблеме / оформить Story›?
