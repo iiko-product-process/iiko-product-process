@@ -1,6 +1,8 @@
 ---
 name: pyrus
-description: "Collect Pyrus form/registry tasks via direct REST."
+description: "Use when нужны обращения из Pyrus: формы, реестры, жалобы клиентов."
+version: 1.0.0
+created: 2026-10-19
 ---
 
 # Pyrus: сбор задач и реестров форм

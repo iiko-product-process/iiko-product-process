@@ -1,6 +1,8 @@
 ---
 name: pyrus-api-direct
-description: Use when collecting Pyrus tasks/registries via REST.
+description: "Use when Pyrus нужен по REST без MCP: токен, формы, реестры."
+version: 1.0.0
+created: 2026-10-19
 ---
 
 # Pyrus: прямой REST-доступ (обход бага MCP get_registry)

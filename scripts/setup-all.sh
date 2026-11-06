@@ -54,7 +54,7 @@ else
   url="https://github.com/iiko-product-process/iiko-product-process.git"
   [ -n "$TOKEN" ] && url="https://x-access-token:$TOKEN@github.com/iiko-product-process/iiko-product-process.git"
   if [ "$DRY" = 0 ]; then
-    git clone -q "$url" "$REPO" && echo "папка процесса получена: $REPO" || { echo "клон не удался — проверьте доступ/токен"; exit 1; }
+    git clone -q "$url" "$REPO" && echo "папка процесса получена: $REPO" || { echo "папку получить не удалось — проверьте доступ/токен"; exit 1; }
   else
     echo "будет получена папка процесса: $REPO"
   fi

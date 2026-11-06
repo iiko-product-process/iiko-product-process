@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Синхронизация рабочей папки задачи в хранилище артефактов (Hermes wiki).
 
-Рабочая папка в контейнере (`/opt/data/tasks/<KEY>-<слаг>`) — временная: там идёт работа.
+Рабочая папка (`~/iiko_process/ARTIFACTS/<слаг>`) — временная: там идёт работа.
 Источник правды — `ARTIFACTS/<слаг>/` в вики. Скрипт копирует артефакты из рабочей папки
 в папку задачи по правилам раскладки, не перезаписывая расхождения молча.
 
-    python3 sync-task.py --from /opt/data/tasks/PB-7105-nacenka-v-prikazah \
+    python3 sync-task.py --from ~/iiko_process/ARTIFACTS/pb-7105-nacenka-v-prikazah \
                          --task <клон>/ARTIFACTS/pb-7105-price-orders --dry-run
     python3 sync-task.py --from … --task … --journal
 
