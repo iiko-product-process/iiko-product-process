@@ -30,7 +30,7 @@
 | share-to-common | Сквозной | `skills/share-to-common/SKILL.md` | Use when просит поделиться наработкой со всеми («в общую папку», «чтобы видели все»): собрать предложение и передать админу. |
 | mirror-skill-to-repo | Сквозной | `skills/mirror-skill-to-repo/SKILL.md` | Use when появился новый скилл или навык: предложить скопировать его в папку репозитория. |
 | git-onboarding | Сквозной | `skills/git-onboarding/SKILL.md` | Use when сотрудник подключается к репозиторию процесса: клон, правила для Гермеса, MCP, первые задачи. |
-| skills-inbox | Сквозной | `skills/skills-inbox/SKILL.md` | Use when нужно собрать новые скиллы сотрудников и прислать дайджест админу — без git у сотрудников. |
+| skills-inbox | Сквозной | `skills/skills-inbox/SKILL.md` | Use when нужно собрать новые скиллы сотрудников и отправить их в Telegram — без git у сотрудников. |
 | git-skills-install | Сквозной | `skills/git-skills-install/SKILL.md` | Use when папка процесса подключена или обновлена: поставить все скиллы из репозитория в Hermes. |
 | pyrus | Шаг 1 | `01-research-problem/skills/pyrus/SKILL.md` | Use when нужны обращения из Pyrus: формы, реестры, жалобы клиентов. |
 | pyrus-api-direct | Шаг 1 | `01-research-problem/skills/pyrus-api-direct/SKILL.md` | Use when Pyrus нужен по REST без MCP: токен, формы, реестры. |
