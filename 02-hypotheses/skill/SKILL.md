@@ -1,7 +1,7 @@
 ---
 name: iiko-hypotheses
 description: "Use when нужны гипотезы по проблеме или в общий список (Шаг 2 iiko): собрать и открыть в прототипе."
-version: 1.8.1
+version: 1.8.2
 author: Hermes Agent
 license: MIT
 metadata:
@@ -24,7 +24,7 @@ metadata:
 
 - Прототип открывается как веб-сервис: **`http://hermes.iiko.ru:8330/?list=<id>`** (запасной адрес — `http://10.10.8.10:8330/?list=<id>`). Порт 8330 взят из диапазона под прототипы (`PROTO_PORT_RANGE=8330-8339`), наружу он проброшен — от ИТ ничего не нужно.
 - **Отдавай результат так: короткое резюме + ссылка отдельной строкой.** Длинные сообщения с вложениями десктоп-клиент пользователя иногда теряет (проверено 22.09 и 29.09) — поэтому собранный HTML присылаем файлом **только если сервис недоступен**.
-- Если сервис не отвечает: `cd /opt/data/IIKO_PROCESS/02-hypotheses && python3 server/serve.py --port 8330` (обычно его сам поднимает watchdog `/opt/data/scripts/hypoproto_ensure.sh`, cron `c5c3e550126c`, каждые 15 минут).
+- Если сервис не отвечает: `cd /opt/data/IIKO_PROCESS/02-hypotheses && python3 server/serve.py --port 8330` (обычно его сам поднимает watchdog `/opt/data/scripts/hypoproto_ensure.sh`, cron `7c12b6a8fb7b`, каждые 15 минут).
 
 ## Что где лежит
 
@@ -117,7 +117,7 @@ metadata:
 Ниже — что именно делает установка на конкретной машине:
 
 1. **Сервис:** `cd /opt/data/IIKO_PROCESS/02-hypotheses && python3 server/serve.py --port 8330` — порт из диапазона `PROTO_PORT_RANGE=8330-8339`, он уже проброшен наружу: `http://<хост>:8330/?list=<id>` (рабочий адрес — `http://hermes.iiko.ru:8330/`, запасной — `http://10.10.8.10:8330/`).
-2. **Автоподъём:** watchdog `/opt/data/scripts/hypoproto_ensure.sh` (cron `c5c3e550126c`, каждые 15 минут) поднимает сервис, если он упал, и коммитит правки списков; после правок `serve.py` сервис перезапускается скриптом `/opt/data/scripts/hypoproto_restart.sh` (код читается один раз при старте).
+2. **Автоподъём:** watchdog `/opt/data/scripts/hypoproto_ensure.sh` (cron `7c12b6a8fb7b`, каждые 15 минут) поднимает сервис, если он упал, и коммитит правки списков; после правок `serve.py` сервис перезапускается скриптом `/opt/data/scripts/hypoproto_restart.sh` (код читается один раз при старте).
 3. **Канал «сайт → Hermes»** (кнопка «Спросить Hermes» в шапке страницы): `POST /api/ask` с телом `{"list": "<id>", "text": "<запрос>"}` запускает агента в фоне, `GET /api/ask/<task>` отдаёт статус (`running | done | error | timeout`).
    - **Все запросы с сайта идут в один чат десктоп-клиента** — сессии не множатся. id чата лежит в файле `/opt/data/hypoproto-ask-session.txt`, название чата — «🤖 Сайт → Hermes (гипотезы)». Если файла нет, сервис при первом запросе создаёт сессию сам (`hermes chat -q … -Q`), находит её id в `state.db` и переименовывает; дальше каждый запрос продолжает её (`hermes chat -q … --resume <id>`).
    - Настройка — переменными окружения сервиса: `HERMES_ASK_SESSION_FILE` (где хранить id чата), `HERMES_ASK_SESSION_TITLE` (название чата), `HERMES_BIN` (путь к `hermes`), `HERMES_STATE_DB` (база сессий, если она не в `/opt/data/state.db`).
