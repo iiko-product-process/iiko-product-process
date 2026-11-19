@@ -61,7 +61,7 @@ ASK_SESSION_TITLE = os.environ.get("HERMES_ASK_SESSION_TITLE", "🤖 Сайт �
 
 ASK_PROMPT = """Запрос с сайта прототипа «Списки гипотез» (кнопка «Спросить Hermes»). Отвечай в этом же чате одной короткой строкой-итогом.
 
-Работай по скиллу iiko-hypotheses. Репозиторий: /opt/data/iiko-product-process, папка шага: 02-hypotheses.
+Работай по скиллу iiko-hypotheses. Репозиторий: {repo}, папка шага: 02-hypotheses.
 
 Продакт просит через сайт прототипа дополнить список гипотез.
 Список: «{title}» (id: {lid}, файл data/lists/{lid}.json).
@@ -78,7 +78,7 @@ ASK_PROMPT = """Запрос с сайта прототипа «Списки г�
 
 ASK_PROMPT_TASK = """Запрос с сайта прототипа «Списки гипотез» (кнопка «Создать задачу»). Отвечай в этом же чате одной короткой строкой-итогом.
 
-Работай по скиллу iiko-hypotheses. Репозиторий: /opt/data/iiko-product-process, папка шага: 02-hypotheses.
+Работай по скиллу iiko-hypotheses. Репозиторий: {repo}, папка шага: 02-hypotheses.
 
 Продакт отобрал галочками гипотезы в списке «{title}» (id: {lid}, файл data/lists/{lid}.json) и просит оформить их в Jira.
 
@@ -380,7 +380,7 @@ class Handler(BaseHTTPRequestHandler):
     def _ask_run(self, task_id: str, lid: str, title: str, text: str, mode: str = "ask") -> None:
         global ASK_RUNNING
         template = ASK_PROMPT_TASK if mode == "task" else ASK_PROMPT
-        prompt = template.format(title=title, lid=lid, text=text.replace('"', "'"))
+        prompt = template.format(title=title, lid=lid, text=text.replace('"', "'"), repo=REPO)
         sid = self._ask_session_id()
         session_note = ""
         started = time.time()
