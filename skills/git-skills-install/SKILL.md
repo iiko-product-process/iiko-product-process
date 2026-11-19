@@ -1,7 +1,7 @@
 ---
 name: git-skills-install
 description: "Use when папка процесса подключена или обновлена: поставить все скиллы из репозитория в Hermes."
-version: 1.0.1
+version: 1.0.2
 created: 2026-10-19
 tags: [скиллы, установка, репозиторий, онбординг, iiko]
 triggers:

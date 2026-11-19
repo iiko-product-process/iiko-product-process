@@ -96,7 +96,10 @@ while IFS=$'\t' read -r name f; do
     prev=$(awk -F'\t' -v n="$name" '$1==n{print $2}' "$STATE" 2>/dev/null | head -1)
     grep -qx "$STATE_HEADER" "$STATE" 2>/dev/null || prev=""   # старый формат манифеста — без защиты от перезаписи
     if [ "$FORCE" = 0 ] && [ -n "$prev" ] && [ "$prev" != "$cur" ]; then
-      echo "  пропуск: $name — локальная копия правилась руками"; skipped=$((skipped+1)); continue
+      echo "  пропуск: $name — локальная копия правилась руками"; skipped=$((skipped+1))
+      # запись в манифест сохраняем: иначе следующая установка потеряет защиту и затрёт правку
+      printf '%s\t%s\t%s\t%s\n' "$name" "$prev" "${ver:-}" "${f#$REPO/}" >> "$NEW"
+      continue
     fi
     action="обновлён"; updated=$((updated+1))
   else
